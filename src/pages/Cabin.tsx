@@ -66,6 +66,7 @@ const Cabin = () => {
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
+  const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
 
   const { weatherCode, windSpeed, temperature } = useWeather(profile?.latitude, profile?.longitude);
 
@@ -145,6 +146,20 @@ const Cabin = () => {
 
       if (owner && editOnLoad) {
         setEditOpen(true);
+      }
+
+      // Fetch monthly visit count for owner
+      if (owner) {
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+        const { data: visits } = await supabase
+          .from('cabin_visits')
+          .select('visit_count')
+          .eq('profile_id', data.id)
+          .gte('visit_date', monthStart);
+        if (visits) {
+          setMonthlyVisits(visits.reduce((sum, v) => sum + (v.visit_count || 0), 0));
+        }
       }
     }
     setLoading(false);
@@ -268,6 +283,9 @@ const Cabin = () => {
                   {profile.is_pines_plus && <span title="Pines+" className="text-lg">🌲</span>}
                 </div>
                 <p className="text-sm font-body text-white/60 mt-0.5">@{profile.handle}</p>
+                {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+                  <p className="text-xs font-body text-white/30 mt-1">{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
+                )}
               </div>
             </div>
           </div>
@@ -303,6 +321,9 @@ const Cabin = () => {
               {profile.is_pines_plus && <span title="Pines+" className="text-xl">🌲</span>}
             </div>
             <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
+            {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+              <p className="text-xs font-body mt-1" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
+            )}
             {profile.mantra && (
               <p className="mt-8 text-xl md:text-2xl font-display italic leading-relaxed" style={{ color: atmos.text, opacity: 0.7 }}>"{profile.mantra}"</p>
             )}
@@ -356,6 +377,9 @@ const Cabin = () => {
                 {profile.is_pines_plus && <span title="Pines+" className="text-base">🌲</span>}
               </div>
               <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
+              {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+                <p className="text-[10px] font-body mt-0.5" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
+              )}
             </div>
             <div className="hidden md:block text-right">
               <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} />
@@ -394,6 +418,9 @@ const Cabin = () => {
                   {profile.is_pines_plus && <span title="Pines+" className="text-lg">🌲</span>}
                 </div>
                 <p className="text-sm font-body mt-1" style={{ color: atmos.text, opacity: 0.5 }}>@{profile.handle}</p>
+                {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+                  <p className="text-xs font-body mt-1" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
+                )}
               </div>
             </div>
             <div className="px-8 pb-8">
