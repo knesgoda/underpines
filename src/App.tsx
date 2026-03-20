@@ -14,6 +14,7 @@ import InviteLanding from "./pages/InviteLanding";
 import Onboarding from "./pages/Onboarding";
 import Cabin from "./pages/Cabin";
 import Invites from "./pages/Invites";
+import InviteTree from "./pages/InviteTree";
 import Campfires from "./pages/Campfires";
 import Lantern from "./pages/Lantern";
 import SettingsPage from "./pages/SettingsPage";
