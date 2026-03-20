@@ -179,6 +179,36 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
         {tab === 'you' && (
           <>
+            <Field label="Avatar">
+              <div className="flex items-center gap-4 mb-2">
+                <img
+                  src={getAvatarSrc(profile.avatar_url, profile.default_avatar_key)}
+                  alt="Current avatar"
+                  className="w-14 h-14 rounded-full object-cover"
+                  style={{ border: '2px solid var(--border)' }}
+                />
+                <p className="text-xs text-muted-foreground font-body">
+                  {profile.avatar_url ? 'Custom photo set. Tap your avatar on the Cabin to change it.' : 'Pick a default avatar below, or tap the camera on your Cabin avatar to upload a photo.'}
+                </p>
+              </div>
+              <div className="grid grid-cols-6 gap-2">
+                {Object.entries(defaultAvatars).map(([key, { src, label }]) => (
+                  <button
+                    key={key}
+                    onClick={async () => {
+                      await supabase.from('profiles').update({ default_avatar_key: key, avatar_url: null }).eq('id', profile.id);
+                      onUpdate();
+                    }}
+                    className={`rounded-full overflow-hidden transition-all ${
+                      !profile.avatar_url && profile.default_avatar_key === key ? 'ring-2 ring-primary ring-offset-1' : 'hover:scale-105'
+                    }`}
+                    title={label}
+                  >
+                    <img src={src} alt={label} className="w-full h-full object-cover aspect-square" />
+                  </button>
+                ))}
+              </div>
+            </Field>
             <Field label="Display name">
               <Input
                 value={form.display_name}
