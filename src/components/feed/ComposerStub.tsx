@@ -40,6 +40,16 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
     setExpanded(false);
   };
 
+  if (isSeedling) {
+    return (
+      <div className="rounded-xl bg-card border border-border shadow-soft p-4 mb-4">
+        <p className="font-body text-sm text-muted-foreground">
+          🌱 You're still getting settled. Explore, read, set up your Cabin — posting unlocks in {daysLeft} {daysLeft === 1 ? 'day' : 'days'}.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-xl bg-card border border-border shadow-soft p-4 mb-4">
       {!expanded && !activeType ? (
