@@ -340,7 +340,12 @@ const CampfireList = ({
                   {isEmbers && c.daysSinceLastMessage ? (
                     <div className="flex items-center gap-2">
                       <p className="font-body text-xs text-muted-foreground">Quiet for {c.daysSinceLastMessage} days</p>
-                      <span className="font-body text-xs text-primary cursor-pointer hover:underline">Stoke it?</span>
+                      <span
+                        className="font-body text-xs text-primary cursor-pointer hover:underline"
+                        onClick={(e) => { e.stopPropagation(); onStoke?.(c.id); }}
+                        role="button"
+                        tabIndex={0}
+                      >Stoke it?</span>
                     </div>
                   ) : c.lastMessage ? (
                     <p className="font-body text-xs text-muted-foreground truncate">
