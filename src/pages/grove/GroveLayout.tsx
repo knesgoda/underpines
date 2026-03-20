@@ -2,7 +2,7 @@ import { Navigate, Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useAuth } from '@/contexts/AuthContext';
 import PineTreeLoading from '@/components/PineTreeLoading';
-import { LayoutDashboard, ListChecks, Users, Tent, DollarSign, Settings, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, ListChecks, Users, Tent, DollarSign, Settings, ArrowLeft, Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { to: '/grove/queue', label: 'Review Queue', icon: ListChecks },
   { to: '/grove/members', label: 'Members', icon: Users },
   { to: '/grove/camps', label: 'Camps', icon: Tent },
+  { to: '/grove/designs', label: 'Designs', icon: Palette },
   { to: '/grove/revenue', label: 'Revenue', icon: DollarSign },
   { to: '/grove/settings', label: 'Settings', icon: Settings },
 ];
