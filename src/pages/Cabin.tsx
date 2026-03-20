@@ -157,8 +157,8 @@ const Cabin = () => {
   }
 
   const effectiveAtmos = previewDesign?.design_data?.atmosphere
-    ? getAtmosphere(previewDesign.design_data.atmosphere)
-    : getAtmosphere(profile.atmosphere);
+    ? getAtmosphere(previewDesign.design_data.atmosphere, theme)
+    : getAtmosphere(profile.atmosphere, theme);
   const atmos = effectiveAtmos;
   const mood = cabinMoods.find(m => m.key === profile.cabin_mood);
   const season = getCurrentSeason();
