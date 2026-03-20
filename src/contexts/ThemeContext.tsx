@@ -37,7 +37,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       .select('theme')
       .eq('id', user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data }: any) => {
         if (data?.theme && VALID_THEMES.includes(data.theme as AppTheme)) {
           setThemeState(data.theme as AppTheme);
           localStorage.setItem(STORAGE_KEY, data.theme);
