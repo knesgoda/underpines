@@ -100,11 +100,11 @@ const ReportSheet = ({
           </div>
         ) : (
           <>
-            <SheetHeader>
-              <SheetTitle className="font-display text-lg">
-                Is something wrong with this?
-              </SheetTitle>
-            </SheetHeader>
+             <SheetHeader>
+               <SheetTitle className="font-display text-lg">
+                 Flag something for the community's health
+               </SheetTitle>
+             </SheetHeader>
 
             <div className="mt-5 space-y-5">
               <RadioGroup value={reason} onValueChange={setReason}>
