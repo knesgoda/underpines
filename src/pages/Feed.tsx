@@ -348,14 +348,19 @@ const Feed = () => {
       {/* Loading */}
       {loading && <div className="py-8"><PineTreeLoading /></div>}
 
-      {/* Empty: no circles */}
-      {!loading && noCircles && (
-        <EmptyState icon="🌲" title="Your feed is quiet right now —" subtitle="which is kind of nice, isn't it?" />
-      )}
-
-      {/* Empty: circles but no posts */}
-      {!loading && emptyFeed && (
-        <EmptyState icon="🌿" title="Everyone's out on the trail." subtitle="Nothing new since your last visit." />
+      {/* Empty: no posts */}
+      {emptyFeed && (
+        <EmptyState icon="🌲" title="Your feed is quiet right now —" subtitle="which is kind of nice, isn't it?">
+          {inviter ? (
+            <Link to={`/circles/suggestions/${inviter.handle}`} className="inline-block mt-4 font-body text-sm text-primary hover:opacity-80 transition-opacity">
+              See who {inviter.display_name} follows →
+            </Link>
+          ) : (
+            <Link to="/search" className="inline-block mt-4 font-body text-sm text-primary hover:opacity-80 transition-opacity">
+              Find people in the Pines →
+            </Link>
+          )}
+        </EmptyState>
       )}
 
       {/* Empty: all filtered */}
