@@ -232,6 +232,15 @@ const CampfireListHeader = ({ filter, setFilter }: { filter: FilterTab; setFilte
   </div>
 );
 
+const flickerTimeRemaining = (expiresAt: string | null): string => {
+  if (!expiresAt) return '';
+  const diff = new Date(expiresAt).getTime() - Date.now();
+  if (diff <= 0) return 'expired';
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  return `${h}h ${m}m`;
+};
+
 const CampfireList = ({
   campfires, displayName, isFlickerExpired, onSelect, selectedId,
 }: {
@@ -250,45 +259,96 @@ const CampfireList = ({
     );
   }
 
-  return (
-    <div className="divide-y divide-border">
-      {campfires.map(c => {
-        const expired = isFlickerExpired(c);
-        const isEmbers = c.is_embers;
+  const flickers = campfires.filter(c => c.campfire_type === 'flicker');
+  const others = campfires.filter(c => c.campfire_type !== 'flicker');
 
-        return (
-          <button
-            key={c.id}
-            onClick={() => !expired && onSelect(c.id)}
-            className={`w-full text-left px-4 py-3 transition-colors ${
-              selectedId === c.id ? 'bg-primary/8' : 'hover:bg-muted/50'
-            } ${isEmbers ? 'opacity-70' : ''} ${expired ? 'opacity-40 cursor-default' : ''}`}
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-lg shrink-0">
-                {c.campfire_type === 'flicker' ? '🕯️' : isEmbers ? '🌙' : '🔥'}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="font-body text-sm font-medium text-foreground truncate">{displayName(c)}</p>
-                {expired ? (
-                  <p className="font-body text-xs text-muted-foreground">This fire had its moment.</p>
-                ) : isEmbers && c.daysSinceLastMessage ? (
-                  <div className="flex items-center gap-2">
-                    <p className="font-body text-xs text-muted-foreground">Quiet for {c.daysSinceLastMessage} days</p>
-                    <span className="font-body text-xs text-primary cursor-pointer hover:underline">Stoke it?</span>
+  return (
+    <div>
+      {/* Flickers section */}
+      {flickers.length > 0 && (
+        <div>
+          <p className="font-display text-[10px] uppercase tracking-widest text-muted-foreground px-4 pt-4 pb-2">
+            🕯️ Flickers
+          </p>
+          <div className="divide-y divide-border">
+            {flickers.map(c => {
+              const expired = isFlickerExpired(c);
+              const timeLeft = flickerTimeRemaining(c.expires_at);
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => onSelect(c.id)}
+                  className={`w-full text-left px-4 py-3 transition-colors ${
+                    selectedId === c.id ? 'bg-primary/8' : 'hover:bg-muted/50'
+                  } ${expired ? 'opacity-50' : ''}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg shrink-0">🕯️</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-body text-sm font-medium text-foreground truncate">{displayName(c)}</p>
+                      {expired ? (
+                        <p className="font-body text-xs text-muted-foreground italic">This Flicker has burned out.</p>
+                      ) : (
+                        <p className="font-body text-xs text-muted-foreground">
+                          Burns out in <span className="text-foreground/70">{timeLeft}</span>
+                        </p>
+                      )}
+                    </div>
+                    {!expired && timeLeft && (
+                      <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+                        {timeLeft}
+                      </span>
+                    )}
                   </div>
-                ) : c.lastMessage ? (
-                  <p className="font-body text-xs text-muted-foreground truncate">
-                    {c.lastMessage} · {c.lastMessageTime ? formatTimeAgo(c.lastMessageTime) : ''}
-                  </p>
-                ) : (
-                  <p className="font-body text-xs text-muted-foreground">New campfire</p>
-                )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Regular campfires */}
+      {others.length > 0 && flickers.length > 0 && (
+        <p className="font-display text-[10px] uppercase tracking-widest text-muted-foreground px-4 pt-4 pb-2">
+          🔥 Campfires
+        </p>
+      )}
+      <div className="divide-y divide-border">
+        {others.map(c => {
+          const isEmbers = c.is_embers;
+
+          return (
+            <button
+              key={c.id}
+              onClick={() => onSelect(c.id)}
+              className={`w-full text-left px-4 py-3 transition-colors ${
+                selectedId === c.id ? 'bg-primary/8' : 'hover:bg-muted/50'
+              } ${isEmbers ? 'opacity-70' : ''}`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-lg shrink-0">
+                  {isEmbers ? '🌙' : '🔥'}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-body text-sm font-medium text-foreground truncate">{displayName(c)}</p>
+                  {isEmbers && c.daysSinceLastMessage ? (
+                    <div className="flex items-center gap-2">
+                      <p className="font-body text-xs text-muted-foreground">Quiet for {c.daysSinceLastMessage} days</p>
+                      <span className="font-body text-xs text-primary cursor-pointer hover:underline">Stoke it?</span>
+                    </div>
+                  ) : c.lastMessage ? (
+                    <p className="font-body text-xs text-muted-foreground truncate">
+                      {c.lastMessage} · {c.lastMessageTime ? formatTimeAgo(c.lastMessageTime) : ''}
+                    </p>
+                  ) : (
+                    <p className="font-body text-xs text-muted-foreground">New campfire</p>
+                  )}
+                </div>
               </div>
-            </div>
-          </button>
-        );
-      })}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
