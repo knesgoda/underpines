@@ -440,13 +440,6 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
         </div>
       </div>
 
-      {/* Flicker banner */}
-      {campfire.campfire_type === 'flicker' && flickerTimeLeft && (
-        <div className="px-4 py-2 bg-amber-light/20 text-center">
-          <p className="font-body text-xs text-foreground">🕯️ This Flicker burns out in {flickerTimeLeft}</p>
-        </div>
-      )}
-
       {/* Embers banner */}
       {campfire.is_embers && (
         <div className="px-4 py-2 bg-muted text-center">
