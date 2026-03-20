@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import DesktopSidebar from './DesktopSidebar';
 import MobileTabBar from './MobileTabBar';
 
-const FULL_SCREEN_ROUTES = ['/onboarding', '/login'];
+const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
