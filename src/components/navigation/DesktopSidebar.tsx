@@ -61,7 +61,7 @@ const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) =>
   );
 };
 
-
+const DesktopSidebar = () => {
   const { user, signOut } = useAuth();
   const { setComposerOpen } = useNavigation();
   const location = useLocation();
