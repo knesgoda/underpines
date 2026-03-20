@@ -56,9 +56,12 @@ const DesktopSidebar = () => {
       {profile && (
         <div className="px-5 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground shrink-0">
-              {profile.display_name[0]?.toUpperCase()}
-            </div>
+            <UserAvatar
+              avatarUrl={profile.avatar_url}
+              defaultAvatarKey={profile.default_avatar_key}
+              displayName={profile.display_name}
+              size={40}
+            />
             <div className="min-w-0">
               <p className="font-body text-sm font-medium text-foreground truncate">{profile.display_name}</p>
               <p className="font-body text-xs text-muted-foreground truncate">@{profile.handle}</p>
