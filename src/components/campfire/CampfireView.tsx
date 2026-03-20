@@ -465,7 +465,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
               const showDivider = shouldShowTimeDivider(msg, prevMsg);
 
               return (
-                <div key={msg.id}>
+                <div key={msg.id} id={`msg-${msg.id}`}>
                   {showDivider && msg.created_at && (
                     <div className="flex items-center gap-3 my-4">
                       <div className="flex-1 h-px bg-border" />
