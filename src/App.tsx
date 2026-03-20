@@ -55,6 +55,7 @@ const App = () => (
                   <Route path="/cabin" element={<Cabin />} />
                   <Route path="/invites" element={<Invites />} />
                   <Route path="/campfires" element={<Campfires />} />
+                  <Route path="/search" element={<SearchPage />} />
                   <Route path="/lantern" element={<Lantern />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/settings/notifications" element={<NotificationSettings />} />
