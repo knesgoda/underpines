@@ -32,6 +32,7 @@ import CampSettings from "./pages/CampSettings";
 import CampNewsletterComposer from "./pages/CampNewsletterComposer";
 import CampNewsletterView from "./pages/CampNewsletterView";
 import CampNewsletterArchive from "./pages/CampNewsletterArchive";
+import SearchPage from "./pages/Search";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => (
                   <Route path="/cabin" element={<Cabin />} />
                   <Route path="/invites" element={<Invites />} />
                   <Route path="/campfires" element={<Campfires />} />
+                  <Route path="/search" element={<SearchPage />} />
                   <Route path="/lantern" element={<Lantern />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/settings/notifications" element={<NotificationSettings />} />

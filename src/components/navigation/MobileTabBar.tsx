@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { Home, Tent, Flame, Plus } from 'lucide-react';
+import { Home, Tent, Flame, Plus, Search } from 'lucide-react';
 import LanternIcon from './LanternIcon';
 
 interface TabItem {
