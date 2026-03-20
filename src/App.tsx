@@ -49,6 +49,10 @@ const App = () => (
                   <Route path="/new/story" element={<StoryComposer />} />
                   <Route path="/circles" element={<CirclesPage />} />
                   <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
+                  <Route path="/collections/new" element={<CollectionEditor />} />
+                  <Route path="/collections/edit/:id" element={<CollectionEditor />} />
+                  <Route path="/:handle/collections" element={<CollectionsList />} />
+                  <Route path="/:handle/collections/:id" element={<CollectionView />} />
                   <Route path="/:handle" element={<Cabin />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
