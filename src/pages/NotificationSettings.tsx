@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import usePushNotifications from '@/hooks/usePushNotifications';
 import { toast } from 'sonner';
 
 const DELIVERY_TIMES = Array.from({ length: 24 }, (_, i) => {
