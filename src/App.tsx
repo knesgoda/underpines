@@ -36,6 +36,17 @@ import CampNewsletterArchive from "./pages/CampNewsletterArchive";
 import SearchPage from "./pages/Search";
 import NotFound from "./pages/NotFound";
 
+// Grove (admin)
+import GroveLayout from "./pages/grove/GroveLayout";
+import GroveOverview from "./pages/grove/GroveOverview";
+import GroveQueue from "./pages/grove/GroveQueue";
+import GroveMembers from "./pages/grove/GroveMembers";
+import GroveMemberDetail from "./pages/grove/GroveMemberDetail";
+import GroveCamps from "./pages/grove/GroveCamps";
+import GroveCampDetail from "./pages/grove/GroveCampDetail";
+import GroveRevenue from "./pages/grove/GroveRevenue";
+import GroveSettings from "./pages/grove/GroveSettings";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -47,40 +58,57 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <AppLayout>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/invite/:slug" element={<InviteLanding />} />
-                  <Route path="/onboarding" element={<Onboarding />} />
-                  <Route path="/cabin" element={<Cabin />} />
-                  <Route path="/invites" element={<Invites />} />
-                  <Route path="/campfires" element={<Campfires />} />
-                  <Route path="/search" element={<SearchPage />} />
-                  <Route path="/lantern" element={<Lantern />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="/settings/notifications" element={<NotificationSettings />} />
-                  <Route path="/settings/subscription" element={<SubscriptionPage />} />
-                  <Route path="/settings/payouts" element={<CreatorPayouts />} />
-                  <Route path="/new/story" element={<StoryComposer />} />
-                  <Route path="/circles" element={<CirclesPage />} />
-                  <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
-                  <Route path="/collections/new" element={<CollectionEditor />} />
-                  <Route path="/collections/edit/:id" element={<CollectionEditor />} />
-                  <Route path="/camps" element={<CampsDirectory />} />
-                  <Route path="/camps/new" element={<CreateCamp />} />
-                  <Route path="/camps/mine" element={<MyCamps />} />
-                  <Route path="/camps/:id" element={<CampView />} />
-                  <Route path="/camps/:id/settings" element={<CampSettings />} />
-                  <Route path="/camps/:id/newsletter/new" element={<CampNewsletterComposer />} />
-                  <Route path="/camps/:id/newsletter/:newsletterId" element={<CampNewsletterView />} />
-                  <Route path="/camps/:id/newsletters" element={<CampNewsletterArchive />} />
-                  <Route path="/:handle/collections" element={<CollectionsList />} />
-                  <Route path="/:handle/collections/:id" element={<CollectionView />} />
-                  <Route path="/:handle" element={<Cabin />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </AppLayout>
+              <Routes>
+                {/* Grove admin routes — outside AppLayout */}
+                <Route path="/grove" element={<GroveLayout />}>
+                  <Route index element={<GroveOverview />} />
+                  <Route path="queue" element={<GroveQueue />} />
+                  <Route path="members" element={<GroveMembers />} />
+                  <Route path="members/:handle" element={<GroveMemberDetail />} />
+                  <Route path="camps" element={<GroveCamps />} />
+                  <Route path="camps/:id" element={<GroveCampDetail />} />
+                  <Route path="revenue" element={<GroveRevenue />} />
+                  <Route path="settings" element={<GroveSettings />} />
+                </Route>
+
+                {/* Main app routes */}
+                <Route path="/*" element={
+                  <AppLayout>
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/invite/:slug" element={<InviteLanding />} />
+                      <Route path="/onboarding" element={<Onboarding />} />
+                      <Route path="/cabin" element={<Cabin />} />
+                      <Route path="/invites" element={<Invites />} />
+                      <Route path="/campfires" element={<Campfires />} />
+                      <Route path="/search" element={<SearchPage />} />
+                      <Route path="/lantern" element={<Lantern />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="/settings/notifications" element={<NotificationSettings />} />
+                      <Route path="/settings/subscription" element={<SubscriptionPage />} />
+                      <Route path="/settings/payouts" element={<CreatorPayouts />} />
+                      <Route path="/new/story" element={<StoryComposer />} />
+                      <Route path="/circles" element={<CirclesPage />} />
+                      <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
+                      <Route path="/collections/new" element={<CollectionEditor />} />
+                      <Route path="/collections/edit/:id" element={<CollectionEditor />} />
+                      <Route path="/camps" element={<CampsDirectory />} />
+                      <Route path="/camps/new" element={<CreateCamp />} />
+                      <Route path="/camps/mine" element={<MyCamps />} />
+                      <Route path="/camps/:id" element={<CampView />} />
+                      <Route path="/camps/:id/settings" element={<CampSettings />} />
+                      <Route path="/camps/:id/newsletter/new" element={<CampNewsletterComposer />} />
+                      <Route path="/camps/:id/newsletter/:newsletterId" element={<CampNewsletterView />} />
+                      <Route path="/camps/:id/newsletters" element={<CampNewsletterArchive />} />
+                      <Route path="/:handle/collections" element={<CollectionsList />} />
+                      <Route path="/:handle/collections/:id" element={<CollectionView />} />
+                      <Route path="/:handle" element={<Cabin />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </AppLayout>
+                } />
+              </Routes>
             </BrowserRouter>
           </TooltipProvider>
         </NavigationProvider>
