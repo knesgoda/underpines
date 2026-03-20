@@ -10,6 +10,15 @@ import SeasonalEventCard from '@/components/feed/SeasonalEventCard';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { Settings } from 'lucide-react';
 
+const PineTreeInline = () => (
+  <svg width="28" height="42" viewBox="0 0 48 72" fill="none" className="animate-tree-sway">
+    <path d="M24 4 L14 24 L34 24 Z" fill="hsl(var(--pine-dark))" opacity="0.9" />
+    <path d="M24 14 L10 38 L38 38 Z" fill="hsl(var(--pine-dark))" opacity="0.75" />
+    <path d="M24 26 L6 52 L42 52 Z" fill="hsl(var(--pine-dark))" opacity="0.6" />
+    <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--amber-deep))" opacity="0.7" />
+  </svg>
+);
+
 const Feed = () => {
   const { user, loading: authLoading } = useAuth();
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
