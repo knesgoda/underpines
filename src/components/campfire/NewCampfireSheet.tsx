@@ -256,6 +256,14 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
               </button>
             </div>
 
+            {atCap && (
+              <p className="font-body text-xs text-muted-foreground text-center px-2">
+                {isFlicker
+                  ? 'Flickers are for small moments — 10 people maximum.'
+                  : 'Campfires stay small — 20 people maximum.'}
+              </p>
+            )}
+
             <button
               onClick={handleNext}
               disabled={selected.length === 0 || creating}

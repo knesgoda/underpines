@@ -671,6 +671,18 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
                     </div>
                   </div>
                 ))}
+                {(() => {
+                  const isBonfire = !!campfire?.camp_id;
+                  const maxCap = isBonfire ? 150 : (campfire?.campfire_type === 'flicker' ? 10 : 20);
+                  const isFull = participants.length >= maxCap;
+                  return isFull ? (
+                    <p className="font-body text-xs text-muted-foreground text-center pt-3 pb-1">
+                      {isBonfire
+                        ? 'This Bonfire has reached its 150-person limit.'
+                        : 'This Campfire is full. Start a new one?'}
+                    </p>
+                  ) : null;
+                })()}
               </div>
             </motion.div>
           </div>
