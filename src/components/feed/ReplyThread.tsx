@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatTimeAgo } from '@/lib/time';
+import { Flame } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Reply {
@@ -186,25 +187,40 @@ const ReplyThread = ({ postId }: ReplyThreadProps) => {
                 </div>
                 <p className="text-sm font-body text-foreground/80 mt-0.5">{reply.content}</p>
 
-                {/* Nested replies (max 1 shown) */}
-                {nestedReplies(reply.id).slice(0, 1).map(nested => (
-                  <div key={nested.id} className="pl-4 mt-2 border-l-2 border-border/50">
-                    <div className="flex items-center gap-2 text-xs font-body text-muted-foreground">
-                      <span className="font-medium text-foreground">{nested.author?.display_name}</span>
-                      <span>· {formatTimeAgo(nested.created_at)}</span>
+                {/* Depth-2 nested replies */}
+                {nestedReplies(reply.id).map(nested => {
+                  const depth3 = nestedReplies(nested.id);
+                  return (
+                    <div key={nested.id} className="pl-4 mt-2 border-l-2 border-border/50">
+                      <div className="flex items-center gap-2 text-xs font-body text-muted-foreground">
+                        <span className="font-medium text-foreground">{nested.author?.display_name}</span>
+                        <span>· {formatTimeAgo(nested.created_at)}</span>
+                      </div>
+                      <p className="text-sm font-body text-foreground/80 mt-0.5">{nested.content}</p>
+
+                      {/* Depth 3+ → campfire prompt */}
+                      {depth3.length > 0 && (
+                        <div className="mt-2 py-2 px-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center gap-2">
+                          <Flame size={14} className="text-primary shrink-0" />
+                          <p className="text-xs font-body text-muted-foreground">
+                            This conversation is getting good — take it to a Campfire?{' '}
+                            <button className="text-primary hover:opacity-80 font-medium">Start one →</button>
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Reply at depth 2 posts flat to depth-1 parent */}
+                      <button
+                        onClick={() => { setComposerOpen(true); setReplyingTo(reply.id); }}
+                        className="text-xs font-body text-muted-foreground hover:text-foreground mt-1"
+                      >
+                        Reply
+                      </button>
                     </div>
-                    <p className="text-sm font-body text-foreground/80 mt-0.5">{nested.content}</p>
-                  </div>
-                ))}
+                  );
+                })}
 
-                {nestedReplies(reply.id).length > 1 && (
-                  <div className="pl-4 mt-2 py-2 px-3 rounded-lg bg-muted/30 text-xs font-body text-muted-foreground">
-                    This conversation is getting good — take it to a Campfire?{' '}
-                    <button className="text-primary hover:opacity-80">Start one →</button>
-                  </div>
-                )}
-
-                {/* Reply to this reply */}
+                {/* Reply to top-level */}
                 <button
                   onClick={() => { setComposerOpen(true); setReplyingTo(reply.id); }}
                   className="text-xs font-body text-muted-foreground hover:text-foreground mt-1"
