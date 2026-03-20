@@ -522,4 +522,52 @@ const CabinMoreMenu = ({
   );
 };
 
+// --- Shared sub-components for layouts ---
+
+const CabinMetaRow = ({ profile, temperature, atmos, centered }: {
+  profile: Profile; temperature: number | null; atmos: any; centered?: boolean;
+}) => (
+  <div className={`flex flex-wrap gap-4 text-sm font-body ${centered ? 'justify-center' : ''}`} style={{ color: atmos.text, opacity: 0.5 }}>
+    {profile.currently_type && profile.currently_value && (
+      <span>Currently {profile.currently_type} {profile.currently_value}</span>
+    )}
+    {profile.city && <span>{profile.city}</span>}
+    {temperature != null && <span>{Math.round(temperature)}°C</span>}
+  </div>
+);
+
+const CabinPinnedSong = ({ profile, atmos, centered }: { profile: Profile; atmos: any; centered?: boolean }) => {
+  if (!profile.pinned_song_title) return null;
+  return (
+    <div className={centered ? 'flex justify-center' : 'mt-4'}>
+      <div
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-body"
+        style={{ backgroundColor: `${atmos.accent}15`, color: atmos.accent }}
+      >
+        <Music size={14} />
+        {profile.pinned_song_title}
+        {profile.pinned_song_artist && ` — ${profile.pinned_song_artist}`}
+      </div>
+    </div>
+  );
+};
+
+const CabinCircleActions = ({ isOwner, user, profile, cabinMenuOpen, setCabinMenuOpen, navigate }: {
+  isOwner: boolean; user: any; profile: Profile; cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void; navigate: (path: string) => void;
+}) => {
+  if (isOwner || !user || !profile) return null;
+  return (
+    <div className="flex items-center justify-center gap-3 pb-12">
+      <CircleButton profileId={profile.id} profileName={profile.display_name} />
+      <CabinMoreMenu
+        targetUserId={profile.id}
+        targetDisplayName={profile.display_name}
+        open={cabinMenuOpen}
+        setOpen={setCabinMenuOpen}
+        navigate={navigate}
+      />
+    </div>
+  );
+};
+
 export default Cabin;
