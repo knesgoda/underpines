@@ -25,6 +25,7 @@ const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [circleIds, setCircleIds] = useState<string[]>([]);
+  const [inviter, setInviter] = useState<{ display_name: string; handle: string } | null>(null);
   const [showPrefs, setShowPrefs] = useState(false);
   const [prefs, setPrefs] = useState({
     feed_show_sparks: true,
@@ -58,6 +59,28 @@ const Feed = () => {
         });
       }
     });
+
+    // Load inviter info
+    supabase
+      .from('invite_uses')
+      .select('invite_id')
+      .eq('invitee_id', user.id)
+      .maybeSingle()
+      .then(async ({ data: useRow }) => {
+        if (!useRow) return;
+        const { data: invite } = await supabase
+          .from('invites')
+          .select('inviter_id')
+          .eq('id', useRow.invite_id)
+          .maybeSingle();
+        if (!invite) return;
+        const { data: inviterProfile } = await supabase
+          .from('profiles')
+          .select('display_name, handle')
+          .eq('id', invite.inviter_id)
+          .maybeSingle();
+        if (inviterProfile) setInviter(inviterProfile);
+      });
   }, [user]);
 
   // Load circles
@@ -251,8 +274,7 @@ const Feed = () => {
 
   // Empty states
   const allFiltered = posts.length > 0 && filteredPosts.length === 0;
-  const noCircles = circleIds.length === 0 && posts.length === 0;
-  const emptyFeed = circleIds.length > 0 && filteredPosts.length === 0 && !allFiltered;
+  const emptyFeed = filteredPosts.length === 0 && !allFiltered && !loading;
 
   return (
     <div ref={feedRef} className="max-w-[680px] mx-auto px-4 md:px-0 py-4 md:py-6">
@@ -326,14 +348,19 @@ const Feed = () => {
       {/* Loading */}
       {loading && <div className="py-8"><PineTreeLoading /></div>}
 
-      {/* Empty: no circles */}
-      {!loading && noCircles && (
-        <EmptyState icon="🌲" title="Your feed is quiet right now —" subtitle="which is kind of nice, isn't it?" />
-      )}
-
-      {/* Empty: circles but no posts */}
-      {!loading && emptyFeed && (
-        <EmptyState icon="🌿" title="Everyone's out on the trail." subtitle="Nothing new since your last visit." />
+      {/* Empty: no posts */}
+      {emptyFeed && (
+        <EmptyState icon="🌲" title="Your feed is quiet right now —" subtitle="which is kind of nice, isn't it?">
+          {inviter ? (
+            <Link to={`/circles/suggestions/${inviter.handle}`} className="inline-block mt-4 font-body text-sm text-primary hover:opacity-80 transition-opacity">
+              See who {inviter.display_name} follows →
+            </Link>
+          ) : (
+            <Link to="/search" className="inline-block mt-4 font-body text-sm text-primary hover:opacity-80 transition-opacity">
+              Find people in the Pines →
+            </Link>
+          )}
+        </EmptyState>
       )}
 
       {/* Empty: all filtered */}
@@ -399,9 +426,9 @@ const Feed = () => {
 };
 
 const EmptyState = ({ icon, title, subtitle, children }: { icon: string; title: string; subtitle?: string; children?: React.ReactNode }) => (
-  <div className="text-center py-16">
-    <p className="text-4xl mb-3">{icon}</p>
-    <p className="font-body text-sm text-foreground">{title}</p>
+  <div className="text-center py-20">
+    <p className="text-3xl mb-3">{icon}</p>
+    <p className="font-body text-sm text-muted-foreground">{title}</p>
     {subtitle && <p className="font-body text-sm text-muted-foreground">{subtitle}</p>}
     {children}
   </div>
