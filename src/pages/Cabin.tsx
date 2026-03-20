@@ -66,6 +66,7 @@ const Cabin = () => {
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
+  const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
 
   const { weatherCode, windSpeed, temperature } = useWeather(profile?.latitude, profile?.longitude);
 
