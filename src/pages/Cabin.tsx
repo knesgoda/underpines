@@ -68,7 +68,7 @@ const Cabin = () => {
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
   const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
 
-  const { weatherCode, windSpeed, temperature } = useWeather(profile?.latitude, profile?.longitude);
+  const { weatherCode, windSpeed, temperature, unit: tempUnit } = useWeather(profile?.latitude, profile?.longitude);
 
   // Load preview design from sessionStorage
   useEffect(() => {
@@ -329,7 +329,7 @@ const Cabin = () => {
             )}
           </div>
           <div className="py-12 space-y-6" style={{ borderTop: `1px solid ${atmos.border}` }}>
-            <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} centered />
+            <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} centered />
             {profile.bio && <p className="text-sm font-body text-center max-w-md mx-auto" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>}
             <CabinPinnedSong profile={profile} atmos={atmos} centered />
           </div>
@@ -346,7 +346,7 @@ const Cabin = () => {
             {profile.mantra && (
               <p className="text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>
             )}
-            <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} />
+            <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} />
             {profile.bio && <p className="text-sm font-body max-w-xl" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
             <CabinPinnedSong profile={profile} atmos={atmos} />
           </div>
@@ -382,7 +382,7 @@ const Cabin = () => {
               )}
             </div>
             <div className="hidden md:block text-right">
-              <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} />
+              <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} />
             </div>
           </div>
 
@@ -426,7 +426,7 @@ const Cabin = () => {
             <div className="px-8 pb-8">
               {profile.mantra && <p className="mt-2 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>}
               <div className="mt-4 h-px" style={{ backgroundColor: atmos.border }} />
-              <div className="mt-4"><CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} /></div>
+              <div className="mt-4"><CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} /></div>
               {profile.bio && <p className="mt-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
               <CabinPinnedSong profile={profile} atmos={atmos} />
             </div>
@@ -579,15 +579,15 @@ const CabinMoreMenu = ({
 
 // --- Shared sub-components for layouts ---
 
-const CabinMetaRow = ({ profile, temperature, atmos, centered }: {
-  profile: Profile; temperature: number | null; atmos: any; centered?: boolean;
+const CabinMetaRow = ({ profile, temperature, tempUnit, atmos, centered }: {
+  profile: Profile; temperature: number | null; tempUnit: 'C' | 'F'; atmos: any; centered?: boolean;
 }) => (
   <div className={`flex flex-wrap gap-4 text-sm font-body ${centered ? 'justify-center' : ''}`} style={{ color: atmos.text, opacity: 0.5 }}>
     {profile.currently_type && profile.currently_value && (
       <span>Currently {profile.currently_type} {profile.currently_value}</span>
     )}
     {profile.city && <span>{profile.city}</span>}
-    {temperature != null && <span>{Math.round(temperature)}°C</span>}
+    {temperature != null && <span>{Math.round(temperature)}°{tempUnit}</span>}
   </div>
 );
 

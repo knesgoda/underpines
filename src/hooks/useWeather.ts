@@ -4,6 +4,7 @@ interface WeatherData {
   weatherCode: number;
   windSpeed: number;
   temperature: number;
+  unit: 'C' | 'F';
 }
 
 interface UseWeatherReturn extends WeatherData {
@@ -48,7 +49,16 @@ const setCache = (lat: number, lon: number, data: WeatherData) => {
   }
 };
 
-const DEFAULTS: WeatherData = { weatherCode: 0, windSpeed: 0, temperature: 20 };
+const DEFAULTS: WeatherData = { weatherCode: 0, windSpeed: 0, temperature: 20, unit: 'C' };
+
+const isUSTimezone = (): boolean => {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return tz.startsWith('America/') && !tz.includes('Argentina') && !tz.includes('Bogota') && !tz.includes('Lima') && !tz.includes('Santiago') && !tz.includes('Sao_Paulo');
+  } catch {
+    return false;
+  }
+};
 
 export const useWeather = (latitude: number | null | undefined, longitude: number | null | undefined): UseWeatherReturn => {
   const [data, setData] = useState<WeatherData>(DEFAULTS);
@@ -70,8 +80,11 @@ export const useWeather = (latitude: number | null | undefined, longitude: numbe
     let cancelled = false;
     setLoading(true);
 
+    const useFahrenheit = isUSTimezone();
+    const unitParam = useFahrenheit ? '&temperature_unit=fahrenheit' : '';
+
     fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=weather_code,wind_speed_10m,temperature_2m&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=weather_code,wind_speed_10m,temperature_2m&timezone=auto${unitParam}`
     )
       .then(res => res.json())
       .then(json => {
@@ -80,6 +93,7 @@ export const useWeather = (latitude: number | null | undefined, longitude: numbe
           weatherCode: json.current?.weather_code ?? 0,
           windSpeed: json.current?.wind_speed_10m ?? 0,
           temperature: json.current?.temperature_2m ?? 20,
+          unit: useFahrenheit ? 'F' : 'C',
         };
         setData(result);
         setCache(latitude, longitude, result);
