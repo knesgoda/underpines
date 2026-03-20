@@ -121,7 +121,21 @@ const Cabin = () => {
         setIsInCircle(true);
       }
 
-      
+      // Check if blocked by this profile owner
+      if (user && !owner) {
+        const { data: block } = await supabase
+          .from('blocks')
+          .select('id')
+          .eq('blocker_id', data.id)
+          .eq('blocked_id', user.id)
+          .maybeSingle();
+        if (block) {
+          setIsBlocked(true);
+          setLoading(false);
+          return;
+        }
+      }
+
       if (user && user.id !== data.id) {
         await supabase.from('cabin_visits').upsert(
           { profile_id: data.id, visit_date: new Date().toISOString().split('T')[0], visit_count: 1 },
