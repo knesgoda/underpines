@@ -14,8 +14,9 @@ import CabinAvatar from '@/components/cabin/CabinAvatar';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { fetchWeather, getCurrentSeason } from '@/lib/weather';
 import { Button } from '@/components/ui/button';
-import { Settings, Music } from 'lucide-react';
+import { Settings, Music, MoreHorizontal } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useBlockMute } from '@/hooks/useBlockMute';
 import { toast } from 'sonner';
 
 interface Profile {
@@ -61,6 +62,7 @@ const Cabin = () => {
   const [weather, setWeather] = useState<any>(null);
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
+  const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
 
   // Load preview design from sessionStorage
   useEffect(() => {
@@ -306,9 +308,16 @@ const Cabin = () => {
             <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
           </div>
 
-          {!isOwner && user && (
-            <div className="flex justify-center pb-16">
+          {!isOwner && user && profile && (
+            <div className="flex items-center justify-center gap-3 pb-16">
               <CircleButton profileId={profile.id} profileName={profile.display_name} />
+              <CabinMoreMenu
+                targetUserId={profile.id}
+                targetDisplayName={profile.display_name}
+                open={cabinMenuOpen}
+                setOpen={setCabinMenuOpen}
+                navigate={navigate}
+              />
             </div>
           )}
         </div>
@@ -397,9 +406,16 @@ const Cabin = () => {
             </div>
           </div>
 
-          {!isOwner && user && (
-            <div className="flex justify-center pb-12">
+          {!isOwner && user && profile && (
+            <div className="flex items-center justify-center gap-3 pb-12">
               <CircleButton profileId={profile.id} profileName={profile.display_name} />
+              <CabinMoreMenu
+                targetUserId={profile.id}
+                targetDisplayName={profile.display_name}
+                open={cabinMenuOpen}
+                setOpen={setCabinMenuOpen}
+                navigate={navigate}
+              />
             </div>
           )}
         </div>
@@ -476,6 +492,62 @@ const Cabin = () => {
           </div>
         )}
       </AnimatePresence>
+    </div>
+  );
+};
+
+
+const CabinMoreMenu = ({
+  targetUserId,
+  targetDisplayName,
+  open,
+  setOpen,
+  navigate,
+}: {
+  targetUserId: string;
+  targetDisplayName: string;
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  navigate: (path: string) => void;
+}) => {
+  const { openBlockDialog, handleMute, BlockConfirmDialog } = useBlockMute({
+    targetUserId,
+    targetDisplayName,
+    onComplete: () => navigate('/'),
+  });
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="p-2 rounded-full border border-border text-muted-foreground hover:bg-muted transition-colors"
+      >
+        <MoreHorizontal size={16} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="absolute bottom-full right-0 mb-2 w-56 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20"
+          >
+            <button
+              onClick={() => { openBlockDialog(); setOpen(false); }}
+              className="w-full text-left px-3 py-2.5 text-sm font-body flex items-center gap-2 text-foreground hover:bg-muted transition-colors"
+            >
+              🚫 Step away from the fire
+            </button>
+            <button
+              onClick={() => { handleMute(); setOpen(false); }}
+              className="w-full text-left px-3 py-2.5 text-sm font-body flex items-center gap-2 text-foreground hover:bg-muted transition-colors"
+            >
+              🔇 Bank the fire
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <BlockConfirmDialog />
     </div>
   );
 };

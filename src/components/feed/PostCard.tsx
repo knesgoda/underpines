@@ -10,6 +10,7 @@ import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
 import ReportSheet from '@/components/reporting/ReportSheet';
+import { useBlockMute } from '@/hooks/useBlockMute';
 import { toast } from 'sonner';
 
 export interface PostWithAuthor {
@@ -47,6 +48,12 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
   const isOwner = user?.id === post.author_id;
   const accent = post.author?.accent_color || 'hsl(var(--primary))';
   const moodIcon = post.author?.cabin_mood || '🕯️';
+
+  const { openBlockDialog, handleMute, BlockConfirmDialog } = useBlockMute({
+    targetUserId: post.author_id,
+    targetDisplayName: post.author?.display_name,
+    onComplete: () => onRemove?.(post.id),
+  });
 
   useEffect(() => {
     const handle = (e: MouseEvent) => {
@@ -131,6 +138,8 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
                       <>
                         <div className="h-px bg-border" />
                         <MenuBtn onClick={() => { setReportOpen(true); setMenuOpen(false); }}><Flag size={14} /> Report</MenuBtn>
+                        <MenuBtn onClick={() => { openBlockDialog(); setMenuOpen(false); }}>🚫 Step away from the fire</MenuBtn>
+                        <MenuBtn onClick={() => { handleMute(); setMenuOpen(false); }}>🔇 Bank the fire</MenuBtn>
                       </>
                     )}
                     {isOwner && (
@@ -261,6 +270,7 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
         reportedPostId={post.id}
         reportedUserId={post.author_id}
       />
+      <BlockConfirmDialog />
     </motion.div>
   );
 };
