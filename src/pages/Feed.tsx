@@ -274,8 +274,7 @@ const Feed = () => {
 
   // Empty states
   const allFiltered = posts.length > 0 && filteredPosts.length === 0;
-  const noCircles = circleIds.length === 0 && posts.length === 0;
-  const emptyFeed = circleIds.length > 0 && filteredPosts.length === 0 && !allFiltered;
+  const emptyFeed = filteredPosts.length === 0 && !allFiltered && !loading;
 
   return (
     <div ref={feedRef} className="max-w-[680px] mx-auto px-4 md:px-0 py-4 md:py-6">
