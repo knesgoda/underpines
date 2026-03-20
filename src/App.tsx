@@ -128,6 +128,7 @@ const App = () => (
         </NavigationProvider>
       </OnboardingProvider>
     </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
