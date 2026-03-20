@@ -328,7 +328,7 @@ const Cabin = () => {
                 isEditing={editOpen}
                 profileId={profile.id}
                 onUpdate={fetchProfile}
-                size="lg"
+                size={isMobile ? 'sm' : 'lg'}
               />
             </div>
             <div className="flex items-start gap-4 pt-4 pl-28 md:pl-28 pr-8 pb-6">
