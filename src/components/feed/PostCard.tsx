@@ -175,6 +175,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                 <img
                   src={post.image_url}
                   alt=""
+                  crossOrigin="anonymous"
                   className="block w-full h-auto rounded-lg bg-muted"
                   style={{ maxHeight: '600px', objectFit: 'contain' }}
                   loading="lazy"
