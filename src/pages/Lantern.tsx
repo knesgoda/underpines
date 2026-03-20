@@ -383,7 +383,7 @@ function groupNotifications(
   campfireNames: Record<string, string>
 ): GroupedNotification[] {
   const groups: GroupedNotification[] = [];
-  const typeOrder = ['campfire_message', 'circle_request', 'circle_accepted', 'reply', 'quote_post', 'reaction_batch', 'invite_accepted', 'smoke_signal', 'camp_join_request', 'camp_join_accepted', 'camp_role_changed', 'camp_post_removed', 'bonfire_split', 'system'];
+  const typeOrder = ['campfire_message', 'circle_request', 'circle_accepted', 'reply', 'quote_post', 'reaction_batch', 'invite_accepted', 'smoke_signal', 'camp_join_request', 'camp_join_accepted', 'camp_role_changed', 'camp_post_removed', 'bonfire_split', 'camp_newsletter', 'system'];
 
   const byType: Record<string, NotificationRow[]> = {};
   notifications.forEach(n => {
