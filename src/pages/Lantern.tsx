@@ -430,6 +430,11 @@ function getSectionEmoji(type: string): string {
     reaction_batch: '💚',
     invite_accepted: '🌱',
     smoke_signal: '🌫️',
+    camp_join_request: '🏕️',
+    camp_join_accepted: '🏕️',
+    camp_role_changed: '🏕️',
+    camp_post_removed: '🏕️',
+    bonfire_split: '🏕️',
     system: '🏮',
   };
   return map[type] || '🏮';
