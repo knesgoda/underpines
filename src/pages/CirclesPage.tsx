@@ -274,19 +274,19 @@ const CirclesPage = () => {
               return (
                 <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground shrink-0">
-                      {m.display_name[0]?.toUpperCase()}
-                    </div>
+                    <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
                     <div className="min-w-0">
-                      <p className="font-body text-sm font-medium text-foreground truncate">{m.display_name}</p>
+                      <Link to={`/${m.handle}`} className="font-body text-sm font-medium text-foreground truncate block hover:opacity-80">{m.display_name}</Link>
                       <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
-                      <p className={`font-body text-xs ${activity.color}`}>{activity.icon} {activity.label}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <Link to={`/${m.handle}`} className="px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground">
-                      View Cabin
-                    </Link>
+                    <button
+                      onClick={() => startCampfire(m.id, m.display_name)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                    >
+                      <Flame size={12} /> Campfire
+                    </button>
                     <div className="relative">
                       <button onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)} className="p-1.5 rounded-md text-muted-foreground hover:bg-muted">
                         <MoreHorizontal size={16} />
