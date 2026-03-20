@@ -68,6 +68,9 @@ const App = () => (
                   <Route path="/camps/mine" element={<MyCamps />} />
                   <Route path="/camps/:id" element={<CampView />} />
                   <Route path="/camps/:id/settings" element={<CampSettings />} />
+                  <Route path="/camps/:id/newsletter/new" element={<CampNewsletterComposer />} />
+                  <Route path="/camps/:id/newsletter/:newsletterId" element={<CampNewsletterView />} />
+                  <Route path="/camps/:id/newsletters" element={<CampNewsletterArchive />} />
                   <Route path="/:handle/collections" element={<CollectionsList />} />
                   <Route path="/:handle/collections/:id" element={<CollectionView />} />
                   <Route path="/:handle" element={<Cabin />} />
