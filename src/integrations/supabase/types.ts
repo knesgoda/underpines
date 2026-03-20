@@ -2692,6 +2692,10 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_campfire_participant: {
+        Args: { _campfire_id: string; _user_id: string }
+        Returns: boolean
+      }
       random_creature: { Args: never; Returns: string }
     }
     Enums: {
