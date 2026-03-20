@@ -61,6 +61,7 @@ const Cabin = () => {
   const [loading, setLoading] = useState(true);
   const [isOwner, setIsOwner] = useState(false);
   const [isInCircle, setIsInCircle] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
@@ -120,7 +121,21 @@ const Cabin = () => {
         setIsInCircle(true);
       }
 
-      
+      // Check if blocked by this profile owner
+      if (user && !owner) {
+        const { data: block } = await supabase
+          .from('blocks')
+          .select('id')
+          .eq('blocker_id', data.id)
+          .eq('blocked_id', user.id)
+          .maybeSingle();
+        if (block) {
+          setIsBlocked(true);
+          setLoading(false);
+          return;
+        }
+      }
+
       if (user && user.id !== data.id) {
         await supabase.from('cabin_visits').upsert(
           { profile_id: data.id, visit_date: new Date().toISOString().split('T')[0], visit_count: 1 },
@@ -140,6 +155,21 @@ const Cabin = () => {
   }, [fetchProfile]);
 
   if (loading) return <PineTreeLoading />;
+
+  if (isBlocked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background texture-paper pt-14">
+        <div className="text-center">
+          <h2 className="text-2xl font-display text-foreground mb-2">
+            This Cabin is not available.
+          </h2>
+          <p className="text-sm text-muted-foreground font-body">
+            Maybe they're still finding their way through the woods.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!profile) {
     return (
