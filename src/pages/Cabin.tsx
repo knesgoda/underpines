@@ -321,6 +321,9 @@ const Cabin = () => {
               {profile.is_pines_plus && <span title="Pines+" className="text-xl">🌲</span>}
             </div>
             <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
+            {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+              <p className="text-xs font-body mt-1" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
+            )}
             {profile.mantra && (
               <p className="mt-8 text-xl md:text-2xl font-display italic leading-relaxed" style={{ color: atmos.text, opacity: 0.7 }}>"{profile.mantra}"</p>
             )}
