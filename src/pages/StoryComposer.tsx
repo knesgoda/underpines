@@ -16,7 +16,9 @@ import { useSeedlingStatus } from '@/hooks/useSeedlingStatus';
 const StoryComposer = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isSeedling, daysLeft } = useSeedlingStatus();
   const [title, setTitle] = useState('');
+  const [postId, setPostId] = useState<string | null>(null);
   const [postId, setPostId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
