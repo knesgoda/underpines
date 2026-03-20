@@ -3,14 +3,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, X } from 'lucide-react';
+import { MoreHorizontal, Flame, Search } from 'lucide-react';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import UserAvatar from '@/components/UserAvatar';
 import { toast } from 'sonner';
 
 interface CircleMember {
   id: string;
   display_name: string;
   handle: string;
+  avatar_url: string | null;
+  default_avatar_key: string | null;
   updated_at: string | null;
   circleId: string;
   direction: 'sent' | 'received';
@@ -61,7 +64,7 @@ const CirclesPage = () => {
       const otherIds = circles.map(c => c.requester_id === user.id ? c.requestee_id : c.requester_id);
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, display_name, handle, updated_at')
+        .select('id, display_name, handle, avatar_url, default_avatar_key, updated_at')
         .in('id', otherIds);
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
@@ -79,6 +82,8 @@ const CirclesPage = () => {
           id: p.id,
           display_name: p.display_name,
           handle: p.handle,
+          avatar_url: (p as any).avatar_url ?? null,
+          default_avatar_key: (p as any).default_avatar_key ?? null,
           updated_at: p.updated_at,
           circleId: c.id,
           direction: c.requester_id === user.id ? 'sent' : 'received',
@@ -195,6 +200,50 @@ const CirclesPage = () => {
     loadAll();
   };
 
+  const startCampfire = async (memberId: string, memberName: string) => {
+    if (!user) return;
+    // Check for existing 1-on-1 campfire
+    const { data: myParts } = await supabase
+      .from('campfire_participants')
+      .select('campfire_id')
+      .eq('user_id', user.id);
+
+    if (myParts) {
+      for (const p of myParts) {
+        const { data: other } = await supabase
+          .from('campfire_participants')
+          .select('user_id')
+          .eq('campfire_id', p.campfire_id)
+          .eq('user_id', memberId)
+          .maybeSingle();
+        if (other) {
+          const { data: cf } = await supabase
+            .from('campfires')
+            .select('id')
+            .eq('id', p.campfire_id)
+            .eq('campfire_type', 'one_on_one')
+            .eq('is_active', true)
+            .maybeSingle();
+          if (cf) { navigate(`/campfires`); return; }
+        }
+      }
+    }
+
+    const { data: newCf } = await supabase
+      .from('campfires')
+      .insert({ campfire_type: 'one_on_one', firekeeper_id: user.id, name: memberName })
+      .select()
+      .single();
+
+    if (newCf) {
+      await supabase.from('campfire_participants').insert([
+        { campfire_id: newCf.id, user_id: user.id },
+        { campfire_id: newCf.id, user_id: memberId },
+      ]);
+      navigate(`/campfires`);
+    }
+  };
+
   if (loading) return <PineTreeLoading />;
 
   return (
@@ -225,19 +274,19 @@ const CirclesPage = () => {
               return (
                 <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground shrink-0">
-                      {m.display_name[0]?.toUpperCase()}
-                    </div>
+                    <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
                     <div className="min-w-0">
-                      <p className="font-body text-sm font-medium text-foreground truncate">{m.display_name}</p>
+                      <Link to={`/${m.handle}`} className="font-body text-sm font-medium text-foreground truncate block hover:opacity-80">{m.display_name}</Link>
                       <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
-                      <p className={`font-body text-xs ${activity.color}`}>{activity.icon} {activity.label}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <Link to={`/${m.handle}`} className="px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground">
-                      View Cabin
-                    </Link>
+                    <button
+                      onClick={() => startCampfire(m.id, m.display_name)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                    >
+                      <Flame size={12} /> Campfire
+                    </button>
                     <div className="relative">
                       <button onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)} className="p-1.5 rounded-md text-muted-foreground hover:bg-muted">
                         <MoreHorizontal size={16} />
@@ -273,9 +322,7 @@ const CirclesPage = () => {
                 {pendingReceived.map(m => (
                   <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground">
-                        {m.display_name[0]?.toUpperCase()}
-                      </div>
+                      <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
                       <div>
                         <p className="font-body text-sm font-medium text-foreground">{m.display_name}</p>
                         <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
@@ -298,9 +345,7 @@ const CirclesPage = () => {
                 {pendingSent.map(m => (
                   <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground">
-                        {m.display_name[0]?.toUpperCase()}
-                      </div>
+                      <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
                       <div>
                         <p className="font-body text-sm font-medium text-foreground">{m.display_name}</p>
                         <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
@@ -378,6 +423,13 @@ const CirclesPage = () => {
           </div>
         </div>
       )}
+
+      {/* Find people */}
+      <div className="text-center pt-8 pb-4">
+        <Link to="/search" className="inline-flex items-center gap-1.5 font-body text-sm text-primary hover:opacity-80 transition-opacity">
+          <Search size={14} /> Find people in the Pines
+        </Link>
+      </div>
     </motion.div>
   );
 };
