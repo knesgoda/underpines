@@ -459,10 +459,9 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                     $10/year
                   </Button>
                   <Button
-                    onClick={async () => {
-                      await supabase.from('profiles').update({ is_pines_plus: true }).eq('id', profile.id);
-                      onUpdate();
-                      toast.success("You're in! Pines+ is active on your account.");
+                    onClick={() => {
+                      onClose();
+                      window.location.href = '/settings/subscription';
                     }}
                     variant="outline"
                     className="rounded-pill text-sm font-body"
