@@ -1510,6 +1510,38 @@ export type Database = {
           },
         ]
       }
+      event_responses: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          id: string
+          response_text: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          id?: string
+          response_text?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          response_text?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_responses_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "seasonal_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inactive_nudges: {
         Row: {
           created_at: string | null
@@ -2394,6 +2426,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      seasonal_events: {
+        Row: {
+          created_at: string | null
+          ends_at: string
+          event_type: string
+          id: string
+          illustration_key: string
+          is_active: boolean | null
+          name: string
+          prompt_text: string | null
+          starts_at: string
+        }
+        Insert: {
+          created_at?: string | null
+          ends_at: string
+          event_type: string
+          id?: string
+          illustration_key: string
+          is_active?: boolean | null
+          name: string
+          prompt_text?: string | null
+          starts_at: string
+        }
+        Update: {
+          created_at?: string | null
+          ends_at?: string
+          event_type?: string
+          id?: string
+          illustration_key?: string
+          is_active?: boolean | null
+          name?: string
+          prompt_text?: string | null
+          starts_at?: string
+        }
+        Relationships: []
       }
       seedling_periods: {
         Row: {
