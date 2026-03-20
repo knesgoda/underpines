@@ -76,6 +76,19 @@ const WeatherScene = ({
   const sway = getWindSway(windSpeed);
   const particleMultiplier = reducedParticles ? 0.5 : 1;
 
+  // Moon phase — recompute at midnight
+  const [moonPhase, setMoonPhase] = useState(() => getMoonPhase());
+  useEffect(() => {
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const ms = midnight.getTime() - now.getTime();
+    const timer = setTimeout(() => setMoonPhase(getMoonPhase(new Date())), ms);
+    return () => clearTimeout(timer);
+  }, [moonPhase]);
+
+  const starOpacity = getStarOpacityForPhase(moonPhase);
+
   const stars = useMemo(() =>
     Array.from({ length: 25 }, (_, i) => ({
       x: Math.random() * 100,
