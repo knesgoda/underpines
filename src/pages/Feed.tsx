@@ -459,7 +459,7 @@ const Feed = () => {
                 </div>
               </motion.div>
             )}
-            <PostCard post={post} onRemove={handleRemovePost} onRefresh={loadPosts} />
+            <PostCard post={post} circleIds={circleIds} onRemove={handleRemovePost} onRefresh={loadPosts} />
           </div>
         ))}
       </AnimatePresence>
