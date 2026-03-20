@@ -255,7 +255,21 @@ const Feed = () => {
   const emptyFeed = circleIds.length > 0 && filteredPosts.length === 0 && !allFiltered;
 
   return (
-    <div className="max-w-[680px] mx-auto px-4 md:px-0 py-4 md:py-6">
+    <div ref={feedRef} className="max-w-[680px] mx-auto px-4 md:px-0 py-4 md:py-6">
+      {/* Pull to refresh indicator */}
+      <AnimatePresence>
+        {(isPulling || isRefreshing) && pullY > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: Math.min(1, pullY / 60), height: pullY }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center justify-center overflow-hidden -mt-4 mb-2"
+          >
+            <PineTreeInline />
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Feed preferences toggle (desktop) */}
       <div className="hidden md:flex justify-end mb-2">
         <button
