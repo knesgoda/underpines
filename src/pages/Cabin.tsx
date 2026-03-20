@@ -12,7 +12,8 @@ import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import CabinAvatar from '@/components/cabin/CabinAvatar';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
-import { fetchWeather, getCurrentSeason } from '@/lib/weather';
+import { getCurrentSeason } from '@/lib/weather';
+import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
 import { Settings, Music, MoreHorizontal } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -59,10 +60,11 @@ const Cabin = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [isInCircle, setIsInCircle] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [weather, setWeather] = useState<any>(null);
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
+
+  const { weatherCode, windSpeed, temperature } = useWeather(profile?.latitude, profile?.longitude);
 
   // Load preview design from sessionStorage
   useEffect(() => {
@@ -116,11 +118,7 @@ const Cabin = () => {
         setIsInCircle(true);
       }
 
-      if (data.latitude && data.longitude) {
-        const w = await fetchWeather(data.latitude, data.longitude);
-        setWeather(w);
-      }
-
+      
       if (user && user.id !== data.id) {
         await supabase.from('cabin_visits').upsert(
           { profile_id: data.id, visit_date: new Date().toISOString().split('T')[0], visit_count: 1 },
@@ -206,8 +204,8 @@ const Cabin = () => {
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${atmos.background}, ${atmos.accent}30)` }} />
         )}
         <WeatherScene
-          weatherCode={weather?.weathercode ?? 0}
-          windSpeed={weather?.windspeed ?? 0}
+          weatherCode={weatherCode}
+          windSpeed={windSpeed}
           hour={currentHour}
           season={season}
           className="opacity-80"
@@ -273,7 +271,7 @@ const Cabin = () => {
                 <span>Currently {profile.currently_type} {profile.currently_value}</span>
               )}
               {profile.city && <span>{profile.city}</span>}
-              {weather && <span>{Math.round(weather.temperature)}°C</span>}
+              {temperature != null && <span>{Math.round(temperature)}°C</span>}
             </div>
 
             {profile.bio && (
@@ -369,7 +367,7 @@ const Cabin = () => {
                 <span>Currently {profile.currently_type} {profile.currently_value}</span>
               )}
               {profile.city && <span>{profile.city}</span>}
-              {weather && <span>{Math.round(weather.temperature)}°C</span>}
+              {temperature != null && <span>{Math.round(temperature)}°C</span>}
             </div>
 
             {profile.bio && (
@@ -496,6 +494,7 @@ const Cabin = () => {
   );
 };
 
+  
 
 const CabinMoreMenu = ({
   targetUserId,
