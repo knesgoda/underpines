@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
 interface NavigationContextType {
+  unreadCount: number;
   hasUnreadNotifications: boolean;
   composerOpen: boolean;
   setComposerOpen: (open: boolean) => void;
@@ -10,6 +11,7 @@ interface NavigationContextType {
 }
 
 const NavigationContext = createContext<NavigationContextType>({
+  unreadCount: 0,
   hasUnreadNotifications: false,
   composerOpen: false,
   setComposerOpen: () => {},
@@ -20,17 +22,17 @@ export const useNavigation = () => useContext(NavigationContext);
 
 export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
-  const [hasUnread, setHasUnread] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [composerOpen, setComposerOpen] = useState(false);
 
   const refreshNotifications = async () => {
-    if (!user) { setHasUnread(false); return; }
+    if (!user) { setUnreadCount(0); return; }
     const { count } = await supabase
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('recipient_id', user.id)
       .eq('is_read', false);
-    setHasUnread((count ?? 0) > 0);
+    setUnreadCount(count ?? 0);
   };
 
   useEffect(() => {
@@ -44,7 +46,17 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
         schema: 'public',
         table: 'notifications',
         filter: `recipient_id=eq.${user.id}`,
-      }, () => setHasUnread(true))
+      }, () => {
+        setUnreadCount(prev => prev + 1);
+      })
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'notifications',
+        filter: `recipient_id=eq.${user.id}`,
+      }, () => {
+        refreshNotifications();
+      })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
@@ -52,7 +64,8 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <NavigationContext.Provider value={{
-      hasUnreadNotifications: hasUnread,
+      unreadCount,
+      hasUnreadNotifications: unreadCount > 0,
       composerOpen,
       setComposerOpen,
       refreshNotifications,

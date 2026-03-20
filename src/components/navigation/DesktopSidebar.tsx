@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Home, Tent, Flame, Search, Settings, Plus, Users } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import LanternIcon from './LanternIcon';
 
 interface NavItem {
   label: string;
@@ -25,7 +26,7 @@ const navItems: NavItem[] = [
 
 const DesktopSidebar = () => {
   const { user, signOut } = useAuth();
-  const { hasUnreadNotifications, setComposerOpen } = useNavigation();
+  const { setComposerOpen } = useNavigation();
   const location = useLocation();
   const [profile, setProfile] = useState<{ display_name: string; handle: string } | null>(null);
 
@@ -46,13 +47,11 @@ const DesktopSidebar = () => {
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-[260px] border-r border-border bg-card flex flex-col z-40">
-      {/* Logo */}
       <Link to="/" className="flex items-center gap-2.5 px-5 py-4 hover:opacity-80 transition-opacity">
         <img src={logo} alt="Under Pines" className="w-8 h-8 rounded-full object-cover" />
         <span className="font-display text-base font-medium text-foreground">Under Pines</span>
       </Link>
 
-      {/* Profile summary */}
       {profile && (
         <div className="px-5 pb-4">
           <div className="flex items-center gap-3">
@@ -69,7 +68,6 @@ const DesktopSidebar = () => {
 
       <div className="h-px bg-border mx-4" />
 
-      {/* Nav items */}
       <nav className="flex-1 px-3 py-3 space-y-0.5">
         {navItems.map((item) => {
           const active = isActive(item.path);
@@ -79,9 +77,7 @@ const DesktopSidebar = () => {
             return (
               <Tooltip key={item.label}>
                 <TooltipTrigger asChild>
-                  <div
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-muted-foreground cursor-default transition-colors"
-                  >
+                  <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-muted-foreground cursor-default transition-colors">
                     <ItemIcon size={18} />
                     <span>{item.label}</span>
                     <span className="ml-auto text-[10px] font-body text-muted-foreground/50">soon</span>
@@ -113,7 +109,7 @@ const DesktopSidebar = () => {
           );
         })}
 
-        {/* Lantern (Notifications) */}
+        {/* Lantern */}
         <Link
           to="/lantern"
           className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm transition-colors relative ${
@@ -125,19 +121,13 @@ const DesktopSidebar = () => {
           {isActive('/lantern') && (
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
           )}
-          <div className="relative">
-            <span className="text-lg">🏮</span>
-            {hasUnreadNotifications && (
-              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-glow animate-pulse shadow-[0_0_6px_hsl(var(--amber-glow))]" />
-            )}
-          </div>
+          <LanternIcon active={isActive('/lantern')} />
           <span>Lantern</span>
         </Link>
       </nav>
 
       <div className="px-3 pb-2">
         <div className="h-px bg-border mb-2" />
-        {/* New Post button */}
         <button
           onClick={() => setComposerOpen(true)}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity"
@@ -149,7 +139,6 @@ const DesktopSidebar = () => {
 
       <div className="px-3 pb-3">
         <div className="h-px bg-border mb-2" />
-        {/* Settings */}
         <Link
           to="/settings"
           className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm transition-colors ${

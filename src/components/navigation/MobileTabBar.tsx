@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { Home, Tent, Flame, Plus } from 'lucide-react';
+import LanternIcon from './LanternIcon';
 
 interface TabItem {
   label: string;
@@ -19,7 +20,7 @@ const tabs: TabItem[] = [
 ];
 
 const MobileTabBar = () => {
-  const { hasUnreadNotifications, setComposerOpen } = useNavigation();
+  const { setComposerOpen } = useNavigation();
   const location = useLocation();
 
   const isActive = (path: string) => {
@@ -51,12 +52,7 @@ const MobileTabBar = () => {
                 to="/lantern"
                 className="flex flex-col items-center justify-center gap-0.5 min-w-[56px]"
               >
-                <div className="relative">
-                  <span className={`text-base ${active ? '' : 'opacity-60'}`}>🏮</span>
-                  {hasUnreadNotifications && (
-                    <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-glow animate-pulse shadow-[0_0_6px_hsl(var(--amber-glow))]" />
-                  )}
-                </div>
+                <LanternIcon active={active} />
                 <span className={`text-[10px] font-body ${active ? 'text-primary' : 'text-muted-foreground'}`}>
                   Lantern
                 </span>
