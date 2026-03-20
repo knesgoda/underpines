@@ -241,7 +241,7 @@ const Cabin = () => {
               isEditing={editOpen}
               profileId={profile.id}
               onUpdate={fetchProfile}
-              size="lg"
+              size={isMobile ? 'sm' : 'lg'}
             />
           </div>
           {/* Large breathing room above the name */}
