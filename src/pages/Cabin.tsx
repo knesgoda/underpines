@@ -377,6 +377,9 @@ const Cabin = () => {
                 {profile.is_pines_plus && <span title="Pines+" className="text-base">🌲</span>}
               </div>
               <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
+              {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+                <p className="text-[10px] font-body mt-0.5" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
+              )}
             </div>
             <div className="hidden md:block text-right">
               <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} />
