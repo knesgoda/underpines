@@ -92,6 +92,10 @@ const App = () => (
                       <Route path="/settings/notifications" element={<NotificationSettings />} />
                       <Route path="/settings/subscription" element={<SubscriptionPage />} />
                       <Route path="/settings/payouts" element={<CreatorPayouts />} />
+                      <Route path="/settings/designs" element={<MyDesigns />} />
+                      <Route path="/marketplace" element={<Marketplace />} />
+                      <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
+                      <Route path="/designs/create" element={<DesignCreator />} />
                       <Route path="/new/story" element={<StoryComposer />} />
                       <Route path="/circles" element={<CirclesPage />} />
                       <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
