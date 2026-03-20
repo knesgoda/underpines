@@ -12,6 +12,7 @@ import CollectionsShelf from '@/components/cabin/CollectionsShelf';
 import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import CabinAvatar from '@/components/cabin/CabinAvatar';
+import SuggestionBox from '@/components/cabin/SuggestionBox';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { getCurrentSeason } from '@/lib/weather';
 import { useWeather } from '@/hooks/useWeather';
@@ -443,6 +444,15 @@ const Cabin = () => {
           </div>
           <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
         </div>
+      )}
+
+      {/* Suggestion box — visitors only */}
+      {!isOwner && user && profile && (
+        <SuggestionBox
+          cabinOwnerId={profile.id}
+          cabinOwnerHandle={profile.handle}
+          atmosphere={atmos}
+        />
       )}
 
       {/* Setup suggestion cards */}
