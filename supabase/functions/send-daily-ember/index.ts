@@ -332,6 +332,8 @@ function buildEmailHtml(
 
   ${sections}
 
+  ${moonPhase ? `<div style="text-align:center;padding:12px 0;margin-bottom:8px;"><p style="font-size:13px;color:#8b7355;font-style:italic;margin:0;">${moonPhase}</p></div>` : ''}
+
   <div style="text-align:center;margin:32px 0;">
     <a href="https://underpines.com/" style="display:inline-block;padding:12px 24px;background:#c2752a;color:#f5f0e8;text-decoration:none;border-radius:24px;font-size:14px;">Enter the Pines →</a>
   </div>
