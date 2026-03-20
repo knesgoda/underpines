@@ -83,62 +83,32 @@ const SettingsPage = () => {
         </div>
       </div>
 
-      <div className="space-y-4">
-        <button
-          onClick={() => navigate('/settings/subscription')}
-          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
-        >
-          🌲 Subscription
-        </button>
-        <button
-          onClick={() => navigate('/settings/payouts')}
-          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
-        >
-          💰 Payouts
-        </button>
-        <button
-          onClick={() => navigate('/settings/notifications')}
-          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
-        >
-          🏮 Notifications
-        </button>
-        <button
-          onClick={() => navigate('/settings/privacy')}
-          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
-        >
-          🔒 Privacy
-        </button>
-        <button
-          onClick={() => navigate('/invites')}
-          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground"
-        >
-          My Invites
-        </button>
-        <button
-          onClick={() => navigate('/circles')}
-          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground"
-        >
-          Circles
-        </button>
-        <button
-          onClick={() => navigate('/settings/designs')}
-          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
-        >
-          🎨 My Designs
-        </button>
-        <button
-          onClick={() => navigate('/marketplace')}
-          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
-        >
-          🏕️ Cabin Marketplace
-        </button>
-        <button
-          onClick={() => navigate('/cabin?edit=true')}
-          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground"
-        >
-          Edit Cabin
-        </button>
-        <div className="h-px bg-border" />
+      {/* YOUR CABIN */}
+      <SettingsSection label="Your Cabin">
+        <SettingsItem emoji="🏠" label="Edit Cabin" onClick={() => navigate('/cabin?edit=true')} />
+        <SettingsItem emoji="🎨" label="My Designs" onClick={() => navigate('/settings/designs')} />
+        <SettingsItem emoji="🏕️" label="Cabin Marketplace" onClick={() => navigate('/marketplace')} />
+      </SettingsSection>
+
+      {/* YOUR PRIVACY */}
+      <SettingsSection label="Your Privacy">
+        <SettingsItem emoji="🔒" label="Privacy Settings" onClick={() => navigate('/settings/privacy')} />
+      </SettingsSection>
+
+      {/* YOUR NOTIFICATIONS */}
+      <SettingsSection label="Your Notifications">
+        <SettingsItem emoji="🏮" label="Notification Settings" onClick={() => navigate('/settings/notifications')} />
+      </SettingsSection>
+
+      {/* YOUR ACCOUNT */}
+      <SettingsSection label="Your Account">
+        <SettingsItem emoji="🌲" label="Subscription" onClick={() => navigate('/settings/subscription')} />
+        <SettingsItem emoji="💰" label="Payouts" onClick={() => navigate('/settings/payouts')} />
+        <SettingsItem emoji="✉️" label="My Invites" onClick={() => navigate('/invites')} />
+        <SettingsItem emoji="⭕" label="Circles" onClick={() => navigate('/circles')} />
+      </SettingsSection>
+
+      <div className="pt-4">
         <Button
           variant="ghost"
           onClick={() => { signOut(); navigate('/'); }}
