@@ -590,6 +590,42 @@ export type Database = {
           },
         ]
       }
+      inactive_nudges: {
+        Row: {
+          created_at: string | null
+          id: string
+          inactive_user_id: string
+          inviter_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          inactive_user_id: string
+          inviter_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          inactive_user_id?: string
+          inviter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inactive_nudges_inactive_user_id_fkey"
+            columns: ["inactive_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inactive_nudges_inviter_id_fkey"
+            columns: ["inviter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invite_uses: {
         Row: {
           id: string
@@ -698,6 +734,53 @@ export type Database = {
             foreignKeyName: "mutes_muter_id_fkey"
             columns: ["muter_id"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_preferences: {
+        Row: {
+          created_at: string | null
+          ember_delivery_time: string | null
+          ember_timezone: string | null
+          id: string
+          notify_circle_requests: boolean | null
+          notify_invite_accepted: boolean | null
+          notify_smoke_signals: boolean | null
+          quiet_mode: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          ember_delivery_time?: string | null
+          ember_timezone?: string | null
+          id?: string
+          notify_circle_requests?: boolean | null
+          notify_invite_accepted?: boolean | null
+          notify_smoke_signals?: boolean | null
+          quiet_mode?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          ember_delivery_time?: string | null
+          ember_timezone?: string | null
+          id?: string
+          notify_circle_requests?: boolean | null
+          notify_invite_accepted?: boolean | null
+          notify_smoke_signals?: boolean | null
+          quiet_mode?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -922,6 +1005,7 @@ export type Database = {
           currently_type: string | null
           currently_value: string | null
           display_name: string
+          ember_unsubscribed: boolean | null
           feed_scroll_reminder: boolean | null
           feed_show_camp_posts: boolean | null
           feed_show_embers: boolean | null
@@ -939,6 +1023,7 @@ export type Database = {
           pinned_song_artist: string | null
           pinned_song_preview_url: string | null
           pinned_song_title: string | null
+          quiet_mode: boolean | null
           updated_at: string | null
           zip_code: string | null
         }
@@ -952,6 +1037,7 @@ export type Database = {
           currently_type?: string | null
           currently_value?: string | null
           display_name: string
+          ember_unsubscribed?: boolean | null
           feed_scroll_reminder?: boolean | null
           feed_show_camp_posts?: boolean | null
           feed_show_embers?: boolean | null
@@ -969,6 +1055,7 @@ export type Database = {
           pinned_song_artist?: string | null
           pinned_song_preview_url?: string | null
           pinned_song_title?: string | null
+          quiet_mode?: boolean | null
           updated_at?: string | null
           zip_code?: string | null
         }
@@ -982,6 +1069,7 @@ export type Database = {
           currently_type?: string | null
           currently_value?: string | null
           display_name?: string
+          ember_unsubscribed?: boolean | null
           feed_scroll_reminder?: boolean | null
           feed_show_camp_posts?: boolean | null
           feed_show_embers?: boolean | null
@@ -999,6 +1087,7 @@ export type Database = {
           pinned_song_artist?: string | null
           pinned_song_preview_url?: string | null
           pinned_song_title?: string | null
+          quiet_mode?: boolean | null
           updated_at?: string | null
           zip_code?: string | null
         }
