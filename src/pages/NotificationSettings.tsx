@@ -190,4 +190,35 @@ const NotificationSettings = () => {
   );
 };
 
+const PushNotificationsSection = () => {
+  const { state, subscribe } = usePushNotifications();
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Push Notifications</p>
+      {state === 'unsupported' ? (
+        <p className="font-body text-xs text-muted-foreground">Push notifications are not supported in this browser.</p>
+      ) : state === 'granted' ? (
+        <p className="font-body text-xs text-muted-foreground">✓ Push notifications are enabled.</p>
+      ) : state === 'denied' ? (
+        <p className="font-body text-xs text-muted-foreground">
+          Push notifications were blocked. You can enable them in your browser settings when you're ready.
+        </p>
+      ) : (
+        <>
+          <p className="font-body text-sm text-foreground mb-3">
+            Get notified when something important arrives — even when the app isn't open.
+          </p>
+          <button
+            onClick={subscribe}
+            className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
+          >
+            Enable push notifications
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+
 export default NotificationSettings;
