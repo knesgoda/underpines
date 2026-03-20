@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { atmospheres, cabinMoods, accentColors, getAtmosphere } from '@/lib/cabin-config';
+import { useTheme } from '@/contexts/ThemeContext';
 import { geocodeZip } from '@/lib/weather';
 import { defaultAvatars, getAvatarSrc } from '@/lib/default-avatars';
 import { toast } from 'sonner';
@@ -44,6 +45,7 @@ interface CabinEditDrawerProps {
 
 const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerProps) => {
   const isMobile = useIsMobile();
+  const { theme } = useTheme();
   const [tab, setTab] = useState<'you' | 'appearance' | 'details' | 'widgets'>('you');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -134,7 +136,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     { key: 'widgets', label: 'Widgets' },
   ] as const;
 
-  const atmos = getAtmosphere(form.atmosphere);
+  const atmos = getAtmosphere(form.atmosphere, theme);
 
   const drawerContent = (
     <div className="flex flex-col h-full bg-card">

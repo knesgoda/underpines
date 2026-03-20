@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import WeatherScene from '@/components/cabin/WeatherScene';
@@ -52,6 +53,7 @@ const Cabin = () => {
   const upgraded = searchParams.get('upgraded') === 'true';
   const previewMode = searchParams.get('preview') === 'true';
   const { user } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
@@ -155,8 +157,8 @@ const Cabin = () => {
   }
 
   const effectiveAtmos = previewDesign?.design_data?.atmosphere
-    ? getAtmosphere(previewDesign.design_data.atmosphere)
-    : getAtmosphere(profile.atmosphere);
+    ? getAtmosphere(previewDesign.design_data.atmosphere, theme)
+    : getAtmosphere(profile.atmosphere, theme);
   const atmos = effectiveAtmos;
   const mood = cabinMoods.find(m => m.key === profile.cabin_mood);
   const season = getCurrentSeason();

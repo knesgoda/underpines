@@ -1,3 +1,5 @@
+import type { AppTheme } from '@/contexts/ThemeContext';
+
 export interface Atmosphere {
   key: string;
   label: string;
@@ -10,7 +12,55 @@ export interface Atmosphere {
   free: boolean;
 }
 
+/** Theme-mapped cabin palettes — follow the app's active theme */
+const themeAtmospheres: Record<AppTheme, Atmosphere> = {
+  light: {
+    key: 'theme-sync',
+    label: 'Golden Morning',
+    background: '#fdf6ee',
+    cardBg: '#f7ede0',
+    accent: '#c67a1a',
+    text: '#2a1a0a',
+    border: '#d4c0a8',
+    description: 'Follows your app theme',
+    free: true,
+  },
+  dark: {
+    key: 'theme-sync',
+    label: 'After Sunset',
+    background: '#1a1008',
+    cardBg: '#261a0e',
+    accent: '#e8922a',
+    text: '#f5ebe0',
+    border: '#3d2c1a',
+    description: 'Follows your app theme',
+    free: true,
+  },
+  evergreen: {
+    key: 'theme-sync',
+    label: 'Through the Pines',
+    background: '#0c0f0a',
+    cardBg: '#141a12',
+    accent: '#d94a8c',
+    text: '#ede6e0',
+    border: '#2a3424',
+    description: 'Follows your app theme',
+    free: true,
+  },
+};
+
 export const atmospheres: Atmosphere[] = [
+  {
+    key: 'theme-sync',
+    label: 'Match Theme',
+    background: '#fdf6ee',
+    cardBg: '#f7ede0',
+    accent: '#c67a1a',
+    text: '#2a1a0a',
+    border: '#d4c0a8',
+    description: 'Follows your app theme automatically',
+    free: true,
+  },
   {
     key: 'morning-mist',
     label: 'Morning Mist',
@@ -101,8 +151,11 @@ export const atmospheres: Atmosphere[] = [
   },
 ];
 
-export const getAtmosphere = (key: string): Atmosphere => {
-  return atmospheres.find(a => a.key === key) || atmospheres[0];
+export const getAtmosphere = (key: string, appTheme?: AppTheme): Atmosphere => {
+  if (key === 'theme-sync' && appTheme) {
+    return themeAtmospheres[appTheme];
+  }
+  return atmospheres.find(a => a.key === key) || (appTheme ? themeAtmospheres[appTheme] : atmospheres[1]);
 };
 
 export const cabinMoods = [
