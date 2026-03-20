@@ -313,22 +313,23 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
 
             <Field label="Layout">
               <div className="grid grid-cols-2 gap-2">
-                {['hearth', 'hollow', 'trailhead', 'canopy'].map(l => {
-                  const coming = l === 'trailhead' || l === 'canopy';
-                  return (
-                    <button
-                      key={l}
-                      onClick={() => !coming && updateField('layout', l)}
-                      disabled={coming}
-                      className={`rounded-xl p-3 text-sm font-body capitalize border transition-all ${
-                        form.layout === l ? 'ring-2 ring-primary' : ''
-                      } ${coming ? 'opacity-40' : 'hover:scale-102'}`}
-                    >
-                      {l}
-                      {coming && <span className="block text-xs opacity-60">Coming soon</span>}
-                    </button>
-                  );
-                })}
+                {[
+                  { key: 'hearth', label: 'Hearth', desc: 'Classic card + sidebar' },
+                  { key: 'hollow', label: 'Hollow', desc: 'Centered & minimal' },
+                  { key: 'trailhead', label: 'Trailhead', desc: 'Wide editorial columns' },
+                  { key: 'canopy', label: 'Canopy', desc: 'Grid-forward gallery' },
+                ].map(l => (
+                  <button
+                    key={l.key}
+                    onClick={() => updateField('layout', l.key)}
+                    className={`rounded-xl p-3 text-left text-sm font-body border transition-all hover:scale-102 ${
+                      form.layout === l.key ? 'ring-2 ring-primary' : ''
+                    }`}
+                  >
+                    <span className="font-medium capitalize">{l.label}</span>
+                    <span className="block text-xs opacity-60 mt-0.5">{l.desc}</span>
+                  </button>
+                ))}
               </div>
             </Field>
 
