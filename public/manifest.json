@@ -4,8 +4,8 @@
   "description": "A quiet place on the internet.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f0eb",
-  "theme_color": "#166534",
+  "background_color": "#052e16",
+  "theme_color": "#052e16",
   "orientation": "portrait-primary",
   "icons": [
     {
