@@ -474,7 +474,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
                     </div>
                   )}
 
-                  <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} group`}>
+                  <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} group transition-colors ${highlightMsgId === msg.id ? 'bg-amber-light/30 rounded-xl' : ''}`}>
                     <div className="max-w-[75%]">
                       {/* Sender name for group chats */}
                       {!isMine && campfire.campfire_type === 'group' && (
