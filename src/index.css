@@ -3,110 +3,222 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* Under Pines — Logo-inspired Palette */
-    /* Deep forest silhouettes */
-    --pine-darkest: 220 30% 10%;
-    --pine-dark: 220 25% 16%;
-    --pine-mid: 200 20% 25%;
-    --pine-light: 30 30% 92%;
-    --pine-pale: 30 25% 96%;
-    /* Sunset amber/fire warmth */
-    --amber-deep: 25 85% 45%;
-    --amber-mid: 30 90% 55%;
-    --amber-light: 35 90% 85%;
-    --amber-glow: 20 95% 60%;
-    /* Dusk sky tones */
-    --dusk-deep: 260 35% 18%;
-    --dusk-mid: 340 40% 30%;
-    --dusk-warm: 15 70% 45%;
-    /* Neutrals */
-    --slate-text: 220 25% 14%;
-    --muted-text: 220 12% 50%;
-    --border-subtle: 30 15% 85%;
+  :root,
+  .theme-light {
+    /* Light Mode — Golden Morning */
+    --background: 32 79% 96%;
+    --foreground: 30 62% 10%;
 
-    /* Design system tokens */
-    --background: 30 25% 96%;
-    --foreground: 220 25% 14%;
+    --card: 34 59% 92%;
+    --card-foreground: 30 62% 10%;
 
-    --card: 30 20% 98%;
-    --card-foreground: 220 25% 14%;
+    --popover: 34 59% 92%;
+    --popover-foreground: 30 62% 10%;
 
-    --popover: 30 20% 98%;
-    --popover-foreground: 220 25% 14%;
+    --primary: 33 77% 44%;
+    --primary-foreground: 32 79% 96%;
 
-    --primary: 25 85% 45%;
-    --primary-foreground: 30 25% 96%;
+    --secondary: 34 52% 88%;
+    --secondary-foreground: 30 36% 26%;
 
-    --secondary: 30 30% 92%;
-    --secondary-foreground: 220 25% 16%;
+    --muted: 34 52% 88%;
+    --muted-foreground: 26 18% 46%;
 
-    --muted: 30 20% 90%;
-    --muted-foreground: 220 12% 50%;
+    --accent: 38 81% 52%;
+    --accent-foreground: 30 62% 10%;
 
-    --accent: 260 35% 18%;
-    --accent-foreground: 35 90% 85%;
+    --destructive: 12 60% 41%;
+    --destructive-foreground: 32 79% 96%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 30 15% 85%;
-    --input: 30 15% 85%;
-    --ring: 25 85% 45%;
+    --border: 33 34% 75%;
+    --input: 33 47% 83%;
+    --ring: 33 77% 44%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 30 25% 96%;
-    --sidebar-foreground: 220 25% 14%;
-    --sidebar-primary: 25 85% 45%;
-    --sidebar-primary-foreground: 30 25% 96%;
-    --sidebar-accent: 30 30% 92%;
-    --sidebar-accent-foreground: 220 25% 16%;
-    --sidebar-border: 30 15% 85%;
-    --sidebar-ring: 25 85% 45%;
+    /* Nature tokens */
+    --pine-darkest: 30 62% 10%;
+    --pine-dark: 30 36% 26%;
+    --pine-mid: 122 29% 32%;
+    --pine-light: 34 59% 92%;
+    --pine-pale: 32 79% 96%;
+
+    --amber-deep: 33 77% 44%;
+    --amber-mid: 38 81% 52%;
+    --amber-light: 33 57% 60%;
+    --amber-glow: 21 63% 44%;
+
+    --dusk-deep: 270 15% 42%;
+    --dusk-mid: 195 30% 42%;
+    --dusk-warm: 12 60% 41%;
+
+    /* Sidebar */
+    --sidebar-background: 32 79% 96%;
+    --sidebar-foreground: 30 62% 10%;
+    --sidebar-primary: 33 77% 44%;
+    --sidebar-primary-foreground: 32 79% 96%;
+    --sidebar-accent: 34 52% 88%;
+    --sidebar-accent-foreground: 30 36% 26%;
+    --sidebar-border: 33 34% 75%;
+    --sidebar-ring: 33 77% 44%;
 
     /* Typography */
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   }
 
+  .theme-dark {
+    /* Dark Mode — After Sunset */
+    --background: 27 53% 7%;
+    --foreground: 31 51% 92%;
+
+    --card: 30 46% 10%;
+    --card-foreground: 31 51% 92%;
+
+    --popover: 30 46% 10%;
+    --popover-foreground: 31 51% 92%;
+
+    --primary: 33 81% 54%;
+    --primary-foreground: 27 53% 7%;
+
+    --secondary: 31 44% 14%;
+    --secondary-foreground: 31 51% 92%;
+
+    --muted: 31 44% 14%;
+    --muted-foreground: 26 18% 46%;
+
+    --accent: 40 90% 61%;
+    --accent-foreground: 27 53% 7%;
+
+    --destructive: 14 62% 47%;
+    --destructive-foreground: 31 51% 92%;
+
+    --border: 31 40% 17%;
+    --input: 28 44% 13%;
+    --ring: 33 81% 54%;
+
+    /* Nature tokens */
+    --pine-darkest: 27 53% 7%;
+    --pine-dark: 30 46% 10%;
+    --pine-mid: 122 24% 23%;
+    --pine-light: 35 36% 64%;
+    --pine-pale: 31 51% 92%;
+
+    --amber-deep: 33 81% 54%;
+    --amber-mid: 40 90% 61%;
+    --amber-light: 29 73% 66%;
+    --amber-glow: 21 64% 53%;
+
+    --dusk-deep: 267 24% 30%;
+    --dusk-mid: 203 31% 33%;
+    --dusk-warm: 14 62% 47%;
+
+    /* Sidebar */
+    --sidebar-background: 27 53% 7%;
+    --sidebar-foreground: 31 51% 92%;
+    --sidebar-primary: 33 81% 54%;
+    --sidebar-primary-foreground: 27 53% 7%;
+    --sidebar-accent: 31 44% 14%;
+    --sidebar-accent-foreground: 31 51% 92%;
+    --sidebar-border: 31 40% 17%;
+    --sidebar-ring: 33 81% 54%;
+  }
+
+  .theme-evergreen {
+    /* Evergreen — Through the Pines */
+    --background: 96 20% 5%;
+    --foreground: 28 27% 90%;
+
+    --card: 105 18% 9%;
+    --card-foreground: 28 27% 90%;
+
+    --popover: 105 18% 9%;
+    --popover-foreground: 28 27% 90%;
+
+    --primary: 332 65% 57%;
+    --primary-foreground: 96 20% 5%;
+
+    --secondary: 100 20% 12%;
+    --secondary-foreground: 28 27% 90%;
+
+    --muted: 100 20% 12%;
+    --muted-foreground: 27 9% 38%;
+
+    --accent: 31 85% 62%;
+    --accent-foreground: 96 20% 5%;
+
+    --destructive: 344 54% 50%;
+    --destructive-foreground: 28 27% 90%;
+
+    --border: 98 18% 17%;
+    --input: 103 21% 13%;
+    --ring: 332 65% 57%;
+
+    /* Nature tokens */
+    --pine-darkest: 96 20% 5%;
+    --pine-dark: 105 18% 9%;
+    --pine-mid: 128 36% 26%;
+    --pine-light: 28 14% 60%;
+    --pine-pale: 28 27% 90%;
+
+    --amber-deep: 332 65% 57%;
+    --amber-mid: 31 85% 62%;
+    --amber-light: 335 35% 57%;
+    --amber-glow: 12 77% 60%;
+
+    --dusk-deep: 285 36% 35%;
+    --dusk-mid: 210 36% 35%;
+    --dusk-warm: 344 54% 50%;
+
+    /* Sidebar */
+    --sidebar-background: 96 20% 5%;
+    --sidebar-foreground: 28 27% 90%;
+    --sidebar-primary: 332 65% 57%;
+    --sidebar-primary-foreground: 96 20% 5%;
+    --sidebar-accent: 100 20% 12%;
+    --sidebar-accent-foreground: 28 27% 90%;
+    --sidebar-border: 98 18% 17%;
+    --sidebar-ring: 332 65% 57%;
+  }
+
+  /* Legacy .dark class maps to theme-dark */
   .dark {
-    --background: 220 30% 7%;
-    --foreground: 30 30% 92%;
+    --background: 27 53% 7%;
+    --foreground: 31 51% 92%;
 
-    --card: 220 28% 11%;
-    --card-foreground: 30 30% 92%;
+    --card: 30 46% 10%;
+    --card-foreground: 31 51% 92%;
 
-    --popover: 220 28% 11%;
-    --popover-foreground: 30 30% 92%;
+    --popover: 30 46% 10%;
+    --popover-foreground: 31 51% 92%;
 
-    --primary: 25 85% 50%;
-    --primary-foreground: 220 30% 7%;
+    --primary: 33 81% 54%;
+    --primary-foreground: 27 53% 7%;
 
-    --secondary: 220 25% 15%;
-    --secondary-foreground: 30 30% 92%;
+    --secondary: 31 44% 14%;
+    --secondary-foreground: 31 51% 92%;
 
-    --muted: 220 25% 15%;
-    --muted-foreground: 220 12% 60%;
+    --muted: 31 44% 14%;
+    --muted-foreground: 26 18% 46%;
 
-    --accent: 340 40% 35%;
-    --accent-foreground: 35 90% 85%;
+    --accent: 40 90% 61%;
+    --accent-foreground: 27 53% 7%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 14 62% 47%;
+    --destructive-foreground: 31 51% 92%;
 
-    --border: 220 25% 15%;
-    --input: 220 25% 15%;
-    --ring: 25 85% 50%;
+    --border: 31 40% 17%;
+    --input: 28 44% 13%;
+    --ring: 33 81% 54%;
 
-    --sidebar-background: 220 30% 7%;
-    --sidebar-foreground: 30 30% 92%;
-    --sidebar-primary: 25 85% 50%;
-    --sidebar-primary-foreground: 220 30% 7%;
-    --sidebar-accent: 220 25% 15%;
-    --sidebar-accent-foreground: 30 30% 92%;
-    --sidebar-border: 220 25% 15%;
-    --sidebar-ring: 25 85% 50%;
+    --sidebar-background: 27 53% 7%;
+    --sidebar-foreground: 31 51% 92%;
+    --sidebar-primary: 33 81% 54%;
+    --sidebar-primary-foreground: 27 53% 7%;
+    --sidebar-accent: 31 44% 14%;
+    --sidebar-accent-foreground: 31 51% 92%;
+    --sidebar-border: 31 40% 17%;
+    --sidebar-ring: 33 81% 54%;
   }
 }
 
