@@ -164,6 +164,29 @@ const Cabin = () => {
       className="min-h-screen transition-colors duration-700 pt-14"
       style={{ backgroundColor: atmos.background, color: atmos.text }}
     >
+      {/* Design Preview Banner */}
+      {previewDesign && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between text-sm font-body">
+          <span>Previewing: {previewDesign.name}</span>
+          <div className="flex gap-2">
+            <button onClick={() => { setPreviewDesign(null); sessionStorage.removeItem('cabin_preview_design'); navigate('/cabin'); }}
+              className="px-3 py-1 rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/30 transition-colors text-xs">
+              Exit preview
+            </button>
+            {previewDesign.price_cents > 0 ? (
+              <button onClick={() => navigate(`/marketplace/${previewDesign.id}`)}
+                className="px-3 py-1 rounded-full bg-primary-foreground text-primary text-xs font-medium">
+                Buy for ${(previewDesign.price_cents / 100).toFixed(0)} →
+              </button>
+            ) : (
+              <button onClick={() => navigate(`/marketplace/${previewDesign.id}`)}
+                className="px-3 py-1 rounded-full bg-primary-foreground text-primary text-xs font-medium">
+                Get for free →
+              </button>
+            )}
+          </div>
+        </div>
+      )}
       {/* Header with weather scene */}
       <div className="relative w-full" style={{ height: isHollow ? 400 : 280 }}>
         {profile.header_image_url ? (
