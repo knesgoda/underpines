@@ -82,6 +82,8 @@ const CirclesPage = () => {
           id: p.id,
           display_name: p.display_name,
           handle: p.handle,
+          avatar_url: (p as any).avatar_url ?? null,
+          default_avatar_key: (p as any).default_avatar_key ?? null,
           updated_at: p.updated_at,
           circleId: c.id,
           direction: c.requester_id === user.id ? 'sent' : 'received',
