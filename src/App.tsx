@@ -16,6 +16,7 @@ import Invites from "./pages/Invites";
 import Campfires from "./pages/Campfires";
 import Lantern from "./pages/Lantern";
 import SettingsPage from "./pages/SettingsPage";
+import NotificationSettings from "./pages/NotificationSettings";
 import StoryComposer from "./pages/StoryComposer";
 import CirclesPage from "./pages/CirclesPage";
 import CircleSuggestions from "./pages/CircleSuggestions";
