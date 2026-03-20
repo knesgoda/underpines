@@ -2068,6 +2068,7 @@ export type Database = {
           header_image_url: string | null
           id: string
           is_pines_plus: boolean | null
+          last_active_at: string | null
           latitude: number | null
           layout: string | null
           longitude: number | null
@@ -2104,6 +2105,7 @@ export type Database = {
           header_image_url?: string | null
           id: string
           is_pines_plus?: boolean | null
+          last_active_at?: string | null
           latitude?: number | null
           layout?: string | null
           longitude?: number | null
@@ -2140,6 +2142,7 @@ export type Database = {
           header_image_url?: string | null
           id?: string
           is_pines_plus?: boolean | null
+          last_active_at?: string | null
           latitude?: number | null
           layout?: string | null
           longitude?: number | null

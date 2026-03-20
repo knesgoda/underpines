@@ -14,6 +14,7 @@ import InviteLanding from "./pages/InviteLanding";
 import Onboarding from "./pages/Onboarding";
 import Cabin from "./pages/Cabin";
 import Invites from "./pages/Invites";
+import InviteTree from "./pages/InviteTree";
 import Campfires from "./pages/Campfires";
 import Lantern from "./pages/Lantern";
 import SettingsPage from "./pages/SettingsPage";
@@ -90,6 +91,7 @@ const App = () => (
                       <Route path="/onboarding" element={<Onboarding />} />
                       <Route path="/cabin" element={<Cabin />} />
                       <Route path="/invites" element={<Invites />} />
+                      <Route path="/invites/tree" element={<InviteTree />} />
                       <Route path="/campfires" element={<Campfires />} />
                       <Route path="/search" element={<SearchPage />} />
                       <Route path="/lantern" element={<Lantern />} />
