@@ -329,10 +329,11 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
   if (isFlickerExpired) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center">
+        <div className="text-center max-w-xs">
           <p className="text-5xl mb-4">🕯️</p>
-          <p className="font-display text-lg text-foreground mb-1">This fire had its moment.</p>
-          <button onClick={onBack} className="mt-4 font-body text-sm text-primary hover:underline">← Back to Campfires</button>
+          <p className="font-display text-lg text-foreground mb-1">This Flicker has burned out.</p>
+          <p className="font-body text-sm text-muted-foreground mb-6">The warmth lingers, even after the light fades.</p>
+          <button onClick={onBack} className="font-body text-sm text-primary hover:underline">← Back to Campfires</button>
         </div>
       </div>
     );
