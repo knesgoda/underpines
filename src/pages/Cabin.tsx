@@ -630,8 +630,8 @@ const PineConeBadge = ({ className = 'w-4 h-4' }: { className?: string }) => (
     viewBox="0 0 16 16"
     fill="currentColor"
     className={`inline-block opacity-50 shrink-0 ${className}`}
-    title="Pines+"
     aria-label="Pines+ member"
+    role="img"
   >
     <path d="M8 1C8 1 6 3.5 6 4.5C6 5.2 6.8 5.8 8 6C9.2 5.8 10 5.2 10 4.5C10 3.5 8 1 8 1Z" />
     <path d="M8 4C8 4 5 7 5 8.5C5 9.5 6.2 10.3 8 10.5C9.8 10.3 11 9.5 11 8.5C11 7 8 4 8 4Z" />
