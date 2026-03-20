@@ -91,19 +91,21 @@ const NotificationSettings = () => {
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="max-w-lg mx-auto px-4 py-8">
       <h1 className="font-display text-2xl text-foreground mb-6">Notifications</h1>
 
-      {/* Quiet Mode */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="font-body text-sm font-medium text-foreground">Quiet Mode</p>
-          </div>
-          <Switch checked={prefs.quiet_mode} onCheckedChange={(v) => save({ quiet_mode: v })} />
+      {/* Quiet Mode — prominently first */}
+      <div className="rounded-xl border-2 border-primary/20 bg-card p-6 mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="font-body text-base font-semibold text-foreground">Quiet Mode 🌲</h2>
+          <Switch
+            checked={prefs.quiet_mode}
+            onCheckedChange={(v) => save({ quiet_mode: v })}
+            className="scale-125 origin-right"
+          />
         </div>
-        <p className="font-body text-xs text-muted-foreground leading-relaxed">
-          When on, only urgent Campfire messages come through in real time. Everything else arrives in your Daily Ember.
+        <p className="font-body text-sm text-muted-foreground leading-relaxed">
+          When on, only your opted-in Campfire messages come through. Everything else waits for your Daily Ember.
         </p>
-        <p className="font-body text-[10px] text-muted-foreground mt-2 italic">
-          Under Pines thinks your attention is worth protecting.
+        <p className="font-body text-[11px] text-muted-foreground/60 mt-3">
+          Under Pines is proud of this feature.
         </p>
       </div>
 
