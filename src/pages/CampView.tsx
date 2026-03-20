@@ -225,7 +225,7 @@ const CampView = () => {
           />
         )}
         {tab === 'bonfire' && (
-          <CampBonfire campId={camp.id} />
+          <CampBonfire campId={camp.id} isScout={!!isScout} scoutDays={scoutDays} />
         )}
       </div>
     </motion.div>
