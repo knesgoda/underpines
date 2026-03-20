@@ -338,10 +338,8 @@ const Cabin = () => {
 
           {/* Masonry-style grid */}
           <div className="columns-2 md:columns-3 gap-4 pb-16 [column-fill:_balance]">
-            {/* Collections as large cards */}
-            <CollectionsShelf profileId={profile.id} handle={profile.handle} isOwner={isOwner} atmosphere={atmos} variant="grid" />
-            {/* Posts in grid */}
-            <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} variant="grid" />
+            <CollectionsShelf profileId={profile.id} handle={profile.handle} isOwner={isOwner} atmosphere={atmos} />
+            <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
           </div>
 
           {profile.is_pines_plus && <div className="pb-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} /></div>}
