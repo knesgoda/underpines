@@ -46,10 +46,11 @@ const StepVerify = () => {
 
       // Record invite use, decrement counter, and create Circle
       if (data.inviteId && authData.user) {
-        // Insert invite_uses row
+        // Insert invite_uses row with IP hash for rate limiting
         await supabase.from('invite_uses').insert({
           invite_id: data.inviteId,
           invitee_id: authData.user.id,
+          ip_hash: data.ipHash || null,
         });
 
         // Fetch the invite to check if infinite

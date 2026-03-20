@@ -1625,18 +1625,21 @@ export type Database = {
           id: string
           invite_id: string
           invitee_id: string
+          ip_hash: string | null
           used_at: string | null
         }
         Insert: {
           id?: string
           invite_id: string
           invitee_id: string
+          ip_hash?: string | null
           used_at?: string | null
         }
         Update: {
           id?: string
           invite_id?: string
           invitee_id?: string
+          ip_hash?: string | null
           used_at?: string | null
         }
         Relationships: [
@@ -1663,6 +1666,7 @@ export type Database = {
           inviter_id: string
           is_active: boolean | null
           is_infinite: boolean | null
+          secret_token: string | null
           slug: string
           uses_remaining: number
           uses_total: number
@@ -1673,6 +1677,7 @@ export type Database = {
           inviter_id: string
           is_active?: boolean | null
           is_infinite?: boolean | null
+          secret_token?: string | null
           slug: string
           uses_remaining?: number
           uses_total?: number
@@ -1683,6 +1688,7 @@ export type Database = {
           inviter_id?: string
           is_active?: boolean | null
           is_infinite?: boolean | null
+          secret_token?: string | null
           slug?: string
           uses_remaining?: number
           uses_total?: number
@@ -2688,6 +2694,10 @@ export type Database = {
         Args: { _invite_id: string; _new_user_id: string }
         Returns: undefined
       }
+      check_invite_rate_limit: {
+        Args: { _invite_id: string; _ip_hash: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2701,6 +2711,7 @@ export type Database = {
         Returns: boolean
       }
       random_creature: { Args: never; Returns: string }
+      rotate_invite_link: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator"
