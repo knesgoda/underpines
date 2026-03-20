@@ -169,12 +169,13 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                 type="button"
                 onClick={() => onImageClick?.([post.image_url!], 0)}
                 className="mt-3 rounded-lg overflow-hidden block w-full text-left cursor-zoom-in"
+                style={{ minHeight: '1px' }}
                 aria-label="View full image"
               >
                 <img
                   src={post.image_url}
                   alt=""
-                  className="w-full h-auto rounded-lg bg-muted"
+                  className="block w-full h-auto rounded-lg bg-muted"
                   style={{ maxHeight: '600px', objectFit: 'contain' }}
                   loading="lazy"
                 />
