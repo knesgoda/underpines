@@ -114,6 +114,337 @@ export type Database = {
           },
         ]
       }
+      camp_invites: {
+        Row: {
+          camp_id: string
+          created_at: string | null
+          id: string
+          invite_link: string | null
+          invited_by: string
+          invited_user_id: string | null
+          uses_remaining: number | null
+        }
+        Insert: {
+          camp_id: string
+          created_at?: string | null
+          id?: string
+          invite_link?: string | null
+          invited_by: string
+          invited_user_id?: string | null
+          uses_remaining?: number | null
+        }
+        Update: {
+          camp_id?: string
+          created_at?: string | null
+          id?: string
+          invite_link?: string | null
+          invited_by?: string
+          invited_user_id?: string | null
+          uses_remaining?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_invites_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_invites_invited_user_id_fkey"
+            columns: ["invited_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      camp_join_requests: {
+        Row: {
+          camp_id: string
+          id: string
+          requested_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          camp_id: string
+          id?: string
+          requested_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          camp_id?: string
+          id?: string
+          requested_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_join_requests_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_join_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      camp_lodge_items: {
+        Row: {
+          author_id: string
+          camp_id: string
+          content: string | null
+          created_at: string | null
+          id: string
+          is_pinned: boolean | null
+          item_type: string
+          link_preview: Json | null
+          link_url: string | null
+          position: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          camp_id: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          item_type?: string
+          link_preview?: Json | null
+          link_url?: string | null
+          position: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          camp_id?: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          item_type?: string
+          link_preview?: Json | null
+          link_url?: string | null
+          position?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_lodge_items_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_lodge_items_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      camp_members: {
+        Row: {
+          camp_id: string
+          id: string
+          joined_at: string | null
+          role: string
+          scout_ends_at: string | null
+          user_id: string
+        }
+        Insert: {
+          camp_id: string
+          id?: string
+          joined_at?: string | null
+          role?: string
+          scout_ends_at?: string | null
+          user_id: string
+        }
+        Update: {
+          camp_id?: string
+          id?: string
+          joined_at?: string | null
+          role?: string
+          scout_ends_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_members_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      camp_post_media: {
+        Row: {
+          camp_post_id: string
+          created_at: string | null
+          id: string
+          media_type: string
+          position: number
+          url: string
+        }
+        Insert: {
+          camp_post_id: string
+          created_at?: string | null
+          id?: string
+          media_type: string
+          position: number
+          url: string
+        }
+        Update: {
+          camp_post_id?: string
+          created_at?: string | null
+          id?: string
+          media_type?: string
+          position?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_post_media_camp_post_id_fkey"
+            columns: ["camp_post_id"]
+            isOneToOne: false
+            referencedRelation: "camp_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      camp_posts: {
+        Row: {
+          author_id: string
+          camp_id: string
+          content: string | null
+          created_at: string | null
+          id: string
+          is_pinned: boolean | null
+          is_published: boolean | null
+          post_type: string
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          camp_id: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          is_published?: boolean | null
+          post_type: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          camp_id?: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          is_published?: boolean | null
+          post_type?: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_posts_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      camp_replies: {
+        Row: {
+          author_id: string
+          camp_post_id: string
+          content: string
+          created_at: string | null
+          id: string
+          parent_reply_id: string | null
+        }
+        Insert: {
+          author_id: string
+          camp_post_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          parent_reply_id?: string | null
+        }
+        Update: {
+          author_id?: string
+          camp_post_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          parent_reply_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_replies_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_replies_camp_post_id_fkey"
+            columns: ["camp_post_id"]
+            isOneToOne: false
+            referencedRelation: "camp_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_replies_parent_reply_id_fkey"
+            columns: ["parent_reply_id"]
+            isOneToOne: false
+            referencedRelation: "camp_replies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campfire_log: {
         Row: {
           author_id: string
@@ -339,6 +670,8 @@ export type Database = {
       }
       campfires: {
         Row: {
+          bonfire_sub_group_of: string | null
+          camp_id: string | null
           campfire_type: string
           created_at: string | null
           expires_at: string | null
@@ -350,6 +683,8 @@ export type Database = {
           vibe: string | null
         }
         Insert: {
+          bonfire_sub_group_of?: string | null
+          camp_id?: string | null
           campfire_type: string
           created_at?: string | null
           expires_at?: string | null
@@ -361,6 +696,8 @@ export type Database = {
           vibe?: string | null
         }
         Update: {
+          bonfire_sub_group_of?: string | null
+          camp_id?: string | null
           campfire_type?: string
           created_at?: string | null
           expires_at?: string | null
@@ -373,7 +710,68 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "campfires_bonfire_sub_group_of_fkey"
+            columns: ["bonfire_sub_group_of"]
+            isOneToOne: false
+            referencedRelation: "campfires"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campfires_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "campfires_firekeeper_id_fkey"
+            columns: ["firekeeper_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      camps: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          firekeeper_id: string
+          health_status: string | null
+          id: string
+          is_active: boolean | null
+          member_count: number | null
+          name: string
+          visibility: string
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          firekeeper_id: string
+          health_status?: string | null
+          id?: string
+          is_active?: boolean | null
+          member_count?: number | null
+          name: string
+          visibility?: string
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          firekeeper_id?: string
+          health_status?: string | null
+          id?: string
+          is_active?: boolean | null
+          member_count?: number | null
+          name?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camps_firekeeper_id_fkey"
             columns: ["firekeeper_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -789,6 +1187,7 @@ export type Database = {
       notifications: {
         Row: {
           actor_id: string | null
+          camp_id_ref: string | null
           campfire_id: string | null
           collection_id: string | null
           created_at: string | null
@@ -801,6 +1200,7 @@ export type Database = {
         }
         Insert: {
           actor_id?: string | null
+          camp_id_ref?: string | null
           campfire_id?: string | null
           collection_id?: string | null
           created_at?: string | null
@@ -813,6 +1213,7 @@ export type Database = {
         }
         Update: {
           actor_id?: string | null
+          camp_id_ref?: string | null
           campfire_id?: string | null
           collection_id?: string | null
           created_at?: string | null
@@ -829,6 +1230,13 @@ export type Database = {
             columns: ["actor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_camp_id_ref_fkey"
+            columns: ["camp_id_ref"]
+            isOneToOne: false
+            referencedRelation: "camps"
             referencedColumns: ["id"]
           },
           {
