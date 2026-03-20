@@ -29,6 +29,9 @@ import MyCamps from "./pages/MyCamps";
 import CreateCamp from "./pages/CreateCamp";
 import CampView from "./pages/CampView";
 import CampSettings from "./pages/CampSettings";
+import CampNewsletterComposer from "./pages/CampNewsletterComposer";
+import CampNewsletterView from "./pages/CampNewsletterView";
+import CampNewsletterArchive from "./pages/CampNewsletterArchive";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
