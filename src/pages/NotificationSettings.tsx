@@ -39,33 +39,73 @@ const defaults: Prefs = {
   notify_smoke_signals: true,
 };
 
+interface CampfireInfo {
+  id: string;
+  name: string | null;
+  notify_realtime: boolean;
+}
+
 const NotificationSettings = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [prefs, setPrefs] = useState<Prefs>(defaults);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [campfires, setCampfires] = useState<CampfireInfo[]>([]);
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from('notification_preferences')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) {
-          setPrefs({
-            quiet_mode: data.quiet_mode ?? false,
-            ember_delivery_time: data.ember_delivery_time ?? '07:00:00',
-            ember_timezone: data.ember_timezone ?? defaults.ember_timezone,
-            notify_circle_requests: data.notify_circle_requests ?? true,
-            notify_invite_accepted: data.notify_invite_accepted ?? true,
-            notify_smoke_signals: data.notify_smoke_signals ?? true,
-          });
-        }
-        setLoading(false);
-      });
+    const loadAll = async () => {
+      const { data } = await supabase
+        .from('notification_preferences')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (data) {
+        setPrefs({
+          quiet_mode: data.quiet_mode ?? false,
+          ember_delivery_time: data.ember_delivery_time ?? '07:00:00',
+          ember_timezone: data.ember_timezone ?? defaults.ember_timezone,
+          notify_circle_requests: data.notify_circle_requests ?? true,
+          notify_invite_accepted: data.notify_invite_accepted ?? true,
+          notify_smoke_signals: data.notify_smoke_signals ?? true,
+        });
+      }
+
+      // Load user's campfires with notification prefs
+      const { data: participants } = await supabase
+        .from('campfire_participants')
+        .select('campfire_id')
+        .eq('user_id', user.id);
+
+      if (participants && participants.length > 0) {
+        const cfIds = participants.map(p => p.campfire_id);
+        const { data: cfData } = await supabase
+          .from('campfires')
+          .select('id, name')
+          .in('id', cfIds)
+          .eq('is_active', true);
+
+        const { data: notifPrefs } = await supabase
+          .from('campfire_notification_prefs')
+          .select('campfire_id, notify_realtime')
+          .eq('user_id', user.id);
+
+        const prefMap = new Map(notifPrefs?.map(p => [p.campfire_id, p.notify_realtime ?? false]) || []);
+
+        setCampfires(
+          (cfData || []).map(cf => ({
+            id: cf.id,
+            name: cf.name,
+            notify_realtime: prefMap.get(cf.id) ?? false,
+          }))
+        );
+      }
+
+      setLoading(false);
+    };
+    loadAll();
   }, [user]);
 
   const save = async (updates: Partial<Prefs>) => {
@@ -85,25 +125,35 @@ const NotificationSettings = () => {
     setSaving(false);
   };
 
+  const toggleCampfireNotif = async (campfireId: string, value: boolean) => {
+    if (!user) return;
+    setCampfires(prev => prev.map(cf => cf.id === campfireId ? { ...cf, notify_realtime: value } : cf));
+    await supabase
+      .from('campfire_notification_prefs')
+      .upsert({ user_id: user.id, campfire_id: campfireId, notify_realtime: value }, { onConflict: 'user_id,campfire_id' } as any);
+  };
+
   if (loading) return <PineTreeLoading />;
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="max-w-lg mx-auto px-4 py-8">
       <h1 className="font-display text-2xl text-foreground mb-6">Notifications</h1>
 
-      {/* Quiet Mode */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="font-body text-sm font-medium text-foreground">Quiet Mode</p>
-          </div>
-          <Switch checked={prefs.quiet_mode} onCheckedChange={(v) => save({ quiet_mode: v })} />
+      {/* Quiet Mode — prominently first */}
+      <div className="rounded-xl border-2 border-primary/20 bg-card p-6 mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="font-body text-base font-semibold text-foreground">Quiet Mode 🌲</h2>
+          <Switch
+            checked={prefs.quiet_mode}
+            onCheckedChange={(v) => save({ quiet_mode: v })}
+            className="scale-125 origin-right"
+          />
         </div>
-        <p className="font-body text-xs text-muted-foreground leading-relaxed">
-          When on, only urgent Campfire messages come through in real time. Everything else arrives in your Daily Ember.
+        <p className="font-body text-sm text-muted-foreground leading-relaxed">
+          When on, only your opted-in Campfire messages come through. Everything else waits for your Daily Ember.
         </p>
-        <p className="font-body text-[10px] text-muted-foreground mt-2 italic">
-          Under Pines thinks your attention is worth protecting.
+        <p className="font-body text-[11px] text-muted-foreground/60 mt-3">
+          Under Pines is proud of this feature.
         </p>
       </div>
 
@@ -146,10 +196,23 @@ const NotificationSettings = () => {
           Real-time notifications {prefs.quiet_mode && <span className="text-amber-glow">(paused by Quiet Mode)</span>}
         </p>
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="font-body text-sm text-foreground">Campfire messages</span>
-            <span className="font-body text-xs text-muted-foreground">Per-Campfire</span>
-          </div>
+          {campfires.length > 0 ? (
+            <div className="space-y-2">
+              <p className="font-body text-xs text-muted-foreground mb-1">Campfire real-time messages</p>
+              {campfires.map(cf => (
+                <div key={cf.id} className="flex items-center justify-between">
+                  <span className="font-body text-sm text-foreground">{cf.name || 'Unnamed campfire'}</span>
+                  <Switch checked={cf.notify_realtime} onCheckedChange={(v) => toggleCampfireNotif(cf.id, v)} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <span className="font-body text-sm text-foreground">Campfire messages</span>
+              <span className="font-body text-xs text-muted-foreground">No active campfires</span>
+            </div>
+          )}
+          <div className="h-px bg-border" />
           <div className="flex items-center justify-between">
             <span className="font-body text-sm text-foreground">Circle requests</span>
             <Switch checked={prefs.notify_circle_requests} onCheckedChange={(v) => save({ notify_circle_requests: v })} />
