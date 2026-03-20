@@ -26,7 +26,7 @@ const GroveMembers = () => {
       const { count } = await supabase.from('profiles').select('id', { count: 'exact', head: true });
       setTotal(count ?? 0);
 
-      let query = supabase.from('profiles').select('id, handle, display_name, created_at, avatar_url').order('created_at', { ascending: false }).limit(100);
+      let query = supabase.from('profiles').select('id, handle, display_name, created_at, header_image_url').order('created_at', { ascending: false }).limit(100);
 
       if (search) {
         query = query.or(`handle.ilike.%${search}%,display_name.ilike.%${search}%`);
