@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { atmospheres, cabinMoods, accentColors, getAtmosphere } from '@/lib/cabin-config';
+import { useTheme } from '@/contexts/ThemeContext';
 import { geocodeZip } from '@/lib/weather';
 import { defaultAvatars, getAvatarSrc } from '@/lib/default-avatars';
 import { toast } from 'sonner';
