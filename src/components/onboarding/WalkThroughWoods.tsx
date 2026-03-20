@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
 interface Waypoint {
-  position: number; // percentage across screen
-  pauseAt: number; // seconds
+  position: number;
+  pauseAt: number;
+  resumeAt: number;
   caption: string;
   subcaption?: string;
 }
@@ -12,26 +13,36 @@ interface Waypoint {
 const waypoints: Waypoint[] = [
   {
     position: 20,
-    pauseAt: 8,
+    pauseAt: 6,
+    resumeAt: 11,
     caption: 'Your Cabin. It\'s yours to make feel like home.',
   },
   {
     position: 45,
-    pauseAt: 14,
+    pauseAt: 16,
+    resumeAt: 22,
     caption: 'Campfires. How you talk to people here.',
     subcaption: 'No notifications unless you want them.',
   },
   {
     position: 70,
-    pauseAt: 24,
+    pauseAt: 26,
+    resumeAt: 32,
     caption: 'Camps. Communities built around the things you love.',
   },
   {
     position: 92,
-    pauseAt: 36,
+    pauseAt: 35,
+    resumeAt: 40,
     caption: 'Your Cabin is ready.',
   },
 ];
+
+// Deterministic random with seed
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed * 9301 + 49297) * 49297;
+  return x - Math.floor(x);
+};
 
 const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
   const [elapsed, setElapsed] = useState(0);
@@ -40,21 +51,69 @@ const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
   const animRef = useRef<number>();
   const startRef = useRef<number>();
 
+  // Memoize all random positions so they don't regenerate on re-render
+  const stars = useMemo(() =>
+    Array.from({ length: 35 }, (_, i) => ({
+      x: seededRandom(i * 3 + 1) * 100,
+      y: seededRandom(i * 3 + 2) * 45,
+      delay: seededRandom(i * 3 + 3) * 4,
+      size: seededRandom(i * 7) * 2 + 0.5,
+    })),
+  []);
+
+  const fireflies = useMemo(() =>
+    Array.from({ length: 8 }, (_, i) => ({
+      x: 15 + seededRandom(i * 5 + 100) * 70,
+      y: 35 + seededRandom(i * 5 + 101) * 35,
+      delay: seededRandom(i * 5 + 102) * 6,
+      duration: 3 + seededRandom(i * 5 + 103) * 4,
+    })),
+  []);
+
+  // Far trees — very tall, slight silhouettes
+  const farTrees = useMemo(() =>
+    Array.from({ length: 9 }, (_, i) => ({
+      x: i * 12 + seededRandom(i + 200) * 6,
+      h: 100 + seededRandom(i + 210) * 60,
+      w: 35 + seededRandom(i + 220) * 20,
+    })),
+  []);
+
+  // Mid trees — more detail
+  const midTrees = useMemo(() =>
+    Array.from({ length: 11 }, (_, i) => ({
+      x: i * 10 - 5 + seededRandom(i + 300) * 8,
+      h: 120 + seededRandom(i + 310) * 80,
+      w: 30 + seededRandom(i + 320) * 25,
+    })),
+  []);
+
+  // Near trees — foreground silhouettes, larger
+  const nearTrees = useMemo(() =>
+    Array.from({ length: 5 }, (_, i) => ({
+      x: i * 25 + seededRandom(i + 400) * 10,
+      h: 180 + seededRandom(i + 410) * 60,
+      w: 50 + seededRandom(i + 420) * 30,
+    })),
+  []);
+
   useEffect(() => {
     const animate = (timestamp: number) => {
       if (!startRef.current) startRef.current = timestamp;
       const secs = (timestamp - startRef.current) / 1000;
       setElapsed(secs);
 
-      // Determine active waypoint
+      // Determine active waypoint — show caption between pauseAt and resumeAt
+      let wp = -1;
       for (let i = waypoints.length - 1; i >= 0; i--) {
-        if (secs >= waypoints[i].pauseAt) {
-          setActiveWaypoint(i);
+        if (secs >= waypoints[i].pauseAt && secs < waypoints[i].resumeAt + 2) {
+          wp = i;
           break;
         }
       }
+      setActiveWaypoint(wp);
 
-      if (secs >= 40) {
+      if (secs >= 42) {
         setShowButton(true);
         return;
       }
@@ -68,139 +127,380 @@ const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
     };
   }, []);
 
-  // Calculate figure position
-  const progress = Math.min(elapsed / 40, 1);
-  const figureX = progress * 90 + 5; // 5% to 95%
+  // Figure position — pauses at waypoints
+  const getFigureX = (t: number) => {
+    let effectiveTime = t;
+    for (const wp of waypoints) {
+      if (t > wp.pauseAt && t < wp.resumeAt) {
+        effectiveTime = wp.pauseAt;
+        break;
+      } else if (t >= wp.resumeAt) {
+        effectiveTime -= (wp.resumeAt - wp.pauseAt);
+      }
+    }
+    const totalWalkTime = 42 - waypoints.reduce((a, w) => a + (w.resumeAt - w.pauseAt), 0);
+    const progress = Math.min(effectiveTime / totalWalkTime, 1);
+    return progress * 88 + 6;
+  };
 
-  // Generate stars
-  const stars = Array.from({ length: 25 }, (_, i) => ({
-    x: Math.random() * 100,
-    y: Math.random() * 40,
-    delay: Math.random() * 3,
-    size: Math.random() * 2 + 1,
-  }));
+  const figureX = getFigureX(elapsed);
+  const progress = Math.min(elapsed / 42, 1);
 
-  // Generate fireflies
-  const fireflies = Array.from({ length: 6 }, (_, i) => ({
-    x: 20 + Math.random() * 60,
-    y: 40 + Math.random() * 30,
-    delay: Math.random() * 5,
-  }));
+  // Is figure currently paused at a waypoint?
+  const isPaused = waypoints.some(w => elapsed >= w.pauseAt && elapsed < w.resumeAt);
 
   return (
-    <div className="fixed inset-0 overflow-hidden" style={{ background: 'linear-gradient(180deg, #1e1b4b 0%, #312e81 30%, #4c1d95 60%, #1e1b4b 100%)' }}>
-      {/* Stars */}
+    <div className="fixed inset-0 overflow-hidden select-none" style={{ background: 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 25%, #312e81 50%, #4c1d95 75%, #1e1b4b 100%)' }}>
+
+      {/* Stars — twinkling night sky */}
       {stars.map((star, i) => (
         <div
-          key={i}
+          key={`s${i}`}
           className="absolute rounded-full"
           style={{
             left: `${star.x}%`,
             top: `${star.y}%`,
             width: star.size,
             height: star.size,
-            backgroundColor: 'white',
-            animation: `twinkle ${2 + star.delay}s ease-in-out infinite`,
+            backgroundColor: i % 5 === 0 ? '#fef9c3' : 'white',
+            animation: `twinkle ${2.5 + star.delay}s ease-in-out infinite`,
             animationDelay: `${star.delay}s`,
+            willChange: 'opacity',
           }}
         />
       ))}
+
+      {/* Crescent moon */}
+      <div className="absolute" style={{ right: '12%', top: '8%' }}>
+        <div
+          className="rounded-full"
+          style={{
+            width: 28,
+            height: 28,
+            background: 'radial-gradient(circle at 35% 40%, #fef9c3 0%, #fde68a 100%)',
+            boxShadow: '0 0 30px 8px rgba(254, 249, 195, 0.15), 0 0 60px 20px rgba(254, 249, 195, 0.06)',
+          }}
+        />
+        {/* Moon shadow to make crescent */}
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: 22,
+            height: 22,
+            top: -2,
+            left: 10,
+            background: '#1e1b4b',
+          }}
+        />
+      </div>
 
       {/* Fireflies */}
       {fireflies.map((ff, i) => (
         <div
-          key={`ff-${i}`}
+          key={`ff${i}`}
           className="absolute rounded-full"
           style={{
             left: `${ff.x}%`,
             top: `${ff.y}%`,
-            width: 4,
-            height: 4,
+            width: 3,
+            height: 3,
             backgroundColor: '#fde68a',
-            boxShadow: '0 0 8px 2px rgba(253, 230, 138, 0.5)',
-            animation: `firefly ${4 + ff.delay}s ease-in-out infinite`,
+            boxShadow: '0 0 6px 2px rgba(253, 230, 138, 0.4)',
+            animation: `firefly ${ff.duration}s ease-in-out infinite`,
             animationDelay: `${ff.delay}s`,
+            willChange: 'opacity',
           }}
         />
       ))}
 
-      {/* Background trees — far layer */}
-      <div className="absolute bottom-0 left-0 right-0" style={{ transform: `translateX(${-progress * 5}%)` }}>
-        {[10, 25, 40, 55, 70, 85].map((x, i) => (
-          <svg key={i} className="absolute bottom-0" style={{ left: `${x}%` }} width="60" height="120" viewBox="0 0 60 120">
-            <path d="M30 10 L10 80 L50 80 Z" fill="#14532d" opacity="0.3" />
-            <rect x="26" y="80" width="8" height="40" fill="#14532d" opacity="0.2" />
-          </svg>
-        ))}
-      </div>
+      {/* === PARALLAX TREE LAYERS === */}
 
-      {/* Mid trees */}
-      <div className="absolute bottom-0 left-0 right-0" style={{ transform: `translateX(${-progress * 12}%)` }}>
-        {[5, 20, 38, 52, 68, 80, 95].map((x, i) => (
-          <svg key={i} className="absolute bottom-0" style={{ left: `${x}%` }} width="50" height="160" viewBox="0 0 50 160">
-            <path d="M25 20 L8 100 L42 100 Z" fill="#166534" opacity="0.5" />
-            <path d="M25 50 L5 130 L45 130 Z" fill="#166534" opacity="0.4" />
-            <rect x="22" y="130" width="6" height="30" fill="#92400e" opacity="0.4" />
-          </svg>
-        ))}
-      </div>
-
-      {/* Ground */}
-      <div className="absolute bottom-0 left-0 right-0 h-24" style={{ background: 'linear-gradient(180deg, transparent, #052e16)' }} />
-
-      {/* Walking figure */}
+      {/* Far layer — slowest movement, faintest */}
       <div
-        className="absolute bottom-20 transition-none"
+        className="absolute bottom-0 left-0 right-0 h-full"
+        style={{ transform: `translateX(${-progress * 4}%)`, willChange: 'transform' }}
+      >
+        {farTrees.map((t, i) => (
+          <svg
+            key={`far${i}`}
+            className="absolute bottom-0"
+            style={{ left: `${t.x}%` }}
+            width={t.w}
+            height={t.h}
+            viewBox={`0 0 ${t.w} ${t.h}`}
+          >
+            <path d={`M${t.w / 2} ${t.h * 0.1} L${t.w * 0.2} ${t.h * 0.7} L${t.w * 0.8} ${t.h * 0.7} Z`} fill="#14532d" opacity="0.2" />
+            <path d={`M${t.w / 2} ${t.h * 0.3} L${t.w * 0.1} ${t.h * 0.85} L${t.w * 0.9} ${t.h * 0.85} Z`} fill="#14532d" opacity="0.15" />
+            <rect x={t.w / 2 - 3} y={t.h * 0.82} width={6} height={t.h * 0.18} fill="#14532d" opacity="0.1" />
+          </svg>
+        ))}
+      </div>
+
+      {/* Mid layer — medium speed, medium opacity */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-full"
+        style={{ transform: `translateX(${-progress * 10}%)`, willChange: 'transform' }}
+      >
+        {midTrees.map((t, i) => (
+          <svg
+            key={`mid${i}`}
+            className="absolute bottom-0"
+            style={{ left: `${t.x}%` }}
+            width={t.w}
+            height={t.h}
+            viewBox={`0 0 ${t.w} ${t.h}`}
+          >
+            <path d={`M${t.w / 2} ${t.h * 0.05} L${t.w * 0.15} ${t.h * 0.4} L${t.w * 0.85} ${t.h * 0.4} Z`} fill="#166534" opacity="0.45" />
+            <path d={`M${t.w / 2} ${t.h * 0.2} L${t.w * 0.08} ${t.h * 0.6} L${t.w * 0.92} ${t.h * 0.6} Z`} fill="#166534" opacity="0.35" />
+            <path d={`M${t.w / 2} ${t.h * 0.35} L${t.w * 0.02} ${t.h * 0.8} L${t.w * 0.98} ${t.h * 0.8} Z`} fill="#166534" opacity="0.25" />
+            <rect x={t.w / 2 - 3} y={t.h * 0.77} width={6} height={t.h * 0.23} rx={2} fill="#92400e" opacity="0.3" />
+          </svg>
+        ))}
+      </div>
+
+      {/* Near layer — fastest movement, most visible */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-full"
+        style={{ transform: `translateX(${-progress * 20}%)`, willChange: 'transform' }}
+      >
+        {nearTrees.map((t, i) => (
+          <svg
+            key={`near${i}`}
+            className="absolute bottom-0"
+            style={{ left: `${t.x}%` }}
+            width={t.w}
+            height={t.h}
+            viewBox={`0 0 ${t.w} ${t.h}`}
+          >
+            <path d={`M${t.w / 2} ${t.h * 0.02} L${t.w * 0.2} ${t.h * 0.35} L${t.w * 0.8} ${t.h * 0.35} Z`} fill="#052e16" opacity="0.7" />
+            <path d={`M${t.w / 2} ${t.h * 0.15} L${t.w * 0.1} ${t.h * 0.55} L${t.w * 0.9} ${t.h * 0.55} Z`} fill="#052e16" opacity="0.6" />
+            <path d={`M${t.w / 2} ${t.h * 0.3} L${t.w * 0.03} ${t.h * 0.75} L${t.w * 0.97} ${t.h * 0.75} Z`} fill="#052e16" opacity="0.5" />
+            <rect x={t.w / 2 - 4} y={t.h * 0.72} width={8} height={t.h * 0.28} rx={2} fill="#1c0a00" opacity="0.5" />
+          </svg>
+        ))}
+      </div>
+
+      {/* Ground — layered for depth */}
+      <div className="absolute bottom-0 left-0 right-0 h-28" style={{ background: 'linear-gradient(180deg, transparent 0%, #052e16 40%, #031a0d 100%)' }} />
+      {/* Path / trail the figure walks on */}
+      <div className="absolute bottom-12 left-0 right-0 h-3" style={{ background: 'linear-gradient(90deg, transparent 2%, rgba(92, 64, 14, 0.15) 10%, rgba(92, 64, 14, 0.2) 50%, rgba(92, 64, 14, 0.15) 90%, transparent 98%)', borderRadius: 4 }} />
+
+      {/* === SCENE LANDMARKS (move with mid layer) === */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-full"
+        style={{ transform: `translateX(${-progress * 10}%)`, willChange: 'transform' }}
+      >
+        {/* Waypoint 1: Cozy cabin with warm lit window */}
+        <div className="absolute bottom-14" style={{ left: '18%' }}>
+          <svg width="56" height="52" viewBox="0 0 56 52">
+            {/* Roof */}
+            <path d="M28 2 L2 24 L54 24 Z" fill="#7c2d12" opacity="0.8" />
+            {/* Walls */}
+            <rect x="6" y="24" width="44" height="24" fill="#92400e" opacity="0.75" />
+            {/* Door */}
+            <rect x="22" y="32" width="12" height="16" rx="2" fill="#7c2d12" opacity="0.9" />
+            {/* Window left — warm glow */}
+            <rect x="10" y="28" width="10" height="8" rx="1" fill="#fde68a" opacity="0.7" />
+            {/* Window right */}
+            <rect x="36" y="28" width="10" height="8" rx="1" fill="#fde68a" opacity="0.5" />
+            {/* Chimney */}
+            <rect x="38" y="6" width="6" height="18" fill="#7c2d12" opacity="0.6" />
+          </svg>
+          {/* Smoke from chimney */}
+          <div className="absolute" style={{ left: 39, top: -8 }}>
+            {[0, 1, 2].map(i => (
+              <div
+                key={i}
+                className="absolute rounded-full"
+                style={{
+                  width: 4 + i * 2,
+                  height: 4 + i * 2,
+                  backgroundColor: 'rgba(203, 213, 225, 0.2)',
+                  left: -i * 3,
+                  top: -i * 8,
+                  animation: `firefly ${3 + i}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.8}s`,
+                }}
+              />
+            ))}
+          </div>
+          {/* Window light glow */}
+          <div
+            className="absolute rounded-full"
+            style={{
+              width: 40,
+              height: 20,
+              left: 8,
+              bottom: 16,
+              background: 'radial-gradient(ellipse, rgba(253, 230, 138, 0.15) 0%, transparent 70%)',
+            }}
+          />
+        </div>
+
+        {/* Waypoint 2: Campfire with two sitting figures */}
+        <div className="absolute bottom-14" style={{ left: '43%' }}>
+          {/* Fire */}
+          <div className="relative">
+            <div
+              className="w-5 h-5 rounded-full"
+              style={{
+                background: 'radial-gradient(circle, #fbbf24, #f97316, #dc2626)',
+                animation: 'firefly 1.5s ease-in-out infinite',
+                boxShadow: '0 0 20px 8px rgba(251, 146, 60, 0.3), 0 -4px 12px rgba(251, 191, 36, 0.2)',
+              }}
+            />
+            {/* Sparks */}
+            {[0, 1, 2].map(i => (
+              <div
+                key={i}
+                className="absolute rounded-full"
+                style={{
+                  width: 2,
+                  height: 2,
+                  backgroundColor: '#fbbf24',
+                  left: 6 + i * 4,
+                  top: -4 - i * 3,
+                  animation: `firefly ${1.5 + i * 0.5}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.4}s`,
+                }}
+              />
+            ))}
+          </div>
+          {/* Two sitting figures */}
+          <svg width="50" height="20" viewBox="0 0 50 20" className="absolute" style={{ left: -12, top: 4 }}>
+            {/* Figure left */}
+            <circle cx="8" cy="4" r="3" fill="#cbd5e1" opacity="0.5" />
+            <path d="M8 7 L8 14 M5 10 L11 10 M6 18 L8 14 L10 18" stroke="#cbd5e1" strokeWidth="1.5" opacity="0.4" strokeLinecap="round" />
+            {/* Figure right */}
+            <circle cx="42" cy="4" r="3" fill="#cbd5e1" opacity="0.5" />
+            <path d="M42 7 L42 14 M39 10 L45 10 M40 18 L42 14 L44 18" stroke="#cbd5e1" strokeWidth="1.5" opacity="0.4" strokeLinecap="round" />
+          </svg>
+          {/* Ground glow from fire */}
+          <div
+            className="absolute rounded-full"
+            style={{
+              width: 60,
+              height: 16,
+              left: -18,
+              top: 8,
+              background: 'radial-gradient(ellipse, rgba(251, 146, 60, 0.12) 0%, transparent 70%)',
+            }}
+          />
+        </div>
+
+        {/* Waypoint 3: Larger campfire with group */}
+        <div className="absolute bottom-14" style={{ left: '68%' }}>
+          {/* Larger fire */}
+          <div className="relative">
+            <div
+              className="w-7 h-7 rounded-full"
+              style={{
+                background: 'radial-gradient(circle, #fbbf24, #f97316, #dc2626)',
+                animation: 'firefly 1.2s ease-in-out infinite',
+                boxShadow: '0 0 28px 12px rgba(251, 146, 60, 0.25), 0 -6px 16px rgba(251, 191, 36, 0.15)',
+              }}
+            />
+          </div>
+          {/* Group of 4-5 silhouettes */}
+          <svg width="80" height="20" viewBox="0 0 80 20" className="absolute" style={{ left: -25, top: 6 }}>
+            {[6, 18, 58, 70, 38].map((cx, i) => (
+              <g key={i}>
+                <circle cx={cx} cy="4" r="2.5" fill="#cbd5e1" opacity={0.35 + i * 0.03} />
+                <path d={`M${cx} 6.5 L${cx} 13`} stroke="#cbd5e1" strokeWidth="1.5" opacity="0.3" strokeLinecap="round" />
+              </g>
+            ))}
+          </svg>
+          <div
+            className="absolute rounded-full"
+            style={{
+              width: 80,
+              height: 20,
+              left: -25,
+              top: 10,
+              background: 'radial-gradient(ellipse, rgba(251, 146, 60, 0.1) 0%, transparent 70%)',
+            }}
+          />
+        </div>
+
+        {/* Waypoint 4: Arrival cabin — door open, light inside */}
+        <div className="absolute bottom-14" style={{ left: '90%' }}>
+          <svg width="52" height="48" viewBox="0 0 52 48">
+            <path d="M26 2 L2 22 L50 22 Z" fill="#7c2d12" opacity="0.85" />
+            <rect x="6" y="22" width="40" height="22" fill="#92400e" opacity="0.8" />
+            {/* Open door with interior light */}
+            <rect x="18" y="26" width="14" height="18" rx="1" fill="#fde68a" opacity="0.5" />
+            <rect x="18" y="26" width="14" height="18" rx="1" fill="url(#doorGlow)" />
+            {/* Window */}
+            <rect x="36" y="26" width="8" height="6" rx="1" fill="#fde68a" opacity="0.4" />
+            <defs>
+              <linearGradient id="doorGlow" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#fde68a" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.3" />
+              </linearGradient>
+            </defs>
+          </svg>
+          {/* Light spilling from door */}
+          <div
+            className="absolute"
+            style={{
+              width: 30,
+              height: 12,
+              left: 12,
+              bottom: -4,
+              background: 'radial-gradient(ellipse at top, rgba(253, 230, 138, 0.2) 0%, transparent 80%)',
+              clipPath: 'polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* === WALKING FIGURE === */}
+      <div
+        className="absolute bottom-16 z-10"
         style={{
           left: `${figureX}%`,
           transform: 'translateX(-50%)',
           willChange: 'left',
         }}
       >
-        <svg width="24" height="48" viewBox="0 0 24 48" style={{ animation: 'walk-bob 0.6s ease-in-out infinite' }}>
+        <svg
+          width="20"
+          height="40"
+          viewBox="0 0 20 40"
+          style={{
+            animation: isPaused ? undefined : 'walk-bob 0.5s ease-in-out infinite',
+            willChange: 'transform',
+          }}
+        >
           {/* Head */}
-          <circle cx="12" cy="6" r="5" fill="#e2e8f0" />
-          {/* Body */}
-          <path d="M12 11 L12 30" stroke="#e2e8f0" strokeWidth="3" strokeLinecap="round" />
+          <circle cx="10" cy="5" r="4" fill="#e2e8f0" />
+          {/* Coat body */}
+          <path d="M6 9 L6 25 Q10 27 14 25 L14 9 Z" fill="#94a3b8" opacity="0.85" />
+          {/* Collar */}
+          <path d="M7 9 L10 12 L13 9" fill="#64748b" opacity="0.6" />
           {/* Legs */}
-          <path d="M12 30 L7 44" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M12 30 L17 44" stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" />
-          {/* Arms */}
-          <path d="M12 18 L5 26" stroke="#e2e8f0" strokeWidth="2" strokeLinecap="round" />
-          <path d="M12 18 L19 26" stroke="#e2e8f0" strokeWidth="2" strokeLinecap="round" />
+          <path d="M8 25 L6 37" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+          <path d="M12 25 L14 37" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
 
-      {/* Scene waypoints — cabin window, campfire, group fire, arrival cabin */}
-      {/* Small cabin at 20% */}
-      <svg className="absolute bottom-16" style={{ left: '18%', transform: `translateX(${-progress * 12}%)` }} width="40" height="36" viewBox="0 0 40 36">
-        <path d="M20 2 L2 18 L38 18 Z" fill="#92400e" opacity="0.7" />
-        <rect x="6" y="18" width="28" height="16" fill="#7c2d12" opacity="0.7" />
-        <rect x="14" y="20" width="8" height="8" fill="#fde68a" opacity="0.6" />
-      </svg>
-
-      {/* Campfire at 45% */}
-      <div className="absolute bottom-16" style={{ left: '43%', transform: `translateX(${-progress * 12}%)` }}>
-        <div className="w-3 h-3 rounded-full bg-amber-light" style={{ animation: 'firefly 2s ease-in-out infinite', boxShadow: '0 0 12px 4px rgba(251, 146, 60, 0.4)' }} />
-      </div>
-
-      {/* Caption area */}
-      <div className="absolute bottom-32 left-0 right-0 flex justify-center px-8">
+      {/* === CAPTION AREA === */}
+      <div className="absolute bottom-28 left-0 right-0 flex justify-center px-8 z-20">
         <AnimatePresence mode="wait">
           {activeWaypoint >= 0 && (
             <motion.div
               key={activeWaypoint}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-center max-w-lg"
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="text-center max-w-md"
             >
-              <p className="text-lg font-display text-pine-light">
+              <p className="text-xl font-display leading-relaxed" style={{ color: '#dcfce7' }}>
                 {waypoints[activeWaypoint].caption}
               </p>
               {waypoints[activeWaypoint].subcaption && (
-                <p className="text-sm text-pine-light/60 mt-2 font-body">
+                <p className="text-sm mt-3 font-body" style={{ color: 'rgba(220, 252, 231, 0.5)' }}>
                   {waypoints[activeWaypoint].subcaption}
                 </p>
               )}
@@ -209,18 +509,18 @@ const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
         </AnimatePresence>
       </div>
 
-      {/* Step inside button */}
+      {/* === STEP INSIDE BUTTON === */}
       <AnimatePresence>
         {showButton && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="absolute bottom-16 left-0 right-0 flex justify-center"
+            transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute bottom-12 left-0 right-0 flex justify-center z-30"
           >
             <Button
               onClick={onComplete}
-              className="rounded-pill px-10 h-14 text-lg font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 animate-breathing"
+              className="rounded-pill px-10 h-14 text-lg font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-500 animate-breathing shadow-glow"
             >
               Step inside →
             </Button>
