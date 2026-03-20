@@ -234,6 +234,19 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
           <ReplyThread postId={post.id} />
         </div>
       </div>
+
+      {/* Modals */}
+      <QuoteComposer
+        post={post}
+        open={quoteOpen}
+        onClose={() => setQuoteOpen(false)}
+        onQuoted={(newPost) => { onRefresh?.(); }}
+      />
+      <ShareToCampfire
+        postId={post.id}
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+      />
     </motion.div>
   );
 };
