@@ -227,6 +227,10 @@
     @apply border-border;
   }
 
+  html, body {
+    overscroll-behavior-y: none;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
@@ -247,6 +251,14 @@
   /* All-caps labels tracking */
   .tracking-caps {
     letter-spacing: 0.08em;
+  }
+
+  /* Android scroll helpers */
+  .scroll-container {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: auto;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
   }
 }
 

@@ -172,7 +172,7 @@ const Campfires = () => {
       {/* Left panel */}
       <div className="w-[320px] border-r border-border flex flex-col shrink-0">
         <CampfireListHeader filter={filter} setFilter={setFilter} />
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
           <CampfireList
             campfires={filtered}
             displayName={displayName}

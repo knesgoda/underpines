@@ -37,7 +37,7 @@ const Onboarding = () => {
   }
 
   return (
-    <div className="fixed inset-0 overflow-auto" style={{ background: 'linear-gradient(180deg, #052e16 0%, #14532d 40%, #052e16 100%)' }}>
+    <div className="fixed inset-0 overflow-auto" style={{ background: 'linear-gradient(180deg, #052e16 0%, #14532d 40%, #052e16 100%)', height: '100dvh' }}>
       {/* Subtle forest background */}
       <div className="absolute inset-0 opacity-10">
         {[15, 35, 55, 75, 90].map((x, i) => (

@@ -460,7 +460,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
       <div className="flex-1 flex min-h-0">
         {/* Messages */}
         <div className="flex-1 flex flex-col min-h-0 relative">
-          <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
+          <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto overscroll-y-contain px-4 py-3 space-y-1" style={{ touchAction: 'pan-y' }}>
             {messages.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-3xl mb-2">🔥</p>
