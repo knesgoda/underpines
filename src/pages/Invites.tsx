@@ -10,6 +10,7 @@ import { useSeedlingStatus } from '@/hooks/useSeedlingStatus';
 
 const Invites = () => {
   const { user } = useAuth();
+  const { isSeedling, daysLeft } = useSeedlingStatus();
   const [invite, setInvite] = useState<any>(null);
   const [invitees, setInvitees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
