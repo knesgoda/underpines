@@ -192,8 +192,9 @@ const Campfires = () => {
         {selectedId ? (
           <CampfireView
             campfireId={selectedId}
-            onBack={() => setSelectedId(null)}
+            onBack={() => { setSelectedId(null); setStokeMode(false); }}
             onRefreshList={loadCampfires}
+            autoFocusInput={stokeMode}
           />
         ) : (
           <div className="flex-1 flex items-center justify-center">
