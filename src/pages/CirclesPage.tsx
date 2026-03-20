@@ -200,6 +200,50 @@ const CirclesPage = () => {
     loadAll();
   };
 
+  const startCampfire = async (memberId: string, memberName: string) => {
+    if (!user) return;
+    // Check for existing 1-on-1 campfire
+    const { data: myParts } = await supabase
+      .from('campfire_participants')
+      .select('campfire_id')
+      .eq('user_id', user.id);
+
+    if (myParts) {
+      for (const p of myParts) {
+        const { data: other } = await supabase
+          .from('campfire_participants')
+          .select('user_id')
+          .eq('campfire_id', p.campfire_id)
+          .eq('user_id', memberId)
+          .maybeSingle();
+        if (other) {
+          const { data: cf } = await supabase
+            .from('campfires')
+            .select('id')
+            .eq('id', p.campfire_id)
+            .eq('campfire_type', 'one_on_one')
+            .eq('is_active', true)
+            .maybeSingle();
+          if (cf) { navigate(`/campfires`); return; }
+        }
+      }
+    }
+
+    const { data: newCf } = await supabase
+      .from('campfires')
+      .insert({ campfire_type: 'one_on_one', firekeeper_id: user.id, name: memberName })
+      .select()
+      .single();
+
+    if (newCf) {
+      await supabase.from('campfire_participants').insert([
+        { campfire_id: newCf.id, user_id: user.id },
+        { campfire_id: newCf.id, user_id: memberId },
+      ]);
+      navigate(`/campfires`);
+    }
+  };
+
   if (loading) return <PineTreeLoading />;
 
   return (
