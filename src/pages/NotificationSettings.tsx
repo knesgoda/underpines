@@ -196,10 +196,23 @@ const NotificationSettings = () => {
           Real-time notifications {prefs.quiet_mode && <span className="text-amber-glow">(paused by Quiet Mode)</span>}
         </p>
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="font-body text-sm text-foreground">Campfire messages</span>
-            <span className="font-body text-xs text-muted-foreground">Per-Campfire</span>
-          </div>
+          {campfires.length > 0 ? (
+            <div className="space-y-2">
+              <p className="font-body text-xs text-muted-foreground mb-1">Campfire real-time messages</p>
+              {campfires.map(cf => (
+                <div key={cf.id} className="flex items-center justify-between">
+                  <span className="font-body text-sm text-foreground">{cf.name || 'Unnamed campfire'}</span>
+                  <Switch checked={cf.notify_realtime} onCheckedChange={(v) => toggleCampfireNotif(cf.id, v)} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <span className="font-body text-sm text-foreground">Campfire messages</span>
+              <span className="font-body text-xs text-muted-foreground">No active campfires</span>
+            </div>
+          )}
+          <div className="h-px bg-border" />
           <div className="flex items-center justify-between">
             <span className="font-body text-sm text-foreground">Circle requests</span>
             <Switch checked={prefs.notify_circle_requests} onCheckedChange={(v) => save({ notify_circle_requests: v })} />
