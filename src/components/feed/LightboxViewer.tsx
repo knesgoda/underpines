@@ -16,6 +16,7 @@ const LightboxViewer = ({ open, images, startIndex, onClose }: LightboxProps) =>
 
   useEffect(() => { setIndex(startIndex); }, [startIndex]);
 
+  // Keyboard navigation
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -26,6 +27,16 @@ const LightboxViewer = ({ open, images, startIndex, onClose }: LightboxProps) =>
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose, images.length, multi]);
+
+  // Lock body scroll when open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -49,15 +60,16 @@ const LightboxViewer = ({ open, images, startIndex, onClose }: LightboxProps) =>
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 h-dvh"
           onClick={onClose}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          {/* Close */}
+          {/* Close — safe-area aware for notch devices */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            className="absolute right-4 z-10 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
             aria-label="Close"
           >
             <X size={20} />
@@ -67,8 +79,12 @@ const LightboxViewer = ({ open, images, startIndex, onClose }: LightboxProps) =>
           <img
             src={images[index]}
             alt=""
-            className="select-none"
-            style={{ maxWidth: '95vw', maxHeight: '92vh', objectFit: 'contain' }}
+            className="block select-none max-w-[95vw] max-h-[92dvh]"
+            style={{
+              width: 'auto',
+              height: 'auto',
+              objectFit: 'contain',
+            }}
             onClick={(e) => e.stopPropagation()}
             draggable={false}
           />

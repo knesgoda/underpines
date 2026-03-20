@@ -48,7 +48,10 @@ const SparkComposer = ({ onPost, onCancel }: SparkComposerProps) => {
     }
 
     if (!/^image\/(jpeg|png|gif|webp)$/.test(file.type)) {
-      toast.error("Only JPEG, PNG, GIF, or WebP images for now.");
+      const isHeic = file.name?.toLowerCase().endsWith('.heic') || file.type === 'image/heic';
+      toast.error(isHeic
+        ? "That file format isn't supported yet. Try saving it as a JPEG or PNG first."
+        : "Only JPEG, PNG, GIF, or WebP images for now.");
       return;
     }
 
