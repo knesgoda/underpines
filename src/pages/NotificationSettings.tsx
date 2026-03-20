@@ -39,12 +39,19 @@ const defaults: Prefs = {
   notify_smoke_signals: true,
 };
 
+interface CampfireInfo {
+  id: string;
+  name: string | null;
+  notify_realtime: boolean;
+}
+
 const NotificationSettings = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [prefs, setPrefs] = useState<Prefs>(defaults);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [campfires, setCampfires] = useState<CampfireInfo[]>([]);
 
   useEffect(() => {
     if (!user) return;
