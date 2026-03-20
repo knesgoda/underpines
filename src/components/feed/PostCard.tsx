@@ -19,6 +19,7 @@ export interface PostWithAuthor {
   post_type: string;
   content: string | null;
   title: string | null;
+  image_url?: string | null;
   is_published: boolean | null;
   is_quote_post: boolean | null;
   quoted_post_id: string | null;
