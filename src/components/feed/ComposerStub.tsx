@@ -17,6 +17,7 @@ interface ComposerStubProps {
 
 const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
   const navigate = useNavigate();
+  const { isSeedling, daysLeft } = useSeedlingStatus();
   const [expanded, setExpanded] = useState(false);
   const [activeType, setActiveType] = useState<PostType>(null);
 
