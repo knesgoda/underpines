@@ -314,13 +314,13 @@ const Cabin = () => {
         </div>
       ) : (
         /* === HEARTH LAYOUT (default) === */
-        <div className="max-w-4xl mx-auto px-6 relative z-10" style={{ marginTop: -40 }}>
+        <div className="max-w-4xl mx-auto px-6 relative z-10" style={{ marginTop: isMobile ? -40 : -48 }}>
           <div
             className="rounded-2xl shadow-card transition-colors duration-700 relative"
             style={{ backgroundColor: atmos.cardBg, borderColor: atmos.border, borderWidth: 1 }}
           >
             {/* Avatar overlapping header/card boundary */}
-            <div className="absolute" style={{ top: -40, left: 24 }}>
+            <div className="absolute" style={{ top: isMobile ? -40 : -48, left: 24 }}>
               <CabinAvatar
                 avatarUrl={profile.avatar_url}
                 defaultAvatarKey={profile.default_avatar_key}
@@ -331,7 +331,7 @@ const Cabin = () => {
                 size={isMobile ? 'sm' : 'lg'}
               />
             </div>
-            <div className="flex items-start gap-4 pt-4 pl-24 md:pl-28 pr-8 pb-6">
+            <div className="flex items-start gap-4 pt-4 pr-8 pb-6" style={{ paddingLeft: isMobile ? 104 : 136 }}>
               <div className="flex-1 pt-2">
                 <div className="flex items-center gap-2">
                   {mood && <span className="text-2xl">{mood.emoji}</span>}

@@ -1,8 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { Camera } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getAvatarSrc } from '@/lib/default-avatars';
 import { toast } from 'sonner';
+import AvatarCropModal from './AvatarCropModal';
 
 interface CabinAvatarProps {
   avatarUrl: string | null;
@@ -24,10 +25,11 @@ const CabinAvatar = ({
   size = 'lg',
 }: CabinAvatarProps) => {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [cropImage, setCropImage] = useState<string | null>(null);
   const src = getAvatarSrc(avatarUrl, defaultAvatarKey);
-  const px = size === 'lg' ? 80 : 64;
+  const px = size === 'lg' ? 96 : 80;
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -40,12 +42,21 @@ const CabinAvatar = ({
       return;
     }
 
-    const ext = file.name.split('.').pop();
-    const path = `${profileId}/avatar.${ext}`;
+    const reader = new FileReader();
+    reader.onload = () => setCropImage(reader.result as string);
+    reader.readAsDataURL(file);
 
+    // Reset so re-selecting same file triggers change
+    e.target.value = '';
+  };
+
+  const handleCropSave = useCallback(async (blob: Blob) => {
+    setCropImage(null);
+
+    const path = `${profileId}/avatar.png`;
     const { error } = await supabase.storage
       .from('avatars')
-      .upload(path, file, { upsert: true });
+      .upload(path, blob, { upsert: true, contentType: 'image/png' });
 
     if (error) {
       toast.error('Could not upload avatar');
@@ -53,50 +64,59 @@ const CabinAvatar = ({
     }
 
     const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
-    // Add cache-busting param
     const url = `${urlData.publicUrl}?t=${Date.now()}`;
 
     await supabase.from('profiles').update({ avatar_url: url }).eq('id', profileId);
     onUpdate();
     toast.success('Avatar updated');
-  };
+  }, [profileId, onUpdate]);
 
   return (
-    <div className="relative" style={{ width: px, height: px }}>
-      <img
-        src={src}
-        alt="Profile avatar"
-        className="rounded-full object-cover"
-        style={{
-          width: px,
-          height: px,
-          border: '3px solid white',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-        }}
-      />
-      {isOwner && isEditing && (
-        <>
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="absolute bottom-0 right-0 flex items-center justify-center rounded-full transition-opacity hover:opacity-90"
-            style={{
-              width: 24,
-              height: 24,
-              backgroundColor: 'rgba(0,0,0,0.6)',
-            }}
-          >
-            <Camera size={12} color="white" />
-          </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/jpeg,image/png"
-            onChange={handleUpload}
-            className="hidden"
-          />
-        </>
+    <>
+      <div className="relative" style={{ width: px, height: px }}>
+        <img
+          src={src}
+          alt="Profile avatar"
+          className="rounded-full object-cover object-center"
+          style={{
+            width: px,
+            height: px,
+            border: '3px solid white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          }}
+        />
+        {isOwner && isEditing && (
+          <>
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="absolute bottom-0 right-0 flex items-center justify-center rounded-full transition-opacity hover:opacity-90"
+              style={{
+                width: 26,
+                height: 26,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+              }}
+            >
+              <Camera size={13} color="white" />
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+          </>
+        )}
+      </div>
+
+      {cropImage && (
+        <AvatarCropModal
+          imageSrc={cropImage}
+          onCancel={() => setCropImage(null)}
+          onSave={handleCropSave}
+        />
       )}
-    </div>
+    </>
   );
 };
 
