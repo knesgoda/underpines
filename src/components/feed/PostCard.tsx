@@ -163,10 +163,10 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) 
             <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
               {post.content}
             </p>
-            {(post as any).image_url && (
+            {post.image_url && (
               <div className="mt-3 rounded-lg overflow-hidden" style={{ aspectRatio: '4/3', maxHeight: '400px' }}>
                 <img
-                  src={(post as any).image_url}
+                  src={post.image_url}
                   alt=""
                   className="w-full h-full object-cover"
                   loading="lazy"
