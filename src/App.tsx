@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import AppLayout from "@/components/navigation/AppLayout";
-import Index from "./pages/Index";
+import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import InviteLanding from "./pages/InviteLanding";
 import Onboarding from "./pages/Onboarding";
@@ -16,6 +16,7 @@ import Invites from "./pages/Invites";
 import Campfires from "./pages/Campfires";
 import Lantern from "./pages/Lantern";
 import SettingsPage from "./pages/SettingsPage";
+import StoryComposer from "./pages/StoryComposer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,7 +32,7 @@ const App = () => (
             <BrowserRouter>
               <AppLayout>
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/" element={<HomePage />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/invite/:slug" element={<InviteLanding />} />
                   <Route path="/onboarding" element={<Onboarding />} />
@@ -40,6 +41,7 @@ const App = () => (
                   <Route path="/campfires" element={<Campfires />} />
                   <Route path="/lantern" element={<Lantern />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/new/story" element={<StoryComposer />} />
                   <Route path="/:handle" element={<Cabin />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
