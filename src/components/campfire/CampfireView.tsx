@@ -329,10 +329,11 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
   if (isFlickerExpired) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center">
+        <div className="text-center max-w-xs">
           <p className="text-5xl mb-4">🕯️</p>
-          <p className="font-display text-lg text-foreground mb-1">This fire had its moment.</p>
-          <button onClick={onBack} className="mt-4 font-body text-sm text-primary hover:underline">← Back to Campfires</button>
+          <p className="font-display text-lg text-foreground mb-1">This Flicker has burned out.</p>
+          <p className="font-body text-sm text-muted-foreground mb-6">The warmth lingers, even after the light fades.</p>
+          <button onClick={onBack} className="font-body text-sm text-primary hover:underline">← Back to Campfires</button>
         </div>
       </div>
     );
@@ -372,6 +373,11 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
           <div className="flex items-center gap-2">
             <span className="text-sm">{campfire.campfire_type === 'flicker' ? '🕯️' : '🔥'}</span>
             <h2 className="font-body text-sm font-medium text-foreground truncate">{headerName}</h2>
+            {campfire.campfire_type === 'flicker' && flickerTimeLeft && flickerTimeLeft !== 'expired' && (
+              <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+                {flickerTimeLeft}
+              </span>
+            )}
           </div>
           {campfire.vibe && (
             <p className="font-body text-xs text-muted-foreground truncate">{campfire.vibe}</p>
@@ -433,13 +439,6 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
           </div>
         </div>
       </div>
-
-      {/* Flicker banner */}
-      {campfire.campfire_type === 'flicker' && flickerTimeLeft && (
-        <div className="px-4 py-2 bg-amber-light/20 text-center">
-          <p className="font-body text-xs text-foreground">🕯️ This Flicker burns out in {flickerTimeLeft}</p>
-        </div>
-      )}
 
       {/* Embers banner */}
       {campfire.is_embers && (
