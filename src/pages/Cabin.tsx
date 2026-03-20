@@ -13,6 +13,7 @@ import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import CabinAvatar from '@/components/cabin/CabinAvatar';
 import SuggestionBox from '@/components/cabin/SuggestionBox';
+import InviteRow from '@/components/cabin/InviteRow';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { getCurrentSeason } from '@/lib/weather';
 import { useWeather } from '@/hooks/useWeather';
@@ -308,6 +309,13 @@ const Cabin = () => {
           </button>
         )}
       </div>
+
+      {/* Mobile invite row for owner */}
+      {isOwner && isMobile && (
+        <div className="px-6 pt-4 md:hidden">
+          <InviteRow />
+        </div>
+      )}
 
       {/* === HOLLOW LAYOUT === */}
       {isHollow ? (

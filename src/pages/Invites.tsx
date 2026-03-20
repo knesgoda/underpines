@@ -2,14 +2,22 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Copy, TreePine } from 'lucide-react';
+import { Copy, TreePine, Share2, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { useSeedlingStatus } from '@/hooks/useSeedlingStatus';
+import UserAvatar from '@/components/UserAvatar';
 
 const THIRTY_DAYS_MS = 30 * 86400000;
+
+const EARNING_CRITERIA = [
+  'Publish your first 10 posts',
+  'Keep an active Campfire for 30 days',
+  'Be a Trailblazer in a Camp for 60 days',
+  'Reach your one-year anniversary',
+];
 
 const Invites = () => {
   const { user } = useAuth();
@@ -17,6 +25,7 @@ const Invites = () => {
   const [invite, setInvite] = useState<any>(null);
   const [invitees, setInvitees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
   const [sentSignals, setSentSignals] = useState<Set<string>>(new Set());
   const [sendingSignal, setSendingSignal] = useState<string | null>(null);
 
@@ -35,12 +44,11 @@ const Invites = () => {
 
         const { data: uses } = await supabase
           .from('invite_uses')
-          .select('*, invitee:invitee_id(id, display_name, handle, updated_at)')
+          .select('*, invitee:invitee_id(id, display_name, handle, avatar_url, default_avatar_key, updated_at)')
           .eq('invite_id', inv.id);
 
         setInvitees(uses || []);
 
-        // Check which invitees already got a smoke signal in last 30 days
         const inviteeIds = (uses || []).map((u: any) => u.invitee_id).filter(Boolean);
         if (inviteeIds.length > 0) {
           const thirtyAgo = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
@@ -68,7 +76,6 @@ const Invites = () => {
     if (!user || sendingSignal) return;
     setSendingSignal(inviteeId);
 
-    // Rate limit check
     const thirtyAgo = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
     const { data: recent } = await supabase
       .from('notifications')
@@ -103,9 +110,33 @@ const Invites = () => {
 
   if (loading) return <PineTreeLoading />;
 
-  const inviteUrl = invite ? `https://underpines.com/invite/${invite.slug}` : '';
-  const displayUrl = invite ? `underpines.com/invite/${invite.slug}` : '';
+  const inviteUrl = invite ? `https://underpines.lovable.app/invite/${invite.slug}` : '';
+  const displayUrl = invite ? `underpines.lovable.app/invite/${invite.slug}` : '';
   const thirtyDaysAgo = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
+  const hasInvites = invite?.is_infinite || (invite?.uses_remaining > 0);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(inviteUrl);
+    setCopied(true);
+    toast.success('Link copied. Choose wisely 🌲');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Join me on Under Pines',
+          text: 'I saved you a seat by the fire.',
+          url: inviteUrl,
+        });
+      } catch {
+        // User cancelled share
+      }
+    } else {
+      handleCopy();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background texture-paper">
@@ -115,7 +146,11 @@ const Invites = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-3xl font-display text-foreground mb-8">Your Invite Link</h1>
+          <h1 className="text-3xl font-display text-foreground mb-2">Invite someone to the Pines</h1>
+          <p className="text-sm font-body text-muted-foreground mb-8 leading-relaxed">
+            Everyone here was vouched for by a real person.{' '}
+            That's what keeps this place warm.
+          </p>
 
           {isSeedling ? (
             <div className="rounded-2xl bg-card p-6 shadow-soft border border-border">
@@ -123,39 +158,51 @@ const Invites = () => {
                 🌱 Your invite link will activate once your Cabin is ready — {daysLeft} {daysLeft === 1 ? 'day' : 'days'} to go.
               </p>
             </div>
-          ) : invite ? (
+          ) : hasInvites && invite ? (
             <div className="space-y-6">
-              <div className="rounded-2xl bg-card p-6 shadow-soft border border-border">
+              {/* Invite link card */}
+              <div className="rounded-2xl bg-card p-5 shadow-soft border border-border space-y-4">
                 <div className="flex items-center gap-3">
                   <span className="text-lg">🔗</span>
-                  <code className="text-sm font-body text-foreground flex-1 break-all">
+                  <code className="text-sm font-body text-foreground flex-1 break-all select-all">
                     {displayUrl}
                   </code>
+                </div>
+                <div className="flex gap-2">
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      navigator.clipboard.writeText(inviteUrl);
-                      toast.success('Link copied');
-                    }}
-                    className="shrink-0"
+                    onClick={handleCopy}
+                    className="flex-1 gap-2"
+                    variant={copied ? 'secondary' : 'default'}
                   >
-                    <Copy size={16} />
+                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                    {copied ? 'Copied' : 'Copy Link'}
                   </Button>
+                  {'share' in navigator && (
+                    <Button
+                      onClick={handleShare}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <Share2 size={16} />
+                      Share
+                    </Button>
+                  )}
                 </div>
               </div>
 
-              <p className="text-sm text-muted-foreground font-body">
-                {invite.is_infinite
-                  ? 'Unlimited invites remaining'
-                  : `${invite.uses_remaining} of ${invite.uses_total} invites remaining`}
-              </p>
+              {/* Counter */}
+              {!invite.is_infinite && (
+                <p className="text-sm text-muted-foreground font-body">
+                  You have {invite.uses_remaining} of {invite.uses_total} invites remaining
+                </p>
+              )}
 
+              {/* Invite tree preview */}
               <div className="mt-8">
-                <h3 className="text-lg font-display text-foreground mb-4">People you've invited</h3>
+                <h3 className="text-lg font-display text-foreground mb-4">Who you've brought to the Pines</h3>
                 {invitees.length === 0 ? (
                   <p className="text-sm text-muted-foreground font-body italic">
-                    Your invites haven't found their way into the forest yet.
+                    No one yet. Your first invite could be the start of something good.
                   </p>
                 ) : (
                   <div className="space-y-1">
@@ -166,6 +213,12 @@ const Invites = () => {
 
                       return (
                         <div key={inv.id} className="flex items-center gap-3 py-2.5 text-sm font-body">
+                          <UserAvatar
+                            avatarUrl={inv.invitee?.avatar_url}
+                            defaultAvatarKey={inv.invitee?.default_avatar_key}
+                            displayName={inv.invitee?.display_name}
+                            size={28}
+                          />
                           <span className="text-foreground">{inv.invitee?.display_name}</span>
                           <span className="text-muted-foreground">@{inv.invitee?.handle}</span>
                           <span className="ml-auto flex items-center gap-2">
@@ -200,13 +253,78 @@ const Invites = () => {
                 className="inline-flex items-center gap-2 text-sm font-body text-primary hover:text-primary/80 transition-colors mt-2"
               >
                 <TreePine size={14} />
-                View your invite tree
+                View your full invite tree
               </Link>
             </div>
+          ) : invite ? (
+            /* Zero invites state */
+            <div className="space-y-6">
+              <div className="rounded-2xl bg-card p-6 shadow-soft border border-border">
+                <p className="font-body text-sm text-foreground mb-4">
+                  Your invites are all out in the world. Here's how to earn more:
+                </p>
+                <ul className="space-y-2">
+                  {EARNING_CRITERIA.map((criterion) => (
+                    <li key={criterion} className="flex items-start gap-2 text-sm font-body text-muted-foreground">
+                      <span className="text-primary mt-0.5">🌲</span>
+                      {criterion}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Still show invite tree even with 0 invites */}
+              {invitees.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-lg font-display text-foreground mb-4">Who you've brought to the Pines</h3>
+                  <div className="space-y-1">
+                    {invitees.map((inv: any) => {
+                      const isInactive = inv.invitee?.updated_at && inv.invitee.updated_at < thirtyDaysAgo;
+                      return (
+                        <div key={inv.id} className="flex items-center gap-3 py-2.5 text-sm font-body">
+                          <UserAvatar
+                            avatarUrl={inv.invitee?.avatar_url}
+                            defaultAvatarKey={inv.invitee?.default_avatar_key}
+                            displayName={inv.invitee?.display_name}
+                            size={28}
+                          />
+                          <span className="text-foreground">{inv.invitee?.display_name}</span>
+                          <span className="text-muted-foreground">@{inv.invitee?.handle}</span>
+                          <span className="ml-auto">
+                            {isInactive ? (
+                              <span className="text-[10px] text-muted-foreground/50">inactive</span>
+                            ) : (
+                              <span className="text-[10px] text-primary/70">🔥 active</span>
+                            )}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <Link
+                    to="/invites/tree"
+                    className="inline-flex items-center gap-2 text-sm font-body text-primary hover:text-primary/80 transition-colors mt-3"
+                  >
+                    <TreePine size={14} />
+                    View your full invite tree
+                  </Link>
+                </div>
+              )}
+            </div>
           ) : (
-            <p className="text-sm text-muted-foreground font-body">
-              Your invite link will appear here once your account is fully set up.
-            </p>
+            <div className="rounded-2xl bg-card p-6 shadow-soft border border-border">
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                Your invites are coming soon. Here's how you'll earn them:
+              </p>
+              <ul className="space-y-2">
+                {EARNING_CRITERIA.map((criterion) => (
+                  <li key={criterion} className="flex items-start gap-2 text-sm font-body text-muted-foreground">
+                    <span className="text-primary mt-0.5">🌲</span>
+                    {criterion}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </motion.div>
       </div>
