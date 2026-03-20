@@ -23,6 +23,12 @@ const SettingsPage = () => {
           🌲 Subscription
         </button>
         <button
+          onClick={() => navigate('/settings/payouts')}
+          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
+        >
+          💰 Payouts
+        </button>
+        <button
           onClick={() => navigate('/settings/notifications')}
           className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
         >
