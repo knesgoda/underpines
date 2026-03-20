@@ -7,6 +7,7 @@ import { Home, Tent, Flame, Search, Settings, Plus, Users } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import LanternIcon from './LanternIcon';
+import UserAvatar from '@/components/UserAvatar';
 
 interface NavItem {
   label: string;
