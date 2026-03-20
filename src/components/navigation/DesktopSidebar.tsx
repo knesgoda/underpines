@@ -129,6 +129,8 @@ const DesktopSidebar = () => {
           <LanternIcon active={isActive('/lantern')} />
           <span>Lantern</span>
         </Link>
+        {/* Invite Friends */}
+        <InviteNavItem isActive={isActive} />
       </nav>
 
       <div className="px-3 pb-2">
