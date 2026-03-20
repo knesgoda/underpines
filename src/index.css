@@ -260,6 +260,12 @@
     overscroll-behavior-y: contain;
     touch-action: pan-y;
   }
+
+  /* 100dvh with fallback */
+  .h-dvh {
+    height: 100vh;
+    height: 100dvh;
+  }
 }
 
 /* Reduced motion */

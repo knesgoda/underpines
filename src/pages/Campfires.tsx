@@ -168,7 +168,7 @@ const Campfires = () => {
 
   // Desktop: split panel
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex" style={{ height: '100vh', height: '100dvh' }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-dvh">
       {/* Left panel */}
       <div className="w-[320px] border-r border-border flex flex-col shrink-0">
         <CampfireListHeader filter={filter} setFilter={setFilter} />
