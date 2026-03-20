@@ -19,6 +19,9 @@ import SettingsPage from "./pages/SettingsPage";
 import StoryComposer from "./pages/StoryComposer";
 import CirclesPage from "./pages/CirclesPage";
 import CircleSuggestions from "./pages/CircleSuggestions";
+import CollectionsList from "./pages/CollectionsList";
+import CollectionView from "./pages/CollectionView";
+import CollectionEditor from "./pages/CollectionEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +49,10 @@ const App = () => (
                   <Route path="/new/story" element={<StoryComposer />} />
                   <Route path="/circles" element={<CirclesPage />} />
                   <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
+                  <Route path="/collections/new" element={<CollectionEditor />} />
+                  <Route path="/collections/edit/:id" element={<CollectionEditor />} />
+                  <Route path="/:handle/collections" element={<CollectionsList />} />
+                  <Route path="/:handle/collections/:id" element={<CollectionView />} />
                   <Route path="/:handle" element={<Cabin />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

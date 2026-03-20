@@ -7,6 +7,8 @@ import WeatherScene from '@/components/cabin/WeatherScene';
 import CabinEditDrawer from '@/components/cabin/CabinEditDrawer';
 import WidgetShelf from '@/components/cabin/WidgetShelf';
 import CircleButton from '@/components/circles/CircleButton';
+import CollectionsShelf from '@/components/cabin/CollectionsShelf';
+import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { fetchWeather, getCurrentSeason } from '@/lib/weather';
@@ -230,16 +232,9 @@ const Cabin = () => {
             </div>
           )}
 
-          {/* Content placeholders */}
+          {/* Post History */}
           <div className="py-12 space-y-6">
-            <div
-              className="rounded-2xl p-8 text-center shadow-soft transition-colors duration-700"
-              style={{ backgroundColor: atmos.cardBg, borderColor: atmos.border, borderWidth: 1 }}
-            >
-              <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.35 }}>
-                Posts will live here. Phase 2.
-              </p>
-            </div>
+            <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
           </div>
 
           {!isOwner && user && (
@@ -307,24 +302,10 @@ const Cabin = () => {
           {/* Two-column content */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 pb-16">
             <div className="md:col-span-2 space-y-6">
-              <div
-                className="rounded-2xl p-8 text-center shadow-soft transition-colors duration-700"
-                style={{ backgroundColor: atmos.cardBg, borderColor: atmos.border, borderWidth: 1 }}
-              >
-                <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.4 }}>
-                  Posts will live here. Phase 2.
-                </p>
-              </div>
+              <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
             </div>
             <div className="space-y-6">
-              <div
-                className="rounded-2xl p-6 text-center shadow-soft transition-colors duration-700"
-                style={{ backgroundColor: atmos.cardBg, borderColor: atmos.border, borderWidth: 1 }}
-              >
-                <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.4 }}>
-                  Collections are coming soon.
-                </p>
-              </div>
+              <CollectionsShelf profileId={profile.id} handle={profile.handle} isOwner={isOwner} atmosphere={atmos} />
 
               {/* Widget Shelf in sidebar for Hearth */}
               {profile.is_pines_plus && (
