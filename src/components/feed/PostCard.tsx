@@ -122,6 +122,8 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="absolute right-0 top-full mt-1 w-44 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20"
                   >
+                    <MenuBtn onClick={() => { setQuoteOpen(true); setMenuOpen(false); }}><Quote size={14} /> Quote post</MenuBtn>
+                    <MenuBtn onClick={() => { setShareOpen(true); setMenuOpen(false); }}><Flame size={14} /> Share to Campfire</MenuBtn>
                     <MenuBtn onClick={handleCopyLink}><Copy size={14} /> Copy link</MenuBtn>
                     {isOwner && (
                       <>
