@@ -5,13 +5,17 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { OnboardingProvider } from "@/contexts/OnboardingContext";
-import Navbar from "@/components/Navbar";
+import { NavigationProvider } from "@/contexts/NavigationContext";
+import AppLayout from "@/components/navigation/AppLayout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import InviteLanding from "./pages/InviteLanding";
 import Onboarding from "./pages/Onboarding";
 import Cabin from "./pages/Cabin";
 import Invites from "./pages/Invites";
+import Campfires from "./pages/Campfires";
+import Lantern from "./pages/Lantern";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,23 +24,29 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <OnboardingProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/invite/:slug" element={<InviteLanding />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/cabin" element={<Cabin />} />
-              <Route path="/invites" element={<Invites />} />
-              <Route path="/:handle" element={<Cabin />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <NavigationProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <AppLayout>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/invite/:slug" element={<InviteLanding />} />
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/cabin" element={<Cabin />} />
+                  <Route path="/invites" element={<Invites />} />
+                  <Route path="/campfires" element={<Campfires />} />
+                  <Route path="/lantern" element={<Lantern />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/:handle" element={<Cabin />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AppLayout>
+            </BrowserRouter>
+          </TooltipProvider>
+        </NavigationProvider>
       </OnboardingProvider>
     </AuthProvider>
   </QueryClientProvider>
