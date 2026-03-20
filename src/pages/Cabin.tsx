@@ -61,6 +61,7 @@ const Cabin = () => {
   const [loading, setLoading] = useState(true);
   const [isOwner, setIsOwner] = useState(false);
   const [isInCircle, setIsInCircle] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
