@@ -129,7 +129,11 @@ const Campfires = () => {
 
   if (loading) return <PineTreeLoading />;
 
-  const selectedCampfire = campfires.find(c => c.id === selectedId);
+  const handleCreated = (id: string) => {
+    setShowNewSheet(false);
+    setSelectedId(id);
+    loadCampfires();
+  };
 
   // Mobile: show either list or chat
   if (isMobile) {
@@ -145,7 +149,7 @@ const Campfires = () => {
     }
 
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col h-dvh">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col" style={{ height: 'calc(100dvh - 56px)' }}>
         <CampfireListHeader filter={filter} setFilter={setFilter} />
         <div className="flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
           <CampfireList
@@ -156,12 +160,17 @@ const Campfires = () => {
             onStoke={(id) => { setStokeMode(true); setSelectedId(id); }}
           />
         </div>
-        <div className="p-4 border-t border-border">
-          <button onClick={() => setShowNewSheet(true)} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium">
-            <Plus size={16} /> Start a new Campfire
-          </button>
-        </div>
-        {showNewSheet && <NewCampfireSheet onClose={() => setShowNewSheet(false)} onCreated={(id) => { setShowNewSheet(false); setSelectedId(id); loadCampfires(); }} />}
+
+        {/* Mobile FAB */}
+        <button
+          onClick={() => setShowNewSheet(true)}
+          className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+          aria-label="Start a new Campfire"
+        >
+          <Flame size={22} />
+        </button>
+
+        {showNewSheet && <NewCampfireSheet onClose={() => setShowNewSheet(false)} onCreated={handleCreated} />}
       </motion.div>
     );
   }
@@ -208,7 +217,7 @@ const Campfires = () => {
         )}
       </div>
 
-      {showNewSheet && <NewCampfireSheet onClose={() => setShowNewSheet(false)} onCreated={(id) => { setShowNewSheet(false); setSelectedId(id); loadCampfires(); }} />}
+      {showNewSheet && <NewCampfireSheet onClose={() => setShowNewSheet(false)} onCreated={handleCreated} />}
     </motion.div>
   );
 };
@@ -258,9 +267,13 @@ const CampfireList = ({
 }) => {
   if (campfires.length === 0) {
     return (
-      <div className="text-center py-12 px-4">
-        <p className="text-3xl mb-2">🔥</p>
-        <p className="font-body text-sm text-muted-foreground">No campfires yet. Start one with someone from your Circle.</p>
+      <div className="flex-1 flex items-center justify-center py-16 px-6">
+        <div className="text-center">
+          <p className="text-3xl mb-3">🔥</p>
+          <p className="font-body text-sm text-muted-foreground">
+            No Campfires yet. Tap the flame to start one.
+          </p>
+        </div>
       </div>
     );
   }

@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
-import { X, Search } from 'lucide-react';
+import { X, Search, Loader2 } from 'lucide-react';
 
 interface Props {
   onClose: () => void;
@@ -68,7 +68,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
   };
 
   const handleNext = async () => {
-    if (selected.length === 0 || !user) return;
+    if (selected.length === 0 || !user || creating) return;
 
     if (selected.length === 1 && !isFlicker) {
       // Check for existing 1-on-1
@@ -107,7 +107,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
       // Create new 1-on-1
       setCreating(true);
       const otherMember = members.find(m => m.id === otherId);
-      const { data: newCf } = await supabase
+      const { data: newCf, error: cfError } = await supabase
         .from('campfires')
         .insert({
           campfire_type: 'one_on_one',
@@ -117,21 +117,34 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
         .select()
         .single();
 
-      if (newCf) {
-        await supabase.from('campfire_participants').insert([
-          { campfire_id: newCf.id, user_id: user.id },
-          { campfire_id: newCf.id, user_id: otherId },
-        ]);
-        onCreated(newCf.id);
+      if (cfError || !newCf) {
+        console.error('Campfire creation failed:', cfError);
+        toast.error("Couldn't light that fire. Give it a moment and try again.");
+        setCreating(false);
+        return;
       }
+
+      const { error: partError } = await supabase.from('campfire_participants').insert([
+        { campfire_id: newCf.id, user_id: user.id },
+        { campfire_id: newCf.id, user_id: otherId },
+      ]);
+
+      if (partError) {
+        console.error('Participant insert failed:', partError);
+        toast.error("Couldn't light that fire. Give it a moment and try again.");
+        setCreating(false);
+        return;
+      }
+
       setCreating(false);
+      onCreated(newCf.id);
       return;
     }
 
     if (isFlicker) {
       // Create flicker immediately
       setCreating(true);
-      const { data: newCf } = await supabase
+      const { data: newCf, error: cfError } = await supabase
         .from('campfires')
         .insert({
           campfire_type: 'flicker',
@@ -141,13 +154,26 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
         .select()
         .single();
 
-      if (newCf) {
-        await supabase.from('campfire_participants').insert(
-          [user.id, ...selected].map(uid => ({ campfire_id: newCf.id, user_id: uid }))
-        );
-        onCreated(newCf.id);
+      if (cfError || !newCf) {
+        console.error('Flicker creation failed:', cfError);
+        toast.error("Couldn't light that fire. Give it a moment and try again.");
+        setCreating(false);
+        return;
       }
+
+      const { error: partError } = await supabase.from('campfire_participants').insert(
+        [user.id, ...selected].map(uid => ({ campfire_id: newCf.id, user_id: uid }))
+      );
+
+      if (partError) {
+        console.error('Participant insert failed:', partError);
+        toast.error("Couldn't light that fire. Give it a moment and try again.");
+        setCreating(false);
+        return;
+      }
+
       setCreating(false);
+      onCreated(newCf.id);
       return;
     }
 
@@ -156,10 +182,10 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
   };
 
   const createGroup = async () => {
-    if (!user || !groupName.trim()) return;
+    if (!user || !groupName.trim() || creating) return;
     setCreating(true);
 
-    const { data: newCf } = await supabase
+    const { data: newCf, error: cfError } = await supabase
       .from('campfires')
       .insert({
         campfire_type: 'group',
@@ -170,13 +196,26 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
       .select()
       .single();
 
-    if (newCf) {
-      await supabase.from('campfire_participants').insert(
-        [user.id, ...selected].map(uid => ({ campfire_id: newCf.id, user_id: uid }))
-      );
-      onCreated(newCf.id);
+    if (cfError || !newCf) {
+      console.error('Group creation failed:', cfError);
+      toast.error("Couldn't light that fire. Give it a moment and try again.");
+      setCreating(false);
+      return;
     }
+
+    const { error: partError } = await supabase.from('campfire_participants').insert(
+      [user.id, ...selected].map(uid => ({ campfire_id: newCf.id, user_id: uid }))
+    );
+
+    if (partError) {
+      console.error('Participant insert failed:', partError);
+      toast.error("Couldn't light that fire. Give it a moment and try again.");
+      setCreating(false);
+      return;
+    }
+
     setCreating(false);
+    onCreated(newCf.id);
   };
 
   const filtered = members.filter(m =>
@@ -185,7 +224,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/30" onClick={creating ? undefined : onClose} />
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -195,7 +234,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
           <h3 className="font-body text-sm font-medium text-foreground">
             {step === 'pick' ? 'Start a Campfire with...' : 'Name this Campfire'}
           </h3>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
+          <button onClick={onClose} disabled={creating} className="text-muted-foreground hover:text-foreground disabled:opacity-40"><X size={18} /></button>
         </div>
 
         {step === 'pick' ? (
@@ -205,14 +244,16 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="Search your Circles..."
+                placeholder="Who do you want to sit with?"
                 className="w-full pl-8 pr-3 py-2 rounded-lg border border-border bg-background font-body text-sm outline-none"
               />
             </div>
 
-            <div className="max-h-[250px] overflow-y-auto space-y-1">
+            <div className="max-h-[250px] overflow-y-auto overscroll-y-contain space-y-1">
               {filtered.length === 0 ? (
-                <p className="text-sm font-body text-muted-foreground text-center py-4">No Circle members found.</p>
+                <p className="text-sm font-body text-muted-foreground text-center py-4">
+                  {members.length === 0 ? "Add someone to your Circle first." : "No one by that name in your Circle."}
+                </p>
               ) : (
                   filtered.map(m => {
                     const isSelected = selected.includes(m.id);
@@ -220,6 +261,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
                     return (
                     <button
                       key={m.id}
+                      type="button"
                       onClick={() => toggleSelect(m.id)}
                       disabled={disabled}
                       className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-3 ${
@@ -249,6 +291,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
                 <p className="font-body text-xs text-muted-foreground">Burns for 24 hours, then it's gone.</p>
               </div>
               <button
+                type="button"
                 onClick={() => setIsFlicker(!isFlicker)}
                 className={`w-11 h-6 rounded-full transition-colors ${isFlicker ? 'bg-primary' : 'bg-muted'}`}
               >
@@ -265,11 +308,17 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
             )}
 
             <button
+              type="button"
               onClick={handleNext}
               disabled={selected.length === 0 || creating}
-              className="w-full py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50"
+              className="w-full py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {creating ? 'Creating...' : selected.length <= 1 ? 'Start Campfire' : isFlicker ? 'Light it →' : 'Next →'}
+              {creating ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Lighting…
+                </>
+              ) : selected.length <= 1 ? 'Light the Campfire' : isFlicker ? 'Light it →' : 'Next →'}
             </button>
           </div>
         ) : (
@@ -288,13 +337,19 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
               className="w-full px-3 py-2 rounded-lg border border-border bg-background font-body text-sm outline-none"
             />
             <div className="flex gap-2">
-              <button onClick={() => setStep('pick')} className="flex-1 py-2.5 rounded-full border border-border font-body text-sm text-muted-foreground">Cancel</button>
+              <button type="button" onClick={() => setStep('pick')} disabled={creating} className="flex-1 py-2.5 rounded-full border border-border font-body text-sm text-muted-foreground disabled:opacity-50">Back</button>
               <button
+                type="button"
                 onClick={createGroup}
                 disabled={!groupName.trim() || creating}
-                className="flex-1 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {creating ? 'Creating...' : 'Light it →'}
+                {creating ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    Lighting…
+                  </>
+                ) : 'Light it →'}
               </button>
             </div>
           </div>
