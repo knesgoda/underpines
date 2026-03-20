@@ -203,8 +203,8 @@ const Cabin = () => {
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${atmos.background}, ${atmos.accent}30)` }} />
         )}
         <WeatherScene
-          weatherCode={weather?.weathercode ?? 0}
-          windSpeed={weather?.windspeed ?? 0}
+          weatherCode={weatherCode}
+          windSpeed={windSpeed}
           hour={currentHour}
           season={season}
           className="opacity-80"
