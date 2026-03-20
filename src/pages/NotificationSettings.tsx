@@ -165,6 +165,9 @@ const NotificationSettings = () => {
         </div>
       </div>
 
+      {/* Push Notifications */}
+      <PushNotificationsSection />
+
       {/* Always Daily Ember */}
       <div className="rounded-xl border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Always in Daily Ember only</p>
