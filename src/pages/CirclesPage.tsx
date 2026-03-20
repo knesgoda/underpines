@@ -12,6 +12,8 @@ interface CircleMember {
   id: string;
   display_name: string;
   handle: string;
+  avatar_url: string | null;
+  default_avatar_key: string | null;
   updated_at: string | null;
   circleId: string;
   direction: 'sent' | 'received';
