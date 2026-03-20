@@ -3,6 +3,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme, type AppTheme } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const themes: { key: AppTheme; label: string; emoji: string; description: string; preview: { bg: string; card: string; accent: string } }[] = [
   {
@@ -32,19 +34,31 @@ const SettingsPage = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const isMobile = useIsMobile();
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-2xl mx-auto px-4 py-8"
+      className="max-w-2xl mx-auto px-4 py-6 md:py-8"
     >
+      {/* Mobile back button */}
+      {isMobile && (
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground mb-4 -ml-1 min-h-[44px] min-w-[44px]"
+        >
+          <ArrowLeft size={18} />
+          <span className="font-body text-sm">Back</span>
+        </button>
+      )}
+
       <h1 className="font-display text-2xl text-foreground mb-6">⚙️ Settings</h1>
 
       {/* Theme picker */}
       <div className="mb-8">
         <p className="font-body text-sm text-muted-foreground mb-3">Theme</p>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {themes.map((t) => (
             <button
               key={t.key}
@@ -108,7 +122,7 @@ const SettingsPage = () => {
         <SettingsItem emoji="⭕" label="Circles" onClick={() => navigate('/circles')} />
       </SettingsSection>
 
-      <div className="pt-4">
+      <div className="pt-4 pb-8">
         <Button
           variant="ghost"
           onClick={() => { signOut(); navigate('/'); }}
@@ -133,7 +147,7 @@ const SettingsSection = ({ label, children }: { label: string; children: React.R
 const SettingsItem = ({ emoji, label, onClick }: { emoji: string; label: string; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="w-full text-left px-4 py-3 hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
+    className="w-full text-left px-4 py-3 hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2 min-h-[44px]"
   >
     <span>{emoji}</span> {label}
   </button>

@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { Home, Tent, Flame, Plus, Search } from 'lucide-react';
+import { Home, Tent, Flame, Plus, Settings } from 'lucide-react';
 import LanternIcon from './LanternIcon';
 
 interface TabItem {
@@ -29,7 +29,7 @@ const MobileTabBar = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-card border-t border-border md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="flex items-center justify-around h-14">
         {tabs.map((tab) => {
           if (tab.isComposer) {
@@ -50,7 +50,7 @@ const MobileTabBar = () => {
               <Link
                 key="lantern"
                 to="/lantern"
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[56px]"
+                className="flex flex-col items-center justify-center gap-0.5 min-w-[48px]"
               >
                 <LanternIcon active={active} />
                 <span className={`text-[10px] font-body ${active ? 'text-primary' : 'text-muted-foreground'}`}>
@@ -66,7 +66,7 @@ const MobileTabBar = () => {
             <Link
               key={tab.label}
               to={tab.path}
-              className="flex flex-col items-center justify-center gap-0.5 min-w-[56px]"
+              className="flex flex-col items-center justify-center gap-0.5 min-w-[48px]"
             >
               <TabIcon size={20} className={active ? 'text-primary' : 'text-muted-foreground'} />
               <span className={`text-[10px] font-body ${active ? 'text-primary' : 'text-muted-foreground'}`}>
@@ -75,6 +75,17 @@ const MobileTabBar = () => {
             </Link>
           );
         })}
+
+        {/* Settings tab */}
+        <Link
+          to="/settings"
+          className="flex flex-col items-center justify-center gap-0.5 min-w-[48px]"
+        >
+          <Settings size={20} className={isActive('/settings') ? 'text-primary' : 'text-muted-foreground'} />
+          <span className={`text-[10px] font-body ${isActive('/settings') ? 'text-primary' : 'text-muted-foreground'}`}>
+            Settings
+          </span>
+        </Link>
       </div>
     </nav>
   );
