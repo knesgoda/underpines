@@ -67,6 +67,13 @@ const Feed = () => {
     if (!user) return;
     setLoading(true);
 
+    // Get muted user IDs for frontend filtering
+    const { data: muteRows } = await supabase
+      .from('mutes')
+      .select('muted_id')
+      .eq('muter_id', user.id);
+    const mutedIds = new Set(muteRows?.map(m => m.muted_id) || []);
+
     const { data } = await supabase
       .from('posts')
       .select('*')
