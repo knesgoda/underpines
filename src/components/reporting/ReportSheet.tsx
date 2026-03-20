@@ -92,10 +92,7 @@ const ReportSheet = ({
         {submitted ? (
           <div className="py-12 text-center space-y-3">
             <p className="font-body text-base text-foreground">
-              Thank you for looking out for the community.
-            </p>
-            <p className="font-body text-sm text-muted-foreground">
-              We'll review this carefully.
+              Thank you. We'll look into this quietly.
             </p>
             <Button variant="ghost" onClick={handleClose} className="mt-4 font-body">
               Close
