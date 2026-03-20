@@ -55,24 +55,57 @@ const NotificationSettings = () => {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from('notification_preferences')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) {
-          setPrefs({
-            quiet_mode: data.quiet_mode ?? false,
-            ember_delivery_time: data.ember_delivery_time ?? '07:00:00',
-            ember_timezone: data.ember_timezone ?? defaults.ember_timezone,
-            notify_circle_requests: data.notify_circle_requests ?? true,
-            notify_invite_accepted: data.notify_invite_accepted ?? true,
-            notify_smoke_signals: data.notify_smoke_signals ?? true,
-          });
-        }
-        setLoading(false);
-      });
+    const loadAll = async () => {
+      const { data } = await supabase
+        .from('notification_preferences')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (data) {
+        setPrefs({
+          quiet_mode: data.quiet_mode ?? false,
+          ember_delivery_time: data.ember_delivery_time ?? '07:00:00',
+          ember_timezone: data.ember_timezone ?? defaults.ember_timezone,
+          notify_circle_requests: data.notify_circle_requests ?? true,
+          notify_invite_accepted: data.notify_invite_accepted ?? true,
+          notify_smoke_signals: data.notify_smoke_signals ?? true,
+        });
+      }
+
+      // Load user's campfires with notification prefs
+      const { data: participants } = await supabase
+        .from('campfire_participants')
+        .select('campfire_id')
+        .eq('user_id', user.id);
+
+      if (participants && participants.length > 0) {
+        const cfIds = participants.map(p => p.campfire_id);
+        const { data: cfData } = await supabase
+          .from('campfires')
+          .select('id, name')
+          .in('id', cfIds)
+          .eq('is_active', true);
+
+        const { data: notifPrefs } = await supabase
+          .from('campfire_notification_prefs')
+          .select('campfire_id, notify_realtime')
+          .eq('user_id', user.id);
+
+        const prefMap = new Map(notifPrefs?.map(p => [p.campfire_id, p.notify_realtime ?? false]) || []);
+
+        setCampfires(
+          (cfData || []).map(cf => ({
+            id: cf.id,
+            name: cf.name,
+            notify_realtime: prefMap.get(cf.id) ?? false,
+          }))
+        );
+      }
+
+      setLoading(false);
+    };
+    loadAll();
   }, [user]);
 
   const save = async (updates: Partial<Prefs>) => {
