@@ -19,6 +19,9 @@ import SettingsPage from "./pages/SettingsPage";
 import StoryComposer from "./pages/StoryComposer";
 import CirclesPage from "./pages/CirclesPage";
 import CircleSuggestions from "./pages/CircleSuggestions";
+import CollectionsList from "./pages/CollectionsList";
+import CollectionView from "./pages/CollectionView";
+import CollectionEditor from "./pages/CollectionEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
