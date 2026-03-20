@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, Copy, Trash2, Quote, Flame } from 'lucide-react';
+import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/time';
 import ReactionBar from './ReactionBar';
 import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
+import ReportSheet from '@/components/reporting/ReportSheet';
 import { toast } from 'sonner';
 
 export interface PostWithAuthor {
@@ -41,6 +42,7 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
   const [reactions, setReactions] = useState(post.reactions || []);
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isOwner = user?.id === post.author_id;
   const accent = post.author?.accent_color || 'hsl(var(--primary))';
@@ -125,6 +127,12 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
                     <MenuBtn onClick={() => { setQuoteOpen(true); setMenuOpen(false); }}><Quote size={14} /> Quote post</MenuBtn>
                     <MenuBtn onClick={() => { setShareOpen(true); setMenuOpen(false); }}><Flame size={14} /> Share to Campfire</MenuBtn>
                     <MenuBtn onClick={handleCopyLink}><Copy size={14} /> Copy link</MenuBtn>
+                    {!isOwner && (
+                      <>
+                        <div className="h-px bg-border" />
+                        <MenuBtn onClick={() => { setReportOpen(true); setMenuOpen(false); }}><Flag size={14} /> Report</MenuBtn>
+                      </>
+                    )}
                     {isOwner && (
                       <>
                         <div className="h-px bg-border" />
@@ -246,6 +254,12 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
         postId={post.id}
         open={shareOpen}
         onClose={() => setShareOpen(false)}
+      />
+      <ReportSheet
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        reportedPostId={post.id}
+        reportedUserId={post.author_id}
       />
     </motion.div>
   );

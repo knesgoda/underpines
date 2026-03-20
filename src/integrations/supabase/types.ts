@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      block_threshold_log: {
+        Row: {
+          block_count: number | null
+          blocked_user_id: string
+          id: string
+          last_action_taken: string | null
+          last_checked: string | null
+          qualified_block_count: number | null
+        }
+        Insert: {
+          block_count?: number | null
+          blocked_user_id: string
+          id?: string
+          last_action_taken?: string | null
+          last_checked?: string | null
+          qualified_block_count?: number | null
+        }
+        Update: {
+          block_count?: number | null
+          blocked_user_id?: string
+          id?: string
+          last_action_taken?: string | null
+          last_checked?: string | null
+          qualified_block_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "block_threshold_log_blocked_user_id_fkey"
+            columns: ["blocked_user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blocks: {
         Row: {
           blocked_id: string
@@ -1417,6 +1452,61 @@ export type Database = {
           },
         ]
       }
+      moderation_actions: {
+        Row: {
+          action_detail: string | null
+          action_type: string
+          admin_id: string
+          created_at: string | null
+          id: string
+          report_id: string | null
+          suspension_days: number | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action_detail?: string | null
+          action_type: string
+          admin_id: string
+          created_at?: string | null
+          id?: string
+          report_id?: string | null
+          suspension_days?: number | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action_detail?: string | null
+          action_type?: string
+          admin_id?: string
+          created_at?: string | null
+          id?: string
+          report_id?: string | null
+          suspension_days?: number | null
+          target_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_actions_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mutes: {
         Row: {
           created_at: string | null
@@ -1937,6 +2027,160 @@ export type Database = {
           },
         ]
       }
+      reporter_patterns: {
+        Row: {
+          cleared_reports: number | null
+          flagged_as_serial: boolean | null
+          id: string
+          last_updated: string | null
+          reporter_id: string
+          total_reports: number | null
+        }
+        Insert: {
+          cleared_reports?: number | null
+          flagged_as_serial?: boolean | null
+          id?: string
+          last_updated?: string | null
+          reporter_id: string
+          total_reports?: number | null
+        }
+        Update: {
+          cleared_reports?: number | null
+          flagged_as_serial?: boolean | null
+          id?: string
+          last_updated?: string | null
+          reporter_id?: string
+          total_reports?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reporter_patterns_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reports: {
+        Row: {
+          ai_category: string | null
+          ai_confidence: number | null
+          ai_reasoning: string | null
+          ai_recommended_action: string | null
+          ai_severity: string | null
+          content_hidden: boolean | null
+          created_at: string | null
+          id: string
+          report_reason: string
+          reported_camp_id: string | null
+          reported_camp_post_id: string | null
+          reported_campfire_message_id: string | null
+          reported_post_id: string | null
+          reported_user_id: string | null
+          reporter_context: string | null
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_note: string | null
+          status: string | null
+        }
+        Insert: {
+          ai_category?: string | null
+          ai_confidence?: number | null
+          ai_reasoning?: string | null
+          ai_recommended_action?: string | null
+          ai_severity?: string | null
+          content_hidden?: boolean | null
+          created_at?: string | null
+          id?: string
+          report_reason: string
+          reported_camp_id?: string | null
+          reported_camp_post_id?: string | null
+          reported_campfire_message_id?: string | null
+          reported_post_id?: string | null
+          reported_user_id?: string | null
+          reporter_context?: string | null
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          status?: string | null
+        }
+        Update: {
+          ai_category?: string | null
+          ai_confidence?: number | null
+          ai_reasoning?: string | null
+          ai_recommended_action?: string | null
+          ai_severity?: string | null
+          content_hidden?: boolean | null
+          created_at?: string | null
+          id?: string
+          report_reason?: string
+          reported_camp_id?: string | null
+          reported_camp_post_id?: string | null
+          reported_campfire_message_id?: string | null
+          reported_post_id?: string | null
+          reported_user_id?: string | null
+          reporter_context?: string | null
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reported_camp_id_fkey"
+            columns: ["reported_camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_camp_post_id_fkey"
+            columns: ["reported_camp_post_id"]
+            isOneToOne: false
+            referencedRelation: "camp_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_campfire_message_id_fkey"
+            columns: ["reported_campfire_message_id"]
+            isOneToOne: false
+            referencedRelation: "campfire_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_post_id_fkey"
+            columns: ["reported_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seedling_periods: {
         Row: {
           ends_at: string
@@ -1985,15 +2229,85 @@ export type Database = {
           },
         ]
       }
+      suspensions: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_permanent: boolean | null
+          reason: string
+          suspended_by: string
+          suspended_until: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_permanent?: boolean | null
+          reason: string
+          suspended_by: string
+          suspended_until?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_permanent?: boolean | null
+          reason?: string
+          suspended_by?: string
+          suspended_until?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suspensions_suspended_by_fkey"
+            columns: ["suspended_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suspensions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2120,6 +2434,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator"],
+    },
   },
 } as const
