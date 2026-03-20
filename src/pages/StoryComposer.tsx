@@ -136,6 +136,12 @@ const StoryComposer = () => {
 
   if (!editor) return null;
 
+  if (isSeedling) {
+    toast.info(`Your Cabin is still getting ready. Stories unlock in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`);
+    navigate('/');
+    return null;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}

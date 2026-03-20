@@ -57,7 +57,13 @@ const Invites = () => {
         >
           <h1 className="text-3xl font-display text-foreground mb-8">Your Invite Link</h1>
 
-          {invite ? (
+          {isSeedling ? (
+            <div className="rounded-2xl bg-card p-6 shadow-soft border border-border">
+              <p className="font-body text-sm text-muted-foreground">
+                🌱 Your invite link will activate once your Cabin is ready — {daysLeft} {daysLeft === 1 ? 'day' : 'days'} to go.
+              </p>
+            </div>
+          ) : invite ? (
             <div className="space-y-6">
               <div className="rounded-2xl bg-card p-6 shadow-soft border border-border">
                 <div className="flex items-center gap-3">
