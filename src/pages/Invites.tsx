@@ -6,6 +6,7 @@ import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { useSeedlingStatus } from '@/hooks/useSeedlingStatus';
 
 const Invites = () => {
   const { user } = useAuth();
