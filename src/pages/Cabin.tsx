@@ -60,10 +60,11 @@ const Cabin = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [isInCircle, setIsInCircle] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [weatherReady, setWeatherReady] = useState(false);
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
+
+  const { weatherCode, windSpeed, temperature } = useWeather(profile?.latitude, profile?.longitude);
 
   // Load preview design from sessionStorage
   useEffect(() => {
