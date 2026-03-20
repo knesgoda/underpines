@@ -226,21 +226,32 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) 
         )}
 
         {/* Quoted post */}
-        {post.is_quote_post && post.quoted_post && (
-          <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-body text-xs font-medium text-foreground">
-                {post.quoted_post.author?.display_name}
-              </span>
-              <span className="text-xs font-body text-muted-foreground">
-                · {formatTimeAgo(post.quoted_post.created_at)}
-              </span>
+        {post.is_quote_post && post.quoted_post && (() => {
+          const quotedAuthorId = post.quoted_post.author_id;
+          const canSeeQuote = quotedAuthorId === user?.id || circleIds.includes(quotedAuthorId);
+
+          return canSeeQuote ? (
+            <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-body text-xs font-medium text-foreground">
+                  {post.quoted_post.author?.display_name}
+                </span>
+                <span className="text-xs font-body text-muted-foreground">
+                  · {formatTimeAgo(post.quoted_post.created_at)}
+                </span>
+              </div>
+              <p className="font-body text-xs text-foreground/70 line-clamp-2">
+                {post.quoted_post.post_type === 'story' ? post.quoted_post.title : post.quoted_post.content}
+              </p>
             </div>
-            <p className="font-body text-xs text-foreground/70 line-clamp-2">
-              {post.quoted_post.post_type === 'story' ? post.quoted_post.title : post.quoted_post.content}
-            </p>
-          </div>
-        )}
+          ) : (
+            <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3 opacity-50">
+              <p className="font-body text-xs text-muted-foreground italic">
+                A post from someone outside your Circles.
+              </p>
+            </div>
+          );
+        })()}
 
         {/* Actions */}
         <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/50">
