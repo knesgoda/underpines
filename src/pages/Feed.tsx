@@ -461,7 +461,7 @@ const Feed = () => {
                 </div>
               </motion.div>
             )}
-            <PostCard post={post} circleIds={circleIds} onRemove={handleRemovePost} onRefresh={loadPosts} />
+            <PostCard post={post} circleIds={circleIds} onRemove={handleRemovePost} onRefresh={loadPosts} onImageClick={(imgs, idx) => setLightbox({ open: true, images: imgs, index: idx })} />
           </div>
         ))}
       </AnimatePresence>
