@@ -42,7 +42,7 @@ const Invites = () => {
 
   if (loading) return <PineTreeLoading />;
 
-  const inviteUrl = invite ? `${window.location.origin}/invite/${invite.slug}` : '';
+  const inviteUrl = invite ? `https://underpines.com/invite/${invite.slug}` : '';
   const displayUrl = invite ? `underpines.com/invite/${invite.slug}` : '';
 
   return (
