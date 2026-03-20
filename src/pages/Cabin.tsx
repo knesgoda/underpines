@@ -280,7 +280,7 @@ const Cabin = () => {
                   <h1 className="text-3xl md:text-4xl font-display text-white drop-shadow-md">
                     {profile.display_name}
                   </h1>
-                  {profile.is_pines_plus && <span title="Pines+" className="text-lg">🌲</span>}
+                  {profile.is_pines_plus && <PineConeBadge className="w-4 h-4" />}
                 </div>
                 <p className="text-sm font-body text-white/60 mt-0.5">@{profile.handle}</p>
                 {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
