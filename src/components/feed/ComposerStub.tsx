@@ -5,12 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import SparkComposer from './SparkComposer';
 import EmberComposer from './EmberComposer';
+import UserAvatar from '@/components/UserAvatar';
 
 type PostType = 'spark' | 'story' | 'ember' | null;
 
 interface ComposerStubProps {
   onPost: (post: any) => void;
-  profile: { display_name: string } | null;
+  profile: { display_name: string; avatar_url?: string | null; default_avatar_key?: string | null } | null;
 }
 
 const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
