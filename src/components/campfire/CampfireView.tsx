@@ -51,11 +51,10 @@ interface Props {
   campfireId: string;
   onBack: () => void;
   onRefreshList: () => void;
+  autoFocusInput?: boolean;
 }
 
-const REACTIONS = ['🔥', '🌲', '💚', '😂', '👀', '🫂', '🌧️', '✨'];
-
-const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
+const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput }: Props) => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [campfire, setCampfire] = useState<CampfireData | null>(null);
