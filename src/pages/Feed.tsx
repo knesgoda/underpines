@@ -37,6 +37,11 @@ const Feed = () => {
   const scrollTimerRef = useRef(0);
   const scrollIntervalRef = useRef<number | null>(null);
   const nudgeDismissedUntilRef = useRef<number>(0);
+  const feedRef = useRef<HTMLDivElement>(null);
+  const [pullY, setPullY] = useState(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const pullStartRef = useRef<number | null>(null);
 
   // Load profile + preferences
   useEffect(() => {
