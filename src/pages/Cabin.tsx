@@ -118,7 +118,7 @@ const Cabin = () => {
         setIsInCircle(true);
       }
 
-      setWeatherReady(true);
+      
       if (user && user.id !== data.id) {
         await supabase.from('cabin_visits').upsert(
           { profile_id: data.id, visit_date: new Date().toISOString().split('T')[0], visit_count: 1 },
