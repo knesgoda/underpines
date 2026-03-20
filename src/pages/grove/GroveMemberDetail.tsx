@@ -96,7 +96,7 @@ const GroveMemberDetail = () => {
 
       <div className="flex items-center gap-4">
         <div className="w-14 h-14 rounded-full bg-[hsl(var(--pine-mid)/0.3)] flex items-center justify-center text-lg text-[hsl(var(--pine-light)/0.5)]">
-          {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="w-full h-full rounded-full object-cover" /> : profile.display_name?.charAt(0)?.toUpperCase()}
+          {profile.display_name?.charAt(0)?.toUpperCase()}
         </div>
         <div>
           <h1 className="font-display text-lg font-bold text-[hsl(var(--pine-pale))]">{profile.handle}</h1>

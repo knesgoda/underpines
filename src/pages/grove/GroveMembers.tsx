@@ -75,11 +75,7 @@ const GroveMembers = () => {
               className="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-[hsl(var(--pine-mid)/0.15)] transition-colors"
             >
               <div className="w-9 h-9 rounded-full bg-[hsl(var(--pine-mid)/0.3)] flex items-center justify-center text-xs text-[hsl(var(--pine-light)/0.5)]">
-                {m.avatar_url ? (
-                  <img src={m.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
-                ) : (
-                  m.display_name.charAt(0).toUpperCase()
-                )}
+                {m.display_name.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-[hsl(var(--pine-pale))] truncate">{m.handle}</p>
