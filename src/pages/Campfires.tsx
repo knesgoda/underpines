@@ -33,6 +33,7 @@ const Campfires = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterTab>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [stokeMode, setStokeMode] = useState(false);
   const [showNewSheet, setShowNewSheet] = useState(false);
 
   const loadCampfires = useCallback(async () => {
