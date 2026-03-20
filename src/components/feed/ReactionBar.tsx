@@ -26,7 +26,6 @@ const ReactionBar = ({ postId, reactions, onReactionChange }: ReactionBarProps) 
   const fanRef = useRef<HTMLDivElement>(null);
 
   const myReaction = reactions.find(r => r.user_id === user?.id);
-  const uniqueTypes = [...new Set(reactions.map(r => r.reaction_type))];
 
   useEffect(() => {
     const handle = (e: MouseEvent) => {
