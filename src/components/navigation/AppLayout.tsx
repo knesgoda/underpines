@@ -2,6 +2,9 @@ import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import DesktopSidebar from './DesktopSidebar';
 import MobileTabBar from './MobileTabBar';
+import OfflineBanner from '@/components/pwa/OfflineBanner';
+import InstallPrompt from '@/components/pwa/InstallPrompt';
+import UpdatePrompt from '@/components/pwa/UpdatePrompt';
 
 const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
@@ -17,11 +20,22 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const showNav = user && !isFullScreen;
 
   if (!showNav) {
-    return <>{children}</>;
+    return (
+      <>
+        <OfflineBanner />
+        <InstallPrompt />
+        <UpdatePrompt />
+        {children}
+      </>
+    );
   }
 
   return (
     <div className="min-h-screen">
+      <OfflineBanner />
+      <InstallPrompt />
+      <UpdatePrompt />
+
       {/* Desktop sidebar */}
       <div className="hidden md:block">
         <DesktopSidebar />
