@@ -125,6 +125,14 @@ const NotificationSettings = () => {
     setSaving(false);
   };
 
+  const toggleCampfireNotif = async (campfireId: string, value: boolean) => {
+    if (!user) return;
+    setCampfires(prev => prev.map(cf => cf.id === campfireId ? { ...cf, notify_realtime: value } : cf));
+    await supabase
+      .from('campfire_notification_prefs')
+      .upsert({ user_id: user.id, campfire_id: campfireId, notify_realtime: value }, { onConflict: 'user_id,campfire_id' } as any);
+  };
+
   if (loading) return <PineTreeLoading />;
 
   return (
