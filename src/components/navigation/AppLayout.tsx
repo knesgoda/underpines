@@ -1,14 +1,17 @@
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSuspensionCheck } from '@/hooks/useSuspensionCheck';
+import { supabase } from '@/integrations/supabase/client';
 import DesktopSidebar from './DesktopSidebar';
 import MobileTabBar from './MobileTabBar';
 import OfflineBanner from '@/components/pwa/OfflineBanner';
 import InstallPrompt from '@/components/pwa/InstallPrompt';
 import UpdatePrompt from '@/components/pwa/UpdatePrompt';
 import SuspendedPage from '@/pages/Suspended';
+import AgeGateInterstitial from '@/components/onboarding/AgeGateInterstitial';
 
-const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story'];
+const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story', '/privacy', '/terms'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
