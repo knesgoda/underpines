@@ -320,7 +320,7 @@ const Cabin = () => {
             style={{ backgroundColor: atmos.cardBg, borderColor: atmos.border, borderWidth: 1 }}
           >
             {/* Avatar overlapping header/card boundary */}
-            <div className="absolute" style={{ top: -40, left: 24 }}>
+            <div className="absolute" style={{ top: isMobile ? -40 : -48, left: 24 }}>
               <CabinAvatar
                 avatarUrl={profile.avatar_url}
                 defaultAvatarKey={profile.default_avatar_key}
