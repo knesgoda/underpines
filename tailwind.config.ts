@@ -60,7 +60,14 @@ export default {
         },
         amber: {
           deep: "hsl(var(--amber-deep))",
+          mid: "hsl(var(--amber-mid))",
           light: "hsl(var(--amber-light))",
+          glow: "hsl(var(--amber-glow))",
+        },
+        dusk: {
+          deep: "hsl(var(--dusk-deep))",
+          mid: "hsl(var(--dusk-mid))",
+          warm: "hsl(var(--dusk-warm))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
