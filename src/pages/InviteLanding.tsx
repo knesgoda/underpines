@@ -72,7 +72,7 @@ const InviteLanding = () => {
           </svg>
 
           <h2 className="text-2xl font-display text-pine-light mb-4">
-            This fire has burned out.
+            This fire's burned out.
           </h2>
           <p className="text-pine-light/60 font-body text-sm">
             Know someone on Under Pines?<br />
