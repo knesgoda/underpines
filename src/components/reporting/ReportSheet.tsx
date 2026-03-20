@@ -120,7 +120,7 @@ const ReportSheet = ({
 
               <div>
                 <Textarea
-                  placeholder="It helps us understand what you saw"
+                  placeholder="Add context if you'd like (optional)"
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
                   className="font-body text-sm resize-none"
