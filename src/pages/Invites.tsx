@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Copy } from 'lucide-react';
+import { Copy, TreePine } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { useSeedlingStatus } from '@/hooks/useSeedlingStatus';
 
