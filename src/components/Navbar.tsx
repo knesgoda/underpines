@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import logo from '@/assets/logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -39,12 +40,7 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-6" style={{ background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(12px)', borderBottom: '1px solid hsl(var(--border))' }}>
       <Link to="/cabin" className="flex items-center gap-2 text-foreground hover:opacity-80 transition-opacity">
-        <svg width="20" height="28" viewBox="0 0 48 72">
-          <path d="M24 4 L14 24 L34 24 Z" fill="hsl(var(--pine-dark))" opacity="0.9" />
-          <path d="M24 14 L10 38 L38 38 Z" fill="hsl(var(--pine-dark))" opacity="0.7" />
-          <path d="M24 26 L6 52 L42 52 Z" fill="hsl(var(--pine-dark))" opacity="0.5" />
-          <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--amber-deep))" opacity="0.5" />
-        </svg>
+        <img src={logo} alt="Under Pines" className="w-8 h-8 rounded-full object-cover" />
         <span className="font-display text-base font-medium">Under Pines</span>
       </Link>
 
