@@ -55,6 +55,21 @@ const Cabin = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [weather, setWeather] = useState<any>(null);
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
+  const [previewDesign, setPreviewDesign] = useState<any>(null);
+
+  // Load preview design from sessionStorage
+  useEffect(() => {
+    if (previewMode) {
+      const raw = sessionStorage.getItem('cabin_preview_design');
+      if (raw) {
+        setPreviewDesign(JSON.parse(raw));
+      }
+    }
+    return () => {
+      // Clean up preview on unmount
+      sessionStorage.removeItem('cabin_preview_design');
+    };
+  }, [previewMode]);
 
   useEffect(() => {
     if (upgraded && !sessionStorage.getItem('pines_upgrade_shown')) {
