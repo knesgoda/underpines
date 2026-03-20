@@ -432,6 +432,7 @@ const CirclesPage = () => {
       </div>
     </motion.div>
   );
+};
 
 const EmptyState = ({ icon, text }: { icon: string; text: string }) => (
   <div className="text-center py-12">
