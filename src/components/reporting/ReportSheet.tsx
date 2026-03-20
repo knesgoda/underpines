@@ -92,10 +92,7 @@ const ReportSheet = ({
         {submitted ? (
           <div className="py-12 text-center space-y-3">
             <p className="font-body text-base text-foreground">
-              Thank you for looking out for the community.
-            </p>
-            <p className="font-body text-sm text-muted-foreground">
-              We'll review this carefully.
+              Thank you. We'll look into this quietly.
             </p>
             <Button variant="ghost" onClick={handleClose} className="mt-4 font-body">
               Close
@@ -103,11 +100,11 @@ const ReportSheet = ({
           </div>
         ) : (
           <>
-            <SheetHeader>
-              <SheetTitle className="font-display text-lg">
-                Is something wrong with this?
-              </SheetTitle>
-            </SheetHeader>
+             <SheetHeader>
+               <SheetTitle className="font-display text-lg">
+                 Flag something for the community's health
+               </SheetTitle>
+             </SheetHeader>
 
             <div className="mt-5 space-y-5">
               <RadioGroup value={reason} onValueChange={setReason}>
@@ -123,7 +120,7 @@ const ReportSheet = ({
 
               <div>
                 <Textarea
-                  placeholder="It helps us understand what you saw"
+                  placeholder="Add context if you'd like (optional)"
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
                   className="font-body text-sm resize-none"
