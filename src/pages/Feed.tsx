@@ -354,11 +354,10 @@ const Feed = () => {
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl bg-card border border-border p-6 mb-3 text-center"
+                className="rounded-2xl bg-card border border-primary/20 p-6 mb-3 text-center"
               >
-                <p className="text-2xl mb-2">🌲</p>
-                <p className="font-body text-sm text-foreground">You've been here a while.</p>
-                <p className="font-body text-sm text-muted-foreground mb-4">Maybe a good time for a walk.</p>
+                <p className="font-body text-sm text-foreground mb-1">You've been here a while.</p>
+                <p className="font-body text-sm text-muted-foreground mb-4">Maybe a good time for a walk. 🌲</p>
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={() => dismissNudge(2)}
@@ -368,14 +367,12 @@ const Feed = () => {
                   </button>
                   <button
                     onClick={() => {
-                      try { window.close(); } catch {
-                        dismissNudge(2);
-                        // toast instead
-                      }
+                      dismissNudge(2);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
                   >
-                    Close the app
+                    Take a break
                   </button>
                 </div>
               </motion.div>
