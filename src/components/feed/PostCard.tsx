@@ -39,6 +39,8 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
   const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [reactions, setReactions] = useState(post.reactions || []);
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isOwner = user?.id === post.author_id;
   const accent = post.author?.accent_color || 'hsl(var(--primary))';
