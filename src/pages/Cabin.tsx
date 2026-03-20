@@ -346,7 +346,7 @@ const Cabin = () => {
             {profile.mantra && (
               <p className="text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>
             )}
-            <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} />
+            <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} />
             {profile.bio && <p className="text-sm font-body max-w-xl" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
             <CabinPinnedSong profile={profile} atmos={atmos} />
           </div>
