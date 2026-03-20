@@ -493,6 +493,7 @@ const Cabin = () => {
   );
 };
 
+  const { weatherCode, windSpeed, temperature } = useWeather(profile.latitude, profile.longitude);
 
 const CabinMoreMenu = ({
   targetUserId,
