@@ -9,7 +9,7 @@ interface CabinAvatarProps {
   avatarUrl: string | null;
   defaultAvatarKey: string | null;
   isOwner: boolean;
-  isEditing: boolean;
+  isEditing?: boolean;
   profileId: string;
   onUpdate: () => void;
   size?: 'sm' | 'lg';
@@ -19,13 +19,13 @@ const CabinAvatar = ({
   avatarUrl,
   defaultAvatarKey,
   isOwner,
-  isEditing,
   profileId,
   onUpdate,
   size = 'lg',
 }: CabinAvatarProps) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [cropImage, setCropImage] = useState<string | null>(null);
+  const [hovered, setHovered] = useState(false);
   const src = getAvatarSrc(avatarUrl, defaultAvatarKey);
   const px = size === 'lg' ? 96 : 80;
 
@@ -45,8 +45,6 @@ const CabinAvatar = ({
     const reader = new FileReader();
     reader.onload = () => setCropImage(reader.result as string);
     reader.readAsDataURL(file);
-
-    // Reset so re-selecting same file triggers change
     e.target.value = '';
   };
 
@@ -73,39 +71,70 @@ const CabinAvatar = ({
 
   return (
     <>
-      <div className="relative" style={{ width: px, height: px }}>
+      <div
+        className="relative group"
+        style={{
+          width: px,
+          height: px,
+          borderRadius: '50%',
+          border: '3px solid white',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          overflow: 'hidden',
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         <img
           src={src}
           alt="Profile avatar"
-          className="rounded-full object-cover object-center"
           style={{
-            width: px,
-            height: px,
-            border: '3px solid white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center',
+            display: 'block',
+            borderRadius: '50%',
           }}
         />
-        {isOwner && isEditing && (
-          <>
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="absolute bottom-0 right-0 flex items-center justify-center rounded-full transition-opacity hover:opacity-90"
-              style={{
-                width: 26,
-                height: 26,
-                backgroundColor: 'rgba(0,0,0,0.6)',
-              }}
-            >
-              <Camera size={13} color="white" />
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/jpeg,image/png"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-          </>
+
+        {/* Owner hover overlay — dims image with centered camera */}
+        {isOwner && hovered && (
+          <div
+            className="absolute inset-0 flex items-center justify-center cursor-pointer"
+            style={{ backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: '50%' }}
+            onClick={() => fileRef.current?.click()}
+          >
+            <Camera size={22} color="white" />
+          </div>
+        )}
+
+        {/* Camera badge — always visible for owner */}
+        {isOwner && (
+          <button
+            onClick={() => fileRef.current?.click()}
+            className="absolute flex items-center justify-center rounded-full"
+            style={{
+              width: 28,
+              height: 28,
+              bottom: 2,
+              right: 2,
+              backgroundColor: 'rgba(0,0,0,0.65)',
+              border: '2px solid white',
+            }}
+            title="Change photo"
+          >
+            <Camera size={13} color="white" />
+          </button>
+        )}
+
+        {isOwner && (
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
         )}
       </div>
 
