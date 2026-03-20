@@ -59,6 +59,28 @@ const Feed = () => {
         });
       }
     });
+
+    // Load inviter info
+    supabase
+      .from('invite_uses')
+      .select('invite_id')
+      .eq('invitee_id', user.id)
+      .maybeSingle()
+      .then(async ({ data: useRow }) => {
+        if (!useRow) return;
+        const { data: invite } = await supabase
+          .from('invites')
+          .select('inviter_id')
+          .eq('id', useRow.invite_id)
+          .maybeSingle();
+        if (!invite) return;
+        const { data: inviterProfile } = await supabase
+          .from('profiles')
+          .select('display_name, handle')
+          .eq('id', invite.inviter_id)
+          .maybeSingle();
+        if (inviterProfile) setInviter(inviterProfile);
+      });
   }, [user]);
 
   // Load circles
