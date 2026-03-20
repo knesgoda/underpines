@@ -450,6 +450,11 @@ function getSectionTitle(type: string): string {
     reaction_batch: 'Reactions',
     invite_accepted: 'Invites',
     smoke_signal: 'Smoke Signals',
+    camp_join_request: 'Camps',
+    camp_join_accepted: 'Camps',
+    camp_role_changed: 'Camps',
+    camp_post_removed: 'Camps',
+    bonfire_split: 'Camps',
     system: 'Updates',
   };
   return map[type] || 'Notifications';
