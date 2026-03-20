@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatTimeAgo } from '@/lib/time';
+import { Flame } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Reply {
