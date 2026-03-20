@@ -17,6 +17,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Home', icon: Home, path: '/' },
   { label: 'My Cabin', icon: Tent, path: '/cabin' },
+  { label: 'Circles', icon: Users, path: '/circles' },
   { label: 'Campfires', icon: Flame, path: '/campfires' },
   { label: 'Camps', icon: Tent, path: '/camps', comingSoon: true },
   { label: 'Search', icon: Search, path: '/search', comingSoon: true },
