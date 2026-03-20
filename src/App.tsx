@@ -98,6 +98,7 @@ const App = () => (
                       <Route path="/lantern" element={<Lantern />} />
                       <Route path="/settings" element={<SettingsPage />} />
                       <Route path="/settings/notifications" element={<NotificationSettings />} />
+                      <Route path="/settings/privacy" element={<PrivacySettings />} />
                       <Route path="/settings/subscription" element={<SubscriptionPage />} />
                       <Route path="/settings/payouts" element={<CreatorPayouts />} />
                       <Route path="/settings/designs" element={<MyDesigns />} />
