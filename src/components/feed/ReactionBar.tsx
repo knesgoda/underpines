@@ -74,13 +74,6 @@ const ReactionBar = ({ postId, reactions, onReactionChange }: ReactionBarProps) 
       >
         {myReactionIcon ? (
           <span className="text-base">{myReactionIcon}</span>
-        ) : uniqueTypes.length > 0 ? (
-          <span className="flex -space-x-0.5">
-            {uniqueTypes.slice(0, 3).map(t => {
-              const r = REACTIONS.find(rx => rx.type === t);
-              return <span key={t} className="text-sm">{r?.icon}</span>;
-            })}
-          </span>
         ) : (
           'React'
         )}
