@@ -130,9 +130,12 @@ serve(async (req) => {
         }
       }
 
+      // Moon phase awareness for Daily Ember
+      const moonPhase = getMoonPhaseForEmber(now);
+
       // Build email
       const dayName = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
-      const html = buildEmailHtml(profile.display_name, dayName, grouped, actorMap, campfireMap, campNewsletterData);
+      const html = buildEmailHtml(profile.display_name, dayName, grouped, actorMap, campfireMap, campNewsletterData, moonPhase);
 
       // Send via Resend
       const res = await fetch("https://api.resend.com/emails", {
