@@ -12,7 +12,7 @@ const StepEmail = () => {
   const handleContinue = () => {
     if (isValid) {
       setData({ email });
-      setStep(4);
+      setStep(5);
     }
   };
 

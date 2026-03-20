@@ -34,6 +34,8 @@ const StepVerify = () => {
           data: {
             display_name: data.displayName,
             handle: data.handle,
+            age_bracket: data.ageBracket,
+            birth_year: data.birthYear,
           },
         },
       });
@@ -42,6 +44,16 @@ const StepVerify = () => {
         toast.error(error.message);
         setSending(false);
         return;
+      }
+
+      // Update profile with age data
+      if (authData.user) {
+        await supabase.from('profiles').update({
+          age_bracket: data.ageBracket,
+          birth_year: data.birthYear,
+          is_age_verified: true,
+          account_status: data.ageBracket === '13_to_17' ? 'pending_parental_consent' : 'active',
+        } as any).eq('id', authData.user.id);
       }
 
       // Record invite use, decrement counter, and create Circle
@@ -78,10 +90,14 @@ const StepVerify = () => {
         });
       }
 
-      // The new user's invite is auto-created by the DB trigger on profiles insert
-
       setSending(false);
-      setStep(6);
+
+      // LEGAL-REVIEW-NEEDED: 13-17 accounts need parental consent before proceeding
+      if (data.ageBracket === '13_to_17') {
+        setStep(50); // Parental consent flow
+      } else {
+        setStep(7); // Walk through woods
+      }
     } catch (err) {
       toast.error('Something went wrong. Please try again.');
       setSending(false);

@@ -45,7 +45,7 @@ const StepHandle = () => {
   const handleContinue = () => {
     if (available) {
       setData({ handle: sanitized });
-      setStep(3);
+      setStep(4);
     }
   };
 
