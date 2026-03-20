@@ -30,6 +30,8 @@ interface Profile {
   pinned_song_artist: string | null;
   header_image_url: string | null;
   is_pines_plus: boolean;
+  avatar_url: string | null;
+  default_avatar_key: string | null;
 }
 
 interface CabinEditDrawerProps {
