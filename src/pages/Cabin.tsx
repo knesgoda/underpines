@@ -406,9 +406,16 @@ const Cabin = () => {
             </div>
           </div>
 
-          {!isOwner && user && (
-            <div className="flex justify-center pb-12">
+          {!isOwner && user && profile && (
+            <div className="flex items-center justify-center gap-3 pb-12">
               <CircleButton profileId={profile.id} profileName={profile.display_name} />
+              <CabinMoreMenu
+                targetUserId={profile.id}
+                targetDisplayName={profile.display_name}
+                open={cabinMenuOpen}
+                setOpen={setCabinMenuOpen}
+                navigate={navigate}
+              />
             </div>
           )}
         </div>
