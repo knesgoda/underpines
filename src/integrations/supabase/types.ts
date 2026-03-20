@@ -2048,12 +2048,14 @@ export type Database = {
           accent_color: string | null
           applied_design_id: string | null
           atmosphere: string | null
+          avatar_url: string | null
           bio: string | null
           cabin_mood: string | null
           city: string | null
           created_at: string | null
           currently_type: string | null
           currently_value: string | null
+          default_avatar_key: string | null
           display_name: string
           ember_unsubscribed: boolean | null
           feed_scroll_reminder: boolean | null
@@ -2081,12 +2083,14 @@ export type Database = {
           accent_color?: string | null
           applied_design_id?: string | null
           atmosphere?: string | null
+          avatar_url?: string | null
           bio?: string | null
           cabin_mood?: string | null
           city?: string | null
           created_at?: string | null
           currently_type?: string | null
           currently_value?: string | null
+          default_avatar_key?: string | null
           display_name: string
           ember_unsubscribed?: boolean | null
           feed_scroll_reminder?: boolean | null
@@ -2114,12 +2118,14 @@ export type Database = {
           accent_color?: string | null
           applied_design_id?: string | null
           atmosphere?: string | null
+          avatar_url?: string | null
           bio?: string | null
           cabin_mood?: string | null
           city?: string | null
           created_at?: string | null
           currently_type?: string | null
           currently_value?: string | null
+          default_avatar_key?: string | null
           display_name?: string
           ember_unsubscribed?: boolean | null
           feed_scroll_reminder?: boolean | null

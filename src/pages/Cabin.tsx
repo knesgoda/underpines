@@ -10,10 +10,12 @@ import CircleButton from '@/components/circles/CircleButton';
 import CollectionsShelf from '@/components/cabin/CollectionsShelf';
 import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import CabinAvatar from '@/components/cabin/CabinAvatar';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { fetchWeather, getCurrentSeason } from '@/lib/weather';
 import { Button } from '@/components/ui/button';
 import { Settings, Music } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 
 interface Profile {
@@ -36,6 +38,8 @@ interface Profile {
   pinned_song_artist: string | null;
   header_image_url: string | null;
   is_pines_plus: boolean;
+  avatar_url: string | null;
+  default_avatar_key: string | null;
 }
 
 const Cabin = () => {
@@ -47,6 +51,7 @@ const Cabin = () => {
   const previewMode = searchParams.get('preview') === 'true';
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -227,8 +232,20 @@ const Cabin = () => {
       {/* === HOLLOW LAYOUT === */}
       {isHollow ? (
         <div className="max-w-2xl mx-auto px-6 relative z-10">
+          {/* Avatar centered above name */}
+          <div className="flex justify-center -mt-8 mb-4">
+            <CabinAvatar
+              avatarUrl={profile.avatar_url}
+              defaultAvatarKey={profile.default_avatar_key}
+              isOwner={isOwner}
+              isEditing={editOpen}
+              profileId={profile.id}
+              onUpdate={fetchProfile}
+              size={isMobile ? 'sm' : 'lg'}
+            />
+          </div>
           {/* Large breathing room above the name */}
-          <div className="pt-20 pb-12 text-center">
+          <div className="pt-4 pb-12 text-center">
             <div className="flex items-center justify-center gap-3 mb-3">
               {mood && <span className="text-3xl">{mood.emoji}</span>}
               <h1 className="text-4xl md:text-5xl font-display" style={{ color: atmos.text }}>
@@ -297,15 +314,27 @@ const Cabin = () => {
         </div>
       ) : (
         /* === HEARTH LAYOUT (default) === */
-        <div className="max-w-4xl mx-auto px-6 -mt-6 relative z-10">
+        <div className="max-w-4xl mx-auto px-6 relative z-10" style={{ marginTop: -40 }}>
           <div
-            className="rounded-2xl p-8 shadow-card transition-colors duration-700"
+            className="rounded-2xl shadow-card transition-colors duration-700 relative"
             style={{ backgroundColor: atmos.cardBg, borderColor: atmos.border, borderWidth: 1 }}
           >
-            <div className="flex items-start gap-4">
-              {mood && <span className="text-2xl">{mood.emoji}</span>}
-              <div className="flex-1">
+            {/* Avatar overlapping header/card boundary */}
+            <div className="absolute" style={{ top: -40, left: 24 }}>
+              <CabinAvatar
+                avatarUrl={profile.avatar_url}
+                defaultAvatarKey={profile.default_avatar_key}
+                isOwner={isOwner}
+                isEditing={editOpen}
+                profileId={profile.id}
+                onUpdate={fetchProfile}
+                size={isMobile ? 'sm' : 'lg'}
+              />
+            </div>
+            <div className="flex items-start gap-4 pt-4 pl-24 md:pl-28 pr-8 pb-6">
+              <div className="flex-1 pt-2">
                 <div className="flex items-center gap-2">
+                  {mood && <span className="text-2xl">{mood.emoji}</span>}
                   <h1 className="text-3xl font-display" style={{ color: atmos.text }}>
                     {profile.display_name}
                   </h1>
@@ -317,8 +346,9 @@ const Cabin = () => {
               </div>
             </div>
 
+            <div className="px-8 pb-8">
             {profile.mantra && (
-              <p className="mt-4 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>
+              <p className="mt-2 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>
                 "{profile.mantra}"
               </p>
             )}
@@ -349,6 +379,7 @@ const Cabin = () => {
                 {profile.pinned_song_artist && ` — ${profile.pinned_song_artist}`}
               </div>
             )}
+            </div>
           </div>
 
           {/* Two-column content */}
