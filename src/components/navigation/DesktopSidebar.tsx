@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Home, Tent, Flame, Search, Settings, Plus, Users } from 'lucide-react';
+import { Home, Tent, Flame, Search, Settings, Plus, Users, Trees } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import LanternIcon from './LanternIcon';
