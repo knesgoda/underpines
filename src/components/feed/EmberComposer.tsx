@@ -87,7 +87,7 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
 
         const { error: uploadErr } = await supabase.storage
           .from('post-media')
-          .upload(path, file, { contentType: file.type, upsert: false });
+          .upload(path, file, { contentType: file.type, upsert: false, cacheControl: '31536000' });
 
         if (uploadErr) {
           console.error('Upload failed for file', i, uploadErr);

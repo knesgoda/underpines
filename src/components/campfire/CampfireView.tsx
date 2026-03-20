@@ -246,7 +246,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
       const files = Array.from(e.target.files || []) as File[];
       for (const file of files.slice(0, 10)) {
         const path = `campfire-media/${user.id}/${campfireId}/${Date.now()}-${file.name}`;
-        const { error } = await supabase.storage.from('post-media').upload(path, file);
+        const { error } = await supabase.storage.from('post-media').upload(path, file, { cacheControl: '31536000' });
         if (!error) {
           const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(path);
           await supabase.from('campfire_messages').insert({
