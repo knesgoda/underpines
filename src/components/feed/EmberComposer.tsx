@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
-import { ImagePlus, X } from 'lucide-react';
+import { ImagePlus, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface EmberComposerProps {
@@ -10,23 +10,48 @@ interface EmberComposerProps {
   onCancel: () => void;
 }
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
 const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
   const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [caption, setCaption] = useState('');
   const [posting, setPosting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = (selected: FileList | null) => {
     if (!selected) return;
     const arr = Array.from(selected).slice(0, 10 - files.length);
-    const valid = arr.filter(f => f.size <= 10 * 1024 * 1024 && /^(image\/(jpeg|png|webp)|video\/mp4)/.test(f.type));
-    if (valid.length < arr.length) toast.info('Some files were skipped (max 10MB, JPEG/PNG/MP4 only)');
+    const valid: File[] = [];
+    let skipped = 0;
+
+    for (const f of arr) {
+      if (f.size > MAX_FILE_SIZE) {
+        skipped++;
+        continue;
+      }
+      if (!/^(image\/(jpeg|png|gif|webp)|video\/mp4)$/.test(f.type)) {
+        skipped++;
+        continue;
+      }
+      valid.push(f);
+    }
+
+    if (skipped > 0) {
+      toast("That image is a bit too big for the fire. Try one under 10MB.", {
+        description: "We accept JPEG, PNG, GIF, WebP, or MP4.",
+      });
+    }
 
     const newFiles = [...files, ...valid].slice(0, 10);
     setFiles(newFiles);
-    setPreviews(newFiles.map(f => URL.createObjectURL(f)));
+    setPreviews(prev => {
+      // Revoke old URLs
+      prev.forEach(u => URL.revokeObjectURL(u));
+      return newFiles.map(f => URL.createObjectURL(f));
+    });
   };
 
   const removeFile = (i: number) => {
@@ -38,6 +63,7 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
   const handlePost = async () => {
     if (files.length === 0 || !user) return;
     setPosting(true);
+    setUploadProgress(0);
 
     try {
       // Create the post first
@@ -53,32 +79,45 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const ext = file.name.split('.').pop();
-        const path = `${user.id}/${post.id}/${i}.${ext}`;
+        const path = `${user.id}/${post.id}/${Date.now()}-${i}.${ext}`;
 
         const { error: uploadErr } = await supabase.storage
           .from('post-media')
-          .upload(path, file, { contentType: file.type });
+          .upload(path, file, { contentType: file.type, upsert: false });
 
-        if (uploadErr) throw uploadErr;
+        if (uploadErr) {
+          console.error('Upload failed for file', i, uploadErr);
+          throw uploadErr;
+        }
 
         const { data: urlData } = supabase.storage.from('post-media').getPublicUrl(path);
 
-        await supabase.from('post_media').insert({
+        const { error: mediaErr } = await supabase.from('post_media').insert({
           post_id: post.id,
           media_type: file.type.startsWith('video') ? 'video' : 'photo',
           url: urlData.publicUrl,
           position: i,
         });
+
+        if (mediaErr) {
+          console.error('Media record insert failed', mediaErr);
+          throw mediaErr;
+        }
+
+        setUploadProgress(Math.round(((i + 1) / files.length) * 100));
       }
 
       onPost({ ...post, post_media: [] }); // Will be refetched
+      previews.forEach(u => URL.revokeObjectURL(u));
       setFiles([]);
       setPreviews([]);
       setCaption('');
-    } catch (err) {
-      toast.error("That one didn't make it. Try again?");
+    } catch (err: any) {
+      console.error('Ember post error:', err);
+      toast.error("Something got stuck in the branches. Your text is safe — try posting again.");
     }
     setPosting(false);
+    setUploadProgress(null);
   };
 
   return (
@@ -91,10 +130,10 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,video/mp4"
+        accept="image/jpeg,image/png,image/gif,image/webp,video/mp4"
         multiple
         className="hidden"
-        onChange={e => handleFiles(e.target.files)}
+        onChange={e => { handleFiles(e.target.files); e.target.value = ''; }}
       />
 
       {previews.length === 0 ? (
@@ -104,7 +143,7 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         >
           <ImagePlus size={28} className="text-muted-foreground" />
           <span className="font-body text-sm text-muted-foreground">Tap to add photos or video</span>
-          <span className="font-body text-xs text-muted-foreground/50">Up to 10 photos or 1 video</span>
+          <span className="font-body text-xs text-muted-foreground/50">Up to 10 photos or 1 video · 10MB each</span>
         </button>
       ) : (
         <div className="space-y-2">
@@ -144,6 +183,18 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         className="w-full bg-transparent text-foreground font-body text-sm outline-none placeholder:text-muted-foreground/50"
       />
 
+      {/* Upload progress */}
+      {posting && uploadProgress !== null && (
+        <div className="w-full h-1 rounded-full bg-muted overflow-hidden">
+          <motion.div
+            className="h-full bg-primary rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${uploadProgress}%` }}
+            transition={{ ease: 'easeOut' }}
+          />
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <button onClick={onCancel} className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors">
           Cancel
@@ -151,9 +202,16 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         <button
           onClick={handlePost}
           disabled={files.length === 0 || posting}
-          className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90"
+          className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90 flex items-center gap-2"
         >
-          {posting ? 'Posting...' : 'Post to Pines ↑'}
+          {posting ? (
+            <>
+              <Loader2 size={14} className="animate-spin" />
+              Uploading…
+            </>
+          ) : (
+            'Post to Pines ↑'
+          )}
         </button>
       </div>
     </motion.div>
