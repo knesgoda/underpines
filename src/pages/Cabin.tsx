@@ -308,9 +308,16 @@ const Cabin = () => {
             <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
           </div>
 
-          {!isOwner && user && (
-            <div className="flex justify-center pb-16">
+          {!isOwner && user && profile && (
+            <div className="flex items-center justify-center gap-3 pb-16">
               <CircleButton profileId={profile.id} profileName={profile.display_name} />
+              <CabinMoreMenu
+                targetUserId={profile.id}
+                targetDisplayName={profile.display_name}
+                open={cabinMenuOpen}
+                setOpen={setCabinMenuOpen}
+                navigate={navigate}
+              />
             </div>
           )}
         </div>
