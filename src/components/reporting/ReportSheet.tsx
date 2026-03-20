@@ -19,12 +19,12 @@ interface ReportSheetProps {
   showWrongCamp?: boolean;
 }
 
-const REASONS = [
+const REASONS: { value: string; label: string; campOnly?: boolean }[] = [
   { value: 'harmful_dangerous', label: 'This feels harmful or dangerous' },
   { value: 'spam_fake', label: 'This is spam or fake' },
   { value: 'wrong_camp', label: "This doesn't belong in this Camp", campOnly: true },
   { value: 'other', label: 'Something else' },
-] as const;
+];
 
 const ReportSheet = ({
   open,
