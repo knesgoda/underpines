@@ -53,6 +53,14 @@ const Cabin = () => {
   const [isInCircle, setIsInCircle] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [weather, setWeather] = useState<any>(null);
+  const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
+
+  useEffect(() => {
+    if (upgraded && !sessionStorage.getItem('pines_upgrade_shown')) {
+      setShowUpgradeWelcome(true);
+      sessionStorage.setItem('pines_upgrade_shown', '1');
+    }
+  }, [upgraded]);
 
   const fetchProfile = useCallback(async () => {
     let query = supabase.from('profiles').select('*');
