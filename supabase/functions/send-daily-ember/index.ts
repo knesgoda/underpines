@@ -195,7 +195,8 @@ function groupNotifications(notifications: any[]): GroupedNotifs {
 
 function buildEmailHtml(
   name: string, dayName: string, grouped: GroupedNotifs,
-  actorMap: Record<string, string>, campfireMap: Record<string, string>
+  actorMap: Record<string, string>, campfireMap: Record<string, string>,
+  campNewsletterData?: { campName: string; title: string; excerpt: string; campId: string; newsletterId: string }[]
 ): string {
   let sections = "";
 
