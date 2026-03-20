@@ -138,6 +138,8 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
                       <>
                         <div className="h-px bg-border" />
                         <MenuBtn onClick={() => { setReportOpen(true); setMenuOpen(false); }}><Flag size={14} /> Report</MenuBtn>
+                        <MenuBtn onClick={() => { openBlockDialog(); setMenuOpen(false); }}>🚫 Step away from the fire</MenuBtn>
+                        <MenuBtn onClick={() => { handleMute(); setMenuOpen(false); }}>🔇 Bank the fire</MenuBtn>
                       </>
                     )}
                     {isOwner && (
