@@ -49,6 +49,12 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
   const accent = post.author?.accent_color || 'hsl(var(--primary))';
   const moodIcon = post.author?.cabin_mood || '🕯️';
 
+  const { openBlockDialog, handleMute, BlockConfirmDialog } = useBlockMute({
+    targetUserId: post.author_id,
+    targetDisplayName: post.author?.display_name,
+    onComplete: () => onRemove?.(post.id),
+  });
+
   useEffect(() => {
     const handle = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
