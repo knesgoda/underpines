@@ -73,7 +73,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
 
   // Visibility gating for non-circle visitors
   const renderGatedPost = (post: PostWithAuthor) => {
-    if (isOwner || isInCircle) return <PostCard key={post.id} post={post} onRemove={handleRemove} />;
+    if (isOwner || isInCircle) return <PostCard key={post.id} post={post} onRemove={handleRemove} onImageClick={(imgs, idx) => setLightbox({ open: true, images: imgs, index: idx })} />;
 
     // Non-circle: sparks visible, stories title-only, embers blurred
     if (post.post_type === 'spark') {
