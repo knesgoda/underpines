@@ -185,6 +185,7 @@ function groupNotifications(notifications: any[]): GroupedNotifs {
         groups.circles.push(n); break;
       case "invite_accepted": groups.invites.push(n); break;
       case "smoke_signal": groups.smoke_signals.push(n); break;
+      case "camp_newsletter": groups.camp_newsletters.push(n); break;
       default: groups.system.push(n); break;
     }
   });
