@@ -11,6 +11,7 @@ interface Member {
   display_name: string;
   created_at: string;
   header_image_url: string | null;
+  age_bracket: string | null;
 }
 
 const GroveMembers = () => {
