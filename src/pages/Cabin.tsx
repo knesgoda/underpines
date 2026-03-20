@@ -270,7 +270,7 @@ const Cabin = () => {
                 <span>Currently {profile.currently_type} {profile.currently_value}</span>
               )}
               {profile.city && <span>{profile.city}</span>}
-              {weather && <span>{Math.round(weather.temperature)}°C</span>}
+              {temperature != null && <span>{Math.round(temperature)}°C</span>}
             </div>
 
             {profile.bio && (
