@@ -345,9 +345,7 @@ const CirclesPage = () => {
                 {pendingSent.map(m => (
                   <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground">
-                        {m.display_name[0]?.toUpperCase()}
-                      </div>
+                      <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
                       <div>
                         <p className="font-body text-sm font-medium text-foreground">{m.display_name}</p>
                         <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
