@@ -31,7 +31,8 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('recipient_id', user.id)
-      .eq('is_read', false);
+      .eq('is_read', false)
+      .neq('notification_type', 'reaction_batch');
     setUnreadCount(count ?? 0);
   };
 
@@ -46,7 +47,9 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
         schema: 'public',
         table: 'notifications',
         filter: `recipient_id=eq.${user.id}`,
-      }, () => {
+      }, (payload: any) => {
+        // Never count reaction_batch in real-time
+        if (payload.new?.notification_type === 'reaction_batch') return;
         setUnreadCount(prev => prev + 1);
       })
       .on('postgres_changes', {
