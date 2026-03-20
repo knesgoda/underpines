@@ -113,30 +113,58 @@ const Feed = () => {
       .eq('muter_id', user.id);
     const mutedIds = new Set(muteRows?.map(m => m.muted_id) || []);
 
-    const { data } = await supabase
+    // Get camp IDs user is a member of
+    const { data: campMemberRows } = await supabase
+      .from('camp_members')
+      .select('camp_id')
+      .eq('user_id', user.id);
+    const campIds = campMemberRows?.map(cm => cm.camp_id) || [];
+
+    // Build the set of author IDs we want to see: self + circle members
+    const allowedAuthorIds = [user.id, ...circleIds];
+
+    // Query posts only from allowed authors
+    let query = supabase
       .from('posts')
       .select('*')
       .eq('is_published', true)
+      .in('author_id', allowedAuthorIds.length > 0 ? allowedAuthorIds : [user.id])
       .order('created_at', { ascending: false })
       .limit(50);
 
-    if (data) {
-      // Fetch authors
-      const authorIds = [...new Set(data.map(p => p.author_id))];
+    const { data } = await query;
+
+    // Also load camp posts from camps the user belongs to
+    let campPosts: any[] = [];
+    if (campIds.length > 0) {
+      const { data: cpData } = await supabase
+        .from('camp_posts')
+        .select('*, camp:camps(name)')
+        .in('camp_id', campIds)
+        .eq('is_published', true)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      campPosts = cpData || [];
+    }
+
+    const allPosts = data || [];
+
+    if (allPosts.length > 0 || campPosts.length > 0) {
+      // Fetch authors for personal feed posts
+      const authorIds = [...new Set([...allPosts.map(p => p.author_id), ...campPosts.map(p => p.author_id)])];
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id, display_name, handle, accent_color, cabin_mood')
-        .in('id', authorIds);
+        .in('id', authorIds.length > 0 ? authorIds : ['00000000-0000-0000-0000-000000000000']);
 
-      // Fetch reactions
-      const postIds = data.map(p => p.id);
-      const { data: allReactions } = await supabase
-        .from('reactions')
-        .select('post_id, reaction_type, user_id')
-        .in('post_id', postIds);
+      // Fetch reactions for personal feed posts
+      const postIds = allPosts.map(p => p.id);
+      const { data: allReactions } = postIds.length > 0
+        ? await supabase.from('reactions').select('post_id, reaction_type, user_id').in('post_id', postIds)
+        : { data: [] };
 
       // Fetch media for ember posts
-      const emberIds = data.filter(p => p.post_type === 'ember').map(p => p.id);
+      const emberIds = allPosts.filter(p => p.post_type === 'ember').map(p => p.id);
       let allMedia: any[] = [];
       if (emberIds.length > 0) {
         const { data: media } = await supabase
@@ -148,8 +176,10 @@ const Feed = () => {
       }
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
-      const enriched: PostWithAuthor[] = data
-        .filter(p => !mutedIds.has(p.author_id)) // Filter muted users
+
+      // Enrich personal feed posts
+      const enrichedPersonal: PostWithAuthor[] = allPosts
+        .filter(p => !mutedIds.has(p.author_id))
         .map(p => ({
           ...p,
           author: profileMap.get(p.author_id) as any,
@@ -157,10 +187,35 @@ const Feed = () => {
           post_media: allMedia.filter(m => m.post_id === p.id),
         }));
 
-      setPosts(enriched);
+      // Enrich camp posts as feed items
+      const enrichedCamp: PostWithAuthor[] = campPosts
+        .filter(p => !mutedIds.has(p.author_id))
+        .map(p => ({
+          id: p.id,
+          author_id: p.author_id,
+          content: p.content,
+          post_type: p.post_type || 'spark',
+          is_published: true,
+          created_at: p.created_at,
+          updated_at: p.updated_at,
+          is_quote_post: false,
+          author: profileMap.get(p.author_id) as any,
+          reactions: [],
+          post_media: [],
+          _campName: p.camp?.name,
+        } as any));
+
+      // Merge and sort chronologically
+      const merged = [...enrichedPersonal, ...enrichedCamp]
+        .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+        .slice(0, 50);
+
+      setPosts(merged);
+    } else {
+      setPosts([]);
     }
     setLoading(false);
-  }, [user]);
+  }, [user, circleIds]);
 
   useEffect(() => { loadPosts(); }, [loadPosts]);
 
