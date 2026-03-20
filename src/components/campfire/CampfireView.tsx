@@ -138,6 +138,18 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
   useEffect(() => { if (campfire) loadParticipants(); }, [campfire, loadParticipants]);
   useEffect(() => { loadMessages(); }, [loadMessages]);
 
+  // Check Pines+ status
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('pines_plus_subscriptions')
+      .select('status')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .maybeSingle()
+      .then(({ data }) => setIsPinesPlus(!!data));
+  }, [user]);
+
   // Auto-scroll
   useEffect(() => {
     if (autoScroll && scrollRef.current) {
