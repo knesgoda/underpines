@@ -32,6 +32,7 @@ import CampSettings from "./pages/CampSettings";
 import CampNewsletterComposer from "./pages/CampNewsletterComposer";
 import CampNewsletterView from "./pages/CampNewsletterView";
 import CampNewsletterArchive from "./pages/CampNewsletterArchive";
+import SearchPage from "./pages/Search";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

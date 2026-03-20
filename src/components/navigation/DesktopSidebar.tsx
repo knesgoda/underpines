@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
   { label: 'Circles', icon: Users, path: '/circles' },
   { label: 'Campfires', icon: Flame, path: '/campfires' },
   { label: 'Camps', icon: Tent, path: '/camps' },
-  { label: 'Search', icon: Search, path: '/search', comingSoon: true },
+  { label: 'Search', icon: Search, path: '/search' },
 ];
 
 const DesktopSidebar = () => {
