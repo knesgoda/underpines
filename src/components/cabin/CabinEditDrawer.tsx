@@ -352,6 +352,8 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                 🎨 Sell this design
               </button>
             </div>
+          </>
+        )}
 
         {tab === 'details' && (
           <>
