@@ -158,9 +158,21 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) 
 
         {/* Content by type */}
         {post.post_type === 'spark' && (
-          <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-            {post.content}
-          </p>
+          <div>
+            <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+              {post.content}
+            </p>
+            {(post as any).image_url && (
+              <div className="mt-3 rounded-lg overflow-hidden" style={{ aspectRatio: '4/3', maxHeight: '400px' }}>
+                <img
+                  src={(post as any).image_url}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            )}
+          </div>
         )}
 
         {post.post_type === 'story' && (
