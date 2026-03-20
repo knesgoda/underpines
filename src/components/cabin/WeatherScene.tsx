@@ -1,4 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import MoonPhase from './MoonPhase';
+import { getMoonPhase, getMoonPhaseDescription, getStarOpacityForPhase } from '@/lib/moon';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface WeatherSceneProps {
   weatherCode?: number;
