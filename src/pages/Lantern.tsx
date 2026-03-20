@@ -525,6 +525,11 @@ function getNotificationContent(
         label: 'Your Bonfire has grown past 150 members. A second fire was started.',
         action: () => {},
       };
+    case 'camp_newsletter':
+      return {
+        label: `${name} sent a newsletter from your Camp.`,
+        action: () => {},
+      };
     default:
       return {
         label: 'New notification',

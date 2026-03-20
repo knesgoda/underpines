@@ -203,6 +203,11 @@ const CampSettings = () => {
         </div>
       </div>
 
+      {/* Newsletter settings */}
+      <div className="mb-8 border-t border-border pt-6">
+        <CampNewsletterSettings campId={id!} firekeeper_id={camp?.firekeeper_id} members={members} />
+      </div>
+
       {/* Danger zone */}
       <div>
         <h2 className="font-body text-sm font-medium text-destructive mb-3">Danger Zone</h2>
