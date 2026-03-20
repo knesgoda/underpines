@@ -33,11 +33,12 @@ export interface PostWithAuthor {
 
 interface PostCardProps {
   post: PostWithAuthor;
+  circleIds?: string[];
   onRemove?: (id: string) => void;
   onRefresh?: () => void;
 }
 
-const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
+const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) => {
   const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [reactions, setReactions] = useState(post.reactions || []);
