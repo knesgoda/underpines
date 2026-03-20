@@ -2043,6 +2043,51 @@ export type Database = {
           },
         ]
       }
+      privacy_settings: {
+        Row: {
+          cabin_visibility: string
+          cabin_visit_mode: string
+          campfire_visibility: string
+          collections_visibility: string
+          created_at: string | null
+          id: string
+          message_requests: boolean
+          read_receipts: boolean
+          show_city: boolean
+          show_weather: boolean
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cabin_visibility?: string
+          cabin_visit_mode?: string
+          campfire_visibility?: string
+          collections_visibility?: string
+          created_at?: string | null
+          id?: string
+          message_requests?: boolean
+          read_receipts?: boolean
+          show_city?: boolean
+          show_weather?: boolean
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cabin_visibility?: string
+          cabin_visit_mode?: string
+          campfire_visibility?: string
+          collections_visibility?: string
+          created_at?: string | null
+          id?: string
+          message_requests?: boolean
+          read_receipts?: boolean
+          show_city?: boolean
+          show_weather?: boolean
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           accent_color: string | null
