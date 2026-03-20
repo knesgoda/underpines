@@ -360,21 +360,45 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
         )}
 
         {tab === 'widgets' && (
-          <div className="text-center py-8">
+          <div className="py-4">
             {profile.is_pines_plus ? (
               <div className="space-y-4">
-                <p className="text-sm font-body text-muted-foreground">
-                  Widget Shelf coming in Phase 2.
+                <p className="text-sm font-body text-muted-foreground mb-4">
+                  Manage your Bookshelf and Field Notes from your Cabin directly. 
+                  They appear in the sidebar (Hearth) or below your profile (Hollow).
                 </p>
+                <div className="space-y-3">
+                  <div className="rounded-xl border border-border p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span>📚</span>
+                      <span className="text-sm font-body font-medium text-foreground">Bookshelf</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-body">
+                      Up to 6 books displayed as illustrated spines. Add and remove books from your Cabin view.
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-border p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span>📝</span>
+                      <span className="text-sm font-body font-medium text-foreground">Field Notes</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-body">
+                      A tiny public notebook. Up to 5 short notes (140 chars each). Newest at top.
+                    </p>
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="text-center space-y-4 py-4">
                 <span className="text-3xl">🌲</span>
                 <h4 className="font-display text-lg text-foreground">Widget Shelf</h4>
                 <p className="text-sm text-muted-foreground font-body">Available with Pines+</p>
-                <p className="text-xs text-muted-foreground font-body">
+                <p className="text-xs text-muted-foreground font-body leading-relaxed">
                   Personalize your Cabin with a bookshelf,<br />
                   vinyl collection, trail map, and more.
+                </p>
+                <p className="text-xs text-muted-foreground font-body">
+                  $10/year — less than a coffee
                 </p>
                 <div className="flex gap-2 justify-center mt-4">
                   <Button
@@ -385,7 +409,18 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                     }}
                     className="rounded-pill text-sm font-body bg-primary text-primary-foreground"
                   >
-                    $10/year — less than a coffee
+                    $10/year
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      await supabase.from('profiles').update({ is_pines_plus: true }).eq('id', profile.id);
+                      onUpdate();
+                      toast.success("You're in! Pines+ is active on your account.");
+                    }}
+                    variant="outline"
+                    className="rounded-pill text-sm font-body"
+                  >
+                    $1/month
                   </Button>
                   <Button variant="ghost" onClick={() => setTab('you')} className="rounded-pill text-sm font-body">
                     Maybe later
