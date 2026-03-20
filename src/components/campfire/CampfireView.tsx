@@ -312,6 +312,18 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
 
   if (!campfire) return null;
 
+  // Show search view
+  if (showSearch) {
+    return (
+      <CampfireSearch
+        campfireId={campfireId}
+        campfireName={headerName}
+        onBack={() => setShowSearch(false)}
+        onJumpToMessage={jumpToMessage}
+      />
+    );
+  }
+
   // Expired flicker
   if (isFlickerExpired) {
     return (
