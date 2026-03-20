@@ -344,8 +344,9 @@ const Cabin = () => {
               </div>
             </div>
 
+            <div className="px-8 pb-8">
             {profile.mantra && (
-              <p className="mt-4 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>
+              <p className="mt-2 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>
                 "{profile.mantra}"
               </p>
             )}
@@ -376,6 +377,7 @@ const Cabin = () => {
                 {profile.pinned_song_artist && ` — ${profile.pinned_song_artist}`}
               </div>
             )}
+            </div>
           </div>
 
           {/* Two-column content */}
