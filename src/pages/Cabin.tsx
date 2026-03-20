@@ -51,6 +51,7 @@ const Cabin = () => {
   const previewMode = searchParams.get('preview') === 'true';
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
