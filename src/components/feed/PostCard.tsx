@@ -19,6 +19,7 @@ export interface PostWithAuthor {
   post_type: string;
   content: string | null;
   title: string | null;
+  image_url?: string | null;
   is_published: boolean | null;
   is_quote_post: boolean | null;
   quoted_post_id: string | null;
@@ -158,9 +159,21 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) 
 
         {/* Content by type */}
         {post.post_type === 'spark' && (
-          <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-            {post.content}
-          </p>
+          <div>
+            <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+              {post.content}
+            </p>
+            {post.image_url && (
+              <div className="mt-3 rounded-lg overflow-hidden" style={{ aspectRatio: '4/3', maxHeight: '400px' }}>
+                <img
+                  src={post.image_url}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            )}
+          </div>
         )}
 
         {post.post_type === 'story' && (
@@ -184,8 +197,11 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) 
 
         {post.post_type === 'ember' && (
           <div>
+            {post.content && (
+              <p className="font-body text-sm text-foreground/80 mb-2">{post.content}</p>
+            )}
             {post.post_media && post.post_media.length > 0 && (
-              <div className={`rounded-lg overflow-hidden mb-2 ${
+              <div className={`rounded-lg overflow-hidden ${
                 post.post_media.length === 1 ? '' :
                 post.post_media.length === 2 ? 'grid grid-cols-2 gap-1' :
                 'grid grid-cols-3 gap-1'
@@ -194,11 +210,12 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) 
                   <div
                     key={i}
                     className={`relative ${i === 0 && post.post_media!.length >= 3 ? 'col-span-2 row-span-2' : ''}`}
+                    style={{ aspectRatio: '4/3' }}
                   >
                     {media.media_type === 'video' ? (
                       <video
                         src={media.url}
-                        className="w-full h-full object-cover max-h-[400px] rounded-lg"
+                        className="w-full h-full object-cover rounded-lg"
                         controls
                         muted
                       />
@@ -206,7 +223,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) 
                       <img
                         src={media.url}
                         alt=""
-                        className="w-full h-full object-cover max-h-[400px] rounded-lg"
+                        className="w-full h-full object-cover rounded-lg"
                         loading="lazy"
                       />
                     )}
@@ -218,9 +235,6 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) 
                   </div>
                 ))}
               </div>
-            )}
-            {post.content && (
-              <p className="font-body text-sm text-foreground/80">{post.content}</p>
             )}
           </div>
         )}
