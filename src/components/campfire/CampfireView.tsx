@@ -77,6 +77,13 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput }: Pro
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // Auto-focus input when opened via "Stoke it?"
+  useEffect(() => {
+    if (autoFocusInput && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 400);
+    }
+  }, [autoFocusInput, campfire]);
+
   // Load campfire data
   const loadCampfire = useCallback(async () => {
     const { data } = await supabase.from('campfires').select('*').eq('id', campfireId).maybeSingle();
