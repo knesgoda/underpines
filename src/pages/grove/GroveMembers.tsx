@@ -10,7 +10,7 @@ interface Member {
   handle: string;
   display_name: string;
   created_at: string;
-  avatar_url: string | null;
+  header_image_url: string | null;
 }
 
 const GroveMembers = () => {
