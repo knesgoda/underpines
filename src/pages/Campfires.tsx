@@ -137,8 +137,9 @@ const Campfires = () => {
       return (
         <CampfireView
           campfireId={selectedId}
-          onBack={() => setSelectedId(null)}
+          onBack={() => { setSelectedId(null); setStokeMode(false); }}
           onRefreshList={loadCampfires}
+          autoFocusInput={stokeMode}
         />
       );
     }
