@@ -17,10 +17,22 @@ const SettingsPage = () => {
 
       <div className="space-y-4">
         <button
+          onClick={() => navigate('/settings/subscription')}
+          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
+        >
+          🌲 Subscription
+        </button>
+        <button
           onClick={() => navigate('/invites')}
           className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground"
         >
           My Invites
+        </button>
+        <button
+          onClick={() => navigate('/circles')}
+          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground"
+        >
+          Circles
         </button>
         <button
           onClick={() => navigate('/cabin?edit=true')}

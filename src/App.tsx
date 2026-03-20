@@ -22,6 +22,7 @@ import CircleSuggestions from "./pages/CircleSuggestions";
 import CollectionsList from "./pages/CollectionsList";
 import CollectionView from "./pages/CollectionView";
 import CollectionEditor from "./pages/CollectionEditor";
+import SubscriptionPage from "./pages/SubscriptionPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => (
                   <Route path="/campfires" element={<Campfires />} />
                   <Route path="/lantern" element={<Lantern />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/settings/subscription" element={<SubscriptionPage />} />
                   <Route path="/new/story" element={<StoryComposer />} />
                   <Route path="/circles" element={<CirclesPage />} />
                   <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />

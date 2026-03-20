@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import WeatherScene from '@/components/cabin/WeatherScene';
 import CabinEditDrawer from '@/components/cabin/CabinEditDrawer';
 import WidgetShelf from '@/components/cabin/WidgetShelf';
@@ -43,6 +43,7 @@ const Cabin = () => {
   const [searchParams] = useSearchParams();
   const setupMode = searchParams.get('setup') === 'true';
   const editOnLoad = searchParams.get('edit') === 'true';
+  const upgraded = searchParams.get('upgraded') === 'true';
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -52,6 +53,14 @@ const Cabin = () => {
   const [isInCircle, setIsInCircle] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [weather, setWeather] = useState<any>(null);
+  const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
+
+  useEffect(() => {
+    if (upgraded && !sessionStorage.getItem('pines_upgrade_shown')) {
+      setShowUpgradeWelcome(true);
+      sessionStorage.setItem('pines_upgrade_shown', '1');
+    }
+  }, [upgraded]);
 
   const fetchProfile = useCallback(async () => {
     let query = supabase.from('profiles').select('*');
@@ -365,6 +374,34 @@ const Cabin = () => {
           onUpdate={fetchProfile}
         />
       )}
+
+      {/* Pines+ Welcome Overlay */}
+      <AnimatePresence>
+        {showUpgradeWelcome && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setShowUpgradeWelcome(false)}>
+            <div className="absolute inset-0 bg-black/40" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              onClick={e => e.stopPropagation()}
+              className="relative rounded-2xl bg-card border border-border shadow-lg p-8 max-w-sm mx-4 text-center"
+            >
+              <p className="text-4xl mb-4">🌲</p>
+              <h2 className="font-display text-xl text-foreground mb-2">Welcome to Pines+</h2>
+              <p className="font-body text-sm text-muted-foreground mb-6">
+                Your Cabin just got a little more yours. New atmospheres, more invites, and your Campfires kept forever.
+              </p>
+              <button
+                onClick={() => setShowUpgradeWelcome(false)}
+                className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm"
+              >
+                Explore what's new →
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
