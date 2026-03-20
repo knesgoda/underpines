@@ -51,7 +51,10 @@ const Lantern = () => {
       .order('created_at', { ascending: false })
       .limit(100);
 
-    const rows = (data || []) as NotificationRow[];
+    // Filter out reaction_batch notifications that haven't been delivered via Daily Ember yet
+    const rows = (data || []).filter((n: any) =>
+      !(n.notification_type === 'reaction_batch' && n.is_delivered_in_ember === true)
+    ) as NotificationRow[];
     setNotifications(rows);
 
     // Fetch actor profiles
