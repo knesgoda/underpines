@@ -24,6 +24,11 @@ import CollectionsList from "./pages/CollectionsList";
 import CollectionView from "./pages/CollectionView";
 import CollectionEditor from "./pages/CollectionEditor";
 import SubscriptionPage from "./pages/SubscriptionPage";
+import CampsDirectory from "./pages/CampsDirectory";
+import MyCamps from "./pages/MyCamps";
+import CreateCamp from "./pages/CreateCamp";
+import CampView from "./pages/CampView";
+import CampSettings from "./pages/CampSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +60,11 @@ const App = () => (
                   <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
                   <Route path="/collections/new" element={<CollectionEditor />} />
                   <Route path="/collections/edit/:id" element={<CollectionEditor />} />
+                  <Route path="/camps" element={<CampsDirectory />} />
+                  <Route path="/camps/new" element={<CreateCamp />} />
+                  <Route path="/camps/mine" element={<MyCamps />} />
+                  <Route path="/camps/:id" element={<CampView />} />
+                  <Route path="/camps/:id/settings" element={<CampSettings />} />
                   <Route path="/:handle/collections" element={<CollectionsList />} />
                   <Route path="/:handle/collections/:id" element={<CollectionView />} />
                   <Route path="/:handle" element={<Cabin />} />

@@ -383,7 +383,7 @@ function groupNotifications(
   campfireNames: Record<string, string>
 ): GroupedNotification[] {
   const groups: GroupedNotification[] = [];
-  const typeOrder = ['campfire_message', 'circle_request', 'circle_accepted', 'reply', 'quote_post', 'reaction_batch', 'invite_accepted', 'smoke_signal', 'system'];
+  const typeOrder = ['campfire_message', 'circle_request', 'circle_accepted', 'reply', 'quote_post', 'reaction_batch', 'invite_accepted', 'smoke_signal', 'camp_join_request', 'camp_join_accepted', 'camp_role_changed', 'camp_post_removed', 'bonfire_split', 'system'];
 
   const byType: Record<string, NotificationRow[]> = {};
   notifications.forEach(n => {
@@ -430,6 +430,11 @@ function getSectionEmoji(type: string): string {
     reaction_batch: '💚',
     invite_accepted: '🌱',
     smoke_signal: '🌫️',
+    camp_join_request: '🏕️',
+    camp_join_accepted: '🏕️',
+    camp_role_changed: '🏕️',
+    camp_post_removed: '🏕️',
+    bonfire_split: '🏕️',
     system: '🏮',
   };
   return map[type] || '🏮';
@@ -445,6 +450,11 @@ function getSectionTitle(type: string): string {
     reaction_batch: 'Reactions',
     invite_accepted: 'Invites',
     smoke_signal: 'Smoke Signals',
+    camp_join_request: 'Camps',
+    camp_join_accepted: 'Camps',
+    camp_role_changed: 'Camps',
+    camp_post_removed: 'Camps',
+    bonfire_split: 'Camps',
     system: 'Updates',
   };
   return map[type] || 'Notifications';
@@ -486,6 +496,31 @@ function getNotificationContent(
     case 'collection_subscriber':
       return {
         label: `${name} subscribed to your collection.`,
+        action: () => {},
+      };
+    case 'camp_join_request':
+      return {
+        label: `${name} wants to join your Camp.`,
+        action: () => {},
+      };
+    case 'camp_join_accepted':
+      return {
+        label: 'Your Camp join request was accepted!',
+        action: () => {},
+      };
+    case 'camp_role_changed':
+      return {
+        label: 'Your Camp role was updated.',
+        action: () => {},
+      };
+    case 'camp_post_removed':
+      return {
+        label: 'A Trailblazer removed your post from a Camp.',
+        action: () => {},
+      };
+    case 'bonfire_split':
+      return {
+        label: 'Your Bonfire has grown past 150 members. A second fire was started.',
         action: () => {},
       };
     default:
