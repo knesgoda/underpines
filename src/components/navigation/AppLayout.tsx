@@ -49,6 +49,11 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     FULL_SCREEN_ROUTES.includes(location.pathname) ||
     FULL_SCREEN_PREFIXES.some(p => location.pathname.startsWith(p));
 
+  // Show age gate interstitial for existing users who haven't verified
+  if (user && ageGateChecked && needsAgeGate) {
+    return <AgeGateInterstitial onComplete={() => setNeedsAgeGate(false)} />;
+  }
+
   // Show suspension page if user is suspended
   if (user && !checking && suspension) {
     return (
