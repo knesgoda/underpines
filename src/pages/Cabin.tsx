@@ -14,8 +14,9 @@ import CabinAvatar from '@/components/cabin/CabinAvatar';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { fetchWeather, getCurrentSeason } from '@/lib/weather';
 import { Button } from '@/components/ui/button';
-import { Settings, Music } from 'lucide-react';
+import { Settings, Music, MoreHorizontal } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useBlockMute } from '@/hooks/useBlockMute';
 import { toast } from 'sonner';
 
 interface Profile {
