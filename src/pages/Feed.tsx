@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ComposerStub from '@/components/feed/ComposerStub';
 import SeedlingBanner from '@/components/feed/SeedlingBanner';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
+import LightboxViewer from '@/components/feed/LightboxViewer';
 import SeasonalEventCard from '@/components/feed/SeasonalEventCard';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { Settings } from 'lucide-react';
