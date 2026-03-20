@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
   { label: 'My Cabin', icon: Tent, path: '/cabin' },
   { label: 'Circles', icon: Users, path: '/circles' },
   { label: 'Campfires', icon: Flame, path: '/campfires' },
-  { label: 'Camps', icon: Tent, path: '/camps' },
+  { label: 'Camps', icon: Trees, path: '/camps' },
   { label: 'Search', icon: Search, path: '/search' },
 ];
 
