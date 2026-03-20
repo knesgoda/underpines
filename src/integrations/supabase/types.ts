@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string | null
+          id: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string | null
+          id?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cabin_visits: {
         Row: {
           id: string
@@ -72,6 +108,389 @@ export type Database = {
           {
             foreignKeyName: "cabin_widgets_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campfire_messages: {
+        Row: {
+          campfire_id: string
+          content: string | null
+          created_at: string | null
+          cross_post_id: string | null
+          id: string
+          is_faded: boolean | null
+          media_url: string | null
+          message_type: string | null
+          sender_id: string
+        }
+        Insert: {
+          campfire_id: string
+          content?: string | null
+          created_at?: string | null
+          cross_post_id?: string | null
+          id?: string
+          is_faded?: boolean | null
+          media_url?: string | null
+          message_type?: string | null
+          sender_id: string
+        }
+        Update: {
+          campfire_id?: string
+          content?: string | null
+          created_at?: string | null
+          cross_post_id?: string | null
+          id?: string
+          is_faded?: boolean | null
+          media_url?: string | null
+          message_type?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campfire_messages_campfire_id_fkey"
+            columns: ["campfire_id"]
+            isOneToOne: false
+            referencedRelation: "campfires"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campfire_messages_cross_post_id_fkey"
+            columns: ["cross_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campfire_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campfire_participants: {
+        Row: {
+          campfire_id: string
+          id: string
+          joined_at: string | null
+          user_id: string
+        }
+        Insert: {
+          campfire_id: string
+          id?: string
+          joined_at?: string | null
+          user_id: string
+        }
+        Update: {
+          campfire_id?: string
+          id?: string
+          joined_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campfire_participants_campfire_id_fkey"
+            columns: ["campfire_id"]
+            isOneToOne: false
+            referencedRelation: "campfires"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campfire_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campfire_reactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          message_id: string
+          reaction_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message_id: string
+          reaction_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message_id?: string
+          reaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campfire_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "campfire_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campfire_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campfires: {
+        Row: {
+          campfire_type: string
+          created_at: string | null
+          expires_at: string | null
+          firekeeper_id: string | null
+          id: string
+          is_active: boolean | null
+          name: string | null
+          vibe: string | null
+        }
+        Insert: {
+          campfire_type: string
+          created_at?: string | null
+          expires_at?: string | null
+          firekeeper_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          vibe?: string | null
+        }
+        Update: {
+          campfire_type?: string
+          created_at?: string | null
+          expires_at?: string | null
+          firekeeper_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          vibe?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campfires_firekeeper_id_fkey"
+            columns: ["firekeeper_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      circles: {
+        Row: {
+          created_at: string | null
+          id: string
+          requestee_id: string
+          requester_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          requestee_id: string
+          requester_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          requestee_id?: string
+          requester_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "circles_requestee_id_fkey"
+            columns: ["requestee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "circles_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_posts: {
+        Row: {
+          added_at: string | null
+          collection_id: string
+          id: string
+          position: number
+          post_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          collection_id: string
+          id?: string
+          position: number
+          post_id: string
+        }
+        Update: {
+          added_at?: string | null
+          collection_id?: string
+          id?: string
+          position?: number
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_posts_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_posts_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_subscriptions: {
+        Row: {
+          collection_id: string
+          ends_at: string | null
+          id: string
+          started_at: string | null
+          status: string | null
+          stripe_subscription_id: string | null
+          subscriber_id: string
+        }
+        Insert: {
+          collection_id: string
+          ends_at?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string | null
+          stripe_subscription_id?: string | null
+          subscriber_id: string
+        }
+        Update: {
+          collection_id?: string
+          ends_at?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string | null
+          stripe_subscription_id?: string | null
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_subscriptions_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_subscriptions_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_waitlist: {
+        Row: {
+          collection_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          collection_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          collection_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_waitlist_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_waitlist_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          author_id: string
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_paid: boolean | null
+          is_published: boolean | null
+          price_cents: number | null
+          price_type: string | null
+          title: string
+        }
+        Insert: {
+          author_id: string
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_paid?: boolean | null
+          is_published?: boolean | null
+          price_cents?: number | null
+          price_type?: string | null
+          title: string
+        }
+        Update: {
+          author_id?: string
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_paid?: boolean | null
+          is_published?: boolean | null
+          price_cents?: number | null
+          price_type?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collections_author_id_fkey"
+            columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -155,6 +574,250 @@ export type Database = {
           },
         ]
       }
+      mutes: {
+        Row: {
+          created_at: string | null
+          id: string
+          muted_id: string
+          muter_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          muted_id: string
+          muter_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          muted_id?: string
+          muter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mutes_muted_id_fkey"
+            columns: ["muted_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mutes_muter_id_fkey"
+            columns: ["muter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          actor_id: string | null
+          campfire_id: string | null
+          collection_id: string | null
+          created_at: string | null
+          id: string
+          is_delivered_in_ember: boolean | null
+          is_read: boolean | null
+          notification_type: string
+          post_id: string | null
+          recipient_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          campfire_id?: string | null
+          collection_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_delivered_in_ember?: boolean | null
+          is_read?: boolean | null
+          notification_type: string
+          post_id?: string | null
+          recipient_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          campfire_id?: string | null
+          collection_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_delivered_in_ember?: boolean | null
+          is_read?: boolean | null
+          notification_type?: string
+          post_id?: string | null
+          recipient_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_campfire_id_fkey"
+            columns: ["campfire_id"]
+            isOneToOne: false
+            referencedRelation: "campfires"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pines_plus_subscriptions: {
+        Row: {
+          created_at: string | null
+          current_period_end: string | null
+          id: string
+          plan: string
+          status: string | null
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_period_end?: string | null
+          id?: string
+          plan: string
+          status?: string | null
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_period_end?: string | null
+          id?: string
+          plan?: string
+          status?: string | null
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pines_plus_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_media: {
+        Row: {
+          created_at: string | null
+          id: string
+          media_type: string
+          position: number
+          post_id: string
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          media_type: string
+          position: number
+          post_id: string
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          media_type?: string
+          position?: number
+          post_id?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_media_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string
+          content: string | null
+          created_at: string | null
+          id: string
+          is_published: boolean | null
+          is_quote_post: boolean | null
+          post_type: string
+          quoted_post_id: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_published?: boolean | null
+          is_quote_post?: boolean | null
+          post_type: string
+          quoted_post_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_published?: boolean | null
+          is_quote_post?: boolean | null
+          post_type?: string
+          quoted_post_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_quoted_post_id_fkey"
+            columns: ["quoted_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           accent_color: string | null
@@ -229,6 +892,94 @@ export type Database = {
           zip_code?: string | null
         }
         Relationships: []
+      }
+      reactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          reaction_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          reaction_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          reaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      replies: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string | null
+          id: string
+          parent_reply_id: string | null
+          post_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          parent_reply_id?: string | null
+          post_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          parent_reply_id?: string | null
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "replies_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "replies_parent_reply_id_fkey"
+            columns: ["parent_reply_id"]
+            isOneToOne: false
+            referencedRelation: "replies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "replies_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seedling_periods: {
         Row: {
