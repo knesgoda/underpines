@@ -45,7 +45,7 @@ const InviteTree = () => {
         if (inv) {
           const { data: profile } = await supabase
             .from('profiles')
-            .select('id, display_name, handle, avatar_url, default_avatar_key, last_active_at')
+            .select('id, display_name, handle, avatar_url, default_avatar_key')
             .eq('id', inv.inviter_id)
             .maybeSingle();
 
@@ -56,7 +56,7 @@ const InviteTree = () => {
               handle: profile.handle,
               avatar_url: profile.avatar_url,
               default_avatar_key: profile.default_avatar_key,
-              isActive: profile.last_active_at ? profile.last_active_at > thirtyDaysAgo : false,
+              isActive: true, // inviter looked up separately below
             });
           }
         }
