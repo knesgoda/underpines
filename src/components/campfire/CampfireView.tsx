@@ -583,6 +583,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
             <button onClick={sendPhoto} className="p-2 text-muted-foreground hover:text-foreground shrink-0">
               <Camera size={18} />
             </button>
+            <VoiceRecorder onSend={sendVoiceMessage} />
             <textarea
               ref={inputRef}
               value={input}
