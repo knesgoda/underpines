@@ -64,7 +64,7 @@ const CirclesPage = () => {
       const otherIds = circles.map(c => c.requester_id === user.id ? c.requestee_id : c.requester_id);
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, display_name, handle, updated_at')
+        .select('id, display_name, handle, avatar_url, default_avatar_key, updated_at')
         .in('id', otherIds);
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
