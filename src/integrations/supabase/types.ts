@@ -307,6 +307,117 @@ export type Database = {
           },
         ]
       }
+      camp_newsletter_settings: {
+        Row: {
+          camp_id: string
+          editor_id: string | null
+          frequency: string | null
+          id: string
+          is_enabled: boolean | null
+          send_day: string | null
+          send_time: string | null
+          timezone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          camp_id: string
+          editor_id?: string | null
+          frequency?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          send_day?: string | null
+          send_time?: string | null
+          timezone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          camp_id?: string
+          editor_id?: string | null
+          frequency?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          send_day?: string | null
+          send_time?: string | null
+          timezone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_newsletter_settings_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: true
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_newsletter_settings_editor_id_fkey"
+            columns: ["editor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      camp_newsletters: {
+        Row: {
+          author_id: string
+          camp_id: string
+          content: string
+          created_at: string | null
+          frequency: string
+          id: string
+          recipient_count: number | null
+          scheduled_for: string | null
+          sent_at: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          camp_id: string
+          content: string
+          created_at?: string | null
+          frequency: string
+          id?: string
+          recipient_count?: number | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          camp_id?: string
+          content?: string
+          created_at?: string | null
+          frequency?: string
+          id?: string
+          recipient_count?: number | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "camp_newsletters_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "camp_newsletters_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       camp_post_media: {
         Row: {
           camp_post_id: string

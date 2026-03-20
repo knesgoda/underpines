@@ -102,9 +102,37 @@ serve(async (req) => {
         (campfires || []).forEach(c => { campfireMap[c.id] = c.name || "Campfire"; });
       }
 
+      // Fetch camp newsletter data for camp_newsletter notifications
+      const campNlNotifs = notifications.filter(n => n.notification_type === "camp_newsletter" && n.camp_id_ref);
+      const campNewsletterData: { campName: string; title: string; excerpt: string; campId: string; newsletterId: string }[] = [];
+      if (campNlNotifs.length > 0) {
+        const campIds = [...new Set(campNlNotifs.map(n => n.camp_id_ref))];
+        for (const cid of campIds) {
+          const { data: camp } = await supabase.from("camps").select("name").eq("id", cid).maybeSingle();
+          const { data: nl } = await supabase
+            .from("camp_newsletters")
+            .select("id, title, content")
+            .eq("camp_id", cid)
+            .eq("status", "sent")
+            .order("sent_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (camp && nl) {
+            const plainText = nl.content.replace(/<[^>]+>/g, "");
+            campNewsletterData.push({
+              campName: camp.name,
+              title: nl.title,
+              excerpt: plainText.slice(0, 150) + (plainText.length > 150 ? "..." : ""),
+              campId: cid,
+              newsletterId: nl.id,
+            });
+          }
+        }
+      }
+
       // Build email
       const dayName = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
-      const html = buildEmailHtml(profile.display_name, dayName, grouped, actorMap, campfireMap);
+      const html = buildEmailHtml(profile.display_name, dayName, grouped, actorMap, campfireMap, campNewsletterData);
 
       // Send via Resend
       const res = await fetch("https://api.resend.com/emails", {
@@ -164,13 +192,14 @@ interface GroupedNotifs {
   circles: any[];
   invites: any[];
   smoke_signals: any[];
+  camp_newsletters: any[];
   system: any[];
 }
 
 function groupNotifications(notifications: any[]): GroupedNotifs {
   const groups: GroupedNotifs = {
     campfire_messages: [], reactions: [], circles: [],
-    invites: [], smoke_signals: [], system: [],
+    invites: [], smoke_signals: [], camp_newsletters: [], system: [],
   };
 
   notifications.forEach(n => {
@@ -184,6 +213,7 @@ function groupNotifications(notifications: any[]): GroupedNotifs {
         groups.circles.push(n); break;
       case "invite_accepted": groups.invites.push(n); break;
       case "smoke_signal": groups.smoke_signals.push(n); break;
+      case "camp_newsletter": groups.camp_newsletters.push(n); break;
       default: groups.system.push(n); break;
     }
   });
@@ -193,7 +223,8 @@ function groupNotifications(notifications: any[]): GroupedNotifs {
 
 function buildEmailHtml(
   name: string, dayName: string, grouped: GroupedNotifs,
-  actorMap: Record<string, string>, campfireMap: Record<string, string>
+  actorMap: Record<string, string>, campfireMap: Record<string, string>,
+  campNewsletterData?: { campName: string; title: string; excerpt: string; campId: string; newsletterId: string }[]
 ): string {
   let sections = "";
 
@@ -251,6 +282,21 @@ function buildEmailHtml(
     sections += section("SMOKE SIGNALS", `
       <p style="margin:4px 0;color:#1a1a2e;">Someone sent you a smoke signal.</p>
     `);
+  }
+
+  if (campNewsletterData && campNewsletterData.length > 0) {
+    let nlContent = "";
+    campNewsletterData.forEach(nl => {
+      nlContent += `
+        <div style="margin-bottom:16px;">
+          <p style="font-size:13px;font-weight:bold;color:#1a1a2e;margin:0 0 4px;">${nl.campName}</p>
+          <p style="font-size:15px;font-weight:bold;color:#1a1a2e;margin:0 0 4px;">${nl.title}</p>
+          <p style="font-size:13px;color:#6b5e4f;margin:0 0 8px;">${nl.excerpt}</p>
+          <a href="https://underpines.com/camps/${nl.campId}/newsletter/${nl.newsletterId}" style="font-size:12px;color:#c2752a;text-decoration:none;">Read the full newsletter →</a>
+        </div>
+      `;
+    });
+    sections += section("FROM YOUR CAMPS", nlContent);
   }
 
   return `

@@ -383,7 +383,7 @@ function groupNotifications(
   campfireNames: Record<string, string>
 ): GroupedNotification[] {
   const groups: GroupedNotification[] = [];
-  const typeOrder = ['campfire_message', 'circle_request', 'circle_accepted', 'reply', 'quote_post', 'reaction_batch', 'invite_accepted', 'smoke_signal', 'camp_join_request', 'camp_join_accepted', 'camp_role_changed', 'camp_post_removed', 'bonfire_split', 'system'];
+  const typeOrder = ['campfire_message', 'circle_request', 'circle_accepted', 'reply', 'quote_post', 'reaction_batch', 'invite_accepted', 'smoke_signal', 'camp_join_request', 'camp_join_accepted', 'camp_role_changed', 'camp_post_removed', 'bonfire_split', 'camp_newsletter', 'system'];
 
   const byType: Record<string, NotificationRow[]> = {};
   notifications.forEach(n => {
@@ -435,6 +435,7 @@ function getSectionEmoji(type: string): string {
     camp_role_changed: '🏕️',
     camp_post_removed: '🏕️',
     bonfire_split: '🏕️',
+    camp_newsletter: '🏕️',
     system: '🏮',
   };
   return map[type] || '🏮';
@@ -455,6 +456,7 @@ function getSectionTitle(type: string): string {
     camp_role_changed: 'Camps',
     camp_post_removed: 'Camps',
     bonfire_split: 'Camps',
+    camp_newsletter: 'Camps',
     system: 'Updates',
   };
   return map[type] || 'Notifications';
@@ -521,6 +523,11 @@ function getNotificationContent(
     case 'bonfire_split':
       return {
         label: 'Your Bonfire has grown past 150 members. A second fire was started.',
+        action: () => {},
+      };
+    case 'camp_newsletter':
+      return {
+        label: `${name} sent a newsletter from your Camp.`,
         action: () => {},
       };
     default:

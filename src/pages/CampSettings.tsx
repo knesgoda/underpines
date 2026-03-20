@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import CampNewsletterSettings from '@/components/camps/CampNewsletterSettings';
 
 interface MemberRow {
   id: string;
@@ -200,6 +201,11 @@ const CampSettings = () => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Newsletter settings */}
+      <div className="mb-8 border-t border-border pt-6">
+        <CampNewsletterSettings campId={id!} firekeeper_id={camp?.firekeeper_id} members={members} />
       </div>
 
       {/* Danger zone */}
