@@ -22,6 +22,7 @@ import CircleSuggestions from "./pages/CircleSuggestions";
 import CollectionsList from "./pages/CollectionsList";
 import CollectionView from "./pages/CollectionView";
 import CollectionEditor from "./pages/CollectionEditor";
+import SubscriptionPage from "./pages/SubscriptionPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
