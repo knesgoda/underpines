@@ -197,7 +197,7 @@ const Cabin = () => {
         </div>
       )}
       {/* Header with weather scene */}
-      <div className="relative w-full" style={{ height: isHollow ? 400 : 280 }}>
+      <div className="relative w-full" style={{ height: isHollow ? 400 : isTrailhead ? 400 : isCanopy ? 200 : 280 }}>
         {profile.header_image_url ? (
           <img
             src={profile.header_image_url}
@@ -215,6 +215,33 @@ const Cabin = () => {
           className="opacity-80"
           reducedParticles={window.innerWidth < 768}
         />
+
+        {/* Trailhead: name overlaid on bottom of header */}
+        {isTrailhead && (
+          <div className="absolute bottom-0 left-0 right-0 px-8 pb-6 pt-16" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)' }}>
+            <div className="max-w-5xl mx-auto flex items-end gap-4">
+              <CabinAvatar
+                avatarUrl={profile.avatar_url}
+                defaultAvatarKey={profile.default_avatar_key}
+                isOwner={isOwner}
+                isEditing={editOpen}
+                profileId={profile.id}
+                onUpdate={fetchProfile}
+                size={isMobile ? 'sm' : 'lg'}
+              />
+              <div>
+                <div className="flex items-center gap-2">
+                  {mood && <span className="text-2xl">{mood.emoji}</span>}
+                  <h1 className="text-3xl md:text-4xl font-display text-white drop-shadow-md">
+                    {profile.display_name}
+                  </h1>
+                  {profile.is_pines_plus && <span title="Pines+" className="text-lg">🌲</span>}
+                </div>
+                <p className="text-sm font-body text-white/60 mt-0.5">@{profile.handle}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {isOwner && (
           <button
