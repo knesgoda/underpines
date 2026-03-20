@@ -65,6 +65,10 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLog, setShowLog] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [isPinesPlus, setIsPinesPlus] = useState(false);
+  const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+  const [highlightMsgId, setHighlightMsgId] = useState<string | null>(null);
   const [reactionMsgId, setReactionMsgId] = useState<string | null>(null);
   const [flickerTimeLeft, setFlickerTimeLeft] = useState('');
   const [autoScroll, setAutoScroll] = useState(true);
