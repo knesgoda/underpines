@@ -50,7 +50,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
     load();
   }, [user]);
 
-  const cap = isFlicker ? 10 : 20;
+  const cap = isFlicker ? 9 : 19; // plus creator = 10 or 20
   const atCap = selected.length >= cap;
 
   const toggleSelect = (id: string) => {
@@ -255,6 +255,14 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
                 <div className={`w-5 h-5 rounded-full bg-card shadow-sm transition-transform ${isFlicker ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
             </div>
+
+            {atCap && (
+              <p className="font-body text-xs text-muted-foreground text-center px-2">
+                {isFlicker
+                  ? 'Flickers are for small moments — 10 people maximum.'
+                  : 'Campfires stay small — 20 people maximum.'}
+              </p>
+            )}
 
             <button
               onClick={handleNext}
