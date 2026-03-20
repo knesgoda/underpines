@@ -980,6 +980,47 @@ export type Database = {
           },
         ]
       }
+      collection_stripe_prices: {
+        Row: {
+          amount_cents: number
+          collection_id: string
+          created_at: string | null
+          currency: string | null
+          id: string
+          price_type: string
+          stripe_price_id: string
+          stripe_product_id: string
+        }
+        Insert: {
+          amount_cents: number
+          collection_id: string
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          price_type: string
+          stripe_price_id: string
+          stripe_product_id: string
+        }
+        Update: {
+          amount_cents?: number
+          collection_id?: string
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          price_type?: string
+          stripe_price_id?: string
+          stripe_product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_stripe_prices_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: true
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_subscriptions: {
         Row: {
           collection_id: string
@@ -1103,6 +1144,161 @@ export type Database = {
             foreignKeyName: "collections_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_earnings: {
+        Row: {
+          amount_cents: number
+          collection_id: string | null
+          creator_amount_cents: number
+          creator_id: string
+          earned_at: string | null
+          id: string
+          platform_fee_cents: number
+          status: string | null
+          stripe_payment_intent_id: string | null
+          stripe_transfer_id: string | null
+          subscriber_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          collection_id?: string | null
+          creator_amount_cents: number
+          creator_id: string
+          earned_at?: string | null
+          id?: string
+          platform_fee_cents: number
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
+          subscriber_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          collection_id?: string | null
+          creator_amount_cents?: number
+          creator_id?: string
+          earned_at?: string | null
+          id?: string
+          platform_fee_cents?: number
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
+          subscriber_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_earnings_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_earnings_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_earnings_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_payout_summaries: {
+        Row: {
+          created_at: string | null
+          creator_amount_cents: number
+          creator_id: string
+          id: string
+          period_end: string
+          period_start: string
+          platform_fee_cents: number
+          status: string | null
+          stripe_payout_id: string | null
+          subscriber_count: number
+          total_earnings_cents: number
+        }
+        Insert: {
+          created_at?: string | null
+          creator_amount_cents: number
+          creator_id: string
+          id?: string
+          period_end: string
+          period_start: string
+          platform_fee_cents: number
+          status?: string | null
+          stripe_payout_id?: string | null
+          subscriber_count: number
+          total_earnings_cents: number
+        }
+        Update: {
+          created_at?: string | null
+          creator_amount_cents?: number
+          creator_id?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          platform_fee_cents?: number
+          status?: string | null
+          stripe_payout_id?: string | null
+          subscriber_count?: number
+          total_earnings_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_payout_summaries_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_stripe_accounts: {
+        Row: {
+          account_status: string | null
+          charges_enabled: boolean | null
+          created_at: string | null
+          id: string
+          payouts_enabled: boolean | null
+          stripe_account_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          account_status?: string | null
+          charges_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          payouts_enabled?: boolean | null
+          stripe_account_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          account_status?: string | null
+          charges_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          payouts_enabled?: boolean | null
+          stripe_account_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_stripe_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
