@@ -31,7 +31,8 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('recipient_id', user.id)
-      .eq('is_read', false);
+      .eq('is_read', false)
+      .neq('notification_type', 'reaction_batch');
     setUnreadCount(count ?? 0);
   };
 
