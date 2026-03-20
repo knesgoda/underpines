@@ -1,0 +1,252 @@
+import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MoreHorizontal, Copy, Trash2, Edit2 } from 'lucide-react';
+import { formatTimeAgo } from '@/lib/time';
+import ReactionBar from './ReactionBar';
+import ReplyThread from './ReplyThread';
+import { toast } from 'sonner';
+
+export interface PostWithAuthor {
+  id: string;
+  author_id: string;
+  post_type: string;
+  content: string | null;
+  title: string | null;
+  is_published: boolean | null;
+  is_quote_post: boolean | null;
+  quoted_post_id: string | null;
+  created_at: string;
+  author?: { display_name: string; handle: string; accent_color: string | null; cabin_mood: string | null };
+  reactions?: { reaction_type: string; user_id: string }[];
+  post_media?: { url: string; media_type: string; position: number }[];
+  quoted_post?: PostWithAuthor | null;
+  _optimistic?: boolean;
+  _failed?: boolean;
+}
+
+interface PostCardProps {
+  post: PostWithAuthor;
+  onRemove?: (id: string) => void;
+  onRefresh?: () => void;
+}
+
+const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
+  const { user } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [reactions, setReactions] = useState(post.reactions || []);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const isOwner = user?.id === post.author_id;
+  const accent = post.author?.accent_color || 'hsl(var(--primary))';
+  const moodIcon = post.author?.cabin_mood || '🕯️';
+
+  useEffect(() => {
+    const handle = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    if (menuOpen) document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [menuOpen]);
+
+  const fetchReactions = async () => {
+    const { data } = await supabase
+      .from('reactions')
+      .select('reaction_type, user_id')
+      .eq('post_id', post.id);
+    if (data) setReactions(data);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('Delete this post?')) return;
+    await supabase.from('posts').delete().eq('id', post.id);
+    onRemove?.(post.id);
+    setMenuOpen(false);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/${post.author?.handle}#post-${post.id}`);
+    toast.success('Link copied');
+    setMenuOpen(false);
+  };
+
+  if (post._failed) return null;
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: post._optimistic ? 0.7 : 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      className="rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] mb-3 overflow-hidden"
+      style={{ borderLeft: `3px solid ${accent}` }}
+    >
+      <div className="p-5">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">{moodIcon}</span>
+            <div>
+              <Link
+                to={`/${post.author?.handle}`}
+                className="font-body text-sm font-medium text-foreground hover:opacity-80"
+              >
+                {post.author?.display_name}
+              </Link>
+              <p className="font-body text-xs text-muted-foreground">
+                @{post.author?.handle}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-body text-muted-foreground">
+              {formatTimeAgo(post.created_at)}
+            </span>
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="p-1 rounded-md text-muted-foreground hover:bg-muted transition-colors"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+              <AnimatePresence>
+                {menuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-1 w-44 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20"
+                  >
+                    <MenuBtn onClick={handleCopyLink}><Copy size={14} /> Copy link</MenuBtn>
+                    {isOwner && (
+                      <>
+                        <div className="h-px bg-border" />
+                        <MenuBtn onClick={handleDelete} destructive><Trash2 size={14} /> Delete</MenuBtn>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+        {/* Content by type */}
+        {post.post_type === 'spark' && (
+          <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+            {post.content}
+          </p>
+        )}
+
+        {post.post_type === 'story' && (
+          <div>
+            {post.title && (
+              <h3 className="font-display text-lg font-semibold text-foreground mb-1.5">
+                {post.title}
+              </h3>
+            )}
+            <p className="font-body text-sm text-foreground/70 line-clamp-3">
+              {stripHtml(post.content || '')}
+            </p>
+            <Link
+              to={`/${post.author?.handle}`}
+              className="inline-block mt-2 text-xs font-body text-primary hover:opacity-80"
+            >
+              ▸ Read in {post.author?.display_name}'s Cabin
+            </Link>
+          </div>
+        )}
+
+        {post.post_type === 'ember' && (
+          <div>
+            {post.post_media && post.post_media.length > 0 && (
+              <div className={`rounded-lg overflow-hidden mb-2 ${
+                post.post_media.length === 1 ? '' :
+                post.post_media.length === 2 ? 'grid grid-cols-2 gap-1' :
+                'grid grid-cols-3 gap-1'
+              }`}>
+                {post.post_media.sort((a, b) => a.position - b.position).map((media, i) => (
+                  <div
+                    key={i}
+                    className={`relative ${i === 0 && post.post_media!.length >= 3 ? 'col-span-2 row-span-2' : ''}`}
+                  >
+                    {media.media_type === 'video' ? (
+                      <video
+                        src={media.url}
+                        className="w-full h-full object-cover max-h-[400px] rounded-lg"
+                        controls
+                        muted
+                      />
+                    ) : (
+                      <img
+                        src={media.url}
+                        alt=""
+                        className="w-full h-full object-cover max-h-[400px] rounded-lg"
+                        loading="lazy"
+                      />
+                    )}
+                    {i === 0 && post.post_media!.length > 3 && (
+                      <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-body px-2 py-0.5 rounded-full">
+                        +{post.post_media!.length - 1} more
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            {post.content && (
+              <p className="font-body text-sm text-foreground/80">{post.content}</p>
+            )}
+          </div>
+        )}
+
+        {/* Quoted post */}
+        {post.is_quote_post && post.quoted_post && (
+          <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-body text-xs font-medium text-foreground">
+                {post.quoted_post.author?.display_name}
+              </span>
+              <span className="text-xs font-body text-muted-foreground">
+                · {formatTimeAgo(post.quoted_post.created_at)}
+              </span>
+            </div>
+            <p className="font-body text-xs text-foreground/70 line-clamp-2">
+              {post.quoted_post.post_type === 'story' ? post.quoted_post.title : post.quoted_post.content}
+            </p>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/50">
+          <ReactionBar
+            postId={post.id}
+            reactions={reactions}
+            onReactionChange={fetchReactions}
+          />
+          <ReplyThread postId={post.id} />
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const MenuBtn = ({ children, onClick, destructive }: { children: React.ReactNode; onClick: () => void; destructive?: boolean }) => (
+  <button
+    onClick={onClick}
+    className={`w-full text-left px-3 py-2 text-sm font-body flex items-center gap-2 transition-colors ${
+      destructive ? 'text-destructive hover:bg-destructive/10' : 'text-foreground hover:bg-muted'
+    }`}
+  >
+    {children}
+  </button>
+);
+
+const stripHtml = (html: string): string => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+};
+
+export default PostCard;
