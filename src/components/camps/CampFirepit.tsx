@@ -108,7 +108,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
       {isScout ? (
         <div className="rounded-xl border border-border bg-card p-4 mb-4 text-center">
           <p className="font-body text-sm text-muted-foreground">
-            🌱 You're still getting settled. You'll be able to post in the Firepit in {scoutDays ?? 0} days. For now, read along and join the Bonfire.
+            🌱 You're a Scout in this Camp for {scoutDays ?? 0} more days. Explore and react — posting unlocks soon.
           </p>
         </div>
       ) : (

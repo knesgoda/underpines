@@ -5,9 +5,11 @@ import CampfireView from '@/components/campfire/CampfireView';
 
 interface Props {
   campId: string;
+  isScout?: boolean;
+  scoutDays?: number | null;
 }
 
-const CampBonfire = ({ campId }: Props) => {
+const CampBonfire = ({ campId, isScout, scoutDays }: Props) => {
   const { user } = useAuth();
   const [bonfireId, setBonfireId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ const CampBonfire = ({ campId }: Props) => {
   if (loading) return <div className="text-center py-8"><p className="font-body text-sm text-muted-foreground">Loading Bonfire...</p></div>;
   if (!bonfireId) return <div className="text-center py-8"><p className="font-body text-sm text-muted-foreground">No Bonfire found for this Camp.</p></div>;
 
-  return <CampfireView campfireId={bonfireId} onBack={() => {}} onRefreshList={() => {}} />;
+  return <CampfireView campfireId={bonfireId} onBack={() => {}} onRefreshList={() => {}} isScout={isScout} scoutDays={scoutDays} />;
 };
 
 export default CampBonfire;

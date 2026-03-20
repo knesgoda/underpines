@@ -52,10 +52,12 @@ interface Props {
   onBack: () => void;
   onRefreshList: () => void;
   autoFocusInput?: boolean;
+  isScout?: boolean;
+  scoutDays?: number | null;
 }
 const REACTIONS = ['🔥', '🌲', '💚', '😂', '👀', '🫂', '🌧️', '✨'];
 
-const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput }: Props) => {
+const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isScout, scoutDays }: Props) => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [campfire, setCampfire] = useState<CampfireData | null>(null);
@@ -586,34 +588,42 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput }: Pro
           )}
 
           {/* Input area */}
-          <div className="border-t border-border px-3 py-2 flex items-end gap-2 shrink-0">
-            <button onClick={sendPhoto} className="p-2 text-muted-foreground hover:text-foreground shrink-0">
-              <Camera size={18} />
-            </button>
-            <VoiceRecorder onSend={sendVoiceMessage} />
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type a message..."
-              rows={1}
-              className="flex-1 resize-none max-h-[120px] py-2 px-3 rounded-xl border border-border bg-background font-body text-sm outline-none"
-              style={{ minHeight: '36px' }}
-              onInput={(e) => {
-                const t = e.currentTarget;
-                t.style.height = '36px';
-                t.style.height = Math.min(t.scrollHeight, 120) + 'px';
-              }}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={!input.trim() || sending}
-              className="p-2 text-primary hover:opacity-80 disabled:opacity-30 shrink-0"
-            >
-              <Send size={18} />
-            </button>
-          </div>
+          {isScout ? (
+            <div className="border-t border-border px-4 py-3 text-center shrink-0">
+              <p className="font-body text-xs text-muted-foreground">
+                🌱 You're a Scout in this Camp for {scoutDays ?? 0} more days. Explore and react — messaging unlocks soon.
+              </p>
+            </div>
+          ) : (
+            <div className="border-t border-border px-3 py-2 flex items-end gap-2 shrink-0">
+              <button onClick={sendPhoto} className="p-2 text-muted-foreground hover:text-foreground shrink-0">
+                <Camera size={18} />
+              </button>
+              <VoiceRecorder onSend={sendVoiceMessage} />
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type a message..."
+                rows={1}
+                className="flex-1 resize-none max-h-[120px] py-2 px-3 rounded-xl border border-border bg-background font-body text-sm outline-none"
+                style={{ minHeight: '36px' }}
+                onInput={(e) => {
+                  const t = e.currentTarget;
+                  t.style.height = '36px';
+                  t.style.height = Math.min(t.scrollHeight, 120) + 'px';
+                }}
+              />
+              <button
+                onClick={sendMessage}
+                disabled={!input.trim() || sending}
+                className="p-2 text-primary hover:opacity-80 disabled:opacity-30 shrink-0"
+              >
+                <Send size={18} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* The Log side panel (desktop only) */}
