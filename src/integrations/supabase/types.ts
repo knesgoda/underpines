@@ -114,6 +114,57 @@ export type Database = {
           },
         ]
       }
+      campfire_log: {
+        Row: {
+          author_id: string
+          campfire_id: string
+          content: string
+          content_type: string
+          created_at: string | null
+          id: string
+          is_pinned: boolean | null
+          link_url: string | null
+          photo_url: string | null
+        }
+        Insert: {
+          author_id: string
+          campfire_id: string
+          content: string
+          content_type: string
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          link_url?: string | null
+          photo_url?: string | null
+        }
+        Update: {
+          author_id?: string
+          campfire_id?: string
+          content?: string
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          link_url?: string | null
+          photo_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campfire_log_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campfire_log_campfire_id_fkey"
+            columns: ["campfire_id"]
+            isOneToOne: false
+            referencedRelation: "campfires"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campfire_messages: {
         Row: {
           campfire_id: string
@@ -166,6 +217,45 @@ export type Database = {
           {
             foreignKeyName: "campfire_messages_sender_id_fkey"
             columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campfire_notification_prefs: {
+        Row: {
+          campfire_id: string
+          created_at: string | null
+          id: string
+          notify_realtime: boolean | null
+          user_id: string
+        }
+        Insert: {
+          campfire_id: string
+          created_at?: string | null
+          id?: string
+          notify_realtime?: boolean | null
+          user_id: string
+        }
+        Update: {
+          campfire_id?: string
+          created_at?: string | null
+          id?: string
+          notify_realtime?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campfire_notification_prefs_campfire_id_fkey"
+            columns: ["campfire_id"]
+            isOneToOne: false
+            referencedRelation: "campfires"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campfire_notification_prefs_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -255,6 +345,7 @@ export type Database = {
           firekeeper_id: string | null
           id: string
           is_active: boolean | null
+          is_embers: boolean | null
           name: string | null
           vibe: string | null
         }
@@ -265,6 +356,7 @@ export type Database = {
           firekeeper_id?: string | null
           id?: string
           is_active?: boolean | null
+          is_embers?: boolean | null
           name?: string | null
           vibe?: string | null
         }
@@ -275,6 +367,7 @@ export type Database = {
           firekeeper_id?: string | null
           id?: string
           is_active?: boolean | null
+          is_embers?: boolean | null
           name?: string | null
           vibe?: string | null
         }
