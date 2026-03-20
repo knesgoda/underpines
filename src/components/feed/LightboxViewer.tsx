@@ -79,15 +79,12 @@ const LightboxViewer = ({ open, images, startIndex, onClose }: LightboxProps) =>
           <img
             src={images[index]}
             alt=""
-            className="block select-none"
+            className="block select-none max-w-[95vw] max-h-[92dvh]"
             style={{
-              maxWidth: '95vw',
-              maxHeight: '92vh',
-              maxHeight: '92dvh',
               width: 'auto',
               height: 'auto',
               objectFit: 'contain',
-            } as any}
+            }}
             onClick={(e) => e.stopPropagation()}
             draggable={false}
           />
