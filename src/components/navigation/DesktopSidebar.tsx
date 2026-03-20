@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Home, Tent, Flame, Search, Settings, Plus, Users } from 'lucide-react';
+import { Home, Tent, Flame, Search, Settings, Plus, Users, Trees } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import LanternIcon from './LanternIcon';
@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
   { label: 'My Cabin', icon: Tent, path: '/cabin' },
   { label: 'Circles', icon: Users, path: '/circles' },
   { label: 'Campfires', icon: Flame, path: '/campfires' },
-  { label: 'Camps', icon: Tent, path: '/camps' },
+  { label: 'Camps', icon: Trees, path: '/camps' },
   { label: 'Search', icon: Search, path: '/search' },
 ];
 
