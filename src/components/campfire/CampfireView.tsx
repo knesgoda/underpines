@@ -21,6 +21,9 @@ interface Message {
   cross_post_id: string | null;
   is_faded: boolean | null;
   created_at: string | null;
+  voice_duration_seconds?: number | null;
+  voice_waveform_data?: number[] | null;
+  voice_mime_type?: string | null;
   senderName?: string;
   senderHandle?: string;
 }
