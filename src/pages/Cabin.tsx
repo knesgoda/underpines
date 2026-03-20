@@ -314,7 +314,7 @@ const Cabin = () => {
         </div>
       ) : (
         /* === HEARTH LAYOUT (default) === */
-        <div className="max-w-4xl mx-auto px-6 relative z-10" style={{ marginTop: -40 }}>
+        <div className="max-w-4xl mx-auto px-6 relative z-10" style={{ marginTop: isMobile ? -40 : -48 }}>
           <div
             className="rounded-2xl shadow-card transition-colors duration-700 relative"
             style={{ backgroundColor: atmos.cardBg, borderColor: atmos.border, borderWidth: 1 }}
