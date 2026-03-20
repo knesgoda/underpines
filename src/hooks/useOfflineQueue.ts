@@ -30,7 +30,7 @@ const useOfflineQueue = (isOnline: boolean) => {
     const queue = getQueue();
     queue.push({ ...post, queued_at: Date.now() });
     setQueue(queue);
-    toast('Your post has been saved and will be sent when you're back in signal.');
+    toast('Your post has been saved and will be sent when you are back in signal.');
   }, []);
 
   const processQueue = useCallback(async () => {
