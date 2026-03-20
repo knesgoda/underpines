@@ -214,26 +214,31 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
               {filtered.length === 0 ? (
                 <p className="text-sm font-body text-muted-foreground text-center py-4">No Circle members found.</p>
               ) : (
-                filtered.map(m => (
-                  <button
-                    key={m.id}
-                    onClick={() => toggleSelect(m.id)}
-                    className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-3 ${
-                      selected.includes(m.id) ? 'bg-primary/10' : 'hover:bg-muted'
-                    }`}
-                  >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 ${
-                      selected.includes(m.id) ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
-                    }`}>
-                      {m.display_name[0]?.toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-body text-sm text-foreground">{m.display_name}</p>
-                      <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
-                    </div>
-                    {selected.includes(m.id) && <span className="ml-auto text-primary">✓</span>}
-                  </button>
-                ))
+                  filtered.map(m => {
+                    const isSelected = selected.includes(m.id);
+                    const disabled = atCap && !isSelected;
+                    return (
+                    <button
+                      key={m.id}
+                      onClick={() => toggleSelect(m.id)}
+                      disabled={disabled}
+                      className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-3 ${
+                        isSelected ? 'bg-primary/10' : disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-muted'
+                      }`}
+                    >
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 ${
+                        isSelected ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
+                      }`}>
+                        {m.display_name[0]?.toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-body text-sm text-foreground">{m.display_name}</p>
+                        <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
+                      </div>
+                      {isSelected && <span className="ml-auto text-primary">✓</span>}
+                    </button>
+                    );
+                  })
               )}
             </div>
 
