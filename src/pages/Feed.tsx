@@ -426,9 +426,9 @@ const Feed = () => {
 };
 
 const EmptyState = ({ icon, title, subtitle, children }: { icon: string; title: string; subtitle?: string; children?: React.ReactNode }) => (
-  <div className="text-center py-16">
-    <p className="text-4xl mb-3">{icon}</p>
-    <p className="font-body text-sm text-foreground">{title}</p>
+  <div className="text-center py-20">
+    <p className="text-3xl mb-3">{icon}</p>
+    <p className="font-body text-sm text-muted-foreground">{title}</p>
     {subtitle && <p className="font-body text-sm text-muted-foreground">{subtitle}</p>}
     {children}
   </div>
