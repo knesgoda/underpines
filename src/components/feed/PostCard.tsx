@@ -127,6 +127,12 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
                     <MenuBtn onClick={() => { setQuoteOpen(true); setMenuOpen(false); }}><Quote size={14} /> Quote post</MenuBtn>
                     <MenuBtn onClick={() => { setShareOpen(true); setMenuOpen(false); }}><Flame size={14} /> Share to Campfire</MenuBtn>
                     <MenuBtn onClick={handleCopyLink}><Copy size={14} /> Copy link</MenuBtn>
+                    {!isOwner && (
+                      <>
+                        <div className="h-px bg-border" />
+                        <MenuBtn onClick={() => { setReportOpen(true); setMenuOpen(false); }}><Flag size={14} /> Report</MenuBtn>
+                      </>
+                    )}
                     {isOwner && (
                       <>
                         <div className="h-px bg-border" />
