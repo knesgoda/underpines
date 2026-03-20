@@ -270,6 +270,7 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
         reportedPostId={post.id}
         reportedUserId={post.author_id}
       />
+      <BlockConfirmDialog />
     </motion.div>
   );
 };
