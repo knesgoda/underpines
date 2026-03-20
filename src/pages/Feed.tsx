@@ -384,17 +384,14 @@ const Feed = () => {
 
       {/* Feed bottom */}
       {!loading && filteredPosts.length > 0 && (
-        <div className="text-center py-12">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px bg-border flex-1 max-w-[80px]" />
-            <span className="text-xs font-body text-muted-foreground">You're all caught up</span>
-            <div className="h-px bg-border flex-1 max-w-[80px]" />
-          </div>
-          <p className="font-body text-xs text-muted-foreground mb-2">
-            Everything since your last visit is above.
+        <div className="py-12 text-center">
+          <div className="h-px bg-border mx-auto max-w-[200px] mb-6" />
+          <p className="font-body text-sm text-muted-foreground mb-1">
+            You're all caught up.
           </p>
-          <p className="text-lg mb-2">🌿</p>
-          <p className="font-body text-xs text-muted-foreground">Check back later.</p>
+          <p className="font-body text-sm text-muted-foreground">
+            Everything since your last visit is above this point. 🌲
+          </p>
         </div>
       )}
     </div>
