@@ -33,6 +33,8 @@ const defaultData: OnboardingData = {
   email: '',
   password: '',
   phone: '',
+  ageBracket: null,
+  birthYear: null,
 };
 
 const OnboardingContext = createContext<OnboardingContextType>({
