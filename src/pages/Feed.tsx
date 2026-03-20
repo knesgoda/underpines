@@ -247,6 +247,9 @@ const Feed = () => {
         )}
       </AnimatePresence>
 
+      {/* Seedling banner */}
+      <SeedlingBanner />
+
       {/* Seasonal event card */}
       <SeasonalEventCard onShareThought={(prompt) => {
         // Pre-fill composer with prompt
