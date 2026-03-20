@@ -62,6 +62,7 @@ const Cabin = () => {
   const [weather, setWeather] = useState<any>(null);
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
+  const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
 
   // Load preview design from sessionStorage
   useEffect(() => {
