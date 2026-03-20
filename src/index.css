@@ -4,57 +4,66 @@
 
 @layer base {
   :root {
-    /* Under Pines — Core Palette */
-    --pine-darkest: 141 69% 20%;
-    --pine-dark: 142 65% 30%;
-    --pine-mid: 142 72% 37%;
-    --pine-light: 138 76% 93%;
-    --pine-pale: 138 76% 97%;
-    --amber-deep: 32 85% 31%;
-    --amber-light: 46 92% 89%;
-    --slate-text: 215 28% 17%;
-    --muted-text: 215 16% 47%;
-    --border-subtle: 214 32% 91%;
+    /* Under Pines — Logo-inspired Palette */
+    /* Deep forest silhouettes */
+    --pine-darkest: 220 30% 10%;
+    --pine-dark: 220 25% 16%;
+    --pine-mid: 200 20% 25%;
+    --pine-light: 30 30% 92%;
+    --pine-pale: 30 25% 96%;
+    /* Sunset amber/fire warmth */
+    --amber-deep: 25 85% 45%;
+    --amber-mid: 30 90% 55%;
+    --amber-light: 35 90% 85%;
+    --amber-glow: 20 95% 60%;
+    /* Dusk sky tones */
+    --dusk-deep: 260 35% 18%;
+    --dusk-mid: 340 40% 30%;
+    --dusk-warm: 15 70% 45%;
+    /* Neutrals */
+    --slate-text: 220 25% 14%;
+    --muted-text: 220 12% 50%;
+    --border-subtle: 30 15% 85%;
 
     /* Design system tokens */
-    --background: 138 76% 97%;
-    --foreground: 215 28% 17%;
+    --background: 30 25% 96%;
+    --foreground: 220 25% 14%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 28% 17%;
+    --card: 30 20% 98%;
+    --card-foreground: 220 25% 14%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 17%;
+    --popover: 30 20% 98%;
+    --popover-foreground: 220 25% 14%;
 
-    --primary: 142 65% 30%;
-    --primary-foreground: 138 76% 97%;
+    --primary: 25 85% 45%;
+    --primary-foreground: 30 25% 96%;
 
-    --secondary: 138 76% 93%;
-    --secondary-foreground: 142 65% 30%;
+    --secondary: 30 30% 92%;
+    --secondary-foreground: 220 25% 16%;
 
-    --muted: 138 76% 93%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 30 20% 90%;
+    --muted-foreground: 220 12% 50%;
 
-    --accent: 32 85% 31%;
-    --accent-foreground: 46 92% 89%;
+    --accent: 260 35% 18%;
+    --accent-foreground: 35 90% 85%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 142 65% 30%;
+    --border: 30 15% 85%;
+    --input: 30 15% 85%;
+    --ring: 25 85% 45%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 138 76% 97%;
-    --sidebar-foreground: 215 28% 17%;
-    --sidebar-primary: 142 65% 30%;
-    --sidebar-primary-foreground: 138 76% 97%;
-    --sidebar-accent: 138 76% 93%;
-    --sidebar-accent-foreground: 142 65% 30%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 142 72% 37%;
+    --sidebar-background: 30 25% 96%;
+    --sidebar-foreground: 220 25% 14%;
+    --sidebar-primary: 25 85% 45%;
+    --sidebar-primary-foreground: 30 25% 96%;
+    --sidebar-accent: 30 30% 92%;
+    --sidebar-accent-foreground: 220 25% 16%;
+    --sidebar-border: 30 15% 85%;
+    --sidebar-ring: 25 85% 45%;
 
     /* Typography */
     --font-display: 'Playfair Display', Georgia, serif;
