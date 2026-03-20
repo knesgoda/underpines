@@ -45,6 +45,7 @@ interface CabinEditDrawerProps {
 
 const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerProps) => {
   const isMobile = useIsMobile();
+  const { theme } = useTheme();
   const [tab, setTab] = useState<'you' | 'appearance' | 'details' | 'widgets'>('you');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
