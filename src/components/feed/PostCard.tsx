@@ -255,6 +255,12 @@ const PostCard = ({ post, onRemove, onRefresh }: PostCardProps) => {
         open={shareOpen}
         onClose={() => setShareOpen(false)}
       />
+      <ReportSheet
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        reportedPostId={post.id}
+        reportedUserId={post.author_id}
+      />
     </motion.div>
   );
 };
