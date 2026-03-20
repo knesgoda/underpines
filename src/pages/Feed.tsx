@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import ComposerStub from '@/components/feed/ComposerStub';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
+import SeasonalEventCard from '@/components/feed/SeasonalEventCard';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { Settings } from 'lucide-react';
 
