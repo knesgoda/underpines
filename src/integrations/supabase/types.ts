@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      age_gate_audit_log: {
+        Row: {
+          action: string
+          age_bracket: string
+          created_at: string
+          id: string
+          ip_hash: string | null
+        }
+        Insert: {
+          action: string
+          age_bracket: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+        }
+        Update: {
+          action?: string
+          age_bracket?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+        }
+        Relationships: []
+      }
       block_threshold_log: {
         Row: {
           block_count: number | null
@@ -1926,6 +1950,47 @@ export type Database = {
           },
         ]
       }
+      parental_consent_requests: {
+        Row: {
+          consent_token: string
+          created_at: string
+          expires_at: string
+          id: string
+          parent_email_hash: string
+          responded_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          consent_token: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_email_hash: string
+          responded_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          consent_token?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_email_hash?: string
+          responded_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parental_consent_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pines_plus_subscriptions: {
         Row: {
           created_at: string | null
@@ -2142,10 +2207,13 @@ export type Database = {
       profiles: {
         Row: {
           accent_color: string | null
+          account_status: string | null
+          age_bracket: string | null
           applied_design_id: string | null
           atmosphere: string | null
           avatar_url: string | null
           bio: string | null
+          birth_year: number | null
           cabin_mood: string | null
           city: string | null
           created_at: string | null
@@ -2163,6 +2231,7 @@ export type Database = {
           handle: string
           header_image_url: string | null
           id: string
+          is_age_verified: boolean | null
           is_pines_plus: boolean | null
           last_active_at: string | null
           latitude: number | null
@@ -2180,10 +2249,13 @@ export type Database = {
         }
         Insert: {
           accent_color?: string | null
+          account_status?: string | null
+          age_bracket?: string | null
           applied_design_id?: string | null
           atmosphere?: string | null
           avatar_url?: string | null
           bio?: string | null
+          birth_year?: number | null
           cabin_mood?: string | null
           city?: string | null
           created_at?: string | null
@@ -2201,6 +2273,7 @@ export type Database = {
           handle: string
           header_image_url?: string | null
           id: string
+          is_age_verified?: boolean | null
           is_pines_plus?: boolean | null
           last_active_at?: string | null
           latitude?: number | null
@@ -2218,10 +2291,13 @@ export type Database = {
         }
         Update: {
           accent_color?: string | null
+          account_status?: string | null
+          age_bracket?: string | null
           applied_design_id?: string | null
           atmosphere?: string | null
           avatar_url?: string | null
           bio?: string | null
+          birth_year?: number | null
           cabin_mood?: string | null
           city?: string | null
           created_at?: string | null
@@ -2239,6 +2315,7 @@ export type Database = {
           handle?: string
           header_image_url?: string | null
           id?: string
+          is_age_verified?: boolean | null
           is_pines_plus?: boolean | null
           last_active_at?: string | null
           latitude?: number | null
