@@ -165,6 +165,8 @@ const Cabin = () => {
   const currentHour = new Date().getHours();
   const effectiveLayout = previewDesign?.design_data?.layout || profile.layout;
   const isHollow = effectiveLayout === 'hollow';
+  const isTrailhead = effectiveLayout === 'trailhead';
+  const isCanopy = effectiveLayout === 'canopy';
 
   return (
     <div
