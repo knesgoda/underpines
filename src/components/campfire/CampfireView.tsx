@@ -228,11 +228,11 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
 
   const sendPhoto = async () => {
     if (!user) return;
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.multiple = true;
-    input.onchange = async (e: any) => {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.multiple = true;
+    inp.onchange = async (e: any) => {
       const files = Array.from(e.target.files || []) as File[];
       for (const file of files.slice(0, 10)) {
         const path = `campfire-media/${user.id}/${campfireId}/${Date.now()}-${file.name}`;
@@ -248,7 +248,41 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
         }
       }
     };
-    input.click();
+    inp.click();
+  };
+
+  const sendVoiceMessage = async (blob: Blob, durationSec: number, waveform: number[], mimeType: string) => {
+    if (!user) return;
+    const msgId = crypto.randomUUID();
+    const ext = mimeType.includes('mp4') ? 'mp4' : mimeType.includes('ogg') ? 'ogg' : 'webm';
+    const storagePath = `${user.id}/${campfireId}/${msgId}.${ext}`;
+
+    const { error } = await supabase.storage.from('voice-messages').upload(storagePath, blob, { contentType: mimeType });
+    if (error) { toast.error('Failed to upload voice message'); return; }
+
+    await supabase.from('campfire_messages').insert({
+      id: msgId,
+      campfire_id: campfireId,
+      sender_id: user.id,
+      message_type: 'voice',
+      media_url: storagePath,
+      voice_duration_seconds: durationSec,
+      voice_waveform_data: waveform,
+      voice_mime_type: mimeType,
+    });
+    setAutoScroll(true);
+  };
+
+  const jumpToMessage = (messageId: string) => {
+    setShowSearch(false);
+    setHighlightMsgId(messageId);
+    setTimeout(() => {
+      const el = document.getElementById(`msg-${messageId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+    setTimeout(() => setHighlightMsgId(null), 2000);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
