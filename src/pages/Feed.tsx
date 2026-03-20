@@ -10,6 +10,15 @@ import SeasonalEventCard from '@/components/feed/SeasonalEventCard';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { Settings } from 'lucide-react';
 
+const PineTreeInline = () => (
+  <svg width="28" height="42" viewBox="0 0 48 72" fill="none" className="animate-tree-sway">
+    <path d="M24 4 L14 24 L34 24 Z" fill="hsl(var(--pine-dark))" opacity="0.9" />
+    <path d="M24 14 L10 38 L38 38 Z" fill="hsl(var(--pine-dark))" opacity="0.75" />
+    <path d="M24 26 L6 52 L42 52 Z" fill="hsl(var(--pine-dark))" opacity="0.6" />
+    <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--amber-deep))" opacity="0.7" />
+  </svg>
+);
+
 const Feed = () => {
   const { user, loading: authLoading } = useAuth();
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
@@ -28,6 +37,11 @@ const Feed = () => {
   const scrollTimerRef = useRef(0);
   const scrollIntervalRef = useRef<number | null>(null);
   const nudgeDismissedUntilRef = useRef<number>(0);
+  const feedRef = useRef<HTMLDivElement>(null);
+  const [pullY, setPullY] = useState(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const pullStartRef = useRef<number | null>(null);
 
   // Load profile + preferences
   useEffect(() => {
@@ -127,6 +141,44 @@ const Feed = () => {
 
   useEffect(() => { loadPosts(); }, [loadPosts]);
 
+  // Pull to refresh
+  useEffect(() => {
+    const el = feedRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (window.scrollY <= 0) {
+        pullStartRef.current = e.touches[0].clientY;
+        setIsPulling(true);
+      }
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (pullStartRef.current === null) return;
+      const dy = Math.max(0, Math.min(e.touches[0].clientY - pullStartRef.current, 120));
+      setPullY(dy);
+    };
+    const onTouchEnd = async () => {
+      if (pullY > 60 && !isRefreshing) {
+        setIsRefreshing(true);
+        setPullY(60);
+        await loadPosts();
+        setIsRefreshing(false);
+      }
+      setPullY(0);
+      setIsPulling(false);
+      pullStartRef.current = null;
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: true });
+    el.addEventListener('touchend', onTouchEnd);
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [pullY, isRefreshing, loadPosts]);
+
   // Scroll timer for 20-minute nudge
   useEffect(() => {
     if (!prefs.feed_scroll_reminder) return;
@@ -203,7 +255,21 @@ const Feed = () => {
   const emptyFeed = circleIds.length > 0 && filteredPosts.length === 0 && !allFiltered;
 
   return (
-    <div className="max-w-[680px] mx-auto px-4 md:px-0 py-4 md:py-6">
+    <div ref={feedRef} className="max-w-[680px] mx-auto px-4 md:px-0 py-4 md:py-6">
+      {/* Pull to refresh indicator */}
+      <AnimatePresence>
+        {(isPulling || isRefreshing) && pullY > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: Math.min(1, pullY / 60), height: pullY }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center justify-center overflow-hidden -mt-4 mb-2"
+          >
+            <PineTreeInline />
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Feed preferences toggle (desktop) */}
       <div className="hidden md:flex justify-end mb-2">
         <button
@@ -288,11 +354,10 @@ const Feed = () => {
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl bg-card border border-border p-6 mb-3 text-center"
+                className="rounded-2xl bg-card border border-primary/20 p-6 mb-3 text-center"
               >
-                <p className="text-2xl mb-2">🌲</p>
-                <p className="font-body text-sm text-foreground">You've been here a while.</p>
-                <p className="font-body text-sm text-muted-foreground mb-4">Maybe a good time for a walk.</p>
+                <p className="font-body text-sm text-foreground mb-1">You've been here a while.</p>
+                <p className="font-body text-sm text-muted-foreground mb-4">Maybe a good time for a walk. 🌲</p>
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={() => dismissNudge(2)}
@@ -302,14 +367,12 @@ const Feed = () => {
                   </button>
                   <button
                     onClick={() => {
-                      try { window.close(); } catch {
-                        dismissNudge(2);
-                        // toast instead
-                      }
+                      dismissNudge(2);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
                   >
-                    Close the app
+                    Take a break
                   </button>
                 </div>
               </motion.div>
@@ -321,17 +384,14 @@ const Feed = () => {
 
       {/* Feed bottom */}
       {!loading && filteredPosts.length > 0 && (
-        <div className="text-center py-12">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px bg-border flex-1 max-w-[80px]" />
-            <span className="text-xs font-body text-muted-foreground">You're all caught up</span>
-            <div className="h-px bg-border flex-1 max-w-[80px]" />
-          </div>
-          <p className="font-body text-xs text-muted-foreground mb-2">
-            Everything since your last visit is above.
+        <div className="py-12 text-center">
+          <div className="h-px bg-border mx-auto max-w-[200px] mb-6" />
+          <p className="font-body text-sm text-muted-foreground mb-1">
+            You're all caught up.
           </p>
-          <p className="text-lg mb-2">🌿</p>
-          <p className="font-body text-xs text-muted-foreground">Check back later.</p>
+          <p className="font-body text-sm text-muted-foreground">
+            Everything since your last visit is above this point. 🌲
+          </p>
         </div>
       )}
     </div>
