@@ -10,6 +10,7 @@ import CircleButton from '@/components/circles/CircleButton';
 import CollectionsShelf from '@/components/cabin/CollectionsShelf';
 import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import CabinAvatar from '@/components/cabin/CabinAvatar';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { fetchWeather, getCurrentSeason } from '@/lib/weather';
 import { Button } from '@/components/ui/button';
