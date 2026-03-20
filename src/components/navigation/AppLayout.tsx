@@ -1,10 +1,12 @@
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSuspensionCheck } from '@/hooks/useSuspensionCheck';
 import DesktopSidebar from './DesktopSidebar';
 import MobileTabBar from './MobileTabBar';
 import OfflineBanner from '@/components/pwa/OfflineBanner';
 import InstallPrompt from '@/components/pwa/InstallPrompt';
 import UpdatePrompt from '@/components/pwa/UpdatePrompt';
+import SuspendedPage from '@/pages/Suspended';
 
 const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
@@ -12,10 +14,22 @@ const FULL_SCREEN_PREFIXES = ['/invite/'];
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const location = useLocation();
+  const { suspension, checking } = useSuspensionCheck(user?.id);
 
   const isFullScreen =
     FULL_SCREEN_ROUTES.includes(location.pathname) ||
     FULL_SCREEN_PREFIXES.some(p => location.pathname.startsWith(p));
+
+  // Show suspension page if user is suspended
+  if (user && !checking && suspension) {
+    return (
+      <SuspendedPage
+        reason={suspension.reason}
+        suspendedUntil={suspension.suspended_until}
+        isPermanent={suspension.is_permanent}
+      />
+    );
+  }
 
   const showNav = user && !isFullScreen;
 
