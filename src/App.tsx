@@ -48,6 +48,7 @@ const App = () => (
                   <Route path="/campfires" element={<Campfires />} />
                   <Route path="/lantern" element={<Lantern />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/settings/notifications" element={<NotificationSettings />} />
                   <Route path="/settings/subscription" element={<SubscriptionPage />} />
                   <Route path="/new/story" element={<StoryComposer />} />
                   <Route path="/circles" element={<CirclesPage />} />
