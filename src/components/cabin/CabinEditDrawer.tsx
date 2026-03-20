@@ -136,7 +136,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     { key: 'widgets', label: 'Widgets' },
   ] as const;
 
-  const atmos = getAtmosphere(form.atmosphere);
+  const atmos = getAtmosphere(form.atmosphere, theme);
 
   const drawerContent = (
     <div className="flex flex-col h-full bg-card">
