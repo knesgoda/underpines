@@ -34,6 +34,10 @@ import CampNewsletterComposer from "./pages/CampNewsletterComposer";
 import CampNewsletterView from "./pages/CampNewsletterView";
 import CampNewsletterArchive from "./pages/CampNewsletterArchive";
 import SearchPage from "./pages/Search";
+import Marketplace from "./pages/Marketplace";
+import MarketplaceDetail from "./pages/MarketplaceDetail";
+import DesignCreator from "./pages/DesignCreator";
+import MyDesigns from "./pages/MyDesigns";
 import NotFound from "./pages/NotFound";
 
 // Grove (admin)
