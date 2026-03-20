@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ComposerStub from '@/components/feed/ComposerStub';
 import SeedlingBanner from '@/components/feed/SeedlingBanner';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
+import LightboxViewer from '@/components/feed/LightboxViewer';
 import SeasonalEventCard from '@/components/feed/SeasonalEventCard';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { Settings } from 'lucide-react';
@@ -35,6 +36,7 @@ const Feed = () => {
     feed_scroll_reminder: true,
   });
   const [scrollNudgeShown, setScrollNudgeShown] = useState(false);
+  const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
   const scrollTimerRef = useRef(0);
   const scrollIntervalRef = useRef<number | null>(null);
   const nudgeDismissedUntilRef = useRef<number>(0);
@@ -459,7 +461,7 @@ const Feed = () => {
                 </div>
               </motion.div>
             )}
-            <PostCard post={post} circleIds={circleIds} onRemove={handleRemovePost} onRefresh={loadPosts} />
+            <PostCard post={post} circleIds={circleIds} onRemove={handleRemovePost} onRefresh={loadPosts} onImageClick={(imgs, idx) => setLightbox({ open: true, images: imgs, index: idx })} />
           </div>
         ))}
       </AnimatePresence>
@@ -476,6 +478,7 @@ const Feed = () => {
           </p>
         </div>
       )}
+      <LightboxViewer open={lightbox.open} images={lightbox.images} startIndex={lightbox.index} onClose={() => setLightbox(l => ({ ...l, open: false }))} />
     </div>
   );
 };

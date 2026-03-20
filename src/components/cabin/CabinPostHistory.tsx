@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
+import LightboxViewer from '@/components/feed/LightboxViewer';
 
 interface Props {
   profileId: string;
@@ -14,6 +15,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
   const navigate = useNavigate();
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
 
   useEffect(() => {
     const load = async () => {
@@ -71,7 +73,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
 
   // Visibility gating for non-circle visitors
   const renderGatedPost = (post: PostWithAuthor) => {
-    if (isOwner || isInCircle) return <PostCard key={post.id} post={post} onRemove={handleRemove} />;
+    if (isOwner || isInCircle) return <PostCard key={post.id} post={post} onRemove={handleRemove} onImageClick={(imgs, idx) => setLightbox({ open: true, images: imgs, index: idx })} />;
 
     // Non-circle: sparks visible, stories title-only, embers blurred
     if (post.post_type === 'spark') {
@@ -139,6 +141,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
           </div>
         );
       })}
+      <LightboxViewer open={lightbox.open} images={lightbox.images} startIndex={lightbox.index} onClose={() => setLightbox(l => ({ ...l, open: false }))} />
     </div>
   );
 };
