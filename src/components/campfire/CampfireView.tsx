@@ -418,6 +418,13 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
                     </>
                   )}
                   <div className="h-px bg-border" />
+                  <MenuBtn onClick={() => { setMenuOpen(false); isPinesPlus ? setShowSearch(true) : toast.info('Search Campfires is available with Pines+'); }}>
+                    <span className="flex items-center gap-2">
+                      <Search size={14} /> Search this Campfire
+                      {!isPinesPlus && <Lock size={12} className="text-muted-foreground" />}
+                    </span>
+                  </MenuBtn>
+                  <div className="h-px bg-border" />
                   <MenuBtn onClick={() => { setMenuOpen(false); }}>Notification settings</MenuBtn>
                 </motion.div>
               )}
