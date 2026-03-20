@@ -15,6 +15,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
   const navigate = useNavigate();
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
 
   useEffect(() => {
     const load = async () => {
