@@ -331,7 +331,7 @@ const Cabin = () => {
                 size={isMobile ? 'sm' : 'lg'}
               />
             </div>
-            <div className="flex items-start gap-4 pt-4 pl-28 md:pl-28 pr-8 pb-6">
+            <div className="flex items-start gap-4 pt-4 pl-24 md:pl-28 pr-8 pb-6">
               <div className="flex-1 pt-2">
                 <div className="flex items-center gap-2">
                   {mood && <span className="text-2xl">{mood.emoji}</span>}
