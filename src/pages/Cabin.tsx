@@ -147,6 +147,20 @@ const Cabin = () => {
       if (owner && editOnLoad) {
         setEditOpen(true);
       }
+
+      // Fetch monthly visit count for owner
+      if (owner) {
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+        const { data: visits } = await supabase
+          .from('cabin_visits')
+          .select('visit_count')
+          .eq('profile_id', data.id)
+          .gte('visit_date', monthStart);
+        if (visits) {
+          setMonthlyVisits(visits.reduce((sum, v) => sum + (v.visit_count || 0), 0));
+        }
+      }
     }
     setLoading(false);
   }, [handle, user, editOnLoad]);
