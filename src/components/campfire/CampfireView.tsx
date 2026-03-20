@@ -51,11 +51,11 @@ interface Props {
   campfireId: string;
   onBack: () => void;
   onRefreshList: () => void;
+  autoFocusInput?: boolean;
 }
-
 const REACTIONS = ['🔥', '🌲', '💚', '😂', '👀', '🫂', '🌧️', '✨'];
 
-const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
+const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput }: Props) => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [campfire, setCampfire] = useState<CampfireData | null>(null);
@@ -76,6 +76,13 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
   const [newMsgPill, setNewMsgPill] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-focus input when opened via "Stoke it?"
+  useEffect(() => {
+    if (autoFocusInput && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 400);
+    }
+  }, [autoFocusInput, campfire]);
 
   // Load campfire data
   const loadCampfire = useCallback(async () => {

@@ -33,6 +33,7 @@ const Campfires = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterTab>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [stokeMode, setStokeMode] = useState(false);
   const [showNewSheet, setShowNewSheet] = useState(false);
 
   const loadCampfires = useCallback(async () => {
@@ -136,8 +137,9 @@ const Campfires = () => {
       return (
         <CampfireView
           campfireId={selectedId}
-          onBack={() => setSelectedId(null)}
+          onBack={() => { setSelectedId(null); setStokeMode(false); }}
           onRefreshList={loadCampfires}
+          autoFocusInput={stokeMode}
         />
       );
     }
@@ -150,7 +152,8 @@ const Campfires = () => {
             campfires={filtered}
             displayName={displayName}
             isFlickerExpired={isFlickerExpired}
-            onSelect={setSelectedId}
+            onSelect={(id) => { setStokeMode(false); setSelectedId(id); }}
+            onStoke={(id) => { setStokeMode(true); setSelectedId(id); }}
           />
         </div>
         <div className="p-4 border-t border-border">
@@ -174,7 +177,8 @@ const Campfires = () => {
             campfires={filtered}
             displayName={displayName}
             isFlickerExpired={isFlickerExpired}
-            onSelect={setSelectedId}
+            onSelect={(id) => { setStokeMode(false); setSelectedId(id); }}
+            onStoke={(id) => { setStokeMode(true); setSelectedId(id); }}
             selectedId={selectedId}
           />
         </div>
@@ -190,8 +194,9 @@ const Campfires = () => {
         {selectedId ? (
           <CampfireView
             campfireId={selectedId}
-            onBack={() => setSelectedId(null)}
+            onBack={() => { setSelectedId(null); setStokeMode(false); }}
             onRefreshList={loadCampfires}
+            autoFocusInput={stokeMode}
           />
         ) : (
           <div className="flex-1 flex items-center justify-center">
@@ -242,12 +247,13 @@ const flickerTimeRemaining = (expiresAt: string | null): string => {
 };
 
 const CampfireList = ({
-  campfires, displayName, isFlickerExpired, onSelect, selectedId,
+  campfires, displayName, isFlickerExpired, onSelect, onStoke, selectedId,
 }: {
   campfires: CampfireItem[];
   displayName: (c: CampfireItem) => string;
   isFlickerExpired: (c: CampfireItem) => boolean;
   onSelect: (id: string) => void;
+  onStoke?: (id: string) => void;
   selectedId?: string | null;
 }) => {
   if (campfires.length === 0) {
@@ -334,7 +340,12 @@ const CampfireList = ({
                   {isEmbers && c.daysSinceLastMessage ? (
                     <div className="flex items-center gap-2">
                       <p className="font-body text-xs text-muted-foreground">Quiet for {c.daysSinceLastMessage} days</p>
-                      <span className="font-body text-xs text-primary cursor-pointer hover:underline">Stoke it?</span>
+                      <span
+                        className="font-body text-xs text-primary cursor-pointer hover:underline"
+                        onClick={(e) => { e.stopPropagation(); onStoke?.(c.id); }}
+                        role="button"
+                        tabIndex={0}
+                      >Stoke it?</span>
                     </div>
                   ) : c.lastMessage ? (
                     <p className="font-body text-xs text-muted-foreground truncate">
