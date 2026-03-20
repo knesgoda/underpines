@@ -11,6 +11,7 @@ import CodeBlock from '@tiptap/extension-code-block';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Bold, Italic, Strikethrough, Heading2, Heading3, Quote, Minus, ImagePlus, Link as LinkIcon, Code } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSeedlingStatus } from '@/hooks/useSeedlingStatus';
 
 const StoryComposer = () => {
   const { user } = useAuth();
