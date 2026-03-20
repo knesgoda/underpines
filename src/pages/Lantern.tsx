@@ -498,6 +498,31 @@ function getNotificationContent(
         label: `${name} subscribed to your collection.`,
         action: () => {},
       };
+    case 'camp_join_request':
+      return {
+        label: `${name} wants to join your Camp.`,
+        action: () => {},
+      };
+    case 'camp_join_accepted':
+      return {
+        label: 'Your Camp join request was accepted!',
+        action: () => {},
+      };
+    case 'camp_role_changed':
+      return {
+        label: 'Your Camp role was updated.',
+        action: () => {},
+      };
+    case 'camp_post_removed':
+      return {
+        label: 'A Trailblazer removed your post from a Camp.',
+        action: () => {},
+      };
+    case 'bonfire_split':
+      return {
+        label: 'Your Bonfire has grown past 150 members. A second fire was started.',
+        action: () => {},
+      };
     default:
       return {
         label: 'New notification',
