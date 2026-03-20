@@ -38,19 +38,67 @@ serve(async (req) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        const metaType = session.metadata?.type;
+
+        // --- Collection checkout ---
+        if (metaType === "collection") {
+          const collectionId = session.metadata?.collectionId;
+          const subscriberId = session.metadata?.subscriberId;
+          if (!collectionId || !subscriberId) break;
+
+          const subscriptionId = session.subscription as string | null;
+          const customerId = session.customer as string;
+
+          // Create collection_subscriptions row
+          await supabase.from("collection_subscriptions").upsert({
+            collection_id: collectionId,
+            subscriber_id: subscriberId,
+            stripe_subscription_id: subscriptionId || session.payment_intent as string,
+            status: "active",
+            started_at: new Date().toISOString(),
+          }, { onConflict: "collection_id,subscriber_id" });
+
+          // Get collection for earnings
+          const { data: col } = await supabase.from("collections").select("author_id, price_cents, title").eq("id", collectionId).single();
+          if (col) {
+            const amount = col.price_cents || 0;
+            const fee = Math.floor(amount * 0.05);
+            await supabase.from("creator_earnings").insert({
+              creator_id: col.author_id,
+              collection_id: collectionId,
+              subscriber_id: subscriberId,
+              amount_cents: amount,
+              platform_fee_cents: fee,
+              creator_amount_cents: amount - fee,
+              stripe_payment_intent_id: (session.payment_intent as string) || null,
+            });
+
+            // Notify creator
+            await supabase.from("notifications").insert({
+              recipient_id: col.author_id,
+              actor_id: subscriberId,
+              notification_type: "collection_subscriber",
+              collection_id: collectionId,
+              is_delivered_in_ember: false,
+            });
+          }
+
+          console.log(`[STRIPE-WEBHOOK] Collection subscription activated: ${collectionId} for ${subscriberId}`);
+          break;
+        }
+
+        // --- Pines+ checkout (existing) ---
         const userId = session.metadata?.userId;
         if (!userId) break;
 
         const subscriptionId = session.subscription as string;
         const customerId = session.customer as string;
 
-        // Get subscription details
         const sub = await stripe.subscriptions.retrieve(subscriptionId);
         const priceId = sub.items.data[0]?.price.id;
         const monthlyPriceId = Deno.env.get("STRIPE_MONTHLY_PRICE_ID");
         const plan = priceId === monthlyPriceId ? "monthly" : "annual";
 
-        // Upsert subscription record
         await supabase.from("pines_plus_subscriptions").upsert({
           user_id: userId,
           stripe_subscription_id: subscriptionId,
@@ -60,10 +108,8 @@ serve(async (req) => {
           current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
         }, { onConflict: "user_id" });
 
-        // Update profile
         await supabase.from("profiles").update({ is_pines_plus: true }).eq("id", userId);
 
-        // Welcome notification
         await supabase.from("notifications").insert({
           recipient_id: userId,
           notification_type: "system",
@@ -76,6 +122,24 @@ serve(async (req) => {
 
       case "customer.subscription.updated": {
         const sub = event.data.object as Stripe.Subscription;
+
+        // Check if this is a collection subscription
+        if (sub.metadata?.type === "collection") {
+          const collectionId = sub.metadata?.collectionId;
+          const subscriberId = sub.metadata?.subscriberId;
+          if (!collectionId || !subscriberId) break;
+
+          const status = sub.cancel_at_period_end ? "cancelled" : sub.status === "active" ? "active" : sub.status;
+          await supabase.from("collection_subscriptions")
+            .update({ status })
+            .eq("collection_id", collectionId)
+            .eq("subscriber_id", subscriberId);
+
+          console.log(`[STRIPE-WEBHOOK] Collection sub updated: ${collectionId} → ${status}`);
+          break;
+        }
+
+        // Pines+ subscription
         const userId = sub.metadata?.userId;
         if (!userId) break;
 
@@ -86,7 +150,6 @@ serve(async (req) => {
           current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
         }).eq("user_id", userId);
 
-        // If reactivated
         if (sub.status === "active" && !sub.cancel_at_period_end) {
           await supabase.from("profiles").update({ is_pines_plus: true }).eq("id", userId);
         }
@@ -97,6 +160,20 @@ serve(async (req) => {
 
       case "customer.subscription.deleted": {
         const sub = event.data.object as Stripe.Subscription;
+
+        if (sub.metadata?.type === "collection") {
+          const collectionId = sub.metadata?.collectionId;
+          const subscriberId = sub.metadata?.subscriberId;
+          if (collectionId && subscriberId) {
+            await supabase.from("collection_subscriptions")
+              .update({ status: "expired" })
+              .eq("collection_id", collectionId)
+              .eq("subscriber_id", subscriberId);
+            console.log(`[STRIPE-WEBHOOK] Collection sub deleted: ${collectionId}`);
+          }
+          break;
+        }
+
         const userId = sub.metadata?.userId;
         if (!userId) break;
 

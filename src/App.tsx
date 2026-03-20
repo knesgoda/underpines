@@ -24,6 +24,7 @@ import CollectionsList from "./pages/CollectionsList";
 import CollectionView from "./pages/CollectionView";
 import CollectionEditor from "./pages/CollectionEditor";
 import SubscriptionPage from "./pages/SubscriptionPage";
+import CreatorPayouts from "./pages/CreatorPayouts";
 import CampsDirectory from "./pages/CampsDirectory";
 import MyCamps from "./pages/MyCamps";
 import CreateCamp from "./pages/CreateCamp";
@@ -60,6 +61,7 @@ const App = () => (
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/settings/notifications" element={<NotificationSettings />} />
                   <Route path="/settings/subscription" element={<SubscriptionPage />} />
+                  <Route path="/settings/payouts" element={<CreatorPayouts />} />
                   <Route path="/new/story" element={<StoryComposer />} />
                   <Route path="/circles" element={<CirclesPage />} />
                   <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
