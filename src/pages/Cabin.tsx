@@ -579,15 +579,15 @@ const CabinMoreMenu = ({
 
 // --- Shared sub-components for layouts ---
 
-const CabinMetaRow = ({ profile, temperature, atmos, centered }: {
-  profile: Profile; temperature: number | null; atmos: any; centered?: boolean;
+const CabinMetaRow = ({ profile, temperature, tempUnit, atmos, centered }: {
+  profile: Profile; temperature: number | null; tempUnit: 'C' | 'F'; atmos: any; centered?: boolean;
 }) => (
   <div className={`flex flex-wrap gap-4 text-sm font-body ${centered ? 'justify-center' : ''}`} style={{ color: atmos.text, opacity: 0.5 }}>
     {profile.currently_type && profile.currently_value && (
       <span>Currently {profile.currently_type} {profile.currently_value}</span>
     )}
     {profile.city && <span>{profile.city}</span>}
-    {temperature != null && <span>{Math.round(temperature)}°C</span>}
+    {temperature != null && <span>{Math.round(temperature)}°{tempUnit}</span>}
   </div>
 );
 
