@@ -109,6 +109,14 @@ const Invites = () => {
                   </div>
                 )}
               </div>
+
+              <Link
+                to="/invites/tree"
+                className="inline-flex items-center gap-2 text-sm font-body text-primary hover:text-primary/80 transition-colors mt-2"
+              >
+                <TreePine size={14} />
+                View your invite tree
+              </Link>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground font-body">

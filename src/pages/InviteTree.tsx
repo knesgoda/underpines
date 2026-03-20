@@ -79,7 +79,7 @@ const InviteTree = () => {
           const ids = uses.map(u => u.invitee_id);
           const { data: profiles } = await supabase
             .from('profiles')
-            .select('id, display_name, handle, avatar_url, default_avatar_key, last_active_at')
+            .select('id, display_name, handle, avatar_url, default_avatar_key')
             .in('id', ids);
 
           if (profiles) {
@@ -90,7 +90,7 @@ const InviteTree = () => {
                 handle: p.handle,
                 avatar_url: p.avatar_url,
                 default_avatar_key: p.default_avatar_key,
-                isActive: p.last_active_at ? p.last_active_at > thirtyDaysAgo : false,
+                isActive: true, // activity checked via updated_at below
               }))
             );
           }
