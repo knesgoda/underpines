@@ -69,6 +69,19 @@ const Cabin = () => {
       const owner = user?.id === data.id;
       setIsOwner(owner);
 
+      // Check circle status
+      if (user && !owner) {
+        const { data: circle } = await supabase
+          .from('circles')
+          .select('status')
+          .or(`and(requester_id.eq.${user.id},requestee_id.eq.${data.id}),and(requester_id.eq.${data.id},requestee_id.eq.${user.id})`)
+          .eq('status', 'accepted')
+          .maybeSingle();
+        setIsInCircle(!!circle);
+      } else if (owner) {
+        setIsInCircle(true);
+      }
+
       if (data.latitude && data.longitude) {
         const w = await fetchWeather(data.latitude, data.longitude);
         setWeather(w);
