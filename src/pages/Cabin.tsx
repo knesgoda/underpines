@@ -12,6 +12,7 @@ import CollectionsShelf from '@/components/cabin/CollectionsShelf';
 import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import CabinAvatar from '@/components/cabin/CabinAvatar';
+import SuggestionBox from '@/components/cabin/SuggestionBox';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { getCurrentSeason } from '@/lib/weather';
 import { useWeather } from '@/hooks/useWeather';
