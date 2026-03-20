@@ -38,6 +38,7 @@ import Marketplace from "./pages/Marketplace";
 import MarketplaceDetail from "./pages/MarketplaceDetail";
 import DesignCreator from "./pages/DesignCreator";
 import MyDesigns from "./pages/MyDesigns";
+import Wrapped from "./pages/Wrapped";
 import NotFound from "./pages/NotFound";
 
 // Grove (admin)
