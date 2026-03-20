@@ -49,7 +49,16 @@ const setCache = (lat: number, lon: number, data: WeatherData) => {
   }
 };
 
-const DEFAULTS: WeatherData = { weatherCode: 0, windSpeed: 0, temperature: 20 };
+const DEFAULTS: WeatherData = { weatherCode: 0, windSpeed: 0, temperature: 20, unit: 'C' };
+
+const isUSTimezone = (): boolean => {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return tz.startsWith('America/') && !tz.includes('Argentina') && !tz.includes('Bogota') && !tz.includes('Lima') && !tz.includes('Santiago') && !tz.includes('Sao_Paulo');
+  } catch {
+    return false;
+  }
+};
 
 export const useWeather = (latitude: number | null | undefined, longitude: number | null | undefined): UseWeatherReturn => {
   const [data, setData] = useState<WeatherData>(DEFAULTS);
