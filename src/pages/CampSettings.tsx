@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import CampNewsletterSettings from '@/components/camps/CampNewsletterSettings';
 
 interface MemberRow {
   id: string;
