@@ -125,6 +125,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
 
       setMessages(data.map(m => ({
         ...m,
+        voice_waveform_data: m.voice_waveform_data as number[] | null,
         senderName: profileMap.get(m.sender_id)?.display_name,
         senderHandle: profileMap.get(m.sender_id)?.handle,
       })));
