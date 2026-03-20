@@ -164,6 +164,7 @@ interface GroupedNotifs {
   circles: any[];
   invites: any[];
   smoke_signals: any[];
+  camp_newsletters: any[];
   system: any[];
 }
 
