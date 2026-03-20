@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import WeatherScene from '@/components/cabin/WeatherScene';
 import CabinEditDrawer from '@/components/cabin/CabinEditDrawer';
 import WidgetShelf from '@/components/cabin/WidgetShelf';
+import CircleButton from '@/components/circles/CircleButton';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { fetchWeather, getCurrentSeason } from '@/lib/weather';
