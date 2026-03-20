@@ -496,4 +496,60 @@ const Cabin = () => {
   );
 };
 
+
+const CabinMoreMenu = ({
+  targetUserId,
+  targetDisplayName,
+  open,
+  setOpen,
+  navigate,
+}: {
+  targetUserId: string;
+  targetDisplayName: string;
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  navigate: (path: string) => void;
+}) => {
+  const { openBlockDialog, handleMute, BlockConfirmDialog } = useBlockMute({
+    targetUserId,
+    targetDisplayName,
+    onComplete: () => navigate('/'),
+  });
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="p-2 rounded-full border border-border text-muted-foreground hover:bg-muted transition-colors"
+      >
+        <MoreHorizontal size={16} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="absolute bottom-full right-0 mb-2 w-56 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20"
+          >
+            <button
+              onClick={() => { openBlockDialog(); setOpen(false); }}
+              className="w-full text-left px-3 py-2.5 text-sm font-body flex items-center gap-2 text-foreground hover:bg-muted transition-colors"
+            >
+              🚫 Step away from the fire
+            </button>
+            <button
+              onClick={() => { handleMute(); setOpen(false); }}
+              className="w-full text-left px-3 py-2.5 text-sm font-body flex items-center gap-2 text-foreground hover:bg-muted transition-colors"
+            >
+              🔇 Bank the fire
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <BlockConfirmDialog />
+    </div>
+  );
+};
+
 export default Cabin;
