@@ -329,7 +329,7 @@ const Cabin = () => {
             )}
           </div>
           <div className="py-12 space-y-6" style={{ borderTop: `1px solid ${atmos.border}` }}>
-            <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} centered />
+            <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} centered />
             {profile.bio && <p className="text-sm font-body text-center max-w-md mx-auto" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>}
             <CabinPinnedSong profile={profile} atmos={atmos} centered />
           </div>
