@@ -14,10 +14,9 @@ const Invites = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       if (!user) return;
 
-      // Get user's invite
       const { data: inv } = await supabase
         .from('invites')
         .select('*')
@@ -27,7 +26,6 @@ const Invites = () => {
       if (inv) {
         setInvite(inv);
 
-        // Get invitees
         const { data: uses } = await supabase
           .from('invite_uses')
           .select('*, invitee:invitee_id(display_name, handle)')
@@ -39,10 +37,13 @@ const Invites = () => {
       setLoading(false);
     };
 
-    fetch();
+    fetchData();
   }, [user]);
 
   if (loading) return <PineTreeLoading />;
+
+  const inviteUrl = invite ? `${window.location.origin}/invite/${invite.slug}` : '';
+  const displayUrl = invite ? `underpines.com/invite/${invite.slug}` : '';
 
   return (
     <div className="min-h-screen bg-background texture-paper">
@@ -60,13 +61,13 @@ const Invites = () => {
                 <div className="flex items-center gap-3">
                   <span className="text-lg">🔗</span>
                   <code className="text-sm font-body text-foreground flex-1 break-all">
-                    underpines.com/invite/{invite.slug}
+                    {displayUrl}
                   </code>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/invite/${invite.slug}`);
+                      navigator.clipboard.writeText(inviteUrl);
                       toast.success('Link copied');
                     }}
                     className="shrink-0"

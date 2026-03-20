@@ -25,7 +25,6 @@ const StepVerify = () => {
   }, [codeSent]);
 
   const handleSendCode = async () => {
-    // For Phase 1, skip actual phone verification and create user directly
     setSending(true);
     try {
       const { data: authData, error } = await supabase.auth.signUp({
@@ -45,19 +44,36 @@ const StepVerify = () => {
         return;
       }
 
-      // If we have invite data, record the invite use
+      // Record invite use and decrement if not infinite
       if (data.inviteId && authData.user) {
-        // Create invite use and auto-create invite for the new user
-        await supabase.from('invites').insert({
-          inviter_id: authData.user.id,
-          slug: data.handle,
-          uses_remaining: 3,
-          uses_total: 3,
+        // Insert invite_uses row
+        await supabase.from('invite_uses').insert({
+          invite_id: data.inviteId,
+          invitee_id: authData.user.id,
         });
+
+        // Fetch the invite to check if infinite
+        const { data: inv } = await supabase
+          .from('invites')
+          .select('is_infinite, uses_remaining')
+          .eq('id', data.inviteId)
+          .maybeSingle();
+
+        if (inv && !inv.is_infinite) {
+          const newRemaining = Math.max(0, inv.uses_remaining - 1);
+          await supabase
+            .from('invites')
+            .update({
+              uses_remaining: newRemaining,
+              is_active: newRemaining > 0,
+            })
+            .eq('id', data.inviteId);
+        }
       }
 
+      // The new user's invite is auto-created by the DB trigger on profiles insert
+
       setSending(false);
-      // Skip to Walk Through the Woods
       setStep(6);
     } catch (err) {
       toast.error('Something went wrong. Please try again.');
