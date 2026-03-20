@@ -382,7 +382,7 @@ const Cabin = () => {
               )}
             </div>
             <div className="hidden md:block text-right">
-              <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} />
+              <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} />
             </div>
           </div>
 
