@@ -45,9 +45,12 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
           onClick={() => setExpanded(true)}
           className="w-full flex items-center gap-3 text-left"
         >
-          <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground shrink-0">
-            {profile?.display_name?.[0]?.toUpperCase() || '?'}
-          </div>
+          <UserAvatar
+            avatarUrl={profile?.avatar_url}
+            defaultAvatarKey={profile?.default_avatar_key}
+            displayName={profile?.display_name}
+            size={36}
+          />
           <span className="font-body text-sm text-muted-foreground/50">
             A thought, a story, a photo...
           </span>
