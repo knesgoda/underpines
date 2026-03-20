@@ -118,10 +118,46 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    line-height: 1.6;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
+  }
+
+  /* Focus states — pine-mid ring */
+  :focus-visible {
+    outline: 2px solid hsl(var(--pine-mid));
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* All-caps labels tracking */
+  .tracking-caps {
+    letter-spacing: 0.08em;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Minimum touch target for mobile */
+@media (pointer: coarse) {
+  button,
+  a,
+  [role="button"],
+  [tabindex] {
+    min-height: 44px;
+    min-width: 44px;
   }
 }
 

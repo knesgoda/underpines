@@ -38,6 +38,7 @@ import Marketplace from "./pages/Marketplace";
 import MarketplaceDetail from "./pages/MarketplaceDetail";
 import DesignCreator from "./pages/DesignCreator";
 import MyDesigns from "./pages/MyDesigns";
+import Wrapped from "./pages/Wrapped";
 import NotFound from "./pages/NotFound";
 
 // Grove (admin)
@@ -113,6 +114,7 @@ const App = () => (
                       <Route path="/camps/:id/newsletters" element={<CampNewsletterArchive />} />
                       <Route path="/:handle/collections" element={<CollectionsList />} />
                       <Route path="/:handle/collections/:id" element={<CollectionView />} />
+                      <Route path="/wrapped/:year" element={<Wrapped />} />
                       <Route path="/:handle" element={<Cabin />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
