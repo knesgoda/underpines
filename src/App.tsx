@@ -42,6 +42,8 @@ import MarketplaceDetail from "./pages/MarketplaceDetail";
 import DesignCreator from "./pages/DesignCreator";
 import MyDesigns from "./pages/MyDesigns";
 import Wrapped from "./pages/Wrapped";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
 // Grove (admin)
