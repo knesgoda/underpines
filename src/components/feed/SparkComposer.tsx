@@ -69,7 +69,7 @@ const SparkComposer = ({ onPost, onCancel }: SparkComposerProps) => {
 
     const { error: uploadErr } = await supabase.storage
       .from('post-media')
-      .upload(path, file, { contentType: file.type, upsert: false });
+      .upload(path, file, { contentType: file.type, upsert: false, cacheControl: '31536000' });
 
     if (uploadErr) {
       toast.error("That image didn't make it through. Try again?");

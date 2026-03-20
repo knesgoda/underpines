@@ -118,7 +118,7 @@ const StoryComposer = () => {
       const ext = file.name.split('.').pop();
       const path = `${user.id}/stories/${Date.now()}.${ext}`;
 
-      const { error } = await supabase.storage.from('post-media').upload(path, file, { contentType: file.type });
+      const { error } = await supabase.storage.from('post-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
       if (error) { toast.error('Upload failed'); return; }
 
       const { data } = supabase.storage.from('post-media').getPublicUrl(path);
