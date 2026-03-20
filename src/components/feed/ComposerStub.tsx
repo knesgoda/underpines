@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SparkComposer from './SparkComposer';
 import EmberComposer from './EmberComposer';
 import UserAvatar from '@/components/UserAvatar';
+import { useSeedlingStatus } from './SeedlingBanner';
 
 type PostType = 'spark' | 'story' | 'ember' | null;
 
