@@ -177,7 +177,8 @@ const Campfires = () => {
             campfires={filtered}
             displayName={displayName}
             isFlickerExpired={isFlickerExpired}
-            onSelect={setSelectedId}
+            onSelect={(id) => { setStokeMode(false); setSelectedId(id); }}
+            onStoke={(id) => { setStokeMode(true); setSelectedId(id); }}
             selectedId={selectedId}
           />
         </div>
