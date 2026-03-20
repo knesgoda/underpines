@@ -102,6 +102,34 @@ serve(async (req) => {
         (campfires || []).forEach(c => { campfireMap[c.id] = c.name || "Campfire"; });
       }
 
+      // Fetch camp newsletter data for camp_newsletter notifications
+      const campNlNotifs = notifications.filter(n => n.notification_type === "camp_newsletter" && n.camp_id_ref);
+      const campNewsletterData: { campName: string; title: string; excerpt: string; campId: string; newsletterId: string }[] = [];
+      if (campNlNotifs.length > 0) {
+        const campIds = [...new Set(campNlNotifs.map(n => n.camp_id_ref))];
+        for (const cid of campIds) {
+          const { data: camp } = await supabase.from("camps").select("name").eq("id", cid).maybeSingle();
+          const { data: nl } = await supabase
+            .from("camp_newsletters")
+            .select("id, title, content")
+            .eq("camp_id", cid)
+            .eq("status", "sent")
+            .order("sent_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (camp && nl) {
+            const plainText = nl.content.replace(/<[^>]+>/g, "");
+            campNewsletterData.push({
+              campName: camp.name,
+              title: nl.title,
+              excerpt: plainText.slice(0, 150) + (plainText.length > 150 ? "..." : ""),
+              campId: cid,
+              newsletterId: nl.id,
+            });
+          }
+        }
+      }
+
       // Build email
       const dayName = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
       const html = buildEmailHtml(profile.display_name, dayName, grouped, actorMap, campfireMap);
