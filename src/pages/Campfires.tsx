@@ -145,9 +145,9 @@ const Campfires = () => {
     }
 
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col h-[calc(100vh-64px)]">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col h-dvh">
         <CampfireListHeader filter={filter} setFilter={setFilter} />
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
           <CampfireList
             campfires={filtered}
             displayName={displayName}
@@ -168,11 +168,11 @@ const Campfires = () => {
 
   // Desktop: split panel
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-[calc(100vh-0px)]">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-dvh">
       {/* Left panel */}
       <div className="w-[320px] border-r border-border flex flex-col shrink-0">
         <CampfireListHeader filter={filter} setFilter={setFilter} />
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
           <CampfireList
             campfires={filtered}
             displayName={displayName}
