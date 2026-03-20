@@ -423,9 +423,15 @@ const CirclesPage = () => {
           </div>
         </div>
       )}
+
+      {/* Find people */}
+      <div className="text-center pt-8 pb-4">
+        <Link to="/search" className="inline-flex items-center gap-1.5 font-body text-sm text-primary hover:opacity-80 transition-opacity">
+          <Search size={14} /> Find people in the Pines
+        </Link>
+      </div>
     </motion.div>
   );
-};
 
 const EmptyState = ({ icon, text }: { icon: string; text: string }) => (
   <div className="text-center py-12">
