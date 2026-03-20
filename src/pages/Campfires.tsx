@@ -145,7 +145,7 @@ const Campfires = () => {
     }
 
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col h-[calc(100vh-64px)]">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col" style={{ height: '100vh', height: '100dvh' }}>
         <CampfireListHeader filter={filter} setFilter={setFilter} />
         <div className="flex-1 overflow-y-auto">
           <CampfireList
