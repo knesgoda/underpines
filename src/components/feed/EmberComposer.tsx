@@ -33,6 +33,10 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         continue;
       }
       if (!/^(image\/(jpeg|png|gif|webp)|video\/mp4)$/.test(f.type)) {
+        const isHeic = f.name?.toLowerCase().endsWith('.heic') || f.type === 'image/heic';
+        if (isHeic) {
+          toast.error("That file format isn't supported yet. Try saving it as a JPEG or PNG first.");
+        }
         skipped++;
         continue;
       }
