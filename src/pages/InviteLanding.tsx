@@ -123,10 +123,9 @@ const InviteLanding = () => {
               border: '1px solid rgba(255, 255, 255, 0.1)',
             }}
           >
-            <p className="text-xl font-display text-pine-light leading-relaxed">
-              {inviter?.display_name || 'Someone special'} has saved you<br />
-              a seat by the fire.
-            </p>
+             <p className="text-xl font-display text-pine-light leading-relaxed">
+               {inviter?.display_name || 'Someone special'} has saved you a seat by the fire.
+             </p>
 
             <p className="text-pine-light/60 font-body text-sm mt-6 leading-relaxed">
               Under Pines is an invite-only community.<br />
