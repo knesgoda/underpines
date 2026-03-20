@@ -74,6 +74,7 @@ const App = () => (
                   <Route path="camps/:id" element={<GroveCampDetail />} />
                   <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
+                  <Route path="designs" element={<GroveDesigns />} />
                 </Route>
 
                 {/* Main app routes */}
