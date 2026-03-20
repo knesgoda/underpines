@@ -171,7 +171,7 @@ interface GroupedNotifs {
 function groupNotifications(notifications: any[]): GroupedNotifs {
   const groups: GroupedNotifs = {
     campfire_messages: [], reactions: [], circles: [],
-    invites: [], smoke_signals: [], system: [],
+    invites: [], smoke_signals: [], camp_newsletters: [], system: [],
   };
 
   notifications.forEach(n => {
