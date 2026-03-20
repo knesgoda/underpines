@@ -18,6 +18,32 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const location = useLocation();
   const { suspension, checking } = useSuspensionCheck(user?.id);
+  const [needsAgeGate, setNeedsAgeGate] = useState(false);
+  const [ageGateChecked, setAgeGateChecked] = useState(false);
+
+  // LEGAL-REVIEW-NEEDED: Check if existing user needs age verification
+  useEffect(() => {
+    if (!user) {
+      setAgeGateChecked(true);
+      return;
+    }
+    const checkAge = async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_age_verified, age_bracket')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      // Check if this is the founder (admin) — exempt from age gate
+      const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: user.id });
+
+      if (profile && !profile.is_age_verified && !isAdmin) {
+        setNeedsAgeGate(true);
+      }
+      setAgeGateChecked(true);
+    };
+    checkAge();
+  }, [user]);
 
   const isFullScreen =
     FULL_SCREEN_ROUTES.includes(location.pathname) ||
