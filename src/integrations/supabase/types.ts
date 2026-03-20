@@ -85,6 +85,80 @@ export type Database = {
           },
         ]
       }
+      cabin_designs: {
+        Row: {
+          created_at: string | null
+          creator_id: string
+          description: string | null
+          design_data: Json
+          id: string
+          is_free: boolean | null
+          is_seasonal: boolean | null
+          name: string
+          preview_image_url: string | null
+          price_cents: number
+          purchases: number | null
+          rating_no: number | null
+          rating_yes: number | null
+          review_notes: string | null
+          season: string | null
+          status: string | null
+          stripe_price_id: string | null
+          stripe_product_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id: string
+          description?: string | null
+          design_data: Json
+          id?: string
+          is_free?: boolean | null
+          is_seasonal?: boolean | null
+          name: string
+          preview_image_url?: string | null
+          price_cents?: number
+          purchases?: number | null
+          rating_no?: number | null
+          rating_yes?: number | null
+          review_notes?: string | null
+          season?: string | null
+          status?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string
+          description?: string | null
+          design_data?: Json
+          id?: string
+          is_free?: boolean | null
+          is_seasonal?: boolean | null
+          name?: string
+          preview_image_url?: string | null
+          price_cents?: number
+          purchases?: number | null
+          rating_no?: number | null
+          rating_yes?: number | null
+          review_notes?: string | null
+          season?: string | null
+          status?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_designs_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cabin_visits: {
         Row: {
           id: string
@@ -1339,6 +1413,103 @@ export type Database = {
           },
         ]
       }
+      design_purchases: {
+        Row: {
+          amount_cents: number
+          buyer_id: string
+          creator_amount_cents: number
+          creator_id: string
+          design_id: string
+          id: string
+          platform_fee_cents: number
+          purchased_at: string | null
+          stripe_payment_intent_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          buyer_id: string
+          creator_amount_cents: number
+          creator_id: string
+          design_id: string
+          id?: string
+          platform_fee_cents: number
+          purchased_at?: string | null
+          stripe_payment_intent_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          buyer_id?: string
+          creator_amount_cents?: number
+          creator_id?: string
+          design_id?: string
+          id?: string
+          platform_fee_cents?: number
+          purchased_at?: string | null
+          stripe_payment_intent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_purchases_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "design_purchases_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "design_purchases_design_id_fkey"
+            columns: ["design_id"]
+            isOneToOne: false
+            referencedRelation: "cabin_designs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      design_ratings: {
+        Row: {
+          buyer_id: string
+          created_at: string | null
+          design_id: string
+          id: string
+          rating: boolean
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string | null
+          design_id: string
+          id?: string
+          rating: boolean
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string | null
+          design_id?: string
+          id?: string
+          rating?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_ratings_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "design_ratings_design_id_fkey"
+            columns: ["design_id"]
+            isOneToOne: false
+            referencedRelation: "cabin_designs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inactive_nudges: {
         Row: {
           created_at: string | null
@@ -1843,6 +2014,7 @@ export type Database = {
       profiles: {
         Row: {
           accent_color: string | null
+          applied_design_id: string | null
           atmosphere: string | null
           bio: string | null
           cabin_mood: string | null
@@ -1875,6 +2047,7 @@ export type Database = {
         }
         Insert: {
           accent_color?: string | null
+          applied_design_id?: string | null
           atmosphere?: string | null
           bio?: string | null
           cabin_mood?: string | null
@@ -1907,6 +2080,7 @@ export type Database = {
         }
         Update: {
           accent_color?: string | null
+          applied_design_id?: string | null
           atmosphere?: string | null
           bio?: string | null
           cabin_mood?: string | null
@@ -1937,7 +2111,15 @@ export type Database = {
           updated_at?: string | null
           zip_code?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_applied_design_id_fkey"
+            columns: ["applied_design_id"]
+            isOneToOne: false
+            referencedRelation: "cabin_designs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       push_subscriptions: {
         Row: {

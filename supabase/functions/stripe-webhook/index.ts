@@ -87,6 +87,54 @@ serve(async (req) => {
           break;
         }
 
+        // --- Design checkout ---
+        if (metaType === "design") {
+          const designId = session.metadata?.designId;
+          const buyerId = session.metadata?.buyerId;
+          if (!designId || !buyerId) break;
+
+          const { data: design } = await supabase.from("cabin_designs").select("*").eq("id", designId).single();
+          if (!design) break;
+
+          const amount = design.price_cents || 0;
+          const fee = Math.floor(amount * 0.05);
+
+          await supabase.from("design_purchases").upsert({
+            design_id: designId,
+            buyer_id: buyerId,
+            creator_id: design.creator_id,
+            amount_cents: amount,
+            platform_fee_cents: fee,
+            creator_amount_cents: amount - fee,
+            stripe_payment_intent_id: (session.payment_intent as string) || null,
+          }, { onConflict: "design_id,buyer_id" });
+
+          await supabase.from("cabin_designs").update({
+            purchases: (design.purchases || 0) + 1,
+          }).eq("id", designId);
+
+          // Creator earnings
+          await supabase.from("creator_earnings").insert({
+            creator_id: design.creator_id,
+            subscriber_id: buyerId,
+            amount_cents: amount,
+            platform_fee_cents: fee,
+            creator_amount_cents: amount - fee,
+            stripe_payment_intent_id: (session.payment_intent as string) || null,
+          });
+
+          // Notify creator
+          await supabase.from("notifications").insert({
+            recipient_id: design.creator_id,
+            actor_id: buyerId,
+            notification_type: "design_purchased",
+            is_delivered_in_ember: true,
+          });
+
+          console.log(`[STRIPE-WEBHOOK] Design purchased: ${designId} by ${buyerId}`);
+          break;
+        }
+
         // --- Pines+ checkout (existing) ---
         const userId = session.metadata?.userId;
         if (!userId) break;

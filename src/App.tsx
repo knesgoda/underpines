@@ -34,6 +34,10 @@ import CampNewsletterComposer from "./pages/CampNewsletterComposer";
 import CampNewsletterView from "./pages/CampNewsletterView";
 import CampNewsletterArchive from "./pages/CampNewsletterArchive";
 import SearchPage from "./pages/Search";
+import Marketplace from "./pages/Marketplace";
+import MarketplaceDetail from "./pages/MarketplaceDetail";
+import DesignCreator from "./pages/DesignCreator";
+import MyDesigns from "./pages/MyDesigns";
 import NotFound from "./pages/NotFound";
 
 // Grove (admin)
@@ -46,6 +50,7 @@ import GroveCamps from "./pages/grove/GroveCamps";
 import GroveCampDetail from "./pages/grove/GroveCampDetail";
 import GroveRevenue from "./pages/grove/GroveRevenue";
 import GroveSettings from "./pages/grove/GroveSettings";
+import GroveDesigns from "./pages/grove/GroveDesigns";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +74,7 @@ const App = () => (
                   <Route path="camps/:id" element={<GroveCampDetail />} />
                   <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
+                  <Route path="designs" element={<GroveDesigns />} />
                 </Route>
 
                 {/* Main app routes */}
@@ -88,6 +94,10 @@ const App = () => (
                       <Route path="/settings/notifications" element={<NotificationSettings />} />
                       <Route path="/settings/subscription" element={<SubscriptionPage />} />
                       <Route path="/settings/payouts" element={<CreatorPayouts />} />
+                      <Route path="/settings/designs" element={<MyDesigns />} />
+                      <Route path="/marketplace" element={<Marketplace />} />
+                      <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
+                      <Route path="/designs/create" element={<DesignCreator />} />
                       <Route path="/new/story" element={<StoryComposer />} />
                       <Route path="/circles" element={<CirclesPage />} />
                       <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />

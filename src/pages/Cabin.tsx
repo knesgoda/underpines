@@ -44,6 +44,7 @@ const Cabin = () => {
   const setupMode = searchParams.get('setup') === 'true';
   const editOnLoad = searchParams.get('edit') === 'true';
   const upgraded = searchParams.get('upgraded') === 'true';
+  const previewMode = searchParams.get('preview') === 'true';
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -54,6 +55,21 @@ const Cabin = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [weather, setWeather] = useState<any>(null);
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
+  const [previewDesign, setPreviewDesign] = useState<any>(null);
+
+  // Load preview design from sessionStorage
+  useEffect(() => {
+    if (previewMode) {
+      const raw = sessionStorage.getItem('cabin_preview_design');
+      if (raw) {
+        setPreviewDesign(JSON.parse(raw));
+      }
+    }
+    return () => {
+      // Clean up preview on unmount
+      sessionStorage.removeItem('cabin_preview_design');
+    };
+  }, [previewMode]);
 
   useEffect(() => {
     if (upgraded && !sessionStorage.getItem('pines_upgrade_shown')) {
@@ -133,17 +149,44 @@ const Cabin = () => {
     );
   }
 
-  const atmos = getAtmosphere(profile.atmosphere);
+  const effectiveAtmos = previewDesign?.design_data?.atmosphere
+    ? getAtmosphere(previewDesign.design_data.atmosphere)
+    : getAtmosphere(profile.atmosphere);
+  const atmos = effectiveAtmos;
   const mood = cabinMoods.find(m => m.key === profile.cabin_mood);
   const season = getCurrentSeason();
   const currentHour = new Date().getHours();
-  const isHollow = profile.layout === 'hollow';
+  const effectiveLayout = previewDesign?.design_data?.layout || profile.layout;
+  const isHollow = effectiveLayout === 'hollow';
 
   return (
     <div
       className="min-h-screen transition-colors duration-700 pt-14"
       style={{ backgroundColor: atmos.background, color: atmos.text }}
     >
+      {/* Design Preview Banner */}
+      {previewDesign && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between text-sm font-body">
+          <span>Previewing: {previewDesign.name}</span>
+          <div className="flex gap-2">
+            <button onClick={() => { setPreviewDesign(null); sessionStorage.removeItem('cabin_preview_design'); navigate('/cabin'); }}
+              className="px-3 py-1 rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/30 transition-colors text-xs">
+              Exit preview
+            </button>
+            {previewDesign.price_cents > 0 ? (
+              <button onClick={() => navigate(`/marketplace/${previewDesign.id}`)}
+                className="px-3 py-1 rounded-full bg-primary-foreground text-primary text-xs font-medium">
+                Buy for ${(previewDesign.price_cents / 100).toFixed(0)} →
+              </button>
+            ) : (
+              <button onClick={() => navigate(`/marketplace/${previewDesign.id}`)}
+                className="px-3 py-1 rounded-full bg-primary-foreground text-primary text-xs font-medium">
+                Get for free →
+              </button>
+            )}
+          </div>
+        </div>
+      )}
       {/* Header with weather scene */}
       <div className="relative w-full" style={{ height: isHollow ? 400 : 280 }}>
         {profile.header_image_url ? (

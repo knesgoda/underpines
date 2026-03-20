@@ -47,6 +47,18 @@ const SettingsPage = () => {
           Circles
         </button>
         <button
+          onClick={() => navigate('/settings/designs')}
+          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
+        >
+          🎨 My Designs
+        </button>
+        <button
+          onClick={() => navigate('/marketplace')}
+          className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
+        >
+          🏕️ Cabin Marketplace
+        </button>
+        <button
           onClick={() => navigate('/cabin?edit=true')}
           className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground"
         >
