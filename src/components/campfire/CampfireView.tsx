@@ -44,6 +44,7 @@ interface CampfireData {
   is_active: boolean | null;
   is_embers: boolean | null;
   expires_at: string | null;
+  camp_id: string | null;
 }
 
 interface Props {
