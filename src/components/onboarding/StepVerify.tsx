@@ -44,7 +44,7 @@ const StepVerify = () => {
         return;
       }
 
-      // Record invite use and decrement if not infinite
+      // Record invite use, decrement counter, and create Circle
       if (data.inviteId && authData.user) {
         // Insert invite_uses row
         await supabase.from('invite_uses').insert({
@@ -69,6 +69,12 @@ const StepVerify = () => {
             })
             .eq('id', data.inviteId);
         }
+
+        // Auto-create bidirectional Circle with inviter
+        await supabase.rpc('accept_invite_create_circle', {
+          _invite_id: data.inviteId,
+          _new_user_id: authData.user.id,
+        });
       }
 
       // The new user's invite is auto-created by the DB trigger on profiles insert

@@ -2684,6 +2684,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_invite_create_circle: {
+        Args: { _invite_id: string; _new_user_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
