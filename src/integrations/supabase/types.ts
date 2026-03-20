@@ -2168,6 +2168,7 @@ export type Database = {
           pinned_song_title: string | null
           quiet_mode: boolean | null
           seedling_ends_at: string | null
+          theme: string | null
           updated_at: string | null
           zip_code: string | null
         }
@@ -2205,6 +2206,7 @@ export type Database = {
           pinned_song_title?: string | null
           quiet_mode?: boolean | null
           seedling_ends_at?: string | null
+          theme?: string | null
           updated_at?: string | null
           zip_code?: string | null
         }
@@ -2242,6 +2244,7 @@ export type Database = {
           pinned_song_title?: string | null
           quiet_mode?: boolean | null
           seedling_ends_at?: string | null
+          theme?: string | null
           updated_at?: string | null
           zip_code?: string | null
         }
