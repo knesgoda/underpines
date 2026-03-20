@@ -245,6 +245,11 @@ const Feed = () => {
         )}
       </AnimatePresence>
 
+      {/* Seasonal event card */}
+      <SeasonalEventCard onShareThought={(prompt) => {
+        // Pre-fill composer with prompt
+      }} />
+
       {/* Composer stub */}
       <ComposerStub onPost={handleOptimisticPost} profile={profile} />
 
