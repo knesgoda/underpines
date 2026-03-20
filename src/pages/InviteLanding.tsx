@@ -72,7 +72,7 @@ const InviteLanding = () => {
           </svg>
 
           <h2 className="text-2xl font-display text-pine-light mb-4">
-            This fire has burned out.
+            This fire's burned out.
           </h2>
           <p className="text-pine-light/60 font-body text-sm">
             Know someone on Under Pines?<br />
@@ -123,21 +123,15 @@ const InviteLanding = () => {
               border: '1px solid rgba(255, 255, 255, 0.1)',
             }}
           >
-            <p className="text-xl font-display text-pine-light leading-relaxed">
-              {inviter?.display_name || 'Someone special'} has saved you<br />
-              a seat by the fire.
-            </p>
-
-            <p className="text-pine-light/60 font-body text-sm mt-6 leading-relaxed">
-              Under Pines is an invite-only community.<br />
-              You've been vouched for. Welcome.
-            </p>
+             <p className="text-xl font-display text-pine-light leading-relaxed">
+               {inviter?.display_name || 'Someone special'} has saved you a seat by the fire.
+             </p>
 
             <Button
               onClick={() => navigate('/onboarding')}
               className="mt-8 rounded-pill px-10 h-14 text-base font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             >
-              Accept your invite
+              Come in
             </Button>
           </div>
 
