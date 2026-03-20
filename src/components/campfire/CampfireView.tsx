@@ -622,7 +622,8 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               >
                 <Send size={18} />
               </button>
-          </div>
+            </div>
+          )}
         </div>
 
         {/* The Log side panel (desktop only) */}
