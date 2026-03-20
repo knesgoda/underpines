@@ -43,6 +43,7 @@ const Cabin = () => {
   const [searchParams] = useSearchParams();
   const setupMode = searchParams.get('setup') === 'true';
   const editOnLoad = searchParams.get('edit') === 'true';
+  const upgraded = searchParams.get('upgraded') === 'true';
   const { user } = useAuth();
   const navigate = useNavigate();
 
