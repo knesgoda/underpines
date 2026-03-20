@@ -256,6 +256,21 @@ function buildEmailHtml(
     `);
   }
 
+  if (campNewsletterData && campNewsletterData.length > 0) {
+    let nlContent = "";
+    campNewsletterData.forEach(nl => {
+      nlContent += `
+        <div style="margin-bottom:16px;">
+          <p style="font-size:13px;font-weight:bold;color:#1a1a2e;margin:0 0 4px;">${nl.campName}</p>
+          <p style="font-size:15px;font-weight:bold;color:#1a1a2e;margin:0 0 4px;">${nl.title}</p>
+          <p style="font-size:13px;color:#6b5e4f;margin:0 0 8px;">${nl.excerpt}</p>
+          <a href="https://underpines.com/camps/${nl.campId}/newsletter/${nl.newsletterId}" style="font-size:12px;color:#c2752a;text-decoration:none;">Read the full newsletter →</a>
+        </div>
+      `;
+    });
+    sections += section("FROM YOUR CAMPS", nlContent);
+  }
+
   return `
 <!DOCTYPE html>
 <html>
