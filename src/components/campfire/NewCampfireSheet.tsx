@@ -50,8 +50,21 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
     load();
   }, [user]);
 
+  const cap = isFlicker ? 10 : 20;
+  const atCap = selected.length >= cap;
+
   const toggleSelect = (id: string) => {
-    setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    if (selected.includes(id)) {
+      setSelected(prev => prev.filter(x => x !== id));
+      return;
+    }
+    if (selected.length >= cap) {
+      toast(isFlicker
+        ? "Flickers are for small moments — 10 people max."
+        : "Campfires don't scale beyond 20. Keep it intimate.");
+      return;
+    }
+    setSelected(prev => [...prev, id]);
   };
 
   const handleNext = async () => {
