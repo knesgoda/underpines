@@ -25,6 +25,7 @@ const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [circleIds, setCircleIds] = useState<string[]>([]);
+  const [inviter, setInviter] = useState<{ display_name: string; handle: string } | null>(null);
   const [showPrefs, setShowPrefs] = useState(false);
   const [prefs, setPrefs] = useState({
     feed_show_sparks: true,
