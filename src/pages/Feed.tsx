@@ -141,6 +141,44 @@ const Feed = () => {
 
   useEffect(() => { loadPosts(); }, [loadPosts]);
 
+  // Pull to refresh
+  useEffect(() => {
+    const el = feedRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (window.scrollY <= 0) {
+        pullStartRef.current = e.touches[0].clientY;
+        setIsPulling(true);
+      }
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (pullStartRef.current === null) return;
+      const dy = Math.max(0, Math.min(e.touches[0].clientY - pullStartRef.current, 120));
+      setPullY(dy);
+    };
+    const onTouchEnd = async () => {
+      if (pullY > 60 && !isRefreshing) {
+        setIsRefreshing(true);
+        setPullY(60);
+        await loadPosts();
+        setIsRefreshing(false);
+      }
+      setPullY(0);
+      setIsPulling(false);
+      pullStartRef.current = null;
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: true });
+    el.addEventListener('touchend', onTouchEnd);
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [pullY, isRefreshing, loadPosts]);
+
   // Scroll timer for 20-minute nudge
   useEffect(() => {
     if (!prefs.feed_scroll_reminder) return;
