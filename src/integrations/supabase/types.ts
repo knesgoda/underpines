@@ -159,6 +159,48 @@ export type Database = {
           },
         ]
       }
+      cabin_suggestions: {
+        Row: {
+          author_id: string | null
+          cabin_owner_id: string
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean
+        }
+        Insert: {
+          author_id?: string | null
+          cabin_owner_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+        }
+        Update: {
+          author_id?: string | null
+          cabin_owner_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_suggestions_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_suggestions_cabin_owner_id_fkey"
+            columns: ["cabin_owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cabin_visits: {
         Row: {
           id: string
