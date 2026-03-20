@@ -107,6 +107,7 @@ const SettingsPage = () => {
           className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
         >
           🔒 Privacy
+        </button>
         <button
           onClick={() => navigate('/invites')}
           className="w-full text-left px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors font-body text-sm text-foreground"
