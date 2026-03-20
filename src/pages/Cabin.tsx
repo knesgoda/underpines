@@ -7,6 +7,8 @@ import WeatherScene from '@/components/cabin/WeatherScene';
 import CabinEditDrawer from '@/components/cabin/CabinEditDrawer';
 import WidgetShelf from '@/components/cabin/WidgetShelf';
 import CircleButton from '@/components/circles/CircleButton';
+import CollectionsShelf from '@/components/cabin/CollectionsShelf';
+import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { fetchWeather, getCurrentSeason } from '@/lib/weather';
