@@ -497,6 +497,17 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
                         >
                           <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
                         </div>
+                      ) : msg.message_type === 'voice' && msg.media_url ? (
+                        <VoiceMessageBubble
+                          mediaUrl={msg.media_url}
+                          durationSeconds={msg.voice_duration_seconds ?? null}
+                          waveformData={msg.voice_waveform_data ?? null}
+                          mimeType={msg.voice_mime_type ?? null}
+                          isMine={isMine}
+                          isPlaying={playingVoiceId === msg.id}
+                          onPlay={() => setPlayingVoiceId(msg.id)}
+                          onPause={() => setPlayingVoiceId(null)}
+                        />
                       ) : msg.message_type === 'cross_post' ? (
                         <div
                           className={`px-3 py-2 rounded-2xl border border-border bg-card ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
