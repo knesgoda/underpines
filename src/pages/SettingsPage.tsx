@@ -121,4 +121,22 @@ const SettingsPage = () => {
   );
 };
 
+const SettingsSection = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div className="mb-6">
+    <p className="font-display text-xs uppercase tracking-wide text-muted-foreground mb-2">{label}</p>
+    <div className="rounded-xl border border-border bg-card overflow-hidden divide-y divide-border">
+      {children}
+    </div>
+  </div>
+);
+
+const SettingsItem = ({ emoji, label, onClick }: { emoji: string; label: string; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className="w-full text-left px-4 py-3 hover:bg-muted transition-colors font-body text-sm text-foreground flex items-center gap-2"
+  >
+    <span>{emoji}</span> {label}
+  </button>
+);
+
 export default SettingsPage;
