@@ -164,13 +164,13 @@ const Feed = () => {
         : { data: [] };
 
       // Fetch media for ember posts
-      const emberIds = allPosts.filter(p => p.post_type === 'ember').map(p => p.id);
+      const mediaPostIds = allPosts.filter(p => p.post_type === 'ember').map(p => p.id);
       let allMedia: any[] = [];
-      if (emberIds.length > 0) {
+      if (mediaPostIds.length > 0) {
         const { data: media } = await supabase
           .from('post_media')
           .select('*')
-          .in('post_id', emberIds)
+          .in('post_id', mediaPostIds)
           .order('position');
         allMedia = media || [];
       }
