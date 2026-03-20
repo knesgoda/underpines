@@ -11,10 +11,12 @@ import CodeBlock from '@tiptap/extension-code-block';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Bold, Italic, Strikethrough, Heading2, Heading3, Quote, Minus, ImagePlus, Link as LinkIcon, Code } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSeedlingStatus } from '@/hooks/useSeedlingStatus';
 
 const StoryComposer = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isSeedling, daysLeft } = useSeedlingStatus();
   const [title, setTitle] = useState('');
   const [postId, setPostId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -132,6 +134,12 @@ const StoryComposer = () => {
   };
 
   if (!editor) return null;
+
+  if (isSeedling) {
+    toast.info(`Your Cabin is still getting ready. Stories unlock in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`);
+    navigate('/');
+    return null;
+  }
 
   return (
     <motion.div

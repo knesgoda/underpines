@@ -6,9 +6,11 @@ import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { useSeedlingStatus } from '@/hooks/useSeedlingStatus';
 
 const Invites = () => {
   const { user } = useAuth();
+  const { isSeedling, daysLeft } = useSeedlingStatus();
   const [invite, setInvite] = useState<any>(null);
   const [invitees, setInvitees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +57,13 @@ const Invites = () => {
         >
           <h1 className="text-3xl font-display text-foreground mb-8">Your Invite Link</h1>
 
-          {invite ? (
+          {isSeedling ? (
+            <div className="rounded-2xl bg-card p-6 shadow-soft border border-border">
+              <p className="font-body text-sm text-muted-foreground">
+                🌱 Your invite link will activate once your Cabin is ready — {daysLeft} {daysLeft === 1 ? 'day' : 'days'} to go.
+              </p>
+            </div>
+          ) : invite ? (
             <div className="space-y-6">
               <div className="rounded-2xl bg-card p-6 shadow-soft border border-border">
                 <div className="flex items-center gap-3">
