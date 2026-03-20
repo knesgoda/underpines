@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import ComposerStub from '@/components/feed/ComposerStub';
+import SeedlingBanner from '@/components/feed/SeedlingBanner';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
 import SeasonalEventCard from '@/components/feed/SeasonalEventCard';
 import PineTreeLoading from '@/components/PineTreeLoading';
@@ -244,6 +245,9 @@ const Feed = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Seedling banner */}
+      <SeedlingBanner />
 
       {/* Seasonal event card */}
       <SeasonalEventCard onShareThought={(prompt) => {
