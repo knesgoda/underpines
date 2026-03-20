@@ -80,8 +80,11 @@ export const useWeather = (latitude: number | null | undefined, longitude: numbe
     let cancelled = false;
     setLoading(true);
 
+    const useFahrenheit = isUSTimezone();
+    const unitParam = useFahrenheit ? '&temperature_unit=fahrenheit' : '';
+
     fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=weather_code,wind_speed_10m,temperature_2m&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=weather_code,wind_speed_10m,temperature_2m&timezone=auto${unitParam}`
     )
       .then(res => res.json())
       .then(json => {
@@ -90,6 +93,7 @@ export const useWeather = (latitude: number | null | undefined, longitude: numbe
           weatherCode: json.current?.weather_code ?? 0,
           windSpeed: json.current?.wind_speed_10m ?? 0,
           temperature: json.current?.temperature_2m ?? 20,
+          unit: useFahrenheit ? 'F' : 'C',
         };
         setData(result);
         setCache(latitude, longitude, result);
