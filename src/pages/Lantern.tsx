@@ -456,6 +456,7 @@ function getSectionTitle(type: string): string {
     camp_role_changed: 'Camps',
     camp_post_removed: 'Camps',
     bonfire_split: 'Camps',
+    camp_newsletter: 'Camps',
     system: 'Updates',
   };
   return map[type] || 'Notifications';
