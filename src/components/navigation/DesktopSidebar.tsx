@@ -29,13 +29,13 @@ const DesktopSidebar = () => {
   const { user, signOut } = useAuth();
   const { setComposerOpen } = useNavigation();
   const location = useLocation();
-  const [profile, setProfile] = useState<{ display_name: string; handle: string } | null>(null);
+  const [profile, setProfile] = useState<{ display_name: string; handle: string; avatar_url: string | null; default_avatar_key: string | null } | null>(null);
 
   useEffect(() => {
     if (!user) return;
     supabase
       .from('profiles')
-      .select('display_name, handle')
+      .select('display_name, handle, avatar_url, default_avatar_key')
       .eq('id', user.id)
       .maybeSingle()
       .then(({ data }) => { if (data) setProfile(data); });
