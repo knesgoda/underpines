@@ -435,6 +435,7 @@ function getSectionEmoji(type: string): string {
     camp_role_changed: '🏕️',
     camp_post_removed: '🏕️',
     bonfire_split: '🏕️',
+    camp_newsletter: '🏕️',
     system: '🏮',
   };
   return map[type] || '🏮';
