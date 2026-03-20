@@ -122,6 +122,12 @@ const SettingsPage = () => {
         <SettingsItem emoji="⭕" label="Circles" onClick={() => navigate('/circles')} />
       </SettingsSection>
 
+      {/* LEGAL */}
+      <SettingsSection label="Legal">
+        <SettingsItem emoji="🔏" label="Privacy Policy" onClick={() => navigate('/privacy')} />
+        <SettingsItem emoji="📜" label="Terms of Service" onClick={() => navigate('/terms')} />
+      </SettingsSection>
+
       <div className="pt-4 pb-8">
         <Button
           variant="ghost"

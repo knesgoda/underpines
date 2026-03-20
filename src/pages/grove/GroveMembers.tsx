@@ -79,7 +79,13 @@ const GroveMembers = () => {
                 {m.display_name.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-[hsl(var(--pine-pale))] truncate">{m.handle}</p>
+                <p className="text-sm text-[hsl(var(--pine-pale))] truncate">
+                  {m.handle}
+                  {/* LEGAL-REVIEW-NEEDED: Minor indicator visible to founder only */}
+                  {m.age_bracket === '13_to_17' && (
+                    <span className="ml-1.5 text-xs" title="Minor account (13-17)">🍃</span>
+                  )}
+                </p>
                 <p className="text-xs text-[hsl(var(--muted-text))]">
                   {m.display_name} · Joined {new Date(m.created_at!).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </p>

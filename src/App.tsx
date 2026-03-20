@@ -91,6 +91,8 @@ const App = () => (
                       <Route path="/" element={<HomePage />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/invite/:slug" element={<InviteLanding />} />
+                      <Route path="/privacy" element={<Privacy />} />
+                      <Route path="/terms" element={<Terms />} />
                       <Route path="/onboarding" element={<Onboarding />} />
                       <Route path="/cabin" element={<Cabin />} />
                       <Route path="/invites" element={<Invites />} />
