@@ -2037,6 +2037,7 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
+          image_url: string | null
           is_published: boolean | null
           is_quote_post: boolean | null
           post_type: string
@@ -2049,6 +2050,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          image_url?: string | null
           is_published?: boolean | null
           is_quote_post?: boolean | null
           post_type: string
@@ -2061,6 +2063,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          image_url?: string | null
           is_published?: boolean | null
           is_quote_post?: boolean | null
           post_type?: string
