@@ -24,6 +24,7 @@ import CollectionsList from "./pages/CollectionsList";
 import CollectionView from "./pages/CollectionView";
 import CollectionEditor from "./pages/CollectionEditor";
 import SubscriptionPage from "./pages/SubscriptionPage";
+import CreatorPayouts from "./pages/CreatorPayouts";
 import CampsDirectory from "./pages/CampsDirectory";
 import MyCamps from "./pages/MyCamps";
 import CreateCamp from "./pages/CreateCamp";
