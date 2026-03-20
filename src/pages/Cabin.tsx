@@ -149,7 +149,10 @@ const Cabin = () => {
     );
   }
 
-  const atmos = getAtmosphere(profile.atmosphere);
+  const effectiveAtmos = previewDesign?.design_data?.atmosphere
+    ? getAtmosphere(previewDesign.design_data.atmosphere)
+    : getAtmosphere(profile.atmosphere);
+  const atmos = effectiveAtmos;
   const mood = cabinMoods.find(m => m.key === profile.cabin_mood);
   const season = getCurrentSeason();
   const currentHour = new Date().getHours();
