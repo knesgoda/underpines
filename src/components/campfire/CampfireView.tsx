@@ -53,6 +53,7 @@ interface Props {
   onRefreshList: () => void;
   autoFocusInput?: boolean;
 }
+const REACTIONS = ['🔥', '🌲', '💚', '😂', '👀', '🫂', '🌧️', '✨'];
 
 const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput }: Props) => {
   const { user } = useAuth();
