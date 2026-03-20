@@ -2,11 +2,14 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, MoreHorizontal, Camera, ArrowUpRight, Send, Pin, Trash2, X, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, MoreHorizontal, Camera, ArrowUpRight, Send, Pin, Trash2, X, Image as ImageIcon, Search, Lock } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { formatTimeAgo } from '@/lib/time';
 import { toast } from 'sonner';
 import CampfireLog from './CampfireLog';
+import VoiceRecorder from './VoiceRecorder';
+import VoiceMessageBubble from './VoiceMessageBubble';
+import CampfireSearch from './CampfireSearch';
 
 interface Message {
   id: string;
