@@ -4,6 +4,7 @@ interface WeatherData {
   weatherCode: number;
   windSpeed: number;
   temperature: number;
+  unit: 'C' | 'F';
 }
 
 interface UseWeatherReturn extends WeatherData {
