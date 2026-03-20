@@ -829,6 +829,12 @@ export type Database = {
           currently_type: string | null
           currently_value: string | null
           display_name: string
+          feed_scroll_reminder: boolean | null
+          feed_show_camp_posts: boolean | null
+          feed_show_embers: boolean | null
+          feed_show_quotes: boolean | null
+          feed_show_sparks: boolean | null
+          feed_show_stories: boolean | null
           handle: string
           header_image_url: string | null
           id: string
@@ -853,6 +859,12 @@ export type Database = {
           currently_type?: string | null
           currently_value?: string | null
           display_name: string
+          feed_scroll_reminder?: boolean | null
+          feed_show_camp_posts?: boolean | null
+          feed_show_embers?: boolean | null
+          feed_show_quotes?: boolean | null
+          feed_show_sparks?: boolean | null
+          feed_show_stories?: boolean | null
           handle: string
           header_image_url?: string | null
           id: string
@@ -877,6 +889,12 @@ export type Database = {
           currently_type?: string | null
           currently_value?: string | null
           display_name?: string
+          feed_scroll_reminder?: boolean | null
+          feed_show_camp_posts?: boolean | null
+          feed_show_embers?: boolean | null
+          feed_show_quotes?: boolean | null
+          feed_show_sparks?: boolean | null
+          feed_show_stories?: boolean | null
           handle?: string
           header_image_url?: string | null
           id?: string
