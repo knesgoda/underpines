@@ -130,9 +130,12 @@ serve(async (req) => {
         }
       }
 
+      // Moon phase awareness for Daily Ember
+      const moonPhase = getMoonPhaseForEmber(now);
+
       // Build email
       const dayName = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
-      const html = buildEmailHtml(profile.display_name, dayName, grouped, actorMap, campfireMap, campNewsletterData);
+      const html = buildEmailHtml(profile.display_name, dayName, grouped, actorMap, campfireMap, campNewsletterData, moonPhase);
 
       // Send via Resend
       const res = await fetch("https://api.resend.com/emails", {
@@ -221,10 +224,23 @@ function groupNotifications(notifications: any[]): GroupedNotifs {
   return groups;
 }
 
+function getMoonPhaseForEmber(date: Date): string | null {
+  const KNOWN_NEW_MOON = new Date('2000-01-06T18:14:00Z').getTime();
+  const SYNODIC_MONTH = 29.53059;
+  const daysSince = (date.getTime() - KNOWN_NEW_MOON) / 86400000;
+  let phase = (daysSince % SYNODIC_MONTH) / SYNODIC_MONTH;
+  if (phase < 0) phase += 1;
+
+  if (phase > 0.47 && phase < 0.53) return '🌕 Full moon tonight. A good night for a long Campfire.';
+  if (phase < 0.03 || phase > 0.97) return '🌑 New moon tonight. The Pines are especially dark and quiet.';
+  return null;
+}
+
 function buildEmailHtml(
   name: string, dayName: string, grouped: GroupedNotifs,
   actorMap: Record<string, string>, campfireMap: Record<string, string>,
-  campNewsletterData?: { campName: string; title: string; excerpt: string; campId: string; newsletterId: string }[]
+  campNewsletterData?: { campName: string; title: string; excerpt: string; campId: string; newsletterId: string }[],
+  moonPhase?: string | null
 ): string {
   let sections = "";
 
@@ -315,6 +331,8 @@ function buildEmailHtml(
   </div>
 
   ${sections}
+
+  ${moonPhase ? `<div style="text-align:center;padding:12px 0;margin-bottom:8px;"><p style="font-size:13px;color:#8b7355;font-style:italic;margin:0;">${moonPhase}</p></div>` : ''}
 
   <div style="text-align:center;margin:32px 0;">
     <a href="https://underpines.com/" style="display:inline-block;padding:12px 24px;background:#c2752a;color:#f5f0e8;text-decoration:none;border-radius:24px;font-size:14px;">Enter the Pines →</a>
