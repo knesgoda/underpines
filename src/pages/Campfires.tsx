@@ -247,12 +247,13 @@ const flickerTimeRemaining = (expiresAt: string | null): string => {
 };
 
 const CampfireList = ({
-  campfires, displayName, isFlickerExpired, onSelect, selectedId,
+  campfires, displayName, isFlickerExpired, onSelect, onStoke, selectedId,
 }: {
   campfires: CampfireItem[];
   displayName: (c: CampfireItem) => string;
   isFlickerExpired: (c: CampfireItem) => boolean;
   onSelect: (id: string) => void;
+  onStoke?: (id: string) => void;
   selectedId?: string | null;
 }) => {
   if (campfires.length === 0) {
