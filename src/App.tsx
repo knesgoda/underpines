@@ -19,6 +19,7 @@ import Campfires from "./pages/Campfires";
 import Lantern from "./pages/Lantern";
 import SettingsPage from "./pages/SettingsPage";
 import NotificationSettings from "./pages/NotificationSettings";
+import PrivacySettings from "./pages/PrivacySettings";
 import StoryComposer from "./pages/StoryComposer";
 import CirclesPage from "./pages/CirclesPage";
 import CircleSuggestions from "./pages/CircleSuggestions";
@@ -97,6 +98,7 @@ const App = () => (
                       <Route path="/lantern" element={<Lantern />} />
                       <Route path="/settings" element={<SettingsPage />} />
                       <Route path="/settings/notifications" element={<NotificationSettings />} />
+                      <Route path="/settings/privacy" element={<PrivacySettings />} />
                       <Route path="/settings/subscription" element={<SubscriptionPage />} />
                       <Route path="/settings/payouts" element={<CreatorPayouts />} />
                       <Route path="/settings/designs" element={<MyDesigns />} />
