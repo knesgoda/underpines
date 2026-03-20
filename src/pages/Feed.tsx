@@ -395,6 +395,9 @@ const Feed = () => {
       {/* Seedling banner */}
       <SeedlingBanner />
 
+      {/* Invite discovery banner */}
+      <InviteBanner />
+
       {/* Seasonal event card */}
       <SeasonalEventCard onShareThought={(prompt) => {
         // Pre-fill composer with prompt
