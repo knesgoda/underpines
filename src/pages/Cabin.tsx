@@ -53,6 +53,7 @@ const Cabin = () => {
   const upgraded = searchParams.get('upgraded') === 'true';
   const previewMode = searchParams.get('preview') === 'true';
   const { user } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
