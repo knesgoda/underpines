@@ -109,12 +109,14 @@ const Feed = () => {
       }
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
-      const enriched: PostWithAuthor[] = data.map(p => ({
-        ...p,
-        author: profileMap.get(p.author_id) as any,
-        reactions: allReactions?.filter(r => r.post_id === p.id) || [],
-        post_media: allMedia.filter(m => m.post_id === p.id),
-      }));
+      const enriched: PostWithAuthor[] = data
+        .filter(p => !mutedIds.has(p.author_id)) // Filter muted users
+        .map(p => ({
+          ...p,
+          author: profileMap.get(p.author_id) as any,
+          reactions: allReactions?.filter(r => r.post_id === p.id) || [],
+          post_media: allMedia.filter(m => m.post_id === p.id),
+        }));
 
       setPosts(enriched);
     }
