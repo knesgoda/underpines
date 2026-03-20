@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import WeatherScene from '@/components/cabin/WeatherScene';
 import CabinEditDrawer from '@/components/cabin/CabinEditDrawer';
 import WidgetShelf from '@/components/cabin/WidgetShelf';
+import CircleButton from '@/components/circles/CircleButton';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { fetchWeather, getCurrentSeason } from '@/lib/weather';
@@ -46,6 +47,7 @@ const Cabin = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isOwner, setIsOwner] = useState(false);
+  const [isInCircle, setIsInCircle] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [weather, setWeather] = useState<any>(null);
 
@@ -66,6 +68,19 @@ const Cabin = () => {
       setProfile(data as Profile);
       const owner = user?.id === data.id;
       setIsOwner(owner);
+
+      // Check circle status
+      if (user && !owner) {
+        const { data: circle } = await supabase
+          .from('circles')
+          .select('status')
+          .or(`and(requester_id.eq.${user.id},requestee_id.eq.${data.id}),and(requester_id.eq.${data.id},requestee_id.eq.${user.id})`)
+          .eq('status', 'accepted')
+          .maybeSingle();
+        setIsInCircle(!!circle);
+      } else if (owner) {
+        setIsInCircle(true);
+      }
 
       if (data.latitude && data.longitude) {
         const w = await fetchWeather(data.latitude, data.longitude);
@@ -229,13 +244,7 @@ const Cabin = () => {
 
           {!isOwner && user && (
             <div className="flex justify-center pb-16">
-              <Button
-                onClick={() => toast.info('Campfires are coming soon')}
-                className="rounded-pill px-6 font-body"
-                style={{ backgroundColor: atmos.accent, color: atmos.cardBg }}
-              >
-                Send a Campfire
-              </Button>
+              <CircleButton profileId={profile.id} profileName={profile.display_name} />
             </div>
           )}
         </div>
@@ -326,13 +335,7 @@ const Cabin = () => {
 
           {!isOwner && user && (
             <div className="flex justify-center pb-12">
-              <Button
-                onClick={() => toast.info('Campfires are coming soon')}
-                className="rounded-pill px-6 font-body"
-                style={{ backgroundColor: atmos.accent, color: atmos.cardBg }}
-              >
-                Send a Campfire
-              </Button>
+              <CircleButton profileId={profile.id} profileName={profile.display_name} />
             </div>
           )}
         </div>

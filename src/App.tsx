@@ -17,6 +17,8 @@ import Campfires from "./pages/Campfires";
 import Lantern from "./pages/Lantern";
 import SettingsPage from "./pages/SettingsPage";
 import StoryComposer from "./pages/StoryComposer";
+import CirclesPage from "./pages/CirclesPage";
+import CircleSuggestions from "./pages/CircleSuggestions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +44,8 @@ const App = () => (
                   <Route path="/lantern" element={<Lantern />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/new/story" element={<StoryComposer />} />
+                  <Route path="/circles" element={<CirclesPage />} />
+                  <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
                   <Route path="/:handle" element={<Cabin />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

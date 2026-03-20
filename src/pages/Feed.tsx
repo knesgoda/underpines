@@ -67,6 +67,13 @@ const Feed = () => {
     if (!user) return;
     setLoading(true);
 
+    // Get muted user IDs for frontend filtering
+    const { data: muteRows } = await supabase
+      .from('mutes')
+      .select('muted_id')
+      .eq('muter_id', user.id);
+    const mutedIds = new Set(muteRows?.map(m => m.muted_id) || []);
+
     const { data } = await supabase
       .from('posts')
       .select('*')
@@ -102,12 +109,14 @@ const Feed = () => {
       }
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
-      const enriched: PostWithAuthor[] = data.map(p => ({
-        ...p,
-        author: profileMap.get(p.author_id) as any,
-        reactions: allReactions?.filter(r => r.post_id === p.id) || [],
-        post_media: allMedia.filter(m => m.post_id === p.id),
-      }));
+      const enriched: PostWithAuthor[] = data
+        .filter(p => !mutedIds.has(p.author_id)) // Filter muted users
+        .map(p => ({
+          ...p,
+          author: profileMap.get(p.author_id) as any,
+          reactions: allReactions?.filter(r => r.post_id === p.id) || [],
+          post_media: allMedia.filter(m => m.post_id === p.id),
+        }));
 
       setPosts(enriched);
     }
