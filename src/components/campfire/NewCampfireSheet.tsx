@@ -50,7 +50,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
     load();
   }, [user]);
 
-  const cap = isFlicker ? 10 : 20;
+  const cap = isFlicker ? 9 : 19; // plus creator = 10 or 20
   const atCap = selected.length >= cap;
 
   const toggleSelect = (id: string) => {
