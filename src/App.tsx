@@ -50,6 +50,7 @@ import GroveCamps from "./pages/grove/GroveCamps";
 import GroveCampDetail from "./pages/grove/GroveCampDetail";
 import GroveRevenue from "./pages/grove/GroveRevenue";
 import GroveSettings from "./pages/grove/GroveSettings";
+import GroveDesigns from "./pages/grove/GroveDesigns";
 
 const queryClient = new QueryClient();
 
