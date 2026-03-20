@@ -117,11 +117,7 @@ const Cabin = () => {
         setIsInCircle(true);
       }
 
-      if (data.latitude && data.longitude) {
-        const w = await fetchWeather(data.latitude, data.longitude);
-        setWeather(w);
-      }
-
+      setWeatherReady(true);
       if (user && user.id !== data.id) {
         await supabase.from('cabin_visits').upsert(
           { profile_id: data.id, visit_date: new Date().toISOString().split('T')[0], visit_count: 1 },
