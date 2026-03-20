@@ -2,11 +2,14 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, MoreHorizontal, Camera, ArrowUpRight, Send, Pin, Trash2, X, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, MoreHorizontal, Camera, ArrowUpRight, Send, Pin, Trash2, X, Image as ImageIcon, Search, Lock } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { formatTimeAgo } from '@/lib/time';
 import { toast } from 'sonner';
 import CampfireLog from './CampfireLog';
+import VoiceRecorder from './VoiceRecorder';
+import VoiceMessageBubble from './VoiceMessageBubble';
+import CampfireSearch from './CampfireSearch';
 
 interface Message {
   id: string;
@@ -18,6 +21,9 @@ interface Message {
   cross_post_id: string | null;
   is_faded: boolean | null;
   created_at: string | null;
+  voice_duration_seconds?: number | null;
+  voice_waveform_data?: number[] | null;
+  voice_mime_type?: string | null;
   senderName?: string;
   senderHandle?: string;
 }
@@ -59,6 +65,10 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLog, setShowLog] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [isPinesPlus, setIsPinesPlus] = useState(false);
+  const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+  const [highlightMsgId, setHighlightMsgId] = useState<string | null>(null);
   const [reactionMsgId, setReactionMsgId] = useState<string | null>(null);
   const [flickerTimeLeft, setFlickerTimeLeft] = useState('');
   const [autoScroll, setAutoScroll] = useState(true);
@@ -115,6 +125,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
 
       setMessages(data.map(m => ({
         ...m,
+        voice_waveform_data: m.voice_waveform_data as number[] | null,
         senderName: profileMap.get(m.sender_id)?.display_name,
         senderHandle: profileMap.get(m.sender_id)?.handle,
       })));
@@ -126,6 +137,18 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
   useEffect(() => { loadCampfire(); }, [loadCampfire]);
   useEffect(() => { if (campfire) loadParticipants(); }, [campfire, loadParticipants]);
   useEffect(() => { loadMessages(); }, [loadMessages]);
+
+  // Check Pines+ status
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('pines_plus_subscriptions')
+      .select('status')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .maybeSingle()
+      .then(({ data }) => setIsPinesPlus(!!data));
+  }, [user]);
 
   // Auto-scroll
   useEffect(() => {
@@ -205,11 +228,11 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
 
   const sendPhoto = async () => {
     if (!user) return;
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.multiple = true;
-    input.onchange = async (e: any) => {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.multiple = true;
+    inp.onchange = async (e: any) => {
       const files = Array.from(e.target.files || []) as File[];
       for (const file of files.slice(0, 10)) {
         const path = `campfire-media/${user.id}/${campfireId}/${Date.now()}-${file.name}`;
@@ -225,7 +248,41 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
         }
       }
     };
-    input.click();
+    inp.click();
+  };
+
+  const sendVoiceMessage = async (blob: Blob, durationSec: number, waveform: number[], mimeType: string) => {
+    if (!user) return;
+    const msgId = crypto.randomUUID();
+    const ext = mimeType.includes('mp4') ? 'mp4' : mimeType.includes('ogg') ? 'ogg' : 'webm';
+    const storagePath = `${user.id}/${campfireId}/${msgId}.${ext}`;
+
+    const { error } = await supabase.storage.from('voice-messages').upload(storagePath, blob, { contentType: mimeType });
+    if (error) { toast.error('Failed to upload voice message'); return; }
+
+    await supabase.from('campfire_messages').insert({
+      id: msgId,
+      campfire_id: campfireId,
+      sender_id: user.id,
+      message_type: 'voice',
+      media_url: storagePath,
+      voice_duration_seconds: durationSec,
+      voice_waveform_data: waveform,
+      voice_mime_type: mimeType,
+    });
+    setAutoScroll(true);
+  };
+
+  const jumpToMessage = (messageId: string) => {
+    setShowSearch(false);
+    setHighlightMsgId(messageId);
+    setTimeout(() => {
+      const el = document.getElementById(`msg-${messageId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+    setTimeout(() => setHighlightMsgId(null), 2000);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -254,6 +311,18 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
   const isFirekeeper = user?.id === campfire?.firekeeper_id;
 
   if (!campfire) return null;
+
+  // Show search view
+  if (showSearch) {
+    return (
+      <CampfireSearch
+        campfireId={campfireId}
+        campfireName={headerName}
+        onBack={() => setShowSearch(false)}
+        onJumpToMessage={jumpToMessage}
+      />
+    );
+  }
 
   // Expired flicker
   if (isFlickerExpired) {
@@ -349,6 +418,13 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
                     </>
                   )}
                   <div className="h-px bg-border" />
+                  <MenuBtn onClick={() => { setMenuOpen(false); isPinesPlus ? setShowSearch(true) : toast.info('Search Campfires is available with Pines+'); }}>
+                    <span className="flex items-center gap-2">
+                      <Search size={14} /> Search this Campfire
+                      {!isPinesPlus && <Lock size={12} className="text-muted-foreground" />}
+                    </span>
+                  </MenuBtn>
+                  <div className="h-px bg-border" />
                   <MenuBtn onClick={() => { setMenuOpen(false); }}>Notification settings</MenuBtn>
                 </motion.div>
               )}
@@ -389,7 +465,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
               const showDivider = shouldShowTimeDivider(msg, prevMsg);
 
               return (
-                <div key={msg.id}>
+                <div key={msg.id} id={`msg-${msg.id}`}>
                   {showDivider && msg.created_at && (
                     <div className="flex items-center gap-3 my-4">
                       <div className="flex-1 h-px bg-border" />
@@ -398,7 +474,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
                     </div>
                   )}
 
-                  <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} group`}>
+                  <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} group transition-colors ${highlightMsgId === msg.id ? 'bg-amber-light/30 rounded-xl' : ''}`}>
                     <div className="max-w-[75%]">
                       {/* Sender name for group chats */}
                       {!isMine && campfire.campfire_type === 'group' && (
@@ -421,6 +497,17 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
                         >
                           <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
                         </div>
+                      ) : msg.message_type === 'voice' && msg.media_url ? (
+                        <VoiceMessageBubble
+                          mediaUrl={msg.media_url}
+                          durationSeconds={msg.voice_duration_seconds ?? null}
+                          waveformData={msg.voice_waveform_data ?? null}
+                          mimeType={msg.voice_mime_type ?? null}
+                          isMine={isMine}
+                          isPlaying={playingVoiceId === msg.id}
+                          onPlay={() => setPlayingVoiceId(msg.id)}
+                          onPause={() => setPlayingVoiceId(null)}
+                        />
                       ) : msg.message_type === 'cross_post' ? (
                         <div
                           className={`px-3 py-2 rounded-2xl border border-border bg-card ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
@@ -496,6 +583,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
             <button onClick={sendPhoto} className="p-2 text-muted-foreground hover:text-foreground shrink-0">
               <Camera size={18} />
             </button>
+            <VoiceRecorder onSend={sendVoiceMessage} />
             <textarea
               ref={inputRef}
               value={input}

@@ -618,6 +618,9 @@ export type Database = {
           media_url: string | null
           message_type: string | null
           sender_id: string
+          voice_duration_seconds: number | null
+          voice_mime_type: string | null
+          voice_waveform_data: Json | null
         }
         Insert: {
           campfire_id: string
@@ -629,6 +632,9 @@ export type Database = {
           media_url?: string | null
           message_type?: string | null
           sender_id: string
+          voice_duration_seconds?: number | null
+          voice_mime_type?: string | null
+          voice_waveform_data?: Json | null
         }
         Update: {
           campfire_id?: string
@@ -640,6 +646,9 @@ export type Database = {
           media_url?: string | null
           message_type?: string | null
           sender_id?: string
+          voice_duration_seconds?: number | null
+          voice_mime_type?: string | null
+          voice_waveform_data?: Json | null
         }
         Relationships: [
           {
