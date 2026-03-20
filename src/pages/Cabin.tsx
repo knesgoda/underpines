@@ -47,6 +47,7 @@ const Cabin = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isOwner, setIsOwner] = useState(false);
+  const [isInCircle, setIsInCircle] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [weather, setWeather] = useState<any>(null);
 
