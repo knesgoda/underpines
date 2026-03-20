@@ -42,6 +42,8 @@ import MarketplaceDetail from "./pages/MarketplaceDetail";
 import DesignCreator from "./pages/DesignCreator";
 import MyDesigns from "./pages/MyDesigns";
 import Wrapped from "./pages/Wrapped";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
 // Grove (admin)
@@ -89,6 +91,8 @@ const App = () => (
                       <Route path="/" element={<HomePage />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/invite/:slug" element={<InviteLanding />} />
+                      <Route path="/privacy" element={<Privacy />} />
+                      <Route path="/terms" element={<Terms />} />
                       <Route path="/onboarding" element={<Onboarding />} />
                       <Route path="/cabin" element={<Cabin />} />
                       <Route path="/invites" element={<Invites />} />

@@ -11,6 +11,8 @@ interface OnboardingData {
   email: string;
   password: string;
   phone: string;
+  ageBracket: 'under_13' | '13_to_17' | '18_plus' | null;
+  birthYear: number | null;
 }
 
 interface OnboardingContextType {
@@ -31,6 +33,8 @@ const defaultData: OnboardingData = {
   email: '',
   password: '',
   phone: '',
+  ageBracket: null,
+  birthYear: null,
 };
 
 const OnboardingContext = createContext<OnboardingContextType>({

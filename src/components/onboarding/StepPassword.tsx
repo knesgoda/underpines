@@ -14,7 +14,7 @@ const StepPassword = () => {
   const handleContinue = () => {
     if (isValid) {
       setData({ password });
-      setStep(5);
+      setStep(6);
     }
   };
 

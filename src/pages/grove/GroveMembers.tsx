@@ -11,6 +11,7 @@ interface Member {
   display_name: string;
   created_at: string;
   header_image_url: string | null;
+  age_bracket: string | null;
 }
 
 const GroveMembers = () => {
@@ -26,7 +27,7 @@ const GroveMembers = () => {
       const { count } = await supabase.from('profiles').select('id', { count: 'exact', head: true });
       setTotal(count ?? 0);
 
-      let query = supabase.from('profiles').select('id, handle, display_name, created_at, header_image_url').order('created_at', { ascending: false }).limit(100);
+      let query = supabase.from('profiles').select('id, handle, display_name, created_at, header_image_url, age_bracket').order('created_at', { ascending: false }).limit(100);
 
       if (search) {
         query = query.or(`handle.ilike.%${search}%,display_name.ilike.%${search}%`);
@@ -78,7 +79,13 @@ const GroveMembers = () => {
                 {m.display_name.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-[hsl(var(--pine-pale))] truncate">{m.handle}</p>
+                <p className="text-sm text-[hsl(var(--pine-pale))] truncate">
+                  {m.handle}
+                  {/* LEGAL-REVIEW-NEEDED: Minor indicator visible to founder only */}
+                  {m.age_bracket === '13_to_17' && (
+                    <span className="ml-1.5 text-xs" title="Minor account (13-17)">🍃</span>
+                  )}
+                </p>
                 <p className="text-xs text-[hsl(var(--muted-text))]">
                   {m.display_name} · Joined {new Date(m.created_at!).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </p>

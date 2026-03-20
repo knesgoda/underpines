@@ -10,7 +10,7 @@ const StepDisplayName = () => {
   const handleContinue = () => {
     if (name.trim().length > 0) {
       setData({ displayName: name.trim() });
-      setStep(2);
+      setStep(3);
     }
   };
 
