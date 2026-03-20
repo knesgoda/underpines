@@ -36,6 +36,7 @@ const Feed = () => {
     feed_scroll_reminder: true,
   });
   const [scrollNudgeShown, setScrollNudgeShown] = useState(false);
+  const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
   const scrollTimerRef = useRef(0);
   const scrollIntervalRef = useRef<number | null>(null);
   const nudgeDismissedUntilRef = useRef<number>(0);
