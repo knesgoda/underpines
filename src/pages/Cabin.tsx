@@ -263,93 +263,91 @@ const Cabin = () => {
       {/* === HOLLOW LAYOUT === */}
       {isHollow ? (
         <div className="max-w-2xl mx-auto px-6 relative z-10">
-          {/* Avatar centered above name */}
           <div className="flex justify-center -mt-8 mb-4">
-            <CabinAvatar
-              avatarUrl={profile.avatar_url}
-              defaultAvatarKey={profile.default_avatar_key}
-              isOwner={isOwner}
-              isEditing={editOpen}
-              profileId={profile.id}
-              onUpdate={fetchProfile}
-              size={isMobile ? 'sm' : 'lg'}
-            />
+            <CabinAvatar avatarUrl={profile.avatar_url} defaultAvatarKey={profile.default_avatar_key} isOwner={isOwner} isEditing={editOpen} profileId={profile.id} onUpdate={fetchProfile} size={isMobile ? 'sm' : 'lg'} />
           </div>
-          {/* Large breathing room above the name */}
           <div className="pt-4 pb-12 text-center">
             <div className="flex items-center justify-center gap-3 mb-3">
               {mood && <span className="text-3xl">{mood.emoji}</span>}
-              <h1 className="text-4xl md:text-5xl font-display" style={{ color: atmos.text }}>
-                {profile.display_name}
-              </h1>
+              <h1 className="text-4xl md:text-5xl font-display" style={{ color: atmos.text }}>{profile.display_name}</h1>
               {profile.is_pines_plus && <span title="Pines+" className="text-xl">🌲</span>}
             </div>
-            <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.4 }}>
-              @{profile.handle}
-            </p>
-
+            <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
             {profile.mantra && (
-              <p className="mt-8 text-xl md:text-2xl font-display italic leading-relaxed" style={{ color: atmos.text, opacity: 0.7 }}>
-                "{profile.mantra}"
-              </p>
+              <p className="mt-8 text-xl md:text-2xl font-display italic leading-relaxed" style={{ color: atmos.text, opacity: 0.7 }}>"{profile.mantra}"</p>
             )}
           </div>
-
-          {/* Minimal info below the fold */}
           <div className="py-12 space-y-6" style={{ borderTop: `1px solid ${atmos.border}` }}>
-            <div className="flex flex-wrap gap-4 text-sm font-body justify-center" style={{ color: atmos.text, opacity: 0.5 }}>
-              {profile.currently_type && profile.currently_value && (
-                <span>Currently {profile.currently_type} {profile.currently_value}</span>
-              )}
-              {profile.city && <span>{profile.city}</span>}
-              {temperature != null && <span>{Math.round(temperature)}°C</span>}
-            </div>
-
-            {profile.bio && (
-              <p className="text-sm font-body text-center max-w-md mx-auto" style={{ color: atmos.text, opacity: 0.6 }}>
-                {profile.bio}
-              </p>
-            )}
-
-            {profile.pinned_song_title && (
-              <div className="flex justify-center">
-                <div
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-body"
-                  style={{ backgroundColor: `${atmos.accent}15`, color: atmos.accent }}
-                >
-                  <Music size={14} />
-                  {profile.pinned_song_title}
-                  {profile.pinned_song_artist && ` — ${profile.pinned_song_artist}`}
-                </div>
-              </div>
-            )}
+            <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} centered />
+            {profile.bio && <p className="text-sm font-body text-center max-w-md mx-auto" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>}
+            <CabinPinnedSong profile={profile} atmos={atmos} centered />
           </div>
-
-          {/* Widgets */}
-          {profile.is_pines_plus && (
-            <div className="py-8">
-              <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} />
-            </div>
-          )}
-
-          {/* Post History */}
-          <div className="py-12 space-y-6">
-            <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
-          </div>
-
-          {!isOwner && user && profile && (
-            <div className="flex items-center justify-center gap-3 pb-16">
-              <CircleButton profileId={profile.id} profileName={profile.display_name} />
-              <CabinMoreMenu
-                targetUserId={profile.id}
-                targetDisplayName={profile.display_name}
-                open={cabinMenuOpen}
-                setOpen={setCabinMenuOpen}
-                navigate={navigate}
-              />
-            </div>
-          )}
+          {profile.is_pines_plus && <div className="py-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} /></div>}
+          <div className="py-12 space-y-6"><CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} /></div>
+          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
         </div>
+
+      ) : isTrailhead ? (
+        /* === TRAILHEAD LAYOUT === */
+        <div className="max-w-5xl mx-auto px-6 relative z-10">
+          {/* Bio strip below header */}
+          <div className="py-6 space-y-3" style={{ borderBottom: `1px solid ${atmos.border}` }}>
+            {profile.mantra && (
+              <p className="text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>
+            )}
+            <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} />
+            {profile.bio && <p className="text-sm font-body max-w-xl" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
+            <CabinPinnedSong profile={profile} atmos={atmos} />
+          </div>
+
+          {/* Two-column editorial */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-5 gap-8 pb-16">
+            <div className="md:col-span-3 space-y-6">
+              <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
+            </div>
+            <div className="md:col-span-2 space-y-6">
+              <CollectionsShelf profileId={profile.id} handle={profile.handle} isOwner={isOwner} atmosphere={atmos} />
+              {profile.is_pines_plus && <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} />}
+            </div>
+          </div>
+          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
+        </div>
+
+      ) : isCanopy ? (
+        /* === CANOPY LAYOUT === */
+        <div className="max-w-5xl mx-auto px-6 relative z-10">
+          {/* Compact name card */}
+          <div className="flex items-center gap-4 py-6">
+            <CabinAvatar avatarUrl={profile.avatar_url} defaultAvatarKey={profile.default_avatar_key} isOwner={isOwner} isEditing={editOpen} profileId={profile.id} onUpdate={fetchProfile} size="sm" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                {mood && <span className="text-xl">{mood.emoji}</span>}
+                <h1 className="text-2xl font-display truncate" style={{ color: atmos.text }}>{profile.display_name}</h1>
+                {profile.is_pines_plus && <span title="Pines+" className="text-base">🌲</span>}
+              </div>
+              <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
+            </div>
+            <div className="hidden md:block text-right">
+              <CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} />
+            </div>
+          </div>
+
+          {profile.bio && (
+            <p className="text-sm font-body mb-6 max-w-lg" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>
+          )}
+
+          {/* Masonry-style grid */}
+          <div className="columns-2 md:columns-3 gap-4 pb-16 [column-fill:_balance]">
+            {/* Collections as large cards */}
+            <CollectionsShelf profileId={profile.id} handle={profile.handle} isOwner={isOwner} atmosphere={atmos} variant="grid" />
+            {/* Posts in grid */}
+            <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} variant="grid" />
+          </div>
+
+          {profile.is_pines_plus && <div className="pb-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} /></div>}
+          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
+        </div>
+
       ) : (
         /* === HEARTH LAYOUT (default) === */
         <div className="max-w-4xl mx-auto px-6 relative z-10" style={{ marginTop: isMobile ? -40 : -48 }}>
@@ -357,96 +355,38 @@ const Cabin = () => {
             className="rounded-2xl shadow-card transition-colors duration-700 relative"
             style={{ backgroundColor: atmos.cardBg, borderColor: atmos.border, borderWidth: 1 }}
           >
-            {/* Avatar overlapping header/card boundary */}
             <div className="absolute" style={{ top: isMobile ? -40 : -48, left: 24 }}>
-              <CabinAvatar
-                avatarUrl={profile.avatar_url}
-                defaultAvatarKey={profile.default_avatar_key}
-                isOwner={isOwner}
-                isEditing={editOpen}
-                profileId={profile.id}
-                onUpdate={fetchProfile}
-                size={isMobile ? 'sm' : 'lg'}
-              />
+              <CabinAvatar avatarUrl={profile.avatar_url} defaultAvatarKey={profile.default_avatar_key} isOwner={isOwner} isEditing={editOpen} profileId={profile.id} onUpdate={fetchProfile} size={isMobile ? 'sm' : 'lg'} />
             </div>
             <div className="flex items-start gap-4 pt-4 pr-8 pb-6" style={{ paddingLeft: isMobile ? 104 : 136 }}>
               <div className="flex-1 pt-2">
                 <div className="flex items-center gap-2">
                   {mood && <span className="text-2xl">{mood.emoji}</span>}
-                  <h1 className="text-3xl font-display" style={{ color: atmos.text }}>
-                    {profile.display_name}
-                  </h1>
+                  <h1 className="text-3xl font-display" style={{ color: atmos.text }}>{profile.display_name}</h1>
                   {profile.is_pines_plus && <span title="Pines+" className="text-lg">🌲</span>}
                 </div>
-                <p className="text-sm font-body mt-1" style={{ color: atmos.text, opacity: 0.5 }}>
-                  @{profile.handle}
-                </p>
+                <p className="text-sm font-body mt-1" style={{ color: atmos.text, opacity: 0.5 }}>@{profile.handle}</p>
               </div>
             </div>
-
             <div className="px-8 pb-8">
-            {profile.mantra && (
-              <p className="mt-2 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>
-                "{profile.mantra}"
-              </p>
-            )}
-
-            <div className="mt-4 h-px" style={{ backgroundColor: atmos.border }} />
-
-            <div className="mt-4 flex flex-wrap gap-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.6 }}>
-              {profile.currently_type && profile.currently_value && (
-                <span>Currently {profile.currently_type} {profile.currently_value}</span>
-              )}
-              {profile.city && <span>{profile.city}</span>}
-              {temperature != null && <span>{Math.round(temperature)}°C</span>}
-            </div>
-
-            {profile.bio && (
-              <p className="mt-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>
-                {profile.bio}
-              </p>
-            )}
-
-            {profile.pinned_song_title && (
-              <div
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-body"
-                style={{ backgroundColor: `${atmos.accent}15`, color: atmos.accent }}
-              >
-                <Music size={14} />
-                {profile.pinned_song_title}
-                {profile.pinned_song_artist && ` — ${profile.pinned_song_artist}`}
-              </div>
-            )}
+              {profile.mantra && <p className="mt-2 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>}
+              <div className="mt-4 h-px" style={{ backgroundColor: atmos.border }} />
+              <div className="mt-4"><CabinMetaRow profile={profile} temperature={temperature} atmos={atmos} /></div>
+              {profile.bio && <p className="mt-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
+              <CabinPinnedSong profile={profile} atmos={atmos} />
             </div>
           </div>
 
-          {/* Two-column content */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 pb-16">
             <div className="md:col-span-2 space-y-6">
               <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
             </div>
             <div className="space-y-6">
               <CollectionsShelf profileId={profile.id} handle={profile.handle} isOwner={isOwner} atmosphere={atmos} />
-
-              {/* Widget Shelf in sidebar for Hearth */}
-              {profile.is_pines_plus && (
-                <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} />
-              )}
+              {profile.is_pines_plus && <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} />}
             </div>
           </div>
-
-          {!isOwner && user && profile && (
-            <div className="flex items-center justify-center gap-3 pb-12">
-              <CircleButton profileId={profile.id} profileName={profile.display_name} />
-              <CabinMoreMenu
-                targetUserId={profile.id}
-                targetDisplayName={profile.display_name}
-                open={cabinMenuOpen}
-                setOpen={setCabinMenuOpen}
-                navigate={navigate}
-              />
-            </div>
-          )}
+          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
         </div>
       )}
 
