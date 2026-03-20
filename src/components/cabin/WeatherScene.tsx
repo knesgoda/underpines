@@ -124,7 +124,7 @@ const WeatherScene = ({
 
   return (
     <div className={`absolute inset-0 overflow-hidden ${className}`} style={{ background: skyGradient }}>
-      {/* Stars (night only) */}
+      {/* Stars (night only) — opacity adjusts with moon brightness */}
       {night && stars.map((star, i) => (
         <div
           key={`star-${i}`}
@@ -135,6 +135,7 @@ const WeatherScene = ({
             width: star.size,
             height: star.size,
             backgroundColor: 'white',
+            opacity: starOpacity,
             animation: `twinkle ${2 + star.delay}s ease-in-out infinite`,
             animationDelay: `${star.delay}s`,
             willChange: 'opacity',
@@ -142,19 +143,26 @@ const WeatherScene = ({
         />
       ))}
 
-      {/* Moon (dusk/night) */}
+      {/* Moon (dusk/night) — phase-accurate */}
       {(night || dusk) && (
-        <div
-          className="absolute rounded-full"
-          style={{
-            right: '15%',
-            top: '12%',
-            width: 24,
-            height: 24,
-            backgroundColor: '#fef9c3',
-            boxShadow: '0 0 20px 6px rgba(254, 249, 195, 0.3)',
-          }}
-        />
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className="absolute cursor-default"
+                style={{ right: '15%', top: '12%' }}
+              >
+                <MoonPhase phase={moonPhase} size={24} />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="bg-card/90 backdrop-blur-sm border-border text-foreground text-xs font-body px-3 py-1.5"
+            >
+              {getMoonPhaseDescription(moonPhase)}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
 
       {/* Trees */}
