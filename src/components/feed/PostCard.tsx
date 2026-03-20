@@ -37,9 +37,10 @@ interface PostCardProps {
   circleIds?: string[];
   onRemove?: (id: string) => void;
   onRefresh?: () => void;
+  onImageClick?: (images: string[], index: number) => void;
 }
 
-const PostCard = ({ post, circleIds = [], onRemove, onRefresh }: PostCardProps) => {
+const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: PostCardProps) => {
   const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [reactions, setReactions] = useState(post.reactions || []);
