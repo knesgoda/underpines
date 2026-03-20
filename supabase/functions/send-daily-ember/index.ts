@@ -132,7 +132,7 @@ serve(async (req) => {
 
       // Build email
       const dayName = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
-      const html = buildEmailHtml(profile.display_name, dayName, grouped, actorMap, campfireMap);
+      const html = buildEmailHtml(profile.display_name, dayName, grouped, actorMap, campfireMap, campNewsletterData);
 
       // Send via Resend
       const res = await fetch("https://api.resend.com/emails", {
