@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, X } from 'lucide-react';
+import { MoreHorizontal, Flame, Search } from 'lucide-react';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import UserAvatar from '@/components/UserAvatar';
 import { toast } from 'sonner';
 
 interface CircleMember {
