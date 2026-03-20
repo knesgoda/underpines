@@ -446,6 +446,15 @@ const Cabin = () => {
         </div>
       )}
 
+      {/* Suggestion box — visitors only */}
+      {!isOwner && user && profile && (
+        <SuggestionBox
+          cabinOwnerId={profile.id}
+          cabinOwnerHandle={profile.handle}
+          atmosphere={atmos}
+        />
+      )}
+
       {/* Setup suggestion cards */}
       {isOwner && setupMode && (
         <div className="fixed bottom-8 left-0 right-0 flex justify-center px-6 z-30">
