@@ -147,7 +147,7 @@ const Campfires = () => {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col" style={{ height: '100vh', height: '100dvh' }}>
         <CampfireListHeader filter={filter} setFilter={setFilter} />
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
           <CampfireList
             campfires={filtered}
             displayName={displayName}
