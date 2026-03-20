@@ -335,13 +335,7 @@ const Cabin = () => {
 
           {!isOwner && user && (
             <div className="flex justify-center pb-12">
-              <Button
-                onClick={() => toast.info('Campfires are coming soon')}
-                className="rounded-pill px-6 font-body"
-                style={{ backgroundColor: atmos.accent, color: atmos.cardBg }}
-              >
-                Send a Campfire
-              </Button>
+              <CircleButton profileId={profile.id} profileName={profile.display_name} />
             </div>
           )}
         </div>
