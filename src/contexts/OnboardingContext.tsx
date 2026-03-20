@@ -5,6 +5,7 @@ interface OnboardingData {
   inviteSlug: string | null;
   inviterName: string | null;
   inviterHandle: string | null;
+  ipHash: string | null;
   displayName: string;
   handle: string;
   email: string;
@@ -24,6 +25,7 @@ const defaultData: OnboardingData = {
   inviteSlug: null,
   inviterName: null,
   inviterHandle: null,
+  ipHash: null,
   displayName: '',
   handle: '',
   email: '',

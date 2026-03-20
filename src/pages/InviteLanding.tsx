@@ -20,6 +20,17 @@ const InviteLanding = () => {
     const fetchInvite = async () => {
       if (!slug) { setExpired(true); setLoading(false); return; }
 
+      // Server-side validation with rate limiting
+      const { data: validation, error: valErr } = await supabase.functions.invoke('validate-invite', {
+        body: { slug },
+      });
+
+      if (valErr || !validation?.valid) {
+        setExpired(true);
+        setLoading(false);
+        return;
+      }
+
       const { data: inv } = await supabase
         .from('invites')
         .select('*')
@@ -46,6 +57,7 @@ const InviteLanding = () => {
         inviteSlug: slug,
         inviterName: profile?.display_name || null,
         inviterHandle: profile?.handle || null,
+        ipHash: validation.ip_hash || null,
       });
       setLoading(false);
     };
@@ -85,15 +97,11 @@ const InviteLanding = () => {
 
   return (
     <div className="fixed inset-0 overflow-hidden">
-      {/* Background weather scene at reduced opacity */}
       <div className="absolute inset-0 opacity-30">
         <WeatherScene hour={21} season="summer" />
       </div>
-
-      {/* Dark overlay */}
       <div className="absolute inset-0" style={{ background: 'rgba(5, 46, 22, 0.7)' }} />
 
-      {/* Content */}
       <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -101,7 +109,6 @@ const InviteLanding = () => {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-md"
         >
-          {/* Swaying pine icon */}
           <svg
             width="32"
             height="48"
@@ -114,7 +121,6 @@ const InviteLanding = () => {
             <rect x="20" y="52" width="8" height="16" rx="2" fill="#fef3c7" opacity="0.5" />
           </svg>
 
-          {/* Card with glass-morphism */}
           <div
             className="rounded-2xl p-8 mb-8"
             style={{
@@ -135,7 +141,6 @@ const InviteLanding = () => {
             </Button>
           </div>
 
-          {/* Divider and inviter info */}
           <div className="flex items-center gap-4 justify-center text-pine-light/30">
             <div className="h-px w-12 bg-pine-light/20" />
             <span className="text-xs font-body">
