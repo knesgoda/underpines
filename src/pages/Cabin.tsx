@@ -310,6 +310,13 @@ const Cabin = () => {
         )}
       </div>
 
+      {/* Mobile invite row for owner */}
+      {isOwner && isMobile && (
+        <div className="px-6 pt-4 md:hidden">
+          <InviteRow />
+        </div>
+      )}
+
       {/* === HOLLOW LAYOUT === */}
       {isHollow ? (
         <div className="max-w-2xl mx-auto px-6 relative z-10">
