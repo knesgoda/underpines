@@ -373,6 +373,11 @@ const CampfireView = ({ campfireId, onBack, onRefreshList }: Props) => {
           <div className="flex items-center gap-2">
             <span className="text-sm">{campfire.campfire_type === 'flicker' ? '🕯️' : '🔥'}</span>
             <h2 className="font-body text-sm font-medium text-foreground truncate">{headerName}</h2>
+            {campfire.campfire_type === 'flicker' && flickerTimeLeft && flickerTimeLeft !== 'expired' && (
+              <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+                {flickerTimeLeft}
+              </span>
+            )}
           </div>
           {campfire.vibe && (
             <p className="font-body text-xs text-muted-foreground truncate">{campfire.vibe}</p>
