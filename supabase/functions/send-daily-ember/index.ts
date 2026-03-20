@@ -224,10 +224,23 @@ function groupNotifications(notifications: any[]): GroupedNotifs {
   return groups;
 }
 
+function getMoonPhaseForEmber(date: Date): string | null {
+  const KNOWN_NEW_MOON = new Date('2000-01-06T18:14:00Z').getTime();
+  const SYNODIC_MONTH = 29.53059;
+  const daysSince = (date.getTime() - KNOWN_NEW_MOON) / 86400000;
+  let phase = (daysSince % SYNODIC_MONTH) / SYNODIC_MONTH;
+  if (phase < 0) phase += 1;
+
+  if (phase > 0.47 && phase < 0.53) return '🌕 Full moon tonight. A good night for a long Campfire.';
+  if (phase < 0.03 || phase > 0.97) return '🌑 New moon tonight. The Pines are especially dark and quiet.';
+  return null;
+}
+
 function buildEmailHtml(
   name: string, dayName: string, grouped: GroupedNotifs,
   actorMap: Record<string, string>, campfireMap: Record<string, string>,
-  campNewsletterData?: { campName: string; title: string; excerpt: string; campId: string; newsletterId: string }[]
+  campNewsletterData?: { campName: string; title: string; excerpt: string; campId: string; newsletterId: string }[],
+  moonPhase?: string | null
 ): string {
   let sections = "";
 
