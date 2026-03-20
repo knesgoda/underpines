@@ -8,6 +8,7 @@ import SeedlingBanner from '@/components/feed/SeedlingBanner';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
 import LightboxViewer from '@/components/feed/LightboxViewer';
 import SeasonalEventCard from '@/components/feed/SeasonalEventCard';
+import InviteBanner from '@/components/feed/InviteBanner';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { Settings } from 'lucide-react';
 
