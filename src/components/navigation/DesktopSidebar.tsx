@@ -25,8 +25,43 @@ const navItems: NavItem[] = [
   { label: 'Camps', icon: Trees, path: '/camps' },
   { label: 'Search', icon: Search, path: '/search' },
 ];
+const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) => {
+  const { usesRemaining, isInfinite, loading } = useInviteData();
+  const active = isActive('/invites');
 
-const DesktopSidebar = () => {
+  if (loading) return null;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link
+          to="/invites"
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm transition-colors relative ${
+            active
+              ? 'bg-primary/8 text-foreground'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          {active && (
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
+          )}
+          <Mail size={18} />
+          <span>Invite Friends</span>
+          {!isInfinite && usesRemaining != null && usesRemaining > 0 && (
+            <span className="ml-auto text-xs font-body text-muted-foreground/60">
+              {usesRemaining} left
+            </span>
+          )}
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent side="right" className="font-body text-xs">
+        Invite someone to the Pines
+      </TooltipContent>
+    </Tooltip>
+  );
+};
+
+
   const { user, signOut } = useAuth();
   const { setComposerOpen } = useNavigation();
   const location = useLocation();
