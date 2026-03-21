@@ -252,6 +252,11 @@ const Cabin = () => {
           moonPhase={getMoonPhase()}
           latitude={profile.latitude ?? undefined}
           longitude={profile.longitude ?? undefined}
+          postalCode={profile.zip_code ?? undefined}
+          countryCode={profile.country_code ?? undefined}
+          biome={profile.biome ?? undefined}
+          creatureKey={profile.default_avatar_key ?? undefined}
+          userId={profile.id}
         />
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
