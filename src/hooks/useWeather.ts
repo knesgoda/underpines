@@ -59,6 +59,13 @@ interface CachedWeather {
   ts: number;
 }
 
+const isUSTimezone = (): boolean => {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return tz.startsWith('America/') && !tz.includes('Argentina') && !tz.includes('Bogota') && !tz.includes('Lima') && !tz.includes('Santiago') && !tz.includes('Sao_Paulo');
+  } catch { return false; }
+};
+
 const DEFAULTS: WeatherData = {
   weatherCode: 0,
   condition: 'clear',
@@ -70,6 +77,7 @@ const DEFAULTS: WeatherData = {
   temperature: 20,
   isSnowing: false,
   isRaining: false,
+  unit: 'C',
 };
 
 function loadCache(lat: number, lon: number): WeatherData | null {
