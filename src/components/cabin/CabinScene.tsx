@@ -612,57 +612,7 @@ function CloudLayer({ cloudCover, windIntensity, renderTime }: {
   );
 }
 
-
-const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude }: CabinSceneProps) => {
-  const solar = useSolarCycle(latitude, longitude);
-  const weather = useWeather(latitude, longitude);
-  const renderTime = toRenderTime(solar.timeOfDay);
-  const isGoldenHour = solar.timeOfDay === 'golden-hour';
-  const windIntensity = weather.windIntensity || 'calm';
-  // Wind direction: 0-180° = from-right, 180-360° = from-left
-  const fromLeft = (weather.windDirection ?? 0) >= 180;
-
-  const skyGradient = buildSkyGradient(renderTime);
-
-  const atmosphereTint = useMemo(() => {
-    return { tint: '#dcfce7', opacity: 0.08 };
-  }, [atmosphere]);
-
-  // Golden hour amber overlay opacity
-  const goldenOverlayOpacity = isGoldenHour && solar.goldenHourProgress !== null
-    ? solar.goldenHourProgress * 0.12
-    : 0;
-
-  // Granular star opacity for smooth transitions
-  const starOpacity = useMemo(() => {
-    switch (renderTime) {
-      case 'night': return 1;
-      case 'dusk': return 0.85;
-      case 'sunset': return 0.3;
-      case 'pre-dawn': return 0.5;
-      case 'dawn': return 0;
-      default: return 0;
-    }
-  }, [renderTime]);
-
-  return (
-    <div
-      className="relative w-full overflow-hidden rounded-xl"
-      style={{
-        aspectRatio: 'var(--cabin-scene-ratio, 3/1)',
-        '--biome-bg-far': '#7a9a8a',
-        '--biome-bg-mid': '#4a7c59',
-        '--biome-bg-near': '#3a6b48',
-        '--biome-fg-ground': '#2d5a3d',
-        '--biome-canopy': '#3a7d44',
-        '--wind-intensity': windIntensity,
-      } as React.CSSProperties}
-    >
-      <style>{`
-        @media (max-width: 767px) { :root { --cabin-scene-ratio: 2/1; } }
-        @media (min-width: 768px) { :root { --cabin-scene-ratio: 3/1; } }
-        ${SCENE_CSS}
-      `}</style>
+const CabinSceneLegacy = null; // removed duplicate — real component above
 
       {/* Layer 1: sky-gradient + starfield */}
       <div className={layerBase} style={{
