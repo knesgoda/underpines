@@ -71,6 +71,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <ScrollToTop />
               <Routes>
                 {/* Grove admin routes — outside AppLayout */}
                 <Route path="/grove" element={<GroveLayout />}>
