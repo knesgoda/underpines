@@ -43,7 +43,7 @@ const biomes = {
       '--biome-trunk':     '#3a2a1a',
       '--biome-accent':    '#7a9a3a',
     },
-    treeComponent: 'PNWTrees',
+    treeComponent: 'PNWMidground',
     backgroundComponent: 'PNWBackground',
     foregroundComponent: 'PNWForeground',
     seasonalOverrides: {
