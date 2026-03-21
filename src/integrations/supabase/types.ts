@@ -2030,6 +2030,86 @@ export type Database = {
           },
         ]
       }
+      pine_pet_generations: {
+        Row: {
+          attempt_number: number
+          created_at: string
+          id: string
+          owner_id: string
+          pet_id: string | null
+          status: string
+        }
+        Insert: {
+          attempt_number?: number
+          created_at?: string
+          id?: string
+          owner_id: string
+          pet_id?: string | null
+          status?: string
+        }
+        Update: {
+          attempt_number?: number
+          created_at?: string
+          id?: string
+          owner_id?: string
+          pet_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pine_pet_generations_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pine_pets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pine_pets: {
+        Row: {
+          animal_type: Database["public"]["Enums"]["animal_type"]
+          created_at: string
+          display_order: number
+          id: string
+          is_memorial: boolean
+          is_pinned: boolean
+          is_resting: boolean
+          name: string
+          original_photo_path: string
+          owner_id: string
+          sprite_cache: Json
+          updated_at: string
+        }
+        Insert: {
+          animal_type: Database["public"]["Enums"]["animal_type"]
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_memorial?: boolean
+          is_pinned?: boolean
+          is_resting?: boolean
+          name: string
+          original_photo_path: string
+          owner_id: string
+          sprite_cache?: Json
+          updated_at?: string
+        }
+        Update: {
+          animal_type?: Database["public"]["Enums"]["animal_type"]
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_memorial?: boolean
+          is_pinned?: boolean
+          is_resting?: boolean
+          name?: string
+          original_photo_path?: string
+          owner_id?: string
+          sprite_cache?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pines_plus_subscriptions: {
         Row: {
           created_at: string | null
@@ -2836,6 +2916,14 @@ export type Database = {
       rotate_invite_link: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
+      animal_type:
+        | "dog"
+        | "cat"
+        | "rabbit"
+        | "bird"
+        | "fish"
+        | "hamster"
+        | "turtle"
       app_role: "admin" | "moderator"
     }
     CompositeTypes: {
@@ -2964,6 +3052,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      animal_type: [
+        "dog",
+        "cat",
+        "rabbit",
+        "bird",
+        "fish",
+        "hamster",
+        "turtle",
+      ],
       app_role: ["admin", "moderator"],
     },
   },
