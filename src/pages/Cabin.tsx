@@ -219,7 +219,6 @@ const Cabin = () => {
   const atmos = effectiveAtmos;
   const mood = cabinMoods.find(m => m.key === profile.cabin_mood);
   const effectiveLayout = previewDesign?.design_data?.layout || profile.layout;
-  const effectiveLayout = previewDesign?.design_data?.layout || profile.layout;
   const isHollow = effectiveLayout === 'hollow';
   const isTrailhead = effectiveLayout === 'trailhead';
   const isCanopy = effectiveLayout === 'canopy';
