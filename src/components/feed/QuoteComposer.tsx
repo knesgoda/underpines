@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
@@ -18,6 +18,25 @@ const QuoteComposer = ({ post, open, onClose, onQuoted }: QuoteComposerProps) =>
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [posting, setPosting] = useState(false);
+
+  // Lock body scroll when sheet is open
+  useEffect(() => {
+    if (!open) return;
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, [open]);
 
   const handleQuote = async () => {
     if (!content.trim() || !user) return;
