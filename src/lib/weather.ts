@@ -13,7 +13,7 @@ export const fetchWeather = async (lat: number, lon: number) => {
 export const geocodeZip = async (zip: string) => {
   try {
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?postalcode=${encodeURIComponent(zip)}&country=us&format=json&limit=1`,
+      `https://nominatim.openstreetmap.org/search?postalcode=${encodeURIComponent(zip)}&format=json&limit=1`,
       { headers: { 'User-Agent': 'UnderPines/1.0' } }
     );
     const data = await res.json();
