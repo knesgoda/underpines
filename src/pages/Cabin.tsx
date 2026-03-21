@@ -218,8 +218,7 @@ const Cabin = () => {
     : getAtmosphere(profile.atmosphere, theme);
   const atmos = effectiveAtmos;
   const mood = cabinMoods.find(m => m.key === profile.cabin_mood);
-  const season = getCurrentSeason();
-  const currentHour = new Date().getHours();
+  const effectiveLayout = previewDesign?.design_data?.layout || profile.layout;
   const effectiveLayout = previewDesign?.design_data?.layout || profile.layout;
   const isHollow = effectiveLayout === 'hollow';
   const isTrailhead = effectiveLayout === 'trailhead';
