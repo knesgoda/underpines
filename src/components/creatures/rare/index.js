@@ -1,0 +1,12 @@
+export { default as Timberwolf } from './Timberwolf';
+export { default as GreyWolf } from './GreyWolf';
+export { default as RedWolf } from './RedWolf';
+export { default as MountainLion } from './MountainLion';
+export { default as Lynx } from './Lynx';
+export { default as Wolverine } from './Wolverine';
+export { default as Orca } from './Orca';
+export { default as Whale } from './Whale';
+export { default as Shark } from './Shark';
+export { default as Hippo } from './Hippo';
+export { default as Rhino } from './Rhino';
+export { default as Vulture } from './Vulture';
