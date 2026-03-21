@@ -7,20 +7,11 @@
 import { useMemo } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 
-type TimeOfDay = 'night' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'dusk'
-  | 'pre-dawn' | 'sunset';
-
-// Map solar hook's expanded timeOfDay to our rendering palette
-type RenderTimeOfDay = 'night' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'dusk';
+// All recognized time-of-day values — kept granular for smooth transitions
+type RenderTimeOfDay = 'night' | 'pre-dawn' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'sunset' | 'dusk';
 function toRenderTime(t: string): RenderTimeOfDay {
-  switch (t) {
-    case 'pre-dawn': return 'dawn';
-    case 'sunset': return 'dusk';
-    case 'night': case 'dawn': case 'morning': case 'afternoon':
-    case 'golden-hour': case 'dusk':
-      return t as RenderTimeOfDay;
-    default: return 'morning';
-  }
+  const valid: RenderTimeOfDay[] = ['night','pre-dawn','dawn','morning','afternoon','golden-hour','sunset','dusk'];
+  return (valid.includes(t as RenderTimeOfDay) ? t : 'morning') as RenderTimeOfDay;
 }
 
 interface CabinSceneProps {
