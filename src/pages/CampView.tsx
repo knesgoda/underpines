@@ -178,7 +178,7 @@ const CampView = () => {
               </button>
             )}
             {!isFirekeeper && (
-              <button onClick={handleLeave} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Leave Camp">
+              <button onClick={() => setLeaveOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Leave Camp">
                 <LogOut size={18} className="text-muted-foreground" />
               </button>
             )}

@@ -362,7 +362,7 @@ const CollectionEditor = () => {
                 </div>
               )}
 
-              <button onClick={handleDelete} className="w-full mt-2 py-2.5 rounded-full border border-destructive/30 text-destructive font-body text-sm flex items-center justify-center gap-2">
+              <button onClick={() => setDeleteOpen(true)} className="w-full mt-2 py-2.5 rounded-full border border-destructive/30 text-destructive font-body text-sm flex items-center justify-center gap-2">
                 <Trash2 size={14} /> Delete Collection
               </button>
             </>
