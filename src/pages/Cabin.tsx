@@ -254,41 +254,12 @@ const Cabin = () => {
           </div>
         </div>
       )}
-      {/* Header with weather scene */}
-      <div className="relative w-full" style={{ height: isHollow ? 400 : isTrailhead ? 400 : isCanopy ? 200 : 280 }}>
-        {profile.header_image_url ? (
-          <img
-            src={profile.header_image_url}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : (
-          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${atmos.background}, ${atmos.accent}30)` }} />
-        )}
-        <WeatherScene
-          weatherCode={weatherCode}
-          windSpeed={windSpeed}
-          hour={currentHour}
-          season={season}
-          className={seasonalEvent ? "opacity-40" : "opacity-80"}
-          reducedParticles={window.innerWidth < 768}
-        />
-        {/* Seasonal event scene overlay */}
-        {seasonalEvent && seasonalProgress.phase !== 'none' && (
-          <div
-            className="absolute inset-0 seasonal-overlay overflow-hidden"
-            style={{ opacity: seasonalProgress.opacity * 0.85 }}
-          >
-            <div className="w-full h-full [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover" style={{ display: 'flex' }}>
-              <SceneForEvent
-                eventKey={seasonalEvent.key}
-                width={1200}
-                height={isHollow ? 400 : isTrailhead ? 400 : isCanopy ? 200 : 280}
-                moonProps={getMoonSVGProps(new Date())}
-              />
-            </div>
-          </div>
-        )}
+      {/* Illustrated scene header */}
+      <CabinScene
+        memberName={profile.display_name}
+        atmosphere={profile.atmosphere}
+        timeOfDay={getTimeOfDay()}
+      />
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
           <div className="absolute bottom-0 left-0 right-0 px-8 pb-6 pt-16" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)' }}>
