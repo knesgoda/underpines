@@ -80,6 +80,42 @@ const SCENE_CSS = `
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
+@keyframes tree-sway-light {
+  0%, 100% { transform: rotate(var(--sway-base, 0deg)); }
+  50% { transform: rotate(calc(var(--sway-base, 0deg) + var(--sway-max, 0.8deg))); }
+}
+@keyframes tree-sway-moderate {
+  0%, 100% { transform: rotate(var(--sway-base, 0deg)); }
+  50% { transform: rotate(calc(var(--sway-base, 0deg) + var(--sway-max, 2.5deg))); }
+}
+@keyframes canopy-flutter {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes tree-sway-strong {
+  0%, 100% { transform: rotate(var(--sway-base, 0deg)); }
+  50% { transform: rotate(calc(var(--sway-base, 0deg) + var(--sway-max, 5deg))); }
+}
+@keyframes tree-sway-extreme {
+  0%, 100% { transform: rotate(calc(var(--lean, 3deg) + 0deg)); }
+  50% { transform: rotate(calc(var(--lean, 3deg) + var(--sway-max, 8deg))); }
+}
+@keyframes leaf-drift-ltr {
+  0% { transform: translate(-5%, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.6; }
+  100% { transform: translate(110%, 15%) rotate(360deg); opacity: 0; }
+}
+@keyframes leaf-drift-rtl {
+  0% { transform: translate(105%, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.6; }
+  100% { transform: translate(-10%, 15%) rotate(-360deg); opacity: 0; }
+}
+@keyframes grass-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(var(--grass-sway, 0deg)); }
+}
 `;
 
 function Starfield({ opacity }: { opacity: number }) {
