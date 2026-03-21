@@ -626,7 +626,8 @@ function CloudLayer({ cloudCover, windIntensity, renderTime }: {
 }
 
 // ─── Main Component ───
-const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude }: CabinSceneProps) => {
+const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude, biome: biomeProp }: CabinSceneProps) => {
+  const biomeConfig = useMemo(() => getBiomeConfig(biomeProp || 'default'), [biomeProp]);
   const solar = useSolarCycle(latitude, longitude);
   const weather = useWeather(latitude, longitude);
   const renderTime = toRenderTime(solar.timeOfDay);
