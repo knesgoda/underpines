@@ -652,7 +652,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              className="relative bg-card rounded-t-2xl w-full max-h-[70vh] overflow-hidden"
+              className="relative bg-card rounded-t-2xl w-full max-h-[70dvh] overflow-hidden"
             >
               <CampfireLog campfireId={campfireId} isFirekeeper={isFirekeeper} onClose={() => setShowLog(false)} />
             </motion.div>
