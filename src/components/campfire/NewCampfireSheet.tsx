@@ -247,7 +247,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-md max-h-[80vh] overflow-hidden border border-border shadow-lg"
+        className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-md max-h-[80dvh] overflow-hidden border border-border shadow-lg"
       >
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h3 className="font-body text-sm font-medium text-foreground">
