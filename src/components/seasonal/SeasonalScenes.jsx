@@ -7,39 +7,77 @@
 import { getMoonSVGProps } from '@/lib/astronomyUtils';
 
 // --- MOON RENDERING HELPER ---
+// Renders an astronomically-accurate moon phase using two-arc shadow paths.
+// Reference: the terminator (shadow edge) is an ellipse whose rx varies with
+// cos(cyclePosition * 2π). The dark side is always a semicircle; the terminator
+// curves inward (crescent) or outward (gibbous) to sculpt the shadow.
 
 function MoonSVG({ cx, cy, r, moonProps, darkColor }) {
   const mp = moonProps || getMoonSVGProps(new Date());
-
   if (!mp.isVisible) return null;
 
-  const { clipDirection, darkEllipseRx, illumination } = mp;
+  const { cyclePosition, illumination } = mp;
+  const shadow = darkColor || '#1a1a2a';
 
-  const darkCx = cx;
-  const darkRx = darkEllipseRx * r;
-  const darkRy = r;
+  // Phase geometry
+  const angle = cyclePosition * 2 * Math.PI;
+  const k = Math.cos(angle); // +1 at new, -1 at full
+  const terminatorRx = Math.abs(k) * r;
+  const isWaxing = cyclePosition < 0.5;
 
-  const clipId = `moon-clip-${cx}-${cy}`;
-  const clipX = clipDirection === 'right' ? cx - r : cx;
-  const clipWidth = r;
+  // Build shadow path with two arcs: outer semicircle + terminator
+  const top = `${cx} ${cy - r}`;
+  const bot = `${cx} ${cy + r}`;
+
+  let shadowPath;
+  if (isWaxing) {
+    // Dark on left: outer arc sweeps counter-clockwise (left side)
+    const outerArc = `A ${r} ${r} 0 1 0 ${bot}`;
+    // Terminator: sweep direction flips at first quarter
+    const termSweep = k >= 0 ? 1 : 0;
+    const termArc = `A ${terminatorRx} ${r} 0 0 ${termSweep} ${top}`;
+    shadowPath = `M ${top} ${outerArc} ${termArc} Z`;
+  } else {
+    // Dark on right: outer arc sweeps clockwise (right side)
+    const outerArc = `A ${r} ${r} 0 1 1 ${bot}`;
+    const termSweep = k >= 0 ? 0 : 1;
+    const termArc = `A ${terminatorRx} ${r} 0 0 ${termSweep} ${top}`;
+    shadowPath = `M ${top} ${outerArc} ${termArc} Z`;
+  }
+
+  // Unique IDs for this moon instance
+  const uid = `moon-${cx}-${cy}`;
 
   return (
-    <g className={`moon-disc moon-disc--visible ${illumination > 0.85 ? 'moon-disc--full' : ''} ${illumination < 0.25 ? 'moon-disc--crescent' : ''}`}>
+    <g>
+      {/* Ambient glow */}
       <defs>
-        <clipPath id={clipId}>
-          <rect x={clipX} y={cy - r} width={clipWidth} height={r * 2} />
-        </clipPath>
+        <radialGradient id={`${uid}-glow`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stopColor="#e8f0f8" stopOpacity={0.15 * illumination} />
+          <stop offset="100%" stopColor="#e8f0f8" stopOpacity="0" />
+        </radialGradient>
       </defs>
+      <circle cx={cx} cy={cy} r={r * 2} fill={`url(#${uid}-glow)`} />
+
+      {/* Moon disc */}
       <circle cx={cx} cy={cy} r={r} fill="#e8f0f8" />
-      <ellipse
-        cx={darkCx}
-        cy={cy}
-        rx={Math.max(darkRx, 0.1)}
-        ry={darkRy}
-        fill={darkColor || '#1a1a2a'}
-        clipPath={`url(#${clipId})`}
-        opacity={0.92}
-      />
+
+      {/* Subtle crater marks — only visible when illuminated enough */}
+      {illumination > 0.3 && (
+        <g opacity={0.12 * illumination}>
+          <circle cx={cx - r * 0.25} cy={cy - r * 0.15} r={r * 0.18} fill="#c0ccd4" />
+          <circle cx={cx + r * 0.15} cy={cy + r * 0.25} r={r * 0.12} fill="#b8c8d0" />
+          <circle cx={cx - r * 0.05} cy={cy + r * 0.4} r={r * 0.09} fill="#c4d0d8" />
+          <circle cx={cx + r * 0.35} cy={cy - r * 0.3} r={r * 0.07} fill="#bcc8d4" />
+          <circle cx={cx - r * 0.35} cy={cy + r * 0.1} r={r * 0.1} fill="#c0c8d0" />
+        </g>
+      )}
+
+      {/* Phase shadow */}
+      <path d={shadowPath} fill={shadow} opacity={0.94} />
+
+      {/* Subtle limb darkening on the lit edge */}
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#c0d0e0" strokeWidth={0.5} opacity={0.3 * illumination} />
     </g>
   );
 }
