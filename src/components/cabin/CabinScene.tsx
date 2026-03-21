@@ -6,6 +6,7 @@
 
 import { useMemo } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
+import { useWeather } from '@/hooks/useWeather';
 
 // All recognized time-of-day values — kept granular for smooth transitions
 type RenderTimeOfDay = 'night' | 'pre-dawn' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'sunset' | 'dusk';
