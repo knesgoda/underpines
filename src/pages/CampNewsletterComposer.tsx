@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import DOMPurify from 'dompurify';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -312,7 +313,7 @@ const CampNewsletterComposer = () => {
               <p className="text-xs text-[#8b7355] tracking-wider mb-2">FROM YOUR CAMPS</p>
               <p className="font-bold text-[#1a1a2e] mb-1">{camp?.name}</p>
               <p className="text-[#1a1a2e] font-bold text-lg mb-2">{title || 'Untitled'}</p>
-              <div className="text-[#1a1a2e] text-sm prose prose-sm" dangerouslySetInnerHTML={{ __html: editor?.getHTML() || '' }} />
+              <div className="text-[#1a1a2e] text-sm prose prose-sm" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(editor?.getHTML() || '') }} />
             </div>
             <div className="text-center mt-6">
               <span className="inline-block px-4 py-2 bg-[#c2752a] text-[#f5f0e8] rounded-full text-xs">Read the full newsletter →</span>

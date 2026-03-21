@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -89,7 +90,7 @@ const CampNewsletterView = () => {
 
       <div
         className="prose prose-sm max-w-none font-body text-foreground"
-        dangerouslySetInnerHTML={{ __html: newsletter.content }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(newsletter.content) }}
       />
     </motion.div>
   );
