@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
-import { Flame } from 'lucide-react';
+import { Flame, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -38,7 +38,7 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
       } else if (data.status === 'pending' && data.requestee_id === user.id) {
         setStatus('pending_received');
       } else {
-        setStatus('none'); // declined resets to none visually
+        setStatus('none');
       }
       setLoading(false);
     };
@@ -52,7 +52,6 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
       requester_id: user.id,
       requestee_id: profileId,
     });
-    // Create notification
     await supabase.from('notifications').insert({
       recipient_id: profileId,
       notification_type: 'circle_request',
@@ -71,7 +70,6 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
       .eq('requester_id', profileId)
       .eq('requestee_id', user.id);
 
-    // Notify the requester
     await supabase.from('notifications').insert({
       recipient_id: profileId,
       notification_type: 'circle_accepted',
@@ -79,7 +77,7 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
     });
     setStatus('accepted');
     setActing(false);
-    toast.success(`${profileName} is now in your Circle`);
+    toast.success(`You and ${profileName} are now on the trail together. 🌲`);
   };
 
   const declineRequest = async () => {
@@ -96,7 +94,6 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
 
   const startCampfire = async () => {
     if (!user) return;
-    // Check if 1-on-1 campfire already exists
     const { data: myParticipations } = await supabase
       .from('campfire_participants')
       .select('campfire_id')
@@ -128,7 +125,6 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
       }
     }
 
-    // Create new campfire
     const { data: newCampfire } = await supabase
       .from('campfires')
       .insert({
@@ -157,14 +153,14 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
         disabled={acting}
         className="px-5 py-2 rounded-full border-2 border-primary text-primary font-body text-sm font-medium hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50"
       >
-        Add to my Circle
+        Follow the trail
       </button>
     );
   }
 
   if (status === 'pending_sent') {
     return (
-      <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-border">
+      <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-border opacity-60">
         <motion.span
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -172,31 +168,28 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
         >
           🔥
         </motion.span>
-        <span className="font-body text-sm text-muted-foreground">Waiting by the fire...</span>
+        <span className="font-body text-sm text-muted-foreground">Trail invite sent</span>
       </div>
     );
   }
 
   if (status === 'pending_received') {
     return (
-      <div className="space-y-2">
-        <p className="font-body text-sm text-foreground">They want to join your Circle</p>
-        <div className="flex gap-2">
-          <button
-            onClick={acceptRequest}
-            disabled={acting}
-            className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 disabled:opacity-50"
-          >
-            Accept
-          </button>
-          <button
-            onClick={declineRequest}
-            disabled={acting}
-            className="px-4 py-1.5 rounded-full border border-border font-body text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
-          >
-            Not now
-          </button>
-        </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={acceptRequest}
+          disabled={acting}
+          className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 disabled:opacity-50"
+        >
+          Join their trail
+        </button>
+        <button
+          onClick={declineRequest}
+          disabled={acting}
+          className="px-4 py-1.5 rounded-full border border-border font-body text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
+        >
+          Not now
+        </button>
       </div>
     );
   }
@@ -205,7 +198,8 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
   return (
     <div className="flex items-center gap-3">
       <span className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/8 font-body text-sm text-primary">
-        In your Circle ✓
+        <Check size={14} />
+        Trail together
       </span>
       <button
         onClick={startCampfire}

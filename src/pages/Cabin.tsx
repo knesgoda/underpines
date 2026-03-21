@@ -14,6 +14,7 @@ import PineTreeLoading from '@/components/PineTreeLoading';
 import CabinAvatar from '@/components/cabin/CabinAvatar';
 import SuggestionBox from '@/components/cabin/SuggestionBox';
 import InviteRow from '@/components/cabin/InviteRow';
+import CabinCircleStack from '@/components/cabin/CabinCircleStack';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { getCurrentSeason } from '@/lib/weather';
 import { useWeather } from '@/hooks/useWeather';
@@ -340,8 +341,9 @@ const Cabin = () => {
           <div className="py-12 space-y-6" style={{ borderTop: `1px solid ${atmos.border}` }}>
             <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} centered />
             {profile.bio && <p className="text-sm font-body text-center max-w-md mx-auto" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>}
-            <CabinPinnedSong profile={profile} atmos={atmos} centered />
-          </div>
+             <CabinPinnedSong profile={profile} atmos={atmos} centered />
+             <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
+           </div>
           {profile.is_pines_plus && <div className="py-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} /></div>}
           <div className="py-12 space-y-6"><CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} /></div>
           <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
@@ -356,8 +358,9 @@ const Cabin = () => {
               <p className="text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>
             )}
             <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} />
-            {profile.bio && <p className="text-sm font-body max-w-xl" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
-            <CabinPinnedSong profile={profile} atmos={atmos} />
+             {profile.bio && <p className="text-sm font-body max-w-xl" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
+             <CabinPinnedSong profile={profile} atmos={atmos} />
+             <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
           </div>
 
           {/* Two-column editorial */}
@@ -436,8 +439,11 @@ const Cabin = () => {
               {profile.mantra && <p className="mt-2 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>}
               <div className="mt-4 h-px" style={{ backgroundColor: atmos.border }} />
               <div className="mt-4"><CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} /></div>
-              {profile.bio && <p className="mt-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
-              <CabinPinnedSong profile={profile} atmos={atmos} />
+               {profile.bio && <p className="mt-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
+               <CabinPinnedSong profile={profile} atmos={atmos} />
+               <div className="mt-4">
+                 <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
+               </div>
             </div>
           </div>
 

@@ -252,7 +252,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
             <div className="max-h-[250px] overflow-y-auto overscroll-y-contain space-y-1">
               {filtered.length === 0 ? (
                 <p className="text-sm font-body text-muted-foreground text-center py-4">
-                  {members.length === 0 ? "Add someone to your Circle first." : "No one by that name in your Circle."}
+                  {members.length === 0 ? "Follow someone's trail first." : "No one by that name on your trail."}
                 </p>
               ) : (
                   filtered.map(m => {

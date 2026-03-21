@@ -36,7 +36,7 @@ interface MutedUser {
 const CirclesPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<'circle' | 'pending' | 'blocked'>('circle');
+  const [tab, setTab] = useState<'trail' | 'invites' | 'blocked'>('trail');
   const [members, setMembers] = useState<CircleMember[]>([]);
   const [pendingSent, setPendingSent] = useState<CircleMember[]>([]);
   const [pendingReceived, setPendingReceived] = useState<CircleMember[]>([]);
@@ -54,7 +54,6 @@ const CirclesPage = () => {
     if (!user) return;
     setLoading(true);
 
-    // Load circles
     const { data: circles } = await supabase
       .from('circles')
       .select('*')
@@ -99,7 +98,6 @@ const CirclesPage = () => {
       setPendingReceived(receivedPending);
     }
 
-    // Load blocks
     const { data: blockRows } = await supabase
       .from('blocks')
       .select('*')
@@ -117,7 +115,6 @@ const CirclesPage = () => {
       })));
     }
 
-    // Load mutes
     const { data: muteRows } = await supabase
       .from('mutes')
       .select('*')
@@ -138,18 +135,9 @@ const CirclesPage = () => {
     setLoading(false);
   };
 
-  const getActivityStatus = (updatedAt: string | null) => {
-    if (!updatedAt) return { label: 'Away', color: 'text-muted-foreground', icon: '🔥' };
-    const diff = Date.now() - new Date(updatedAt).getTime();
-    const days = diff / 86400000;
-    if (days < 14) return { label: 'Active', color: 'text-primary', icon: '🟢' };
-    if (days < 30) return { label: 'Quiet', color: 'text-muted-foreground', icon: '🟡' };
-    return { label: 'Away', color: 'text-muted-foreground', icon: '🔥' };
-  };
-
   const acceptRequest = async (circleId: string, name: string) => {
     await supabase.from('circles').update({ status: 'accepted', updated_at: new Date().toISOString() }).eq('id', circleId);
-    toast.success(`${name} is now in your Circle`);
+    toast.success(`You and ${name} are now on the trail together. 🌲`);
     loadAll();
   };
 
@@ -164,7 +152,7 @@ const CirclesPage = () => {
   };
 
   const removeFromCircle = async (member: CircleMember) => {
-    if (!confirm(`Remove ${member.display_name} from your Circle? They won't be notified, and you can always add them back.`)) return;
+    if (!confirm(`Leave ${member.display_name}'s trail? They won't be notified, and you can always reconnect.`)) return;
     await supabase.from('circles').update({ status: 'declined' }).eq('id', member.circleId);
     setMenuOpen(null);
     loadAll();
@@ -173,7 +161,6 @@ const CirclesPage = () => {
   const blockUser = async (userId: string, name: string) => {
     if (!user) return;
     await supabase.from('blocks').insert({ blocker_id: user.id, blocked_id: userId });
-    // Decline any circle relationship
     await supabase.from('circles')
       .update({ status: 'declined' })
       .or(`and(requester_id.eq.${user.id},requestee_id.eq.${userId}),and(requester_id.eq.${userId},requestee_id.eq.${user.id})`);
@@ -202,7 +189,6 @@ const CirclesPage = () => {
 
   const startCampfire = async (memberId: string, memberName: string) => {
     if (!user) return;
-    // Check for existing 1-on-1 campfire
     const { data: myParts } = await supabase
       .from('campfire_participants')
       .select('campfire_id')
@@ -246,78 +232,81 @@ const CirclesPage = () => {
 
   if (loading) return <PineTreeLoading />;
 
+  const pendingCount = pendingSent.length + pendingReceived.length;
+
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="font-display text-2xl text-foreground mb-6">🌲 Circles</h1>
+      <h1 className="font-display text-2xl text-foreground mb-6">🌲 Your Circles</h1>
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 bg-muted rounded-xl p-1">
-        {(['circle', 'pending', 'blocked'] as const).map(t => (
+        {([
+          { key: 'trail' as const, label: 'Trail together' },
+          { key: 'invites' as const, label: `Trail invites${pendingCount > 0 ? ` (${pendingCount})` : ''}` },
+          { key: 'blocked' as const, label: 'Blocked & Muted' },
+        ]).map(t => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`flex-1 py-2 rounded-lg font-body text-sm transition-colors ${tab === t ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`flex-1 py-2 rounded-lg font-body text-sm transition-colors ${tab === t.key ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            {t === 'circle' ? `Your Circle (${members.length})` : t === 'pending' ? `Pending (${pendingSent.length + pendingReceived.length})` : 'Blocked & Muted'}
+            {t.label}
           </button>
         ))}
       </div>
 
-      {/* Tab: Your Circle */}
-      {tab === 'circle' && (
+      {/* Tab: Trail together */}
+      {tab === 'trail' && (
         <div className="space-y-2">
           {members.length === 0 ? (
-            <EmptyState icon="🌲" text="Your Circle is empty. Find people to connect with." />
+            <EmptyState icon="🌲" text="Your trail is quiet. Find people to walk with." />
           ) : (
-            members.map(m => {
-              const activity = getActivityStatus(m.updated_at);
-              return (
-                <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
-                    <div className="min-w-0">
-                      <Link to={`/${m.handle}`} className="font-body text-sm font-medium text-foreground truncate block hover:opacity-80">{m.display_name}</Link>
-                      <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => startCampfire(m.id, m.display_name)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
-                    >
-                      <Flame size={12} /> Campfire
-                    </button>
-                    <div className="relative">
-                      <button onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)} className="p-1.5 rounded-md text-muted-foreground hover:bg-muted">
-                        <MoreHorizontal size={16} />
-                      </button>
-                      <AnimatePresence>
-                        {menuOpen === m.id && (
-                          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-                            className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20">
-                            <MBtn onClick={() => { navigate(`/${m.handle}`); }}>View Cabin</MBtn>
-                            <MBtn onClick={() => removeFromCircle(m)}>Remove from Circle</MBtn>
-                            <MBtn onClick={() => muteUser(m.id, m.display_name)}>Bank the fire (mute)</MBtn>
-                            <div className="h-px bg-border" />
-                            <MBtn onClick={() => blockUser(m.id, m.display_name)} destructive>Step away from the fire</MBtn>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+            members.map(m => (
+              <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
+                <div className="flex items-center gap-3 min-w-0">
+                  <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
+                  <div className="min-w-0">
+                    <Link to={`/${m.handle}`} className="font-body text-sm font-medium text-foreground truncate block hover:opacity-80">{m.display_name}</Link>
+                    <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
                   </div>
                 </div>
-              );
-            })
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => startCampfire(m.id, m.display_name)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                  >
+                    <Flame size={12} /> Campfire
+                  </button>
+                  <div className="relative">
+                    <button onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)} className="p-1.5 rounded-md text-muted-foreground hover:bg-muted">
+                      <MoreHorizontal size={16} />
+                    </button>
+                    <AnimatePresence>
+                      {menuOpen === m.id && (
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                          className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20">
+                          <MBtn onClick={() => { navigate(`/${m.handle}`); }}>View Cabin</MBtn>
+                          <MBtn onClick={() => removeFromCircle(m)}>Leave their trail</MBtn>
+                          <MBtn onClick={() => muteUser(m.id, m.display_name)}>Bank the fire (mute)</MBtn>
+                          <div className="h-px bg-border" />
+                          <MBtn onClick={() => blockUser(m.id, m.display_name)} destructive>Step away from the fire</MBtn>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+            ))
           )}
         </div>
       )}
 
-      {/* Tab: Pending */}
-      {tab === 'pending' && (
+      {/* Tab: Trail invites */}
+      {tab === 'invites' && (
         <div className="space-y-6">
           {pendingReceived.length > 0 && (
             <div>
-              <h3 className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">Waiting to join your Circle</h3>
+              <h3 className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">Wants to walk the trail with you</h3>
               <div className="space-y-2">
                 {pendingReceived.map(m => (
                   <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
@@ -329,7 +318,7 @@ const CirclesPage = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => acceptRequest(m.circleId, m.display_name)} className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-xs font-medium">Accept</button>
+                      <button onClick={() => acceptRequest(m.circleId, m.display_name)} className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-xs font-medium">Join their trail</button>
                       <button onClick={() => declineRequest(m.circleId)} className="px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground">Not now</button>
                     </div>
                   </div>
@@ -340,7 +329,7 @@ const CirclesPage = () => {
 
           {pendingSent.length > 0 && (
             <div>
-              <h3 className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">Your pending requests</h3>
+              <h3 className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">Your sent trail invites</h3>
               <div className="space-y-2">
                 {pendingSent.map(m => (
                   <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
@@ -362,7 +351,7 @@ const CirclesPage = () => {
           )}
 
           {pendingReceived.length === 0 && pendingSent.length === 0 && (
-            <EmptyState icon="🌿" text="No pending requests right now." />
+            <EmptyState icon="🌿" text="No trail invites right now." />
           )}
         </div>
       )}
