@@ -222,7 +222,12 @@ const Feed = () => {
 
   useEffect(() => { loadPosts(); }, [loadPosts]);
 
-  // Pull to refresh
+  // Pull to refresh — use refs to avoid re-registering listeners on every frame
+  const pullYRef = useRef(0);
+  const isRefreshingRef = useRef(false);
+  const loadPostsRef = useRef(loadPosts);
+  loadPostsRef.current = loadPosts;
+
   useEffect(() => {
     const el = feedRef.current;
     if (!el) return;
@@ -236,15 +241,19 @@ const Feed = () => {
     const onTouchMove = (e: TouchEvent) => {
       if (pullStartRef.current === null) return;
       const dy = Math.max(0, Math.min(e.touches[0].clientY - pullStartRef.current, 120));
+      pullYRef.current = dy;
       setPullY(dy);
     };
     const onTouchEnd = async () => {
-      if (pullY > 60 && !isRefreshing) {
+      if (pullYRef.current > 60 && !isRefreshingRef.current) {
+        isRefreshingRef.current = true;
         setIsRefreshing(true);
         setPullY(60);
-        await loadPosts();
+        await loadPostsRef.current();
+        isRefreshingRef.current = false;
         setIsRefreshing(false);
       }
+      pullYRef.current = 0;
       setPullY(0);
       setIsPulling(false);
       pullStartRef.current = null;
@@ -258,7 +267,7 @@ const Feed = () => {
       el.removeEventListener('touchmove', onTouchMove);
       el.removeEventListener('touchend', onTouchEnd);
     };
-  }, [pullY, isRefreshing, loadPosts]);
+  }, []); // stable — no re-registration
 
   // Scroll timer for 20-minute nudge
   useEffect(() => {
