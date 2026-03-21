@@ -57,6 +57,7 @@ import GroveCamps from "./pages/grove/GroveCamps";
 import GroveCampDetail from "./pages/grove/GroveCampDetail";
 import GroveRevenue from "./pages/grove/GroveRevenue";
 import GroveSettings from "./pages/grove/GroveSettings";
+import GroveCompanions from "./pages/grove/GroveCompanions";
 import GroveDesigns from "./pages/grove/GroveDesigns";
 
 const queryClient = new QueryClient();
@@ -84,6 +85,7 @@ const App = () => (
                   <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
                   <Route path="designs" element={<GroveDesigns />} />
+                  <Route path="companions" element={<GroveCompanions />} />
                 </Route>
 
                 {/* Main app routes */}

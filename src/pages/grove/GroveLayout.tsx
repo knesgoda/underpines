@@ -2,13 +2,14 @@ import { Navigate, Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useAuth } from '@/contexts/AuthContext';
 import PineTreeLoading from '@/components/PineTreeLoading';
-import { LayoutDashboard, ListChecks, Users, Tent, DollarSign, Settings, ArrowLeft, Palette } from 'lucide-react';
+import { LayoutDashboard, ListChecks, Users, Tent, DollarSign, Settings, ArrowLeft, Palette, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { to: '/grove', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/grove/queue', label: 'Review Queue', icon: ListChecks },
   { to: '/grove/members', label: 'Members', icon: Users },
+  { to: '/grove/companions', label: 'Companions', icon: Heart },
   { to: '/grove/camps', label: 'Camps', icon: Tent },
   { to: '/grove/designs', label: 'Designs', icon: Palette },
   { to: '/grove/revenue', label: 'Revenue', icon: DollarSign },
