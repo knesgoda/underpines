@@ -401,7 +401,7 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
 
   const renderCanopy = (type: string, cx: number, baseY: number, s: number, treeIndex: number) => {
     const canopyColor = 'var(--biome-canopy, #3a7d44)';
-    const trunkColor = '#5c4033';
+    const trunkColor = 'var(--biome-trunk, #5c4033)';
     const swayStyle = getTreeSwayStyle(windIntensity, treeIndex, fromLeft);
     const flutterAnim = (windIntensity === 'moderate' || windIntensity === 'strong' || windIntensity === 'extreme')
       ? { animation: `canopy-flutter ${windIntensity === 'moderate' ? '3s' : '2s'} ease-in-out infinite`, animationDelay: `${treeIndex * 200}ms` }
