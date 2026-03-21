@@ -46,6 +46,8 @@ interface Profile {
   is_pines_plus: boolean;
   avatar_url: string | null;
   default_avatar_key: string | null;
+  country_code: string | null;
+  biome: string | null;
 }
 
 const Cabin = () => {
