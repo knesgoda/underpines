@@ -283,11 +283,18 @@ function BackgroundHills({ renderTime }: { renderTime: RenderTimeOfDay }) {
 }
 
 // ─── Foreground Ground (Layer 8) ───
-function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
+function ForegroundGround({ renderTime, windIntensity }: { renderTime: RenderTimeOfDay; windIntensity: string }) {
   const tf = TIME_FILTERS[renderTime];
   const isNight = renderTime === 'night';
   const groundColor = isNight ? '#1a2e1a' : 'var(--biome-fg-ground, #2d5a3d)';
   const grassColor = isNight ? '#1a2e1a' : 'var(--biome-fg-ground, #3a7a4a)';
+
+  const grassSwayMap: Record<string, string> = {
+    calm: '0deg', light: '0.4deg', moderate: '1.2deg', strong: '2.5deg', extreme: '4deg',
+  };
+  const grassDuration: Record<string, string> = {
+    calm: '0s', light: '4s', moderate: '2.5s', strong: '1.5s', extreme: '1s',
+  };
 
   const grassSpikes = useMemo(() => {
     const rand = seededRandom(77);
@@ -302,12 +309,21 @@ function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
     return spikes.join(' ');
   }, []);
 
+  const grassAnim = windIntensity !== 'calm'
+    ? `grass-sway ${grassDuration[windIntensity] || '4s'} ease-in-out infinite`
+    : 'none';
+
   return (
-    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter, transition: 'filter 3s ease' }}>
+    <div className="absolute inset-0 w-full h-full" style={{
+      filter: tf.filter, transition: 'filter 3s ease',
+      '--grass-sway': grassSwayMap[windIntensity] || '0deg',
+    } as React.CSSProperties}>
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d={`M0,85 ${grassSpikes} L1000,85 L1000,85 L0,85 Z`}
-          fill={grassColor} opacity="0.7" style={{ transition: 'fill 3s ease' }} />
+        <g style={{ transformOrigin: '500px 85px', animation: grassAnim }}>
+          <path d={`M0,85 ${grassSpikes} L1000,85 L1000,85 L0,85 Z`}
+            fill={grassColor} opacity="0.7" style={{ transition: 'fill 3s ease' }} />
+        </g>
         <path d="M0,85 C100,83 250,86 400,84 C550,82 700,86 850,84 C950,83 1000,85 1000,85 L1000,100 L0,100 Z"
           fill={groundColor} style={{ transition: 'fill 3s ease' }} />
       </svg>
