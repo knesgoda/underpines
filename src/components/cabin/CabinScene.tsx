@@ -507,7 +507,112 @@ function WindDebris({ windIntensity, fromLeft }: { windIntensity: string; fromLe
   );
 }
 
-// ─── Main Component ───
+// ─── Cloud Layer ───
+interface CloudDef {
+  variant: 'wispy' | 'puffy' | 'heavy';
+  y: number;       // % from top (0-40)
+  opacity: number;  // 0.7-0.95
+  delay: number;    // animation-delay in seconds
+  scale: number;    // size multiplier
+}
+
+function generateClouds(cloudCover: number): CloudDef[] {
+  let count = 0;
+  let variants: Array<'wispy' | 'puffy' | 'heavy'> = [];
+
+  if (cloudCover <= 10) return [];
+  if (cloudCover <= 30) { count = 1 + Math.round(Math.random()); variants = ['wispy']; }
+  else if (cloudCover <= 60) { count = 3 + Math.round(Math.random()); variants = ['wispy', 'puffy']; }
+  else if (cloudCover <= 80) { count = 5 + Math.round(Math.random()); variants = ['puffy', 'heavy', 'puffy']; }
+  else { count = 7 + Math.round(Math.random()); variants = ['heavy', 'heavy', 'puffy']; }
+
+  const rand = seededRandom(cloudCover * 7 + 13);
+  return Array.from({ length: count }, (_, i) => ({
+    variant: variants[i % variants.length],
+    y: 3 + rand() * 35,
+    opacity: 0.7 + rand() * 0.25,
+    delay: rand() * 60,
+    scale: 0.7 + rand() * 0.6,
+  }));
+}
+
+const WIND_SPEED_MAP: Record<string, number> = {
+  calm: 120, light: 80, moderate: 45, strong: 20, extreme: 10,
+};
+
+function CloudShape({ variant, isNight }: { variant: 'wispy' | 'puffy' | 'heavy'; isNight: boolean }) {
+  const fill = isNight ? '#3a3a5a' : '#f0f0f0';
+  const fill2 = isNight ? '#2e2e4a' : '#e8e8e8';
+  const fill3 = isNight ? '#34345a' : '#e0e0e0';
+
+  switch (variant) {
+    case 'wispy':
+      return (
+        <g>
+          <ellipse cx="30" cy="14" rx="22" ry="7" fill={fill} />
+          <ellipse cx="50" cy="12" rx="16" ry="5" fill={fill2} />
+        </g>
+      );
+    case 'puffy':
+      return (
+        <g>
+          <ellipse cx="30" cy="18" rx="24" ry="10" fill={fill} />
+          <ellipse cx="50" cy="14" rx="20" ry="12" fill={fill2} />
+          <ellipse cx="40" cy="10" rx="16" ry="9" fill={fill} />
+          <ellipse cx="55" cy="18" rx="14" ry="8" fill={fill3} />
+        </g>
+      );
+    case 'heavy':
+      return (
+        <g>
+          <ellipse cx="40" cy="20" rx="35" ry="14" fill={fill} />
+          <ellipse cx="60" cy="16" rx="28" ry="13" fill={fill2} />
+          <ellipse cx="30" cy="14" rx="22" ry="11" fill={fill} />
+          <ellipse cx="55" cy="10" rx="20" ry="10" fill={fill3} />
+          <ellipse cx="70" cy="20" rx="18" ry="10" fill={fill} />
+        </g>
+      );
+  }
+}
+
+function CloudLayer({ cloudCover, windIntensity, renderTime }: {
+  cloudCover: number; windIntensity: string; renderTime: RenderTimeOfDay;
+}) {
+  const isNight = renderTime === 'night' || renderTime === 'dusk';
+  const clouds = useMemo(() => generateClouds(cloudCover), [cloudCover]);
+  const duration = WIND_SPEED_MAP[windIntensity] || 120;
+
+  if (clouds.length === 0) return null;
+
+  return (
+    <div className="absolute inset-0 w-full h-full overflow-hidden">
+      {clouds.map((c, i) => (
+        <svg
+          key={i}
+          data-cloud
+          className="absolute"
+          viewBox="0 0 100 30"
+          preserveAspectRatio="xMidYMid meet"
+          style={{
+            width: `${12 * c.scale}%`,
+            height: 'auto',
+            top: `${c.y}%`,
+            left: 0,
+            opacity: isNight ? c.opacity * 0.5 : c.opacity,
+            animation: `cloud-drift ${duration + i * 5}s linear infinite`,
+            animationDelay: `${-c.delay}s`,
+            pointerEvents: 'none',
+            transition: 'opacity 1.5s ease',
+          }}
+        >
+          <CloudShape variant={c.variant} isNight={isNight} />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+
 const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude }: CabinSceneProps) => {
   const solar = useSolarCycle(latitude, longitude);
   const weather = useWeather(latitude, longitude);
