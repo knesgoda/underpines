@@ -5,6 +5,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import CabinScene from '@/components/cabin/CabinScene';
+import { getMoonPhase } from '@/lib/moon';
 import CabinEditDrawer from '@/components/cabin/CabinEditDrawer';
 import WidgetShelf from '@/components/cabin/WidgetShelf';
 import CircleButton from '@/components/circles/CircleButton';
