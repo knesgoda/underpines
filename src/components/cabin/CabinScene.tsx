@@ -715,6 +715,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   const resolvedBiome = dbg?.biome || resolvedLocation?.biome || biomeProp || 'default';
 
   const biomeConfig = useMemo(() => getBiomeConfig(resolvedBiome), [resolvedBiome]);
+  const biomeSet = useMemo(() => BIOME_COMPONENTS[resolvedBiome] || BIOME_COMPONENTS['pacific-northwest'], [resolvedBiome]);
   const solarRaw = useSolarCycle(lat, lng);
   const weatherRaw = useWeather(lat, lng);
   const seasonalRaw = useWheelOfTheYear();
