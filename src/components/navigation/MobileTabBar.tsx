@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { Home, Tent, Flame, Plus, Settings } from 'lucide-react';
+import { Home, Tent, Flame, Plus } from 'lucide-react';
 import LanternIcon from './LanternIcon';
 
 interface TabItem {
@@ -38,6 +38,7 @@ const MobileTabBar = () => {
                 key="composer"
                 onClick={() => setComposerOpen(true)}
                 className="flex items-center justify-center w-12 h-12 -mt-4 rounded-full bg-primary text-primary-foreground shadow-card"
+                aria-label="New post"
               >
                 <Plus size={22} />
               </button>
@@ -75,17 +76,6 @@ const MobileTabBar = () => {
             </Link>
           );
         })}
-
-        {/* Settings tab */}
-        <Link
-          to="/settings"
-          className="flex flex-col items-center justify-center gap-0.5 min-w-[48px]"
-        >
-          <Settings size={20} className={isActive('/settings') ? 'text-primary' : 'text-muted-foreground'} />
-          <span className={`text-[10px] font-body ${isActive('/settings') ? 'text-primary' : 'text-muted-foreground'}`}>
-            Settings
-          </span>
-        </Link>
       </div>
     </nav>
   );
