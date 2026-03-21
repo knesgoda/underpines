@@ -125,14 +125,25 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     setSaving(true);
     const payload: any = { ...updates };
 
-    // If zip changed, geocode it
-    if (updates.zip_code && updates.zip_code !== profile.zip_code) {
-      const geo = await geocodeZip(updates.zip_code);
-      if (geo) {
-        payload.latitude = geo.lat;
-        payload.longitude = geo.lon;
-        payload.city = geo.city;
+    // If zip or country changed, geocode and recompute biome
+    const zipChanged = updates.zip_code != null && updates.zip_code !== profile.zip_code;
+    const countryChanged = updates.country_code != null && updates.country_code !== profile.country_code;
+
+    if (zipChanged || countryChanged) {
+      const currentZip = updates.zip_code ?? form.zip_code;
+      const currentCountry = updates.country_code ?? form.country_code;
+
+      if (zipChanged && currentZip) {
+        const geo = await geocodeZip(currentZip);
+        if (geo) {
+          payload.latitude = geo.lat;
+          payload.longitude = geo.lon;
+          payload.city = geo.city;
+        }
       }
+
+      // Recompute biome from location
+      payload.biome = getBiomeFromLocation(currentZip, currentCountry);
     }
 
     await supabase.from('profiles').update(payload).eq('id', profile.id);
@@ -140,7 +151,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
     onUpdate();
-  }, [profile.id, profile.zip_code, onUpdate]);
+  }, [profile.id, profile.zip_code, profile.country_code, form.zip_code, form.country_code, onUpdate]);
 
   // Debounced auto-save
   useEffect(() => {
