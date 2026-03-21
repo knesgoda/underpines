@@ -255,11 +255,12 @@ const Cabin = () => {
         </div>
       )}
       {/* Illustrated scene header */}
-      <CabinScene
-        memberName={profile.display_name}
-        atmosphere={profile.atmosphere}
-        timeOfDay={getTimeOfDay()}
-      />
+      <div className="relative w-full">
+        <CabinScene
+          memberName={isTrailhead ? '' : profile.display_name}
+          atmosphere={profile.atmosphere}
+          timeOfDay={getTimeOfDay()}
+        />
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
           <div className="absolute bottom-0 left-0 right-0 px-8 pb-6 pt-16" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)' }}>
