@@ -85,8 +85,9 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
   };
 
   const togglePin = async (pet: PinePet) => {
+    if (pet.is_ambassador) return; // Ambassador pets are always pinned
     if (!pet.is_pinned) {
-      const pinnedCount = pets.filter(p => p.is_pinned).length;
+      const pinnedCount = pets.filter(p => p.is_pinned && !p.is_ambassador).length;
       if (pinnedCount >= 3) {
         toast.info('You can pin up to 3 pets. Unpin one first.');
         return;
