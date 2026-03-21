@@ -14,6 +14,7 @@ interface PetData {
   sprite_cache: Record<string, string>;
   is_pinned: boolean;
   is_memorial: boolean;
+  is_ambassador: boolean;
   display_order: number;
 }
 
@@ -98,7 +99,7 @@ const CabinPets = ({ ownerId, atmosphere = 'morning_mist' }: CabinPetsProps) => 
     const fetchPets = async () => {
       const { data } = await supabase
         .from('pine_pets')
-        .select('id, name, animal_type, sprite_cache, is_pinned, is_memorial, display_order')
+        .select('id, name, animal_type, sprite_cache, is_pinned, is_memorial, is_ambassador, display_order')
         .eq('owner_id', ownerId)
         .eq('is_resting', false)
         .order('is_pinned', { ascending: false })
@@ -108,6 +109,7 @@ const CabinPets = ({ ownerId, atmosphere = 'morning_mist' }: CabinPetsProps) => 
         setAllPets(data.map(p => ({
           ...p,
           sprite_cache: (p.sprite_cache as Record<string, string>) || {},
+          is_ambassador: (p as any).is_ambassador ?? false,
         })));
       }
     };
@@ -115,22 +117,31 @@ const CabinPets = ({ ownerId, atmosphere = 'morning_mist' }: CabinPetsProps) => 
   }, [ownerId]);
 
   // Determine which 3 pets to show (pinned first, then rotate remainder)
+  // Ambassadors always show + up to 3 regular pets
   const visiblePets = useMemo(() => {
     if (allPets.length === 0) return [];
-    if (allPets.length <= 3) return allPets;
 
-    const pinned = allPets.filter(p => p.is_pinned);
-    const unpinned = allPets.filter(p => !p.is_pinned);
+    const ambassadors = allPets.filter(p => p.is_ambassador);
+    const regular = allPets.filter(p => !p.is_ambassador);
+
+    if (regular.length <= 3) return [...ambassadors, ...regular];
+
+    const pinned = regular.filter(p => p.is_pinned);
+    const unpinned = regular.filter(p => !p.is_pinned);
     const slotsNeeded = 3 - pinned.length;
 
-    if (slotsNeeded <= 0) return pinned.slice(0, 3);
-
-    const rotated: PetData[] = [];
-    for (let i = 0; i < slotsNeeded; i++) {
-      const idx = (rotationIdx + i) % unpinned.length;
-      rotated.push(unpinned[idx]);
+    let regularVisible: PetData[];
+    if (slotsNeeded <= 0) {
+      regularVisible = pinned.slice(0, 3);
+    } else {
+      const rotated: PetData[] = [];
+      for (let i = 0; i < slotsNeeded && unpinned.length > 0; i++) {
+        const idx = (rotationIdx + i) % unpinned.length;
+        rotated.push(unpinned[idx]);
+      }
+      regularVisible = [...pinned, ...rotated];
     }
-    return [...pinned, ...rotated];
+    return [...ambassadors, ...regularVisible];
   }, [allPets, rotationIdx]);
 
   // Rotation timer for >3 pets

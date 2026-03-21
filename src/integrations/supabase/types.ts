@@ -2071,6 +2071,7 @@ export type Database = {
           created_at: string
           display_order: number
           id: string
+          is_ambassador: boolean
           is_memorial: boolean
           is_pinned: boolean
           is_resting: boolean
@@ -2085,6 +2086,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          is_ambassador?: boolean
           is_memorial?: boolean
           is_pinned?: boolean
           is_resting?: boolean
@@ -2099,6 +2101,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          is_ambassador?: boolean
           is_memorial?: boolean
           is_pinned?: boolean
           is_resting?: boolean

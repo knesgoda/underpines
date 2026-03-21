@@ -498,9 +498,32 @@ const Feed = () => {
   );
 };
 
+const PearlGreyResting = () => (
+  <svg width="80" height="50" viewBox="0 0 80 50" className="mx-auto mb-4 opacity-40">
+    {/* Body — lying down */}
+    <ellipse cx="40" cy="35" rx="22" ry="9" fill="hsl(var(--muted-foreground))" opacity="0.3" />
+    {/* White chest */}
+    <ellipse cx="38" cy="37" rx="6" ry="5" fill="hsl(var(--muted-foreground))" opacity="0.15" />
+    {/* Head — resting on paws */}
+    <ellipse cx="55" cy="28" rx="9" ry="7" fill="hsl(var(--muted-foreground))" opacity="0.35" />
+    {/* Rose ears */}
+    <ellipse cx="50" cy="22" rx="3" ry="2" fill="hsl(var(--muted-foreground))" opacity="0.25" transform="rotate(-10 50 22)" />
+    <ellipse cx="60" cy="22" rx="3" ry="2" fill="hsl(var(--muted-foreground))" opacity="0.25" transform="rotate(10 60 22)" />
+    {/* Closed eyes */}
+    <path d="M52 27 Q53.5 26 55 27" stroke="hsl(var(--muted-foreground))" strokeWidth="0.6" fill="none" opacity="0.4" />
+    <path d="M57 27 Q58.5 26 60 27" stroke="hsl(var(--muted-foreground))" strokeWidth="0.6" fill="none" opacity="0.4" />
+    {/* Nose */}
+    <ellipse cx="62" cy="29" rx="1.5" ry="1" fill="hsl(var(--muted-foreground))" opacity="0.3" />
+    {/* Front paws */}
+    <ellipse cx="60" cy="38" rx="4" ry="2" fill="hsl(var(--muted-foreground))" opacity="0.25" />
+    {/* Gentle breathing animation */}
+    <animateTransform attributeName="transform" type="scale" values="1 1;1 1.015;1 1" dur="4s" repeatCount="indefinite" additive="sum" />
+  </svg>
+);
+
 const EmptyState = ({ icon, title, subtitle, children }: { icon: string; title: string; subtitle?: string; children?: React.ReactNode }) => (
   <div className="text-center py-20">
-    <p className="text-3xl mb-3">{icon}</p>
+    <PearlGreyResting />
     <p className="font-body text-sm text-muted-foreground">{title}</p>
     {subtitle && <p className="font-body text-sm text-muted-foreground">{subtitle}</p>}
     {children}

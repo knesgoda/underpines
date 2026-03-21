@@ -454,7 +454,7 @@ const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
         </div>
       </div>
 
-      {/* === WALKING FIGURE === */}
+      {/* === PEARL GREY — the guide dog === */}
       <div
         className="absolute bottom-16 z-10"
         style={{
@@ -464,23 +464,56 @@ const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
         }}
       >
         <svg
-          width="20"
-          height="40"
-          viewBox="0 0 20 40"
+          width="32"
+          height="28"
+          viewBox="0 0 32 28"
           style={{
-            animation: isPaused ? undefined : 'walk-bob 0.5s ease-in-out infinite',
+            animation: isPaused ? 'pearl-grey-look 2s ease-in-out infinite' : 'walk-bob 0.5s ease-in-out infinite',
             willChange: 'transform',
           }}
         >
-          {/* Head */}
-          <circle cx="10" cy="5" r="4" fill="#e2e8f0" />
-          {/* Coat body */}
-          <path d="M6 9 L6 25 Q10 27 14 25 L14 9 Z" fill="#94a3b8" opacity="0.85" />
-          {/* Collar */}
-          <path d="M7 9 L10 12 L13 9" fill="#64748b" opacity="0.6" />
-          {/* Legs */}
-          <path d="M8 25 L6 37" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
-          <path d="M12 25 L14 37" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+          {/* Body — stocky, muscular */}
+          <ellipse cx="16" cy="18" rx="10" ry="7" fill="#7b8fa3" opacity="0.9" />
+          {/* White chest patch */}
+          <ellipse cx="16" cy="20" rx="4" ry="5" fill="#d1d9e0" opacity="0.7" />
+          {/* Head — broad, blocky */}
+          <ellipse cx="22" cy="10" rx="6" ry="5.5" fill="#8b9eb3" opacity="0.95" />
+          {/* Lighter face */}
+          <ellipse cx="23" cy="11" rx="4" ry="3.5" fill="#a8b8c8" opacity="0.7" />
+          {/* Rose ears — soft, folded back */}
+          <ellipse cx="18" cy="6" rx="2.5" ry="1.8" fill="#6e849a" opacity="0.8" transform="rotate(-15 18 6)" />
+          <ellipse cx="26" cy="6" rx="2.5" ry="1.8" fill="#6e849a" opacity="0.8" transform="rotate(15 26 6)" />
+          {/* Eyes — warm brown */}
+          <circle cx="20.5" cy="9.5" r="1" fill="#5c3a1a" />
+          <circle cx="24.5" cy="9.5" r="1" fill="#5c3a1a" />
+          {/* Eye shine */}
+          <circle cx="20.8" cy="9.2" r="0.4" fill="white" opacity="0.7" />
+          <circle cx="24.8" cy="9.2" r="0.4" fill="white" opacity="0.7" />
+          {/* Nose — wide, dark */}
+          <ellipse cx="26" cy="11.5" rx="1.5" ry="1" fill="#3a3a4a" />
+          {/* Smile line */}
+          <path d="M24 13 Q26 14.5 27.5 13" stroke="#5a6a7a" strokeWidth="0.5" fill="none" opacity="0.6" />
+          {/* Tongue peeking out */}
+          <ellipse cx="25.5" cy="14" rx="1" ry="1.5" fill="#e8838a" opacity="0.7" />
+          {/* Front legs — sturdy */}
+          <rect x="11" y="22" width="3" height="5" rx="1" fill="#7b8fa3" opacity="0.85" />
+          <rect x="18" y="22" width="3" height="5" rx="1" fill="#7b8fa3" opacity="0.85" />
+          {/* White paw tips */}
+          <rect x="11" y="25.5" width="3" height="1.5" rx="0.8" fill="#d1d9e0" opacity="0.6" />
+          <rect x="18" y="25.5" width="3" height="1.5" rx="0.8" fill="#d1d9e0" opacity="0.6" />
+          {/* Tail — low curve, wagging */}
+          <path
+            d="M6 16 Q3 13 4 10"
+            stroke="#7b8fa3"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.8"
+            style={{ animation: isPaused ? 'pearl-grey-wag 0.6s ease-in-out infinite' : undefined }}
+          />
+          {/* Forehead wrinkles */}
+          <path d="M20 7.5 Q22 7 24 7.5" stroke="#6e849a" strokeWidth="0.3" fill="none" opacity="0.4" />
+          <path d="M20.5 8 Q22 7.6 23.5 8" stroke="#6e849a" strokeWidth="0.3" fill="none" opacity="0.3" />
         </svg>
       </div>
 
