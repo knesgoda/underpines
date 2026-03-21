@@ -8,6 +8,7 @@ import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 import { useWeather } from '@/hooks/useWeather';
 import PrecipitationLayer from './PrecipitationLayer';
+import { getBiomeConfig } from '@/config/biomes';
 
 // All recognized time-of-day values — kept granular for smooth transitions
 type RenderTimeOfDay = 'night' | 'pre-dawn' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'sunset' | 'dusk';
@@ -22,6 +23,7 @@ interface CabinSceneProps {
   moonPhase?: number;
   latitude?: number;
   longitude?: number;
+  biome?: string;
 }
 
 // Sky gradient stops as RGB arrays for interpolation
@@ -54,6 +56,14 @@ const TIME_FILTERS: Record<RenderTimeOfDay, { filter: string; treeFilter?: strin
   sunset:       { filter: 'saturate(0.8) brightness(0.7)', blendOverlay: 'rgba(200,120,60,0.12)' },
   dusk:         { filter: 'saturate(0.55) brightness(0.5)', treeFilter: 'brightness(0.4) saturate(0.5)' },
 };
+
+// Darken a hex color by ~15% for wet-ground effect
+function darkenColor(hex: string): string {
+  const m = hex.match(/^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+  if (!m) return hex;
+  const d = (v: string) => Math.max(0, Math.round(parseInt(v, 16) * 0.85)).toString(16).padStart(2, '0');
+  return `#${d(m[1])}${d(m[2])}${d(m[3])}`;
+}
 
 const layerBase = 'absolute inset-0 w-full h-full';
 
@@ -399,7 +409,7 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
 
   const renderCanopy = (type: string, cx: number, baseY: number, s: number, treeIndex: number) => {
     const canopyColor = 'var(--biome-canopy, #3a7d44)';
-    const trunkColor = '#5c4033';
+    const trunkColor = 'var(--biome-trunk, #5c4033)';
     const swayStyle = getTreeSwayStyle(windIntensity, treeIndex, fromLeft);
     const flutterAnim = (windIntensity === 'moderate' || windIntensity === 'strong' || windIntensity === 'extreme')
       ? { animation: `canopy-flutter ${windIntensity === 'moderate' ? '3s' : '2s'} ease-in-out infinite`, animationDelay: `${treeIndex * 200}ms` }
@@ -500,7 +510,7 @@ function WindDebris({ windIntensity, fromLeft }: { windIntensity: string; fromLe
     size: 1 + rand() * 1.5,
     duration: 3 + rand() * 4,
     delay: rand() * 6,
-    color: rand() > 0.5 ? 'var(--biome-canopy, #3a7d44)' : '#5c4033',
+    color: rand() > 0.5 ? 'var(--biome-canopy, #3a7d44)' : 'var(--biome-trunk, #5c4033)',
   }));
 
   return (
@@ -624,7 +634,8 @@ function CloudLayer({ cloudCover, windIntensity, renderTime }: {
 }
 
 // ─── Main Component ───
-const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude }: CabinSceneProps) => {
+const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude, biome: biomeProp }: CabinSceneProps) => {
+  const biomeConfig = useMemo(() => getBiomeConfig(biomeProp || 'default'), [biomeProp]);
   const solar = useSolarCycle(latitude, longitude);
   const weather = useWeather(latitude, longitude);
   const renderTime = toRenderTime(solar.timeOfDay);
@@ -714,11 +725,9 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       className={`cabin-scene-root relative w-full overflow-hidden rounded-xl${sunObscured ? ' sun-obscured' : ''}${lightningFlash > 0 ? ' lightning-flash' : ''}`}
       style={{
         aspectRatio: 'var(--cabin-scene-ratio, 3/1)',
-        '--biome-bg-far': '#7a9a8a',
-        '--biome-bg-mid': '#4a7c59',
-        '--biome-bg-near': '#3a6b48',
-        '--biome-fg-ground': weather.isRaining ? '#1f4a2e' : '#2d5a3d',
-        '--biome-canopy': '#3a7d44',
+        ...biomeConfig.cssVariables,
+        // Wet-ground override when raining
+        ...(weather.isRaining ? { '--biome-fg-ground': darkenColor(biomeConfig.cssVariables['--biome-fg-ground'] || '#2d5a3d') } : {}),
         '--wind-intensity': windIntensity,
       } as React.CSSProperties}
     >
