@@ -355,6 +355,11 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
                   </p>
 
                   {/* Status labels */}
+                  {pet.is_ambassador && (
+                    <span className="text-[9px] font-body text-primary mt-0.5 block">
+                      🌲 Ambassador
+                    </span>
+                  )}
                   {pet.is_resting && (
                     <span className="text-[9px] font-body text-muted-foreground italic mt-0.5 block">
                       Resting inside
@@ -365,7 +370,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
                       In memory ♡
                     </span>
                   )}
-                  {pet.is_pinned && (
+                  {pet.is_pinned && !pet.is_ambassador && (
                     <Pin size={8} className="absolute bottom-2 right-2 text-primary opacity-60" />
                   )}
                 </div>
