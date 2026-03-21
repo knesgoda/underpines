@@ -884,6 +884,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       <div className={layerBase} style={{ zIndex: 8, pointerEvents: 'none' }} data-layer="foreground-elements">
         <ForegroundGround renderTime={renderTime} windIntensity={windIntensity} />
         <ForegroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
+        <biomeSet.Foreground timeOfDay={renderTime} />
         <WindDebris windIntensity={windIntensity} fromLeft={fromLeft} />
       </div>
 
