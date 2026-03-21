@@ -121,12 +121,22 @@ const SCENE_CSS = `
   0% { transform: translateX(110%); }
   100% { transform: translateX(-30%); }
 }
+@keyframes heat-shimmer {
+  0%, 100% { transform: scaleY(1.0); }
+  50% { transform: scaleY(1.003); }
+}
 /* Sun occlusion dimming */
 .cabin-scene-root.sun-obscured [data-layer="sky-gradient"] {
   filter: saturate(0.85) !important;
 }
 .cabin-scene-root.sun-obscured .sun-glow-outer {
   r: 2.5 !important;
+}
+/* Lightning flash backlights trees */
+.cabin-scene-root.lightning-flash [data-layer="midground-trees"],
+.cabin-scene-root.lightning-flash [data-layer="foreground-elements"] {
+  filter: brightness(1.8) !important;
+  transition: filter 0ms !important;
 }
 `;
 
@@ -622,7 +632,31 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   const windIntensity = weather.windIntensity || 'calm';
   const fromLeft = (weather.windDirection ?? 0) >= 180;
   const [sunObscured, setSunObscured] = useState(false);
+  const [lightningFlash, setLightningFlash] = useState(0);
   const sceneRef = useRef<HTMLDivElement>(null);
+
+  // Heat shimmer: clear + hot
+  const showHeatShimmer = weather.condition === 'clear' && (weather.temperature ?? 0) > 32 && (weather.unit === 'C' || ((weather.temperature ?? 0) > 90 && weather.unit === 'F'));
+
+  // Thunderstorm lightning effect
+  useEffect(() => {
+    if (weather.condition !== 'thunderstorm') return;
+    let cancelled = false;
+    const scheduleFlash = () => {
+      const delay = 8000 + Math.random() * 27000;
+      setTimeout(() => {
+        if (cancelled) return;
+        // Double-flash pattern: 0.7 for 80ms, 0 for 120ms, 0.4 for 60ms, 0
+        setLightningFlash(0.7);
+        setTimeout(() => { if (!cancelled) setLightningFlash(0); }, 80);
+        setTimeout(() => { if (!cancelled) setLightningFlash(0.4); }, 200);
+        setTimeout(() => { if (!cancelled) setLightningFlash(0); }, 260);
+        scheduleFlash();
+      }, delay);
+    };
+    scheduleFlash();
+    return () => { cancelled = true; };
+  }, [weather.condition]);
 
   // Sun occlusion check every 2s
   useEffect(() => {
@@ -677,7 +711,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   return (
     <div
       ref={sceneRef}
-      className={`cabin-scene-root relative w-full overflow-hidden rounded-xl${sunObscured ? ' sun-obscured' : ''}`}
+      className={`cabin-scene-root relative w-full overflow-hidden rounded-xl${sunObscured ? ' sun-obscured' : ''}${lightningFlash > 0 ? ' lightning-flash' : ''}`}
       style={{
         aspectRatio: 'var(--cabin-scene-ratio, 3/1)',
         '--biome-bg-far': '#7a9a8a',
@@ -706,8 +740,13 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       {/* Layer 2: background-landscape */}
       <div className={layerBase} style={{
         zIndex: 2, pointerEvents: 'none',
-        filter: sunObscured ? 'brightness(0.9)' : 'none',
+        filter: [
+          sunObscured ? 'brightness(0.9)' : '',
+          showHeatShimmer ? '' : '',
+        ].filter(Boolean).join(' ') || 'none',
         transition: 'filter 1.5s ease',
+        animation: showHeatShimmer ? 'heat-shimmer 6s ease-in-out infinite' : 'none',
+        transformOrigin: 'bottom center',
       }} data-layer="background-landscape">
         <BackgroundHills renderTime={renderTime} />
       </div>
@@ -740,6 +779,9 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
           windDirection={weather.windDirection}
           isSnowing={weather.isSnowing}
           isRaining={weather.isRaining}
+          renderTime={renderTime}
+          moonPhase={moonPhase}
+          isGoldenHour={isGoldenHour}
         />
       </div>
 
@@ -777,8 +819,17 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         )}
       </div>
 
-      {/* Layer 10: ambient-particles */}
-      <div className={layerBase} style={{ zIndex: 10, pointerEvents: 'none' }} data-layer="ambient-particles" />
+      {/* Layer 10: ambient-particles + lightning flash */}
+      <div className={layerBase} style={{ zIndex: 10, pointerEvents: 'none' }} data-layer="ambient-particles">
+        {weather.condition === 'thunderstorm' && (
+          <div className="absolute inset-0" style={{
+            backgroundColor: 'white',
+            opacity: lightningFlash,
+            transition: 'opacity 0ms',
+            pointerEvents: 'none',
+          }} />
+        )}
+      </div>
 
       {/* Member name */}
       <div className="absolute bottom-0 left-0 px-5 pb-4" style={{ zIndex: 11 }}>
