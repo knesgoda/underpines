@@ -1,0 +1,10 @@
+export { default as Sasquatch } from './Sasquatch';
+export { default as LochNessMonster } from './LochNessMonster';
+export { default as Yeti } from './Yeti';
+export { default as DireWolf } from './DireWolf';
+export { default as Nuckelavee } from './Nuckelavee';
+export { default as Dragon } from './Dragon';
+export { default as Wendigo } from './Wendigo';
+export { default as Kraken } from './Kraken';
+export { default as Thunderbird } from './Thunderbird';
+export { default as Phoenix } from './Phoenix';
