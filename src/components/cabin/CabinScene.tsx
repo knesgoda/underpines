@@ -17,6 +17,35 @@ import { getBiomeConfig } from '@/config/biomes';
 import CreatureRenderer from '@/components/creatures/CreatureRenderer';
 import CompanionRenderer from '@/components/creatures/CompanionRenderer';
 
+// ── Biome component imports ──
+import { PNWBackground, PNWMidground, PNWForeground } from '@/components/biomes/PacificNorthwest';
+import { CaliforniaSWBackground, CaliforniaSWMidground, CaliforniaSWForeground } from '@/components/biomes/CaliforniaSW';
+import { NortheastBackground, NortheastMidground, NortheastForeground } from '@/components/biomes/Northeast';
+import { SoutheastBackground, SoutheastMidground, SoutheastForeground } from '@/components/biomes/Southeast';
+import { MidwestBackground, MidwestMidground, MidwestForeground } from '@/components/biomes/Midwest';
+import { MountainWestBackground, MountainWestMidground, MountainWestForeground } from '@/components/biomes/MountainWest';
+import { BritishIslesBackground, BritishIslesMidground, BritishIslesForeground } from '@/components/biomes/BritishIsles';
+import { NordicBackground, NordicMidground, NordicForeground } from '@/components/biomes/Nordic';
+import { MedBackground, MedMidground, MedForeground } from '@/components/biomes/Mediterranean';
+
+type BiomeComponents = {
+  Background: React.ComponentType<any>;
+  Midground: React.ComponentType<any>;
+  Foreground: React.ComponentType<any>;
+};
+
+const BIOME_COMPONENTS: Record<string, BiomeComponents> = {
+  'pacific-northwest': { Background: PNWBackground, Midground: PNWMidground, Foreground: PNWForeground },
+  'california-sw':     { Background: CaliforniaSWBackground, Midground: CaliforniaSWMidground, Foreground: CaliforniaSWForeground },
+  'northeast':         { Background: NortheastBackground, Midground: NortheastMidground, Foreground: NortheastForeground },
+  'southeast':         { Background: SoutheastBackground, Midground: SoutheastMidground, Foreground: SoutheastForeground },
+  'midwest':           { Background: MidwestBackground, Midground: MidwestMidground, Foreground: MidwestForeground },
+  'mountain-west':     { Background: MountainWestBackground, Midground: MountainWestMidground, Foreground: MountainWestForeground },
+  'british-isles':     { Background: BritishIslesBackground, Midground: BritishIslesMidground, Foreground: BritishIslesForeground },
+  'nordic':            { Background: NordicBackground, Midground: NordicMidground, Foreground: NordicForeground },
+  'mediterranean':     { Background: MedBackground, Midground: MedMidground, Foreground: MedForeground },
+};
+
 // All recognized time-of-day values — kept granular for smooth transitions
 type RenderTimeOfDay = 'night' | 'pre-dawn' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'sunset' | 'dusk';
 function toRenderTime(t: string): RenderTimeOfDay {
