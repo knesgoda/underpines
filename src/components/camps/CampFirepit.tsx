@@ -210,7 +210,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
                     {menuOpenId === post.id && (
                       <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-10 py-1 min-w-[140px]">
                         <button
-                          onClick={() => { handleDelete(post.id); setMenuOpenId(null); }}
+                          onClick={() => { setDeleteConfirmId(post.id); setMenuOpenId(null); }}
                           className="w-full text-left px-3 py-1.5 font-body text-xs text-destructive hover:bg-muted flex items-center gap-2"
                         >
                           <Trash2 size={12} /> Remove post

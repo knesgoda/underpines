@@ -148,7 +148,7 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
                         <Pin size={12} className={item.is_pinned ? 'text-primary' : 'text-muted-foreground'} />
                       </button>
                     )}
-                    <button onClick={() => handleDelete(item.id)} className="p-1 rounded hover:bg-muted">
+                    <button onClick={() => setDeleteConfirmId(item.id)} className="p-1 rounded hover:bg-muted">
                       <Trash2 size={12} className="text-muted-foreground" />
                     </button>
                   </div>
