@@ -361,7 +361,8 @@ const Feed = () => {
         )}
       </AnimatePresence>
       {/* Feed preferences toggle (desktop) */}
-      <div className="hidden md:flex justify-end mb-2">
+      <div className="hidden md:flex justify-end items-center gap-2 mb-2">
+        <SeasonalFeedGlyph />
         <button
           onClick={() => setShowPrefs(!showPrefs)}
           className="p-1.5 rounded-md text-muted-foreground hover:bg-muted transition-colors"
