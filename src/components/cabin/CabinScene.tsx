@@ -248,6 +248,10 @@ function BackgroundHills({ renderTime }: { renderTime: RenderTimeOfDay }) {
 // ─── Foreground Ground (Layer 8) ───
 function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
   const tf = TIME_FILTERS[renderTime];
+  const isNight = renderTime === 'night';
+  const groundColor = isNight ? '#1a2e1a' : 'var(--biome-fg-ground, #2d5a3d)';
+  const grassColor = isNight ? '#1a2e1a' : 'var(--biome-fg-ground, #3a7a4a)';
+
   const grassSpikes = useMemo(() => {
     const rand = seededRandom(77);
     const spikes: string[] = [];
@@ -262,13 +266,13 @@ function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
   }, []);
 
   return (
-    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter }}>
+    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter, transition: 'filter 3s ease' }}>
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <path d={`M0,85 ${grassSpikes} L1000,85 L1000,85 L0,85 Z`}
-          fill="var(--biome-fg-ground, #3a7a4a)" opacity="0.7" />
+          fill={grassColor} opacity="0.7" style={{ transition: 'fill 3s ease' }} />
         <path d="M0,85 C100,83 250,86 400,84 C550,82 700,86 850,84 C950,83 1000,85 1000,85 L1000,100 L0,100 Z"
-          fill="var(--biome-fg-ground, #2d5a3d)" />
+          fill={groundColor} style={{ transition: 'fill 3s ease' }} />
       </svg>
       {tf.blendOverlay && (
         <div className="absolute inset-0" style={{ backgroundColor: tf.blendOverlay, mixBlendMode: 'multiply' }} />
