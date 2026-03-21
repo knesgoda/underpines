@@ -395,11 +395,16 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
     ? solar.goldenHourProgress * 0.12
     : 0;
 
+  // Granular star opacity for smooth transitions
   const starOpacity = useMemo(() => {
-    if (renderTime === 'night') return 1;
-    if (renderTime === 'dusk') return 0.7;
-    if (renderTime === 'dawn') return 0.3;
-    return 0;
+    switch (renderTime) {
+      case 'night': return 1;
+      case 'dusk': return 0.85;        // fading in during dusk
+      case 'sunset': return 0.3;       // just starting to appear
+      case 'pre-dawn': return 0.5;     // fading out
+      case 'dawn': return 0;           // fully gone
+      default: return 0;
+    }
   }, [renderTime]);
 
   return (
