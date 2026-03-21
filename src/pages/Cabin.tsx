@@ -16,7 +16,6 @@ import SuggestionBox from '@/components/cabin/SuggestionBox';
 import InviteRow from '@/components/cabin/InviteRow';
 import CabinCircleStack from '@/components/cabin/CabinCircleStack';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
-import { getCurrentSeason } from '@/lib/weather';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
 import { Settings, Music, MoreHorizontal } from 'lucide-react';
