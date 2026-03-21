@@ -90,7 +90,7 @@ const CampNewsletterView = () => {
 
       <div
         className="prose prose-sm max-w-none font-body text-foreground"
-        dangerouslySetInnerHTML={{ __html: newsletter.content }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(newsletter.content) }}
       />
     </motion.div>
   );
