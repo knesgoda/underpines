@@ -683,7 +683,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         '--biome-bg-far': '#7a9a8a',
         '--biome-bg-mid': '#4a7c59',
         '--biome-bg-near': '#3a6b48',
-        '--biome-fg-ground': '#2d5a3d',
+        '--biome-fg-ground': weather.isRaining ? '#1f4a2e' : '#2d5a3d',
         '--biome-canopy': '#3a7d44',
         '--wind-intensity': windIntensity,
       } as React.CSSProperties}
