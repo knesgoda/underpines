@@ -126,8 +126,19 @@ const GroveSettings = () => {
                 {inviteUrl}
               </code>
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(inviteUrl);
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(inviteUrl);
+                  } catch {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = inviteUrl;
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                  }
                   toast.success('Link copied');
                 }}
                 className="shrink-0 text-[hsl(var(--pine-light)/0.5)] hover:text-[hsl(var(--pine-light))] transition-colors"

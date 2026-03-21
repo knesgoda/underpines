@@ -81,9 +81,22 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
     setMenuOpen(false);
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/${post.author?.handle}#post-${post.id}`);
-    toast.success('Link copied');
+  const handleCopyLink = async () => {
+    const url = `${window.location.origin}/${post.author?.handle}#post-${post.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied');
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      toast.success('Link copied');
+    }
     setMenuOpen(false);
   };
 
