@@ -7,20 +7,11 @@
 import { useMemo } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 
-type TimeOfDay = 'night' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'dusk'
-  | 'pre-dawn' | 'sunset';
-
-// Map solar hook's expanded timeOfDay to our rendering palette
-type RenderTimeOfDay = 'night' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'dusk';
+// All recognized time-of-day values — kept granular for smooth transitions
+type RenderTimeOfDay = 'night' | 'pre-dawn' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'sunset' | 'dusk';
 function toRenderTime(t: string): RenderTimeOfDay {
-  switch (t) {
-    case 'pre-dawn': return 'dawn';
-    case 'sunset': return 'dusk';
-    case 'night': case 'dawn': case 'morning': case 'afternoon':
-    case 'golden-hour': case 'dusk':
-      return t as RenderTimeOfDay;
-    default: return 'morning';
-  }
+  const valid: RenderTimeOfDay[] = ['night','pre-dawn','dawn','morning','afternoon','golden-hour','sunset','dusk'];
+  return (valid.includes(t as RenderTimeOfDay) ? t : 'morning') as RenderTimeOfDay;
 }
 
 interface CabinSceneProps {
@@ -34,19 +25,14 @@ interface CabinSceneProps {
 // Sky gradient stops as RGB arrays for interpolation
 const SKY_STOPS: Record<RenderTimeOfDay, [number,number,number][]> = {
   night:        [[12,20,69],[26,26,62]],
+  'pre-dawn':   [[20,22,58],[40,40,80],[100,130,180]],
   dawn:         [[26,26,62],[244,164,96],[135,206,235]],
   morning:      [[135,206,235],[176,212,241]],
   afternoon:    [[135,206,235],[107,179,224]],
   'golden-hour':[[244,164,96],[232,115,74],[139,71,137]],
+  sunset:       [[200,120,80],[139,71,137],[45,27,78]],
   dusk:         [[139,71,137],[45,27,78],[12,20,69]],
 };
-
-function lerpColor(a: [number,number,number], b: [number,number,number], t: number): string {
-  const r = Math.round(a[0] + (b[0]-a[0]) * t);
-  const g = Math.round(a[1] + (b[1]-a[1]) * t);
-  const bl = Math.round(a[2] + (b[2]-a[2]) * t);
-  return `rgb(${r},${g},${bl})`;
-}
 
 function buildSkyGradient(tod: RenderTimeOfDay): string {
   const stops = SKY_STOPS[tod];
@@ -55,13 +41,16 @@ function buildSkyGradient(tod: RenderTimeOfDay): string {
   return `linear-gradient(to bottom, ${parts.join(', ')})`;
 }
 
-const TIME_FILTERS: Record<RenderTimeOfDay, { filter: string; blendOverlay?: string }> = {
-  night:        { filter: 'saturate(0.6) brightness(0.6)' },
+// Filters for landscape/tree layers — night is very dark for silhouette effect
+const TIME_FILTERS: Record<RenderTimeOfDay, { filter: string; treeFilter?: string; blendOverlay?: string }> = {
+  night:        { filter: 'saturate(0.4) brightness(0.35)', treeFilter: 'brightness(0.3) saturate(0.4)' },
+  'pre-dawn':   { filter: 'saturate(0.6) brightness(0.5)', treeFilter: 'brightness(0.4) saturate(0.5)', blendOverlay: 'rgba(80,100,160,0.1)' },
   dawn:         { filter: 'saturate(0.8) brightness(0.7)', blendOverlay: 'rgba(100,130,180,0.12)' },
   morning:      { filter: 'none' },
   afternoon:    { filter: 'none' },
   'golden-hour':{ filter: 'hue-rotate(-10deg) saturate(1.2) brightness(0.95)', blendOverlay: 'rgba(210,160,80,0.15)' },
-  dusk:         { filter: 'saturate(0.7) brightness(0.65)' },
+  sunset:       { filter: 'saturate(0.8) brightness(0.7)', blendOverlay: 'rgba(200,120,60,0.12)' },
+  dusk:         { filter: 'saturate(0.55) brightness(0.5)', treeFilter: 'brightness(0.4) saturate(0.5)' },
 };
 
 const layerBase = 'absolute inset-0 w-full h-full';
@@ -157,19 +146,42 @@ function SunRenderer({ sunPosition }: { sunPosition: number | null }) {
 }
 
 // ─── Moon ───
-function MoonPhaseRenderer({ moonPhase, renderTime }: { moonPhase: number; renderTime: RenderTimeOfDay }) {
-  const isDaytime = renderTime === 'morning' || renderTime === 'afternoon' || renderTime === 'golden-hour';
-  let moonOpacity = 1;
-  if (isDaytime) {
-    if (moonPhase >= 0.3 && moonPhase <= 0.7) moonOpacity = 0.2;
-    else return null;
+// Moon opacity by time-of-day for smooth transitions
+function getMoonOpacity(renderTime: RenderTimeOfDay, moonPhase: number): number {
+  const isBright = moonPhase >= 0.3 && moonPhase <= 0.7;
+  switch (renderTime) {
+    case 'night': return 1;
+    case 'dusk': return 0.85;
+    case 'sunset': return 0.5;
+    case 'pre-dawn': return 0.6;
+    case 'dawn': return isBright ? 0.15 : 0;
+    case 'morning': case 'afternoon': return isBright ? 0.2 : 0;
+    case 'golden-hour': return isBright ? 0.15 : 0;
+    default: return 0;
   }
-  if (renderTime === 'dawn') {
-    if (moonPhase >= 0.3 && moonPhase <= 0.7) moonOpacity = 0.15;
-    else return null;
+}
+
+function MoonPhaseRenderer({ moonPhase, moonPosition, renderTime }: {
+  moonPhase: number; moonPosition: number | null; renderTime: RenderTimeOfDay;
+}) {
+  const moonOpacity = getMoonOpacity(renderTime, moonPhase);
+  if (moonOpacity <= 0) return null;
+
+  const moonR = 2;
+  // Arc position: if moonPosition available, trace arc like sun; else fixed position
+  const horizonY = 65;
+  const maxHeight = 45;
+  let cx: number, cy: number;
+
+  if (moonPosition !== null && moonPosition >= 0 && moonPosition <= 1) {
+    cx = 5 + moonPosition * 90;
+    cy = horizonY - Math.sin(moonPosition * Math.PI) * maxHeight;
+  } else {
+    // Fallback: upper-right for transition phases
+    cx = 82;
+    cy = 18;
   }
 
-  const moonR = 2, cx = 82, cy = 18;
   const normalizedPhase = moonPhase <= 0.5 ? moonPhase * 2 : (1 - moonPhase) * 2;
   const shadowOffsetX = (1 - normalizedPhase) * moonR * 1.6;
   const isWaxing = moonPhase <= 0.5;
@@ -177,7 +189,10 @@ function MoonPhaseRenderer({ moonPhase, renderTime }: { moonPhase: number; rende
 
   return (
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
-      preserveAspectRatio="none" style={{ opacity: moonOpacity }}>
+      preserveAspectRatio="none" style={{
+        opacity: moonOpacity,
+        transition: 'opacity 3s ease',
+      }}>
       <defs>
         <clipPath id="cabin-moon-clip"><circle cx={cx} cy={cy} r={moonR} /></clipPath>
         <radialGradient id="cabin-moon-glow" cx="50%" cy="50%" r="50%">
@@ -185,11 +200,14 @@ function MoonPhaseRenderer({ moonPhase, renderTime }: { moonPhase: number; rende
           <stop offset="100%" stopColor="#f5f0c1" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <circle cx={cx} cy={cy} r={moonR * 2} fill="url(#cabin-moon-glow)" />
-      <circle cx={cx} cy={cy} r={moonR} fill="#f5f0c1" />
+      <circle cx={cx} cy={cy} r={moonR * 2} fill="url(#cabin-moon-glow)"
+        style={{ transition: 'cx 60s linear, cy 60s linear' }} />
+      <circle cx={cx} cy={cy} r={moonR} fill="#f5f0c1"
+        style={{ transition: 'cx 60s linear, cy 60s linear' }} />
       {normalizedPhase < 0.98 && (
         <circle cx={shadowCx} cy={cy} r={moonR} fill="#0c1445"
-          clipPath="url(#cabin-moon-clip)" opacity={0.92} />
+          clipPath="url(#cabin-moon-clip)" opacity={0.92}
+          style={{ transition: 'cx 60s linear' }} />
       )}
     </svg>
   );
@@ -198,10 +216,10 @@ function MoonPhaseRenderer({ moonPhase, renderTime }: { moonPhase: number; rende
 // ─── Background Hills (Layer 2) ───
 function BackgroundHills({ renderTime }: { renderTime: RenderTimeOfDay }) {
   const tf = TIME_FILTERS[renderTime];
-  const showHorizonGlow = renderTime === 'dawn' || renderTime === 'golden-hour';
+  const showHorizonGlow = renderTime === 'dawn' || renderTime === 'golden-hour' || renderTime === 'pre-dawn' || renderTime === 'sunset';
 
   return (
-    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter }}>
+    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter, transition: 'filter 3s ease' }}>
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 333"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -230,6 +248,10 @@ function BackgroundHills({ renderTime }: { renderTime: RenderTimeOfDay }) {
 // ─── Foreground Ground (Layer 8) ───
 function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
   const tf = TIME_FILTERS[renderTime];
+  const isNight = renderTime === 'night';
+  const groundColor = isNight ? '#1a2e1a' : 'var(--biome-fg-ground, #2d5a3d)';
+  const grassColor = isNight ? '#1a2e1a' : 'var(--biome-fg-ground, #3a7a4a)';
+
   const grassSpikes = useMemo(() => {
     const rand = seededRandom(77);
     const spikes: string[] = [];
@@ -244,13 +266,13 @@ function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
   }, []);
 
   return (
-    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter }}>
+    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter, transition: 'filter 3s ease' }}>
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <path d={`M0,85 ${grassSpikes} L1000,85 L1000,85 L0,85 Z`}
-          fill="var(--biome-fg-ground, #3a7a4a)" opacity="0.7" />
+          fill={grassColor} opacity="0.7" style={{ transition: 'fill 3s ease' }} />
         <path d="M0,85 C100,83 250,86 400,84 C550,82 700,86 850,84 C950,83 1000,85 1000,85 L1000,100 L0,100 Z"
-          fill="var(--biome-fg-ground, #2d5a3d)" />
+          fill={groundColor} style={{ transition: 'fill 3s ease' }} />
       </svg>
       {tf.blendOverlay && (
         <div className="absolute inset-0" style={{ backgroundColor: tf.blendOverlay, mixBlendMode: 'multiply' }} />
@@ -262,7 +284,7 @@ function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
 // ─── Midground Trees (Layer 5) ───
 function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOfDay; isGoldenHour: boolean }) {
   const tf = TIME_FILTERS[renderTime];
-  const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : tf.filter;
+  const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
 
   const trees = [
     { x: 120, groundY: 72, scale: 0.7, type: 'conifer-a' },
@@ -332,7 +354,7 @@ function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOf
 // ─── Foreground Framing Trees (Layer 8) ───
 function ForegroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOfDay; isGoldenHour: boolean }) {
   const tf = TIME_FILTERS[renderTime];
-  const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : tf.filter;
+  const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
   const darkCanopy = '#2a5a30';
   const darkTrunk = '#3a2a1a';
 
@@ -373,11 +395,16 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
     ? solar.goldenHourProgress * 0.12
     : 0;
 
+  // Granular star opacity for smooth transitions
   const starOpacity = useMemo(() => {
-    if (renderTime === 'night') return 1;
-    if (renderTime === 'dusk') return 0.7;
-    if (renderTime === 'dawn') return 0.3;
-    return 0;
+    switch (renderTime) {
+      case 'night': return 1;
+      case 'dusk': return 0.85;        // fading in during dusk
+      case 'sunset': return 0.3;       // just starting to appear
+      case 'pre-dawn': return 0.5;     // fading out
+      case 'dawn': return 0;           // fully gone
+      default: return 0;
+    }
   }, [renderTime]);
 
   return (
@@ -415,7 +442,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       {/* Layer 3: celestial-bodies (sun + moon) */}
       <div className={layerBase} style={{ zIndex: 3, pointerEvents: 'none' }} data-layer="celestial-bodies">
         <SunRenderer sunPosition={solar.sunPosition} />
-        <MoonPhaseRenderer moonPhase={moonPhase} renderTime={renderTime} />
+        <MoonPhaseRenderer moonPhase={moonPhase} moonPosition={solar.moonPosition} renderTime={renderTime} />
       </div>
 
       {/* Layer 4: cloud-layer */}
@@ -438,7 +465,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         <ForegroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} />
       </div>
 
-      {/* Layer 9: atmosphere-wash + golden hour overlay */}
+      {/* Layer 9: atmosphere-wash + golden hour overlay + moonlight glow */}
       <div className={layerBase} style={{
         zIndex: 9, pointerEvents: 'none',
       }} data-layer="atmosphere-wash">
@@ -453,6 +480,14 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
             backgroundColor: '#f4a460',
             opacity: goldenOverlayOpacity,
             transition: 'opacity 60s linear',
+          }} />
+        )}
+        {/* Moonlight glow — visible at night when moon is bright enough */}
+        {(renderTime === 'night' || renderTime === 'dusk') && moonPhase > 0.35 && solar.moonPosition !== null && (
+          <div className="absolute inset-0" style={{
+            background: `radial-gradient(ellipse 40% 60% at ${5 + solar.moonPosition * 90}% ${65 - Math.sin(solar.moonPosition * Math.PI) * 45}%, #c4d4f0 0%, transparent 100%)`,
+            opacity: 0.06,
+            transition: 'background 60s linear, opacity 3s ease',
           }} />
         )}
       </div>
