@@ -284,7 +284,7 @@ function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
 // ─── Midground Trees (Layer 5) ───
 function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOfDay; isGoldenHour: boolean }) {
   const tf = TIME_FILTERS[renderTime];
-  const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : tf.filter;
+  const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
 
   const trees = [
     { x: 120, groundY: 72, scale: 0.7, type: 'conifer-a' },
