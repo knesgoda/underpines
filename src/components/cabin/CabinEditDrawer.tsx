@@ -387,14 +387,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
               </div>
             </Field>
 
-            <Field label="Header image">
-              <label className="flex items-center justify-center w-full h-20 rounded-xl border-2 border-dashed border-border cursor-pointer hover:border-primary/50 transition-colors">
-                <input type="file" accept="image/jpeg,image/png" onChange={handleImageUpload} className="hidden" />
-                <span className="text-sm text-muted-foreground font-body">
-                  {profile.header_image_url ? 'Replace header' : 'Upload an image'}
-                </span>
-              </label>
-            </Field>
+            {/* Header is now a 100% illustrated scene — upload removed */}
 
             <div className="flex flex-col gap-2 pt-4 border-t border-border">
               <button
