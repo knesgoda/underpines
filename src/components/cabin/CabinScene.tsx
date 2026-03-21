@@ -216,7 +216,7 @@ function MoonPhaseRenderer({ moonPhase, moonPosition, renderTime }: {
 // ─── Background Hills (Layer 2) ───
 function BackgroundHills({ renderTime }: { renderTime: RenderTimeOfDay }) {
   const tf = TIME_FILTERS[renderTime];
-  const showHorizonGlow = renderTime === 'dawn' || renderTime === 'golden-hour';
+  const showHorizonGlow = renderTime === 'dawn' || renderTime === 'golden-hour' || renderTime === 'pre-dawn' || renderTime === 'sunset';
 
   return (
     <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter }}>
