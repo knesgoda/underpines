@@ -12,6 +12,37 @@ import { geocodeZip } from '@/lib/weather';
 import { defaultAvatars, getAvatarSrc } from '@/lib/default-avatars';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { getBiomeFromLocation } from '@/lib/biomeMapping';
+
+const COUNTRIES = [
+  { code: 'AU', name: 'Australia' },
+  { code: 'AT', name: 'Austria' },
+  { code: 'BE', name: 'Belgium' },
+  { code: 'BR', name: 'Brazil' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'HR', name: 'Croatia' },
+  { code: 'CY', name: 'Cyprus' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'FR', name: 'France' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'GR', name: 'Greece' },
+  { code: 'IS', name: 'Iceland' },
+  { code: 'IE', name: 'Ireland' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'JP', name: 'Japan' },
+  { code: 'MT', name: 'Malta' },
+  { code: 'MX', name: 'Mexico' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'NZ', name: 'New Zealand' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'PT', name: 'Portugal' },
+  { code: 'ES', name: 'Spain' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'US', name: 'United States' },
+];
 
 interface Profile {
   id: string;
@@ -35,6 +66,8 @@ interface Profile {
   is_pines_plus: boolean;
   avatar_url: string | null;
   default_avatar_key: string | null;
+  country_code: string | null;
+  biome: string | null;
 }
 
 interface CabinEditDrawerProps {
@@ -79,6 +112,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     currently_type: profile.currently_type || '',
     currently_value: profile.currently_value || '',
     zip_code: profile.zip_code || '',
+    country_code: profile.country_code || 'US',
     atmosphere: profile.atmosphere,
     layout: profile.layout,
     accent_color: profile.accent_color,
@@ -91,14 +125,25 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     setSaving(true);
     const payload: any = { ...updates };
 
-    // If zip changed, geocode it
-    if (updates.zip_code && updates.zip_code !== profile.zip_code) {
-      const geo = await geocodeZip(updates.zip_code);
-      if (geo) {
-        payload.latitude = geo.lat;
-        payload.longitude = geo.lon;
-        payload.city = geo.city;
+    // If zip or country changed, geocode and recompute biome
+    const zipChanged = updates.zip_code != null && updates.zip_code !== profile.zip_code;
+    const countryChanged = updates.country_code != null && updates.country_code !== profile.country_code;
+
+    if (zipChanged || countryChanged) {
+      const currentZip = updates.zip_code ?? form.zip_code;
+      const currentCountry = updates.country_code ?? form.country_code;
+
+      if (zipChanged && currentZip) {
+        const geo = await geocodeZip(currentZip);
+        if (geo) {
+          payload.latitude = geo.lat;
+          payload.longitude = geo.lon;
+          payload.city = geo.city;
+        }
       }
+
+      // Recompute biome from location
+      payload.biome = getBiomeFromLocation(currentZip, currentCountry);
     }
 
     await supabase.from('profiles').update(payload).eq('id', profile.id);
@@ -106,7 +151,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
     onUpdate();
-  }, [profile.id, profile.zip_code, onUpdate]);
+  }, [profile.id, profile.zip_code, profile.country_code, form.zip_code, form.country_code, onUpdate]);
 
   // Debounced auto-save
   useEffect(() => {
@@ -268,10 +313,19 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
               />
             </Field>
             <Field label="Location" hint="We use your zip to show weather. Never stored as precise location.">
+              <select
+                value={form.country_code}
+                onChange={e => updateField('country_code', e.target.value)}
+                className="w-full rounded-xl bg-background border border-input px-3 py-2 text-sm mb-2"
+              >
+                {COUNTRIES.map(c => (
+                  <option key={c.code} value={c.code}>{c.name}</option>
+                ))}
+              </select>
               <Input
                 value={form.zip_code}
                 onChange={e => updateField('zip_code', e.target.value)}
-                placeholder="Zip code"
+                placeholder={form.country_code === 'US' ? 'Zip code' : 'Postal code'}
                 className="rounded-xl bg-background"
               />
             </Field>
