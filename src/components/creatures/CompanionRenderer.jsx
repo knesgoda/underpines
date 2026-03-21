@@ -216,6 +216,7 @@ export default function CompanionRenderer({
   companions = [],
   onDailyVisitComplete,
   onPassingComplete,
+  isRaining = false,
 }) {
   const handleComplete = useCallback((companionId, behavior) => {
     if (behavior === 'daily_visit') onDailyVisitComplete?.(companionId);
@@ -233,6 +234,7 @@ export default function CompanionRenderer({
           key={companion.id}
           companion={companion}
           onComplete={handleComplete}
+          isRaining={isRaining}
         />
       ))}
     </>
