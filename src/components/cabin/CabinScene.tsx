@@ -465,7 +465,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         <ForegroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} />
       </div>
 
-      {/* Layer 9: atmosphere-wash + golden hour overlay */}
+      {/* Layer 9: atmosphere-wash + golden hour overlay + moonlight glow */}
       <div className={layerBase} style={{
         zIndex: 9, pointerEvents: 'none',
       }} data-layer="atmosphere-wash">
@@ -480,6 +480,14 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
             backgroundColor: '#f4a460',
             opacity: goldenOverlayOpacity,
             transition: 'opacity 60s linear',
+          }} />
+        )}
+        {/* Moonlight glow — visible at night when moon is bright enough */}
+        {(renderTime === 'night' || renderTime === 'dusk') && moonPhase > 0.35 && solar.moonPosition !== null && (
+          <div className="absolute inset-0" style={{
+            background: `radial-gradient(ellipse 40% 60% at ${5 + solar.moonPosition * 90}% ${65 - Math.sin(solar.moonPosition * Math.PI) * 45}%, #c4d4f0 0%, transparent 100%)`,
+            opacity: 0.06,
+            transition: 'background 60s linear, opacity 3s ease',
           }} />
         )}
       </div>
