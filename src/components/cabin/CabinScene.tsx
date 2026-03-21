@@ -644,10 +644,42 @@ function CloudLayer({ cloudCover, windIntensity, renderTime }: {
 }
 
 // ─── Main Component ───
-const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude, biome: biomeProp }: CabinSceneProps) => {
-  const biomeConfig = useMemo(() => getBiomeConfig(biomeProp || 'default'), [biomeProp]);
-  const solar = useSolarCycle(latitude, longitude);
-  const weather = useWeather(latitude, longitude);
+// ── Atmosphere wash tints ───
+const ATMOSPHERE_TINTS: Record<string, { tint: string; opacity: number }> = {
+  'morning-mist':   { tint: '#dcfce7', opacity: 0.08 },
+  'golden-hour':    { tint: '#fef3c7', opacity: 0.10 },
+  'twilight':       { tint: '#c4b5fd', opacity: 0.08 },
+  'midnight':       { tint: '#1e1b4b', opacity: 0.12 },
+  'overcast':       { tint: '#d1d5db', opacity: 0.06 },
+  'warm-hearth':    { tint: '#fed7aa', opacity: 0.09 },
+  'frost':          { tint: '#e0f2fe', opacity: 0.07 },
+  'autumn-amber':   { tint: '#fbbf24', opacity: 0.08 },
+};
+
+const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude, biome: biomeProp, postalCode, countryCode, creatureKey, userId }: CabinSceneProps) => {
+  // ── Location resolution ──
+  const [resolvedLocation, setResolvedLocation] = useState<{ latitude: number; longitude: number; countryCode: string; biome: string } | null>(null);
+
+  useEffect(() => {
+    if (postalCode) {
+      resolveLocation(postalCode, countryCode).then(setResolvedLocation);
+    } else if (latitude != null && longitude != null) {
+      setResolvedLocation({ latitude, longitude, countryCode: countryCode || 'US', biome: biomeProp || 'default' });
+    } else {
+      setResolvedLocation({ latitude: 47.6, longitude: -122.3, countryCode: 'US', biome: 'default' });
+    }
+  }, [postalCode, countryCode, latitude, longitude, biomeProp]);
+
+  const lat = resolvedLocation?.latitude ?? 47.6;
+  const lng = resolvedLocation?.longitude ?? -122.3;
+  const resolvedBiome = resolvedLocation?.biome || biomeProp || 'default';
+
+  const biomeConfig = useMemo(() => getBiomeConfig(resolvedBiome), [resolvedBiome]);
+  const solar = useSolarCycle(lat, lng);
+  const weather = useWeather(lat, lng);
+  const seasonal = useWheelOfTheYear();
+  const { companions, markDailyVisitComplete, markPassingComplete } = useCompanions(userId, { isViewingCabin: true });
+
   const renderTime = toRenderTime(solar.timeOfDay);
   const isGoldenHour = solar.timeOfDay === 'golden-hour';
   const windIntensity = weather.windIntensity || 'calm';
@@ -656,63 +688,20 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   const [lightningFlash, setLightningFlash] = useState(0);
   const sceneRef = useRef<HTMLDivElement>(null);
 
+  // Apply seasonal token overrides to biome CSS vars
+  const seasonalCssOverrides = useMemo(() => {
+    if (!seasonal.event) return {};
+    const overrides = biomeConfig.seasonalOverrides?.[seasonal.event.key];
+    return overrides || {};
+  }, [seasonal.event, biomeConfig]);
+
+  // Samhain spectral quality for creatures
+  const isSamhain = seasonal.event?.key === 'samhain';
+
   // Heat shimmer: clear + hot
   const showHeatShimmer = weather.condition === 'clear' && (weather.temperature ?? 0) > 32 && (weather.unit === 'C' || ((weather.temperature ?? 0) > 90 && weather.unit === 'F'));
 
-  // Thunderstorm lightning effect
-  useEffect(() => {
-    if (weather.condition !== 'thunderstorm') return;
-    let cancelled = false;
-    const scheduleFlash = () => {
-      const delay = 8000 + Math.random() * 27000;
-      setTimeout(() => {
-        if (cancelled) return;
-        // Double-flash pattern: 0.7 for 80ms, 0 for 120ms, 0.4 for 60ms, 0
-        setLightningFlash(0.7);
-        setTimeout(() => { if (!cancelled) setLightningFlash(0); }, 80);
-        setTimeout(() => { if (!cancelled) setLightningFlash(0.4); }, 200);
-        setTimeout(() => { if (!cancelled) setLightningFlash(0); }, 260);
-        scheduleFlash();
-      }, delay);
-    };
-    scheduleFlash();
-    return () => { cancelled = true; };
-  }, [weather.condition]);
-
-  // Sun occlusion check every 2s
-  useEffect(() => {
-    if (solar.sunPosition === null) { setSunObscured(false); return; }
-
-    const checkOcclusion = () => {
-      const container = sceneRef.current;
-      if (!container) return;
-      const clouds = container.querySelectorAll('[data-cloud]');
-      if (clouds.length === 0) { setSunObscured(false); return; }
-
-      const rect = container.getBoundingClientRect();
-      const sunX = rect.left + (5 + (solar.sunPosition ?? 0.5) * 90) / 100 * rect.width;
-      const sunY = rect.top + (65 - Math.sin((solar.sunPosition ?? 0.5) * Math.PI) * 50) / 100 * rect.height;
-
-      let obscured = false;
-      clouds.forEach(cloud => {
-        const cr = cloud.getBoundingClientRect();
-        if (sunX >= cr.left && sunX <= cr.right && sunY >= cr.top && sunY <= cr.bottom) {
-          obscured = true;
-        }
-      });
-      setSunObscured(obscured);
-    };
-
-    checkOcclusion();
-    const timer = setInterval(checkOcclusion, 2000);
-    return () => clearInterval(timer);
-  }, [solar.sunPosition]);
-
-  const skyGradient = buildSkyGradient(renderTime);
-
-  const atmosphereTint = useMemo(() => {
-    return { tint: '#dcfce7', opacity: 0.08 };
-  }, [atmosphere]);
+  const effectiveMoonPhase = seasonal.moonPhase ?? moonPhase;
 
   const goldenOverlayOpacity = isGoldenHour && solar.goldenHourProgress !== null
     ? solar.goldenHourProgress * 0.12
