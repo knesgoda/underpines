@@ -73,7 +73,7 @@ const AvatarCropModal = ({ imageSrc, onCancel, onSave }: AvatarCropModalProps) =
 
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm mx-4">
         {/* Crop area */}
-        <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-2xl overflow-hidden">
+        <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-2xl overflow-hidden" style={{ touchAction: 'none' }}>
           <Cropper
             image={imageSrc}
             crop={crop}
