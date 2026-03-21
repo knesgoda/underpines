@@ -116,6 +116,17 @@ const SCENE_CSS = `
   0%, 100% { transform: rotate(0deg); }
   50% { transform: rotate(var(--grass-sway, 0deg)); }
 }
+@keyframes cloud-drift {
+  0% { transform: translateX(110%); }
+  100% { transform: translateX(-30%); }
+}
+/* Sun occlusion dimming */
+.cabin-scene-root.sun-obscured [data-layer="sky-gradient"] {
+  filter: saturate(0.85) !important;
+}
+.cabin-scene-root.sun-obscured .sun-glow-outer {
+  r: 2.5 !important;
+}
 `;
 
 function Starfield({ opacity }: { opacity: number }) {
