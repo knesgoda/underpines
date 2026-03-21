@@ -368,3 +368,16 @@
   0%, 100% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.6); }
   50% { box-shadow: 0 0 24px rgba(245, 158, 11, 0.8); }
 }
+
+/* Pearl Grey onboarding animations */
+@keyframes pearl-grey-look {
+  0%, 100% { transform: scaleX(1); }
+  40% { transform: scaleX(-1); }
+  60% { transform: scaleX(-1); }
+}
+
+@keyframes pearl-grey-wag {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(8deg); }
+  75% { transform: rotate(-8deg); }
+}
