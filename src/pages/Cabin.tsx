@@ -62,6 +62,7 @@ const Cabin = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { event: seasonalEvent, progress: seasonalProgress } = useWheelOfTheYear();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
