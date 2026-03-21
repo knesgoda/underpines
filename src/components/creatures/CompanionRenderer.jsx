@@ -11,6 +11,15 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { creatureMap } from '@/config/creatures';
 
+// Import special memorial variants
+import { DirectGazeWave, MincingTrot, AlwaysPresentHover } from './companions';
+
+// Map movement_style → special component
+const SPECIAL_VARIANTS = {
+  direct_gaze_wave: DirectGazeWave,
+  mincing_trot: MincingTrot,
+};
+
 // Import all creature components
 import * as Common from './common';
 import * as Uncommon from './uncommon';
