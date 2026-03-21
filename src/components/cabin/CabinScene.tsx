@@ -684,7 +684,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
 
       {/* Layer 3: celestial-bodies (sun + moon) */}
       <div className={layerBase} style={{ zIndex: 3, pointerEvents: 'none' }} data-layer="celestial-bodies">
-        <SunRenderer sunPosition={solar.sunPosition} />
+        <SunRenderer sunPosition={solar.sunPosition} sunObscured={sunObscured} />
         <MoonPhaseRenderer moonPhase={moonPhase} moonPosition={solar.moonPosition} renderTime={renderTime} />
       </div>
 
