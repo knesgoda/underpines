@@ -97,7 +97,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Mobile tab bar */}
       <MobileTabBar />
-      <SeasonalDebugPanel />
+      
     </div>
   );
 };
