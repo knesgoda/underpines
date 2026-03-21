@@ -502,7 +502,7 @@ function WindDebris({ windIntensity, fromLeft }: { windIntensity: string; fromLe
     size: 1 + rand() * 1.5,
     duration: 3 + rand() * 4,
     delay: rand() * 6,
-    color: rand() > 0.5 ? 'var(--biome-canopy, #3a7d44)' : '#5c4033',
+    color: rand() > 0.5 ? 'var(--biome-canopy, #3a7d44)' : 'var(--biome-trunk, #5c4033)',
   }));
 
   return (
