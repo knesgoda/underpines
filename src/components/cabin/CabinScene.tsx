@@ -25,19 +25,14 @@ interface CabinSceneProps {
 // Sky gradient stops as RGB arrays for interpolation
 const SKY_STOPS: Record<RenderTimeOfDay, [number,number,number][]> = {
   night:        [[12,20,69],[26,26,62]],
+  'pre-dawn':   [[20,22,58],[40,40,80],[100,130,180]],
   dawn:         [[26,26,62],[244,164,96],[135,206,235]],
   morning:      [[135,206,235],[176,212,241]],
   afternoon:    [[135,206,235],[107,179,224]],
   'golden-hour':[[244,164,96],[232,115,74],[139,71,137]],
+  sunset:       [[200,120,80],[139,71,137],[45,27,78]],
   dusk:         [[139,71,137],[45,27,78],[12,20,69]],
 };
-
-function lerpColor(a: [number,number,number], b: [number,number,number], t: number): string {
-  const r = Math.round(a[0] + (b[0]-a[0]) * t);
-  const g = Math.round(a[1] + (b[1]-a[1]) * t);
-  const bl = Math.round(a[2] + (b[2]-a[2]) * t);
-  return `rgb(${r},${g},${bl})`;
-}
 
 function buildSkyGradient(tod: RenderTimeOfDay): string {
   const stops = SKY_STOPS[tod];
@@ -46,13 +41,16 @@ function buildSkyGradient(tod: RenderTimeOfDay): string {
   return `linear-gradient(to bottom, ${parts.join(', ')})`;
 }
 
-const TIME_FILTERS: Record<RenderTimeOfDay, { filter: string; blendOverlay?: string }> = {
-  night:        { filter: 'saturate(0.6) brightness(0.6)' },
+// Filters for landscape/tree layers — night is very dark for silhouette effect
+const TIME_FILTERS: Record<RenderTimeOfDay, { filter: string; treeFilter?: string; blendOverlay?: string }> = {
+  night:        { filter: 'saturate(0.4) brightness(0.35)', treeFilter: 'brightness(0.3) saturate(0.4)' },
+  'pre-dawn':   { filter: 'saturate(0.6) brightness(0.5)', treeFilter: 'brightness(0.4) saturate(0.5)', blendOverlay: 'rgba(80,100,160,0.1)' },
   dawn:         { filter: 'saturate(0.8) brightness(0.7)', blendOverlay: 'rgba(100,130,180,0.12)' },
   morning:      { filter: 'none' },
   afternoon:    { filter: 'none' },
   'golden-hour':{ filter: 'hue-rotate(-10deg) saturate(1.2) brightness(0.95)', blendOverlay: 'rgba(210,160,80,0.15)' },
-  dusk:         { filter: 'saturate(0.7) brightness(0.65)' },
+  sunset:       { filter: 'saturate(0.8) brightness(0.7)', blendOverlay: 'rgba(200,120,60,0.12)' },
+  dusk:         { filter: 'saturate(0.55) brightness(0.5)', treeFilter: 'brightness(0.4) saturate(0.5)' },
 };
 
 const layerBase = 'absolute inset-0 w-full h-full';
