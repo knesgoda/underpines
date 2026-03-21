@@ -23,6 +23,7 @@ interface CabinSceneProps {
   moonPhase?: number;
   latitude?: number;
   longitude?: number;
+  biome?: string;
 }
 
 // Sky gradient stops as RGB arrays for interpolation
