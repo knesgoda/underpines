@@ -612,7 +612,86 @@ function CloudLayer({ cloudCover, windIntensity, renderTime }: {
   );
 }
 
-const CabinSceneLegacy = null; // removed duplicate — real component above
+// ─── Main Component ───
+const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude }: CabinSceneProps) => {
+  const solar = useSolarCycle(latitude, longitude);
+  const weather = useWeather(latitude, longitude);
+  const renderTime = toRenderTime(solar.timeOfDay);
+  const isGoldenHour = solar.timeOfDay === 'golden-hour';
+  const windIntensity = weather.windIntensity || 'calm';
+  const fromLeft = (weather.windDirection ?? 0) >= 180;
+  const [sunObscured, setSunObscured] = useState(false);
+  const sceneRef = useRef<HTMLDivElement>(null);
+
+  // Sun occlusion check every 2s
+  useEffect(() => {
+    if (solar.sunPosition === null) { setSunObscured(false); return; }
+
+    const checkOcclusion = () => {
+      const container = sceneRef.current;
+      if (!container) return;
+      const clouds = container.querySelectorAll('[data-cloud]');
+      if (clouds.length === 0) { setSunObscured(false); return; }
+
+      const rect = container.getBoundingClientRect();
+      const sunX = rect.left + (5 + (solar.sunPosition ?? 0.5) * 90) / 100 * rect.width;
+      const sunY = rect.top + (65 - Math.sin((solar.sunPosition ?? 0.5) * Math.PI) * 50) / 100 * rect.height;
+
+      let obscured = false;
+      clouds.forEach(cloud => {
+        const cr = cloud.getBoundingClientRect();
+        if (sunX >= cr.left && sunX <= cr.right && sunY >= cr.top && sunY <= cr.bottom) {
+          obscured = true;
+        }
+      });
+      setSunObscured(obscured);
+    };
+
+    checkOcclusion();
+    const timer = setInterval(checkOcclusion, 2000);
+    return () => clearInterval(timer);
+  }, [solar.sunPosition]);
+
+  const skyGradient = buildSkyGradient(renderTime);
+
+  const atmosphereTint = useMemo(() => {
+    return { tint: '#dcfce7', opacity: 0.08 };
+  }, [atmosphere]);
+
+  const goldenOverlayOpacity = isGoldenHour && solar.goldenHourProgress !== null
+    ? solar.goldenHourProgress * 0.12
+    : 0;
+
+  const starOpacity = useMemo(() => {
+    switch (renderTime) {
+      case 'night': return 1;
+      case 'dusk': return 0.85;
+      case 'sunset': return 0.3;
+      case 'pre-dawn': return 0.5;
+      case 'dawn': return 0;
+      default: return 0;
+    }
+  }, [renderTime]);
+
+  return (
+    <div
+      ref={sceneRef}
+      className={`cabin-scene-root relative w-full overflow-hidden rounded-xl${sunObscured ? ' sun-obscured' : ''}`}
+      style={{
+        aspectRatio: 'var(--cabin-scene-ratio, 3/1)',
+        '--biome-bg-far': '#7a9a8a',
+        '--biome-bg-mid': '#4a7c59',
+        '--biome-bg-near': '#3a6b48',
+        '--biome-fg-ground': '#2d5a3d',
+        '--biome-canopy': '#3a7d44',
+        '--wind-intensity': windIntensity,
+      } as React.CSSProperties}
+    >
+      <style>{`
+        @media (max-width: 767px) { :root { --cabin-scene-ratio: 2/1; } }
+        @media (min-width: 768px) { :root { --cabin-scene-ratio: 3/1; } }
+        ${SCENE_CSS}
+      `}</style>
 
       {/* Layer 1: sky-gradient + starfield */}
       <div className={layerBase} style={{
@@ -669,12 +748,10 @@ const CabinSceneLegacy = null; // removed duplicate — real component above
       <div className={layerBase} style={{
         zIndex: 9, pointerEvents: 'none',
       }} data-layer="atmosphere-wash">
-        {/* Base atmosphere tint */}
         <div className="absolute inset-0" style={{
           backgroundColor: atmosphereTint.tint,
           opacity: atmosphereTint.opacity,
         }} />
-        {/* Golden hour amber overlay */}
         {goldenOverlayOpacity > 0 && (
           <div className="absolute inset-0" style={{
             backgroundColor: '#f4a460',
@@ -682,7 +759,6 @@ const CabinSceneLegacy = null; // removed duplicate — real component above
             transition: 'opacity 60s linear',
           }} />
         )}
-        {/* Moonlight glow — visible at night when moon is bright enough */}
         {(renderTime === 'night' || renderTime === 'dusk') && moonPhase > 0.35 && solar.moonPosition !== null && (
           <div className="absolute inset-0" style={{
             background: `radial-gradient(ellipse 40% 60% at ${5 + solar.moonPosition * 90}% ${65 - Math.sin(solar.moonPosition * Math.PI) * 45}%, #c4d4f0 0%, transparent 100%)`,
