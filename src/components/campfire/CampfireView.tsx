@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -59,6 +60,7 @@ const REACTIONS = ['🔥', '🌲', '💚', '😂', '👀', '🫂', '🌧️', '�
 
 const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isScout, scoutDays }: Props) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [campfire, setCampfire] = useState<CampfireData | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -423,7 +425,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-30"
                 >
                   {campfire.campfire_type === 'one_on_one' && otherParticipant && (
-                    <MenuBtn onClick={() => { setMenuOpen(false); window.location.href = `/${otherParticipant.handle}`; }}>
+                    <MenuBtn onClick={() => { setMenuOpen(false); navigate(`/${otherParticipant.handle}`); }}>
                       View {otherParticipant.display_name}'s Cabin
                     </MenuBtn>
                   )}
