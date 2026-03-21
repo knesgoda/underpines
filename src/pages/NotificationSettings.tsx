@@ -214,7 +214,7 @@ const NotificationSettings = () => {
           )}
           <div className="h-px bg-border" />
           <div className="flex items-center justify-between">
-            <span className="font-body text-sm text-foreground">Circle requests</span>
+            <span className="font-body text-sm text-foreground">Trail invites</span>
             <Switch checked={prefs.notify_circle_requests} onCheckedChange={(v) => save({ notify_circle_requests: v })} />
           </div>
           <div className="flex items-center justify-between">
