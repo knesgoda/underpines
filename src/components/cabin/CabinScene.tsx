@@ -666,11 +666,18 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
 
   useEffect(() => {
     if (postalCode) {
-      resolveLocation(postalCode, countryCode).then(setResolvedLocation);
+      resolveLocation(postalCode, countryCode).then(result => {
+        // If a biome is already stored on the profile, prefer it
+        if (biomeProp && biomeProp !== 'default') {
+          setResolvedLocation({ ...result, biome: biomeProp });
+        } else {
+          setResolvedLocation(result);
+        }
+      });
     } else if (latitude != null && longitude != null) {
       setResolvedLocation({ latitude, longitude, countryCode: countryCode || 'US', biome: biomeProp || 'default' });
     } else {
-      setResolvedLocation({ latitude: 47.6, longitude: -122.3, countryCode: 'US', biome: 'default' });
+      setResolvedLocation({ latitude: 47.6, longitude: -122.3, countryCode: 'US', biome: biomeProp || 'default' });
     }
   }, [postalCode, countryCode, latitude, longitude, biomeProp]);
 

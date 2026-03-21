@@ -2252,9 +2252,11 @@ export type Database = {
           atmosphere: string | null
           avatar_url: string | null
           bio: string | null
+          biome: string | null
           birth_year: number | null
           cabin_mood: string | null
           city: string | null
+          country_code: string | null
           created_at: string | null
           currently_type: string | null
           currently_value: string | null
@@ -2294,9 +2296,11 @@ export type Database = {
           atmosphere?: string | null
           avatar_url?: string | null
           bio?: string | null
+          biome?: string | null
           birth_year?: number | null
           cabin_mood?: string | null
           city?: string | null
+          country_code?: string | null
           created_at?: string | null
           currently_type?: string | null
           currently_value?: string | null
@@ -2336,9 +2340,11 @@ export type Database = {
           atmosphere?: string | null
           avatar_url?: string | null
           bio?: string | null
+          biome?: string | null
           birth_year?: number | null
           cabin_mood?: string | null
           city?: string | null
+          country_code?: string | null
           created_at?: string | null
           currently_type?: string | null
           currently_value?: string | null

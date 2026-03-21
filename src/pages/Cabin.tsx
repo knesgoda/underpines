@@ -46,6 +46,8 @@ interface Profile {
   is_pines_plus: boolean;
   avatar_url: string | null;
   default_avatar_key: string | null;
+  country_code: string | null;
+  biome: string | null;
 }
 
 const Cabin = () => {
@@ -250,6 +252,11 @@ const Cabin = () => {
           moonPhase={getMoonPhase()}
           latitude={profile.latitude ?? undefined}
           longitude={profile.longitude ?? undefined}
+          postalCode={profile.zip_code ?? undefined}
+          countryCode={profile.country_code ?? undefined}
+          biome={profile.biome ?? undefined}
+          creatureKey={profile.default_avatar_key ?? undefined}
+          userId={profile.id}
         />
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
