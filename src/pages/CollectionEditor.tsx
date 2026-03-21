@@ -161,9 +161,12 @@ const CollectionEditor = () => {
     setSaving(false);
   };
 
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const handleDelete = async () => {
-    if (!id || !confirm('Delete this Collection? Your posts aren\'t deleted — only this Collection.')) return;
+    if (!id) return;
     await supabase.from('collections').update({ is_published: false }).eq('id', id);
+    setDeleteOpen(false);
     toast.success('Collection removed');
     navigate('/cabin');
   };

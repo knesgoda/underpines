@@ -429,6 +429,22 @@ const CirclesPage = () => {
           <Search size={14} /> Find people in the Pines
         </Link>
       </div>
+      <AlertDialog open={!!leaveCircleId} onOpenChange={(open) => !open && setLeaveCircleId(null)}>
+        <AlertDialogContent className="rounded-2xl max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-lg">Leave {leaveCircleName}'s trail?</AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              They won't be notified, and you can always reconnect.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-body text-sm rounded-full">Never mind</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveFromCircle} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Leave trail
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 };

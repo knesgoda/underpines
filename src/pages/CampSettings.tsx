@@ -216,10 +216,46 @@ const CampSettings = () => {
       {/* Danger zone */}
       <div>
         <h2 className="font-body text-sm font-medium text-destructive mb-3">Danger Zone</h2>
-        <button onClick={archiveCamp} className="px-4 py-2 rounded-full border border-destructive text-destructive font-body text-sm hover:bg-destructive/10 transition-colors">
+        <button onClick={() => setArchiveOpen(true)} className="px-4 py-2 rounded-full border border-destructive text-destructive font-body text-sm hover:bg-destructive/10 transition-colors">
           Archive this Camp
         </button>
       </div>
+
+      {/* Pass Firekeeping confirmation */}
+      <AlertDialog open={!!passTarget} onOpenChange={(open) => !open && setPassTarget(null)}>
+        <AlertDialogContent className="rounded-2xl max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-lg">Pass the torch?</AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              You'll become a regular member. {passTarget?.name} will have full control of this Camp.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmPassFirekeeping} className="font-body text-sm rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
+              Pass Firekeeping
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Archive Camp confirmation */}
+      <AlertDialog open={archiveOpen} onOpenChange={setArchiveOpen}>
+        <AlertDialogContent className="rounded-2xl max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-lg">Let this Camp rest?</AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              Members will lose access but nothing is deleted. This can be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it going</AlertDialogCancel>
+            <AlertDialogAction onClick={archiveCamp} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Archive Camp
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 };

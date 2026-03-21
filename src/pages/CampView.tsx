@@ -93,12 +93,13 @@ const CampView = () => {
     setJoining(false);
   };
 
+  const [leaveOpen, setLeaveOpen] = useState(false);
+
   const handleLeave = async () => {
     if (!user || !id || !camp) return;
-    if (!confirm(`Leave ${camp.name}? You can rejoin anytime if it's an Open Camp.`)) return;
-
     await supabase.from('camp_members').delete().eq('camp_id', id).eq('user_id', user.id);
     await supabase.from('camps').update({ member_count: Math.max(0, (camp.member_count || 1) - 1) }).eq('id', id);
+    setLeaveOpen(false);
     toast('You\'ve left the Camp.');
     navigate('/camps');
   };
