@@ -218,6 +218,164 @@ function ForegroundGround({ timeOfDay }: { timeOfDay: TimeOfDay }) {
   );
 }
 
+// ─── Midground Trees (Layer 5) ───
+// Organic, hand-drawn feel — conifer + deciduous mix along middle hills
+function MidgroundTrees({ timeOfDay }: { timeOfDay: TimeOfDay }) {
+  const tf = TIME_FILTERS[timeOfDay];
+
+  // Each tree: { x, groundY, trunkH, trunkW, type, scale }
+  const trees = [
+    // Conifer variants — pointed, irregular
+    { x: 120, groundY: 72, scale: 0.7, type: 'conifer-a' },
+    { x: 310, groundY: 70, scale: 1.0, type: 'conifer-b' },
+    { x: 680, groundY: 71, scale: 0.85, type: 'conifer-a' },
+    { x: 850, groundY: 73, scale: 0.6, type: 'conifer-c' },
+    // Deciduous variants — rounded, organic
+    { x: 200, groundY: 71, scale: 0.8, type: 'deciduous-a' },
+    { x: 500, groundY: 69, scale: 1.1, type: 'deciduous-b' },
+    { x: 760, groundY: 72, scale: 0.75, type: 'deciduous-a' },
+  ];
+
+  const renderCanopy = (type: string, cx: number, baseY: number, s: number) => {
+    const canopyColor = 'var(--biome-canopy, #3a7d44)';
+    const trunkColor = '#5c4033';
+
+    switch (type) {
+      case 'conifer-a':
+        return (
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+            <rect x={cx - 1.2 * s} y={baseY - 18 * s} width={2.4 * s} height={18 * s} fill={trunkColor} rx={0.5} />
+            <path d={`M${cx},${baseY - 38 * s} 
+              C${cx + 2 * s},${baseY - 34 * s} ${cx + 8 * s},${baseY - 28 * s} ${cx + 10 * s},${baseY - 22 * s}
+              C${cx + 7 * s},${baseY - 20 * s} ${cx + 11 * s},${baseY - 14 * s} ${cx + 12 * s},${baseY - 8 * s}
+              L${cx - 12 * s},${baseY - 8 * s}
+              C${cx - 11 * s},${baseY - 14 * s} ${cx - 7 * s},${baseY - 20 * s} ${cx - 10 * s},${baseY - 22 * s}
+              C${cx - 8 * s},${baseY - 28 * s} ${cx - 2 * s},${baseY - 34 * s} ${cx},${baseY - 38 * s}Z`}
+              fill={canopyColor} />
+          </g>
+        );
+      case 'conifer-b':
+        return (
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+            <rect x={cx - 1.5 * s} y={baseY - 20 * s} width={3 * s} height={20 * s} fill={trunkColor} rx={0.6} />
+            <path d={`M${cx},${baseY - 44 * s}
+              C${cx + 3 * s},${baseY - 38 * s} ${cx + 6 * s},${baseY - 32 * s} ${cx + 9 * s},${baseY - 26 * s}
+              C${cx + 6 * s},${baseY - 24 * s} ${cx + 10 * s},${baseY - 18 * s} ${cx + 13 * s},${baseY - 10 * s}
+              C${cx + 10 * s},${baseY - 9 * s} ${cx + 14 * s},${baseY - 4 * s} ${cx + 14 * s},${baseY - 4 * s}
+              L${cx - 14 * s},${baseY - 4 * s}
+              C${cx - 14 * s},${baseY - 4 * s} ${cx - 10 * s},${baseY - 9 * s} ${cx - 13 * s},${baseY - 10 * s}
+              C${cx - 10 * s},${baseY - 18 * s} ${cx - 6 * s},${baseY - 24 * s} ${cx - 9 * s},${baseY - 26 * s}
+              C${cx - 6 * s},${baseY - 32 * s} ${cx - 3 * s},${baseY - 38 * s} ${cx},${baseY - 44 * s}Z`}
+              fill={canopyColor} />
+          </g>
+        );
+      case 'conifer-c':
+        return (
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+            <rect x={cx - 1 * s} y={baseY - 14 * s} width={2 * s} height={14 * s} fill={trunkColor} rx={0.4} />
+            <path d={`M${cx},${baseY - 30 * s}
+              C${cx + 2 * s},${baseY - 26 * s} ${cx + 7 * s},${baseY - 18 * s} ${cx + 8 * s},${baseY - 12 * s}
+              L${cx - 8 * s},${baseY - 12 * s}
+              C${cx - 7 * s},${baseY - 18 * s} ${cx - 2 * s},${baseY - 26 * s} ${cx},${baseY - 30 * s}Z`}
+              fill={canopyColor} />
+          </g>
+        );
+      case 'deciduous-a':
+        return (
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+            <rect x={cx - 1.5 * s} y={baseY - 16 * s} width={3 * s} height={16 * s} fill={trunkColor} rx={0.6} />
+            <path d={`M${cx - 14 * s},${baseY - 20 * s}
+              C${cx - 16 * s},${baseY - 28 * s} ${cx - 12 * s},${baseY - 36 * s} ${cx - 6 * s},${baseY - 38 * s}
+              C${cx - 3 * s},${baseY - 42 * s} ${cx + 3 * s},${baseY - 42 * s} ${cx + 6 * s},${baseY - 38 * s}
+              C${cx + 12 * s},${baseY - 36 * s} ${cx + 16 * s},${baseY - 28 * s} ${cx + 14 * s},${baseY - 20 * s}
+              C${cx + 12 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 16 * s} ${cx - 14 * s},${baseY - 20 * s}Z`}
+              fill={canopyColor} />
+          </g>
+        );
+      case 'deciduous-b':
+        return (
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+            <rect x={cx - 2 * s} y={baseY - 18 * s} width={4 * s} height={18 * s} fill={trunkColor} rx={0.8} />
+            <path d={`M${cx - 16 * s},${baseY - 22 * s}
+              C${cx - 18 * s},${baseY - 30 * s} ${cx - 14 * s},${baseY - 40 * s} ${cx - 4 * s},${baseY - 44 * s}
+              C${cx},${baseY - 46 * s} ${cx + 4 * s},${baseY - 44 * s} ${cx + 8 * s},${baseY - 42 * s}
+              C${cx + 14 * s},${baseY - 38 * s} ${cx + 18 * s},${baseY - 30 * s} ${cx + 16 * s},${baseY - 22 * s}
+              C${cx + 14 * s},${baseY - 18 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 16 * s},${baseY - 22 * s}Z`}
+              fill={canopyColor} />
+          </g>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter }}>
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
+        preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        {trees.map((t, i) => (
+          <g key={i}>{renderCanopy(t.type, t.x, t.groundY, t.scale)}</g>
+        ))}
+      </svg>
+      {tf.blendOverlay && (
+        <div className="absolute inset-0" style={{ backgroundColor: tf.blendOverlay, mixBlendMode: 'multiply' }} />
+      )}
+    </div>
+  );
+}
+
+// ─── Foreground Framing Trees (Layer 8, rendered above ground) ───
+function ForegroundTrees({ timeOfDay }: { timeOfDay: TimeOfDay }) {
+  const tf = TIME_FILTERS[timeOfDay];
+  const darkCanopy = '#2a5a30';
+  const darkTrunk = '#3a2a1a';
+
+  return (
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
+      preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ filter: tf.filter }}>
+      {/* Left edge — large conifer, partially off-screen */}
+      <g className="tree-sway" style={{ transformOrigin: '40px 100px' }}>
+        <rect x={30} y={20} width={8} height={80} fill={darkTrunk} rx={2} />
+        <path d={`M34,0
+          C40,-2 56,8 60,18
+          C58,20 64,28 66,36
+          C62,38 68,48 68,56
+          L0,56
+          C0,48 6,38 2,36
+          C4,28 10,20 8,18
+          C12,8 28,-2 34,0Z`}
+          fill={darkCanopy} opacity="0.9" />
+      </g>
+
+      {/* Right edge — tall deciduous, partially off-screen */}
+      <g className="tree-sway" style={{ transformOrigin: '960px 100px' }}>
+        <rect x={956} y={25} width={7} height={75} fill={darkTrunk} rx={2} />
+        <path d={`M960,5
+          C968,2 982,10 988,22
+          C994,30 996,40 992,48
+          C988,54 980,58 972,56
+          C964,58 950,52 946,44
+          C942,36 944,24 950,14
+          C952,10 956,6 960,5Z`}
+          fill={darkCanopy} opacity="0.85" />
+      </g>
+
+      {/* Right edge — smaller conifer behind the deciduous */}
+      <g className="tree-sway" style={{ transformOrigin: '920px 100px' }}>
+        <rect x={917} y={40} width={5} height={60} fill={darkTrunk} rx={1.5} />
+        <path d={`M920,12
+          C924,16 934,28 936,38
+          C932,40 938,50 938,56
+          L902,56
+          C902,50 908,40 904,38
+          C906,28 916,16 920,12Z`}
+          fill={darkCanopy} opacity="0.8" />
+      </g>
+    </svg>
+  );
+}
+
 // ─── Main Component ───
 const CabinScene = ({ memberName, atmosphere = 'morning-mist', timeOfDay = 'morning', moonPhase = 0.5 }: CabinSceneProps) => {
   const skyGradient = SKY_GRADIENTS[timeOfDay] ?? SKY_GRADIENTS.morning;
@@ -242,12 +400,14 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', timeOfDay = 'morn
         '--biome-bg-mid': '#4a7c59',
         '--biome-bg-near': '#3a6b48',
         '--biome-fg-ground': '#2d5a3d',
+        '--biome-canopy': '#3a7d44',
       } as React.CSSProperties}
     >
       <style>{`
         @media (max-width: 767px) { :root { --cabin-scene-ratio: 2/1; } }
         @media (min-width: 768px) { :root { --cabin-scene-ratio: 3/1; } }
         ${SCENE_CSS}
+        .tree-sway { transform-origin: bottom center; }
       `}</style>
 
       {/* Layer 1: sky-gradient + starfield */}
@@ -269,7 +429,9 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', timeOfDay = 'morn
       <div className={layerBase} style={{ zIndex: 4, pointerEvents: 'none' }} data-layer="cloud-layer" />
 
       {/* Layer 5: midground-trees */}
-      <div className={layerBase} style={{ zIndex: 5, pointerEvents: 'none' }} data-layer="midground-trees" />
+      <div className={layerBase} style={{ zIndex: 5, pointerEvents: 'none' }} data-layer="midground-trees">
+        <MidgroundTrees timeOfDay={timeOfDay} />
+      </div>
 
       {/* Layer 6: precipitation */}
       <div className={layerBase} style={{ zIndex: 6, pointerEvents: 'none' }} data-layer="precipitation" />
@@ -277,9 +439,10 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', timeOfDay = 'morn
       {/* Layer 7: creature-layer */}
       <div className={layerBase} style={{ zIndex: 7 }} data-layer="creature-layer" />
 
-      {/* Layer 8: foreground-elements (near ground + grass) */}
+      {/* Layer 8: foreground-elements (near ground + grass + framing trees) */}
       <div className={layerBase} style={{ zIndex: 8, pointerEvents: 'none' }} data-layer="foreground-elements">
         <ForegroundGround timeOfDay={timeOfDay} />
+        <ForegroundTrees timeOfDay={timeOfDay} />
       </div>
 
       {/* Layer 9: atmosphere-wash */}
