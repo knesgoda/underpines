@@ -622,7 +622,31 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   const windIntensity = weather.windIntensity || 'calm';
   const fromLeft = (weather.windDirection ?? 0) >= 180;
   const [sunObscured, setSunObscured] = useState(false);
+  const [lightningFlash, setLightningFlash] = useState(0);
   const sceneRef = useRef<HTMLDivElement>(null);
+
+  // Heat shimmer: clear + hot
+  const showHeatShimmer = weather.condition === 'clear' && (weather.temperature ?? 0) > 32 && (weather.unit === 'C' || ((weather.temperature ?? 0) > 90 && weather.unit === 'F'));
+
+  // Thunderstorm lightning effect
+  useEffect(() => {
+    if (weather.condition !== 'thunderstorm') return;
+    let cancelled = false;
+    const scheduleFlash = () => {
+      const delay = 8000 + Math.random() * 27000;
+      setTimeout(() => {
+        if (cancelled) return;
+        // Double-flash pattern: 0.7 for 80ms, 0 for 120ms, 0.4 for 60ms, 0
+        setLightningFlash(0.7);
+        setTimeout(() => { if (!cancelled) setLightningFlash(0); }, 80);
+        setTimeout(() => { if (!cancelled) setLightningFlash(0.4); }, 200);
+        setTimeout(() => { if (!cancelled) setLightningFlash(0); }, 260);
+        scheduleFlash();
+      }, delay);
+    };
+    scheduleFlash();
+    return () => { cancelled = true; };
+  }, [weather.condition]);
 
   // Sun occlusion check every 2s
   useEffect(() => {
