@@ -503,8 +503,12 @@ function WindDebris({ windIntensity, fromLeft }: { windIntensity: string; fromLe
 // ─── Main Component ───
 const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude }: CabinSceneProps) => {
   const solar = useSolarCycle(latitude, longitude);
+  const weather = useWeather(latitude, longitude);
   const renderTime = toRenderTime(solar.timeOfDay);
   const isGoldenHour = solar.timeOfDay === 'golden-hour';
+  const windIntensity = weather.windIntensity || 'calm';
+  // Wind direction: 0-180° = from-right, 180-360° = from-left
+  const fromLeft = (weather.windDirection ?? 0) >= 180;
 
   const skyGradient = buildSkyGradient(renderTime);
 
@@ -521,10 +525,10 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   const starOpacity = useMemo(() => {
     switch (renderTime) {
       case 'night': return 1;
-      case 'dusk': return 0.85;        // fading in during dusk
-      case 'sunset': return 0.3;       // just starting to appear
-      case 'pre-dawn': return 0.5;     // fading out
-      case 'dawn': return 0;           // fully gone
+      case 'dusk': return 0.85;
+      case 'sunset': return 0.3;
+      case 'pre-dawn': return 0.5;
+      case 'dawn': return 0;
       default: return 0;
     }
   }, [renderTime]);
@@ -539,13 +543,13 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         '--biome-bg-near': '#3a6b48',
         '--biome-fg-ground': '#2d5a3d',
         '--biome-canopy': '#3a7d44',
+        '--wind-intensity': windIntensity,
       } as React.CSSProperties}
     >
       <style>{`
         @media (max-width: 767px) { :root { --cabin-scene-ratio: 2/1; } }
         @media (min-width: 768px) { :root { --cabin-scene-ratio: 3/1; } }
         ${SCENE_CSS}
-        .tree-sway { transform-origin: bottom center; }
       `}</style>
 
       {/* Layer 1: sky-gradient + starfield */}
