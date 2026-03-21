@@ -120,6 +120,9 @@ const SettingsPage = () => {
         <SettingsItem emoji="🏕️" label="Cabin Marketplace" onClick={() => navigate('/marketplace')} />
       </SettingsSection>
 
+      {/* PINE PETS — Pines+ only */}
+      {isPinesPlus && <PinePetsSection />}
+
       {/* YOUR PRIVACY */}
       <SettingsSection label="Your Privacy">
         <SettingsItem emoji="🔒" label="Privacy Settings" onClick={() => navigate('/settings/privacy')} />
