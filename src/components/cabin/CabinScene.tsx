@@ -576,7 +576,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
 
       {/* Layer 5: midground-trees */}
       <div className={layerBase} style={{ zIndex: 5, pointerEvents: 'none' }} data-layer="midground-trees">
-        <MidgroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} />
+        <MidgroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
       </div>
 
       {/* Layer 6: precipitation */}
