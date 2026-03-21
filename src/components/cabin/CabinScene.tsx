@@ -819,8 +819,17 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         )}
       </div>
 
-      {/* Layer 10: ambient-particles */}
-      <div className={layerBase} style={{ zIndex: 10, pointerEvents: 'none' }} data-layer="ambient-particles" />
+      {/* Layer 10: ambient-particles + lightning flash */}
+      <div className={layerBase} style={{ zIndex: 10, pointerEvents: 'none' }} data-layer="ambient-particles">
+        {weather.condition === 'thunderstorm' && (
+          <div className="absolute inset-0" style={{
+            backgroundColor: 'white',
+            opacity: lightningFlash,
+            transition: 'opacity 0ms',
+            pointerEvents: 'none',
+          }} />
+        )}
+      </div>
 
       {/* Member name */}
       <div className="absolute bottom-0 left-0 px-5 pb-4" style={{ zIndex: 11 }}>
