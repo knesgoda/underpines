@@ -57,6 +57,14 @@ const TIME_FILTERS: Record<RenderTimeOfDay, { filter: string; treeFilter?: strin
   dusk:         { filter: 'saturate(0.55) brightness(0.5)', treeFilter: 'brightness(0.4) saturate(0.5)' },
 };
 
+// Darken a hex color by ~15% for wet-ground effect
+function darkenColor(hex: string): string {
+  const m = hex.match(/^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+  if (!m) return hex;
+  const d = (v: string) => Math.max(0, Math.round(parseInt(v, 16) * 0.85)).toString(16).padStart(2, '0');
+  return `#${d(m[1])}${d(m[2])}${d(m[3])}`;
+}
+
 const layerBase = 'absolute inset-0 w-full h-full';
 
 // ─── Seeded random ───
