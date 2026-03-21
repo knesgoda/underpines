@@ -740,6 +740,9 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
           windDirection={weather.windDirection}
           isSnowing={weather.isSnowing}
           isRaining={weather.isRaining}
+          renderTime={renderTime}
+          moonPhase={moonPhase}
+          isGoldenHour={isGoldenHour}
         />
       </div>
 

@@ -1,5 +1,5 @@
 /**
- * PrecipitationLayer — Rain, snow, and hail particle systems for CabinScene Layer 6.
+ * PrecipitationLayer — Rain, snow, hail & fog for CabinScene Layer 6.
  * Max 160 DOM elements. GPU-accelerated via will-change: transform.
  */
 
@@ -37,9 +37,13 @@ const PRECIP_CSS = `
   90%  { opacity: 0.7; }
   100% { transform: translateY(110vh) rotate(var(--hail-angle, 0deg)); opacity: 0; }
 }
+@keyframes fog-drift-1 { 0% { transform: translateX(-20%); } 100% { transform: translateX(30%); } }
+@keyframes fog-drift-2 { 0% { transform: translateX(10%); } 100% { transform: translateX(-25%); } }
+@keyframes fog-drift-3 { 0% { transform: translateX(-10%); } 100% { transform: translateX(20%); } }
 `;
 
 type Condition = string;
+type RenderTimeOfDay = string;
 
 interface PrecipitationLayerProps {
   condition: Condition;
@@ -47,6 +51,9 @@ interface PrecipitationLayerProps {
   windDirection: number;
   isSnowing: boolean;
   isRaining: boolean;
+  renderTime?: RenderTimeOfDay;
+  moonPhase?: number;
+  isGoldenHour?: boolean;
 }
 
 // ─── Rain particles ───
@@ -146,8 +153,58 @@ function SnowAccumulation({ isSnowing }: { isSnowing: boolean }) {
   );
 }
 
+// ─── Fog bands ───
+function FogLayer({ renderTime, moonPhase, isGoldenHour }: {
+  renderTime: string; moonPhase: number; isGoldenHour: boolean;
+}) {
+  const isNight = renderTime === 'night' || renderTime === 'dusk';
+  const hasMoonlight = isNight && moonPhase > 0.2;
+
+  // Tint: night+moon = blue, golden hour = amber, default = white
+  const fogColor = hasMoonlight ? '#b8c8e8' : isGoldenHour ? '#e8c89a' : '#ffffff';
+
+  const bands = [
+    { y: '80%', h: '22%', opacity: 0.35, blur: 10, anim: 'fog-drift-1', dur: 90 },
+    { y: '48%', h: '22%', opacity: 0.20, blur: 12, anim: 'fog-drift-2', dur: 110 },
+    { y: '38%', h: '22%', opacity: 0.12, blur: 8,  anim: 'fog-drift-3', dur: 140 },
+  ];
+
+  return (
+    <>
+      {bands.map((b, i) => (
+        <svg
+          key={`fog-${i}`}
+          className="absolute"
+          style={{
+            top: b.y, left: '-30%', width: '160%', height: b.h,
+            opacity: b.opacity,
+            animation: `${b.anim} ${b.dur}s ease-in-out infinite alternate`,
+            pointerEvents: 'none',
+          }}
+          viewBox="0 0 200 30"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <filter id={`fog-blur-${i}`}>
+              <feGaussianBlur stdDeviation={b.blur} />
+            </filter>
+          </defs>
+          <ellipse
+            cx="100" cy="15" rx="110" ry="14"
+            fill={fogColor}
+            filter={`url(#fog-blur-${i})`}
+          />
+        </svg>
+      ))}
+    </>
+  );
+}
+
 // ─── Main component ───
-export default function PrecipitationLayer({ condition, windIntensity, windDirection, isSnowing, isRaining }: PrecipitationLayerProps) {
+export default function PrecipitationLayer({
+  condition, windIntensity, windDirection, isSnowing, isRaining,
+  renderTime = 'morning', moonPhase = 0.5, isGoldenHour = false,
+}: PrecipitationLayerProps) {
   const rainDrops = useRainDrops(condition, windIntensity);
   const snowFlakes = useSnowFlakes(condition, windIntensity);
   const hailStones = useHailStones(condition);
@@ -157,14 +214,20 @@ export default function PrecipitationLayer({ condition, windIntensity, windDirec
   const showRain = rainDrops.length > 0;
   const showSnow = snowFlakes.length > 0;
   const showHail = hailStones.length > 0;
+  const showFog = condition === 'fog';
 
-  if (!showRain && !showSnow && !showHail) return null;
+  if (!showRain && !showSnow && !showHail && !showFog) return null;
 
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ pointerEvents: 'none' }}>
       <style>{PRECIP_CSS}</style>
 
       <MistOverlay condition={condition} />
+
+      {/* Fog */}
+      {showFog && (
+        <FogLayer renderTime={renderTime} moonPhase={moonPhase} isGoldenHour={isGoldenHour} />
+      )}
 
       {/* Rain */}
       {showRain && rainDrops.map((drop, i) => (
