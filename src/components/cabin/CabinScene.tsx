@@ -1,14 +1,20 @@
 /**
  * CabinScene — Fully illustrated header for every Cabin page.
  * 10 compositing layers stacked by z-index.
- * Now driven by useSolarCycle for real-time sun position and time-of-day.
+ * Now driven by useSolarCycle, useWeather, useWheelOfTheYear,
+ * CreatureRenderer, CompanionRenderer, and resolveLocation.
  */
 
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 import { useWeather } from '@/hooks/useWeather';
+import { useWheelOfTheYear } from '@/lib/wheelOfTheYear';
+import { useCompanions } from '@/hooks/useCompanions';
+import { resolveLocation } from '@/lib/locationResolver';
 import PrecipitationLayer from './PrecipitationLayer';
 import { getBiomeConfig } from '@/config/biomes';
+import CreatureRenderer from '@/components/creatures/CreatureRenderer';
+import CompanionRenderer from '@/components/creatures/CompanionRenderer';
 
 // All recognized time-of-day values — kept granular for smooth transitions
 type RenderTimeOfDay = 'night' | 'pre-dawn' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'sunset' | 'dusk';
@@ -24,6 +30,10 @@ interface CabinSceneProps {
   latitude?: number;
   longitude?: number;
   biome?: string;
+  postalCode?: string;
+  countryCode?: string;
+  creatureKey?: string;
+  userId?: string;
 }
 
 // Sky gradient stops as RGB arrays for interpolation
