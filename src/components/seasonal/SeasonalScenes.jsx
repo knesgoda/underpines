@@ -244,7 +244,7 @@ function BeltaneScene({ width = 680, height = 280 }) {
 function LithaScene({ width = 680, height = 280 }) {
   const groundY = height * 0.7;
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="litha-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#f0c840" />
