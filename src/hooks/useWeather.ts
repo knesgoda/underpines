@@ -117,7 +117,9 @@ export const useWeather = (
     setLoading(true);
 
     try {
-      const url = `${API_BASE}?latitude=${lat}&longitude=${lon}&current=weather_code,temperature_2m,wind_speed_10m,wind_direction_10m,cloud_cover,precipitation,rain,snowfall&timezone=auto`;
+      const useFahrenheit = isUSTimezone();
+      const unitParam = useFahrenheit ? '&temperature_unit=fahrenheit' : '';
+      const url = `${API_BASE}?latitude=${lat}&longitude=${lon}&current=weather_code,temperature_2m,wind_speed_10m,wind_direction_10m,cloud_cover,precipitation,rain,snowfall&timezone=auto${unitParam}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Open-Meteo ${res.status}`);
       const json = await res.json();
