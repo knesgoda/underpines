@@ -477,7 +477,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                   <Button
                     onClick={() => {
                       onClose();
-                      window.location.href = '/settings/subscription';
+                      navigate('/settings/subscription');
                     }}
                     className="rounded-pill text-sm font-body bg-primary text-primary-foreground"
                   >
