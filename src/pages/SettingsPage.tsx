@@ -34,10 +34,23 @@ const themes: { key: AppTheme; label: string; emoji: string; description: string
 ];
 
 const SettingsPage = () => {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const isMobile = useIsMobile();
+  const [isPinesPlus, setIsPinesPlus] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('is_pines_plus')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.is_pines_plus) setIsPinesPlus(true);
+      });
+  }, [user]);
 
   return (
     <motion.div
