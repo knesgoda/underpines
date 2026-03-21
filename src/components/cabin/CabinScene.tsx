@@ -733,7 +733,15 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       </div>
 
       {/* Layer 6: precipitation */}
-      <div className={layerBase} style={{ zIndex: 6, pointerEvents: 'none' }} data-layer="precipitation" />
+      <div className={layerBase} style={{ zIndex: 6, pointerEvents: 'none' }} data-layer="precipitation">
+        <PrecipitationLayer
+          condition={weather.condition}
+          windIntensity={windIntensity}
+          windDirection={weather.windDirection}
+          isSnowing={weather.isSnowing}
+          isRaining={weather.isRaining}
+        />
+      </div>
 
       {/* Layer 7: creature-layer */}
       <div className={layerBase} style={{ zIndex: 7 }} data-layer="creature-layer" />
