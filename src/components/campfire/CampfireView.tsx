@@ -425,7 +425,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-30"
                 >
                   {campfire.campfire_type === 'one_on_one' && otherParticipant && (
-                    <MenuBtn onClick={() => { setMenuOpen(false); window.location.href = `/${otherParticipant.handle}`; }}>
+                    <MenuBtn onClick={() => { setMenuOpen(false); navigate(`/${otherParticipant.handle}`); }}>
                       View {otherParticipant.display_name}'s Cabin
                     </MenuBtn>
                   )}
