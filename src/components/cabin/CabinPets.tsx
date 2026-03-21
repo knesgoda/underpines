@@ -99,7 +99,7 @@ const CabinPets = ({ ownerId, atmosphere = 'morning_mist' }: CabinPetsProps) => 
     const fetchPets = async () => {
       const { data } = await supabase
         .from('pine_pets')
-        .select('id, name, animal_type, sprite_cache, is_pinned, is_memorial, display_order')
+        .select('id, name, animal_type, sprite_cache, is_pinned, is_memorial, is_ambassador, display_order')
         .eq('owner_id', ownerId)
         .eq('is_resting', false)
         .order('is_pinned', { ascending: false })
@@ -109,6 +109,7 @@ const CabinPets = ({ ownerId, atmosphere = 'morning_mist' }: CabinPetsProps) => 
         setAllPets(data.map(p => ({
           ...p,
           sprite_cache: (p.sprite_cache as Record<string, string>) || {},
+          is_ambassador: (p as any).is_ambassador ?? false,
         })));
       }
     };
