@@ -1,9 +1,12 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme, type AppTheme } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import PinePetsSection from '@/components/cabin/PinePetsSection';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const themes: { key: AppTheme; label: string; emoji: string; description: string; preview: { bg: string; card: string; accent: string } }[] = [
@@ -31,10 +34,23 @@ const themes: { key: AppTheme; label: string; emoji: string; description: string
 ];
 
 const SettingsPage = () => {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const isMobile = useIsMobile();
+  const [isPinesPlus, setIsPinesPlus] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('is_pines_plus')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.is_pines_plus) setIsPinesPlus(true);
+      });
+  }, [user]);
 
   return (
     <motion.div
@@ -103,6 +119,9 @@ const SettingsPage = () => {
         <SettingsItem emoji="🎨" label="My Designs" onClick={() => navigate('/settings/designs')} />
         <SettingsItem emoji="🏕️" label="Cabin Marketplace" onClick={() => navigate('/marketplace')} />
       </SettingsSection>
+
+      {/* PINE PETS — Pines+ only */}
+      {isPinesPlus && <PinePetsSection />}
 
       {/* YOUR PRIVACY */}
       <SettingsSection label="Your Privacy">
