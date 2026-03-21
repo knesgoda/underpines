@@ -711,7 +711,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   return (
     <div
       ref={sceneRef}
-      className={`cabin-scene-root relative w-full overflow-hidden rounded-xl${sunObscured ? ' sun-obscured' : ''}`}
+      className={`cabin-scene-root relative w-full overflow-hidden rounded-xl${sunObscured ? ' sun-obscured' : ''}${lightningFlash > 0 ? ' lightning-flash' : ''}`}
       style={{
         aspectRatio: 'var(--cabin-scene-ratio, 3/1)',
         '--biome-bg-far': '#7a9a8a',
