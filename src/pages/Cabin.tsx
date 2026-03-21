@@ -111,8 +111,18 @@ const Cabin = () => {
 
     const { data } = await query.maybeSingle();
     if (data) {
-      setProfile(data as Profile);
       const owner = user?.id === data.id;
+
+      // Self-heal: backfill biome if member has location but biome is still default
+      if (owner && (!data.biome || data.biome === 'default') && data.zip_code && data.country_code) {
+        const computed = getBiomeFromLocation(data.zip_code, data.country_code);
+        if (computed !== 'default') {
+          data.biome = computed;
+          supabase.from('profiles').update({ biome: computed }).eq('id', data.id).then(() => {});
+        }
+      }
+
+      setProfile(data as Profile);
       setIsOwner(owner);
 
       // Check circle status
