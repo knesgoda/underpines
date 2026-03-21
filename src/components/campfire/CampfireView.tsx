@@ -652,7 +652,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              className="relative bg-card rounded-t-2xl w-full max-h-[70vh] overflow-hidden"
+              className="relative bg-card rounded-t-2xl w-full max-h-[70dvh] overflow-hidden"
             >
               <CampfireLog campfireId={campfireId} isFirekeeper={isFirekeeper} onClose={() => setShowLog(false)} />
             </motion.div>
@@ -669,7 +669,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-sm max-h-[60vh] overflow-hidden border border-border"
+              className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-sm max-h-[60dvh] overflow-hidden border border-border"
             >
               <div className="p-4 border-b border-border flex items-center justify-between">
                 <h3 className="font-body text-sm font-medium text-foreground">The Fire ({participants.length})</h3>

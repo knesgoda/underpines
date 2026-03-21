@@ -88,7 +88,7 @@ const ShareToCampfire = ({ postId, open, onClose }: ShareToCampfireProps) => {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
-        className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-md max-h-[70vh] overflow-hidden border border-border shadow-card"
+        className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-md max-h-[70dvh] overflow-hidden border border-border shadow-card"
       >
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h3 className="font-body text-sm font-medium text-foreground">Send to a Campfire</h3>
