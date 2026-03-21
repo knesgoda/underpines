@@ -115,8 +115,19 @@ const Invites = () => {
   const thirtyDaysAgo = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
   const hasInvites = invite?.is_infinite || (invite?.uses_remaining > 0);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(inviteUrl);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(inviteUrl);
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = inviteUrl;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
     setCopied(true);
     toast.success('Link copied. Choose wisely 🌲');
     setTimeout(() => setCopied(false), 2000);
