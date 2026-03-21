@@ -144,6 +144,7 @@ const App = () => (
         </NavigationProvider>
       </OnboardingProvider>
     </AuthProvider>
+    </SceneDebugProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
