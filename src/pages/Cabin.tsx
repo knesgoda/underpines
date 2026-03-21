@@ -341,8 +341,9 @@ const Cabin = () => {
           <div className="py-12 space-y-6" style={{ borderTop: `1px solid ${atmos.border}` }}>
             <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} centered />
             {profile.bio && <p className="text-sm font-body text-center max-w-md mx-auto" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>}
-            <CabinPinnedSong profile={profile} atmos={atmos} centered />
-          </div>
+             <CabinPinnedSong profile={profile} atmos={atmos} centered />
+             <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
+           </div>
           {profile.is_pines_plus && <div className="py-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} /></div>}
           <div className="py-12 space-y-6"><CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} /></div>
           <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
