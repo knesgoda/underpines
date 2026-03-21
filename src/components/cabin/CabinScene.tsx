@@ -146,19 +146,42 @@ function SunRenderer({ sunPosition }: { sunPosition: number | null }) {
 }
 
 // ─── Moon ───
-function MoonPhaseRenderer({ moonPhase, renderTime }: { moonPhase: number; renderTime: RenderTimeOfDay }) {
-  const isDaytime = renderTime === 'morning' || renderTime === 'afternoon' || renderTime === 'golden-hour';
-  let moonOpacity = 1;
-  if (isDaytime) {
-    if (moonPhase >= 0.3 && moonPhase <= 0.7) moonOpacity = 0.2;
-    else return null;
+// Moon opacity by time-of-day for smooth transitions
+function getMoonOpacity(renderTime: RenderTimeOfDay, moonPhase: number): number {
+  const isBright = moonPhase >= 0.3 && moonPhase <= 0.7;
+  switch (renderTime) {
+    case 'night': return 1;
+    case 'dusk': return 0.85;
+    case 'sunset': return 0.5;
+    case 'pre-dawn': return 0.6;
+    case 'dawn': return isBright ? 0.15 : 0;
+    case 'morning': case 'afternoon': return isBright ? 0.2 : 0;
+    case 'golden-hour': return isBright ? 0.15 : 0;
+    default: return 0;
   }
-  if (renderTime === 'dawn') {
-    if (moonPhase >= 0.3 && moonPhase <= 0.7) moonOpacity = 0.15;
-    else return null;
+}
+
+function MoonPhaseRenderer({ moonPhase, moonPosition, renderTime }: {
+  moonPhase: number; moonPosition: number | null; renderTime: RenderTimeOfDay;
+}) {
+  const moonOpacity = getMoonOpacity(renderTime, moonPhase);
+  if (moonOpacity <= 0) return null;
+
+  const moonR = 2;
+  // Arc position: if moonPosition available, trace arc like sun; else fixed position
+  const horizonY = 65;
+  const maxHeight = 45;
+  let cx: number, cy: number;
+
+  if (moonPosition !== null && moonPosition >= 0 && moonPosition <= 1) {
+    cx = 5 + moonPosition * 90;
+    cy = horizonY - Math.sin(moonPosition * Math.PI) * maxHeight;
+  } else {
+    // Fallback: upper-right for transition phases
+    cx = 82;
+    cy = 18;
   }
 
-  const moonR = 2, cx = 82, cy = 18;
   const normalizedPhase = moonPhase <= 0.5 ? moonPhase * 2 : (1 - moonPhase) * 2;
   const shadowOffsetX = (1 - normalizedPhase) * moonR * 1.6;
   const isWaxing = moonPhase <= 0.5;
@@ -166,7 +189,10 @@ function MoonPhaseRenderer({ moonPhase, renderTime }: { moonPhase: number; rende
 
   return (
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
-      preserveAspectRatio="none" style={{ opacity: moonOpacity }}>
+      preserveAspectRatio="none" style={{
+        opacity: moonOpacity,
+        transition: 'opacity 3s ease',
+      }}>
       <defs>
         <clipPath id="cabin-moon-clip"><circle cx={cx} cy={cy} r={moonR} /></clipPath>
         <radialGradient id="cabin-moon-glow" cx="50%" cy="50%" r="50%">
@@ -174,11 +200,14 @@ function MoonPhaseRenderer({ moonPhase, renderTime }: { moonPhase: number; rende
           <stop offset="100%" stopColor="#f5f0c1" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <circle cx={cx} cy={cy} r={moonR * 2} fill="url(#cabin-moon-glow)" />
-      <circle cx={cx} cy={cy} r={moonR} fill="#f5f0c1" />
+      <circle cx={cx} cy={cy} r={moonR * 2} fill="url(#cabin-moon-glow)"
+        style={{ transition: 'cx 60s linear, cy 60s linear' }} />
+      <circle cx={cx} cy={cy} r={moonR} fill="#f5f0c1"
+        style={{ transition: 'cx 60s linear, cy 60s linear' }} />
       {normalizedPhase < 0.98 && (
         <circle cx={shadowCx} cy={cy} r={moonR} fill="#0c1445"
-          clipPath="url(#cabin-moon-clip)" opacity={0.92} />
+          clipPath="url(#cabin-moon-clip)" opacity={0.92}
+          style={{ transition: 'cx 60s linear' }} />
       )}
     </svg>
   );
