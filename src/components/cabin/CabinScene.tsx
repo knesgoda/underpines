@@ -121,12 +121,22 @@ const SCENE_CSS = `
   0% { transform: translateX(110%); }
   100% { transform: translateX(-30%); }
 }
+@keyframes heat-shimmer {
+  0%, 100% { transform: scaleY(1.0); }
+  50% { transform: scaleY(1.003); }
+}
 /* Sun occlusion dimming */
 .cabin-scene-root.sun-obscured [data-layer="sky-gradient"] {
   filter: saturate(0.85) !important;
 }
 .cabin-scene-root.sun-obscured .sun-glow-outer {
   r: 2.5 !important;
+}
+/* Lightning flash backlights trees */
+.cabin-scene-root.lightning-flash [data-layer="midground-trees"],
+.cabin-scene-root.lightning-flash [data-layer="foreground-elements"] {
+  filter: brightness(1.8) !important;
+  transition: filter 0ms !important;
 }
 `;
 
