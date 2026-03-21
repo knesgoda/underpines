@@ -370,6 +370,25 @@ const CollectionEditor = () => {
         </div>
       )}
     </motion.div>
+
+    {/* Delete Collection confirmation */}
+    <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+      <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="font-display text-lg">Let this Collection go?</AlertDialogTitle>
+          <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+            Your posts aren't deleted — only this Collection.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 };
 

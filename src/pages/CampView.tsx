@@ -231,6 +231,25 @@ const CampView = () => {
         )}
       </div>
     </motion.div>
+
+    {/* Leave Camp confirmation */}
+    <AlertDialog open={leaveOpen} onOpenChange={setLeaveOpen}>
+      <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="font-display text-lg">Leave {camp?.name}?</AlertDialogTitle>
+          <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+            You can rejoin anytime if it's an Open Camp.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="font-body text-sm rounded-full">Stay</AlertDialogCancel>
+          <AlertDialogAction onClick={handleLeave} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Leave Camp
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 };
 
