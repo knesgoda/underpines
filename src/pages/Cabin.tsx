@@ -80,7 +80,7 @@ const Cabin = () => {
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
   const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
 
-  const { weatherCode, windSpeed, temperature, unit: tempUnit } = useWeather(profile?.latitude, profile?.longitude);
+  const { temperature, unit: tempUnit } = useWeather(profile?.latitude, profile?.longitude);
 
   // Load preview design from sessionStorage
   useEffect(() => {
