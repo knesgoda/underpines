@@ -68,6 +68,7 @@ const Cabin = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [isInCircle, setIsInCircle] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [isFounderProfile, setIsFounderProfile] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
@@ -124,6 +125,15 @@ const Cabin = () => {
 
       setProfile(data as Profile);
       setIsOwner(owner);
+
+      // Check founder status
+      const { data: founderRole } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', data.id)
+        .eq('role', 'founder')
+        .maybeSingle();
+      setIsFounderProfile(!!founderRole);
 
       // Check circle status
       if (user && !owner) {
@@ -288,7 +298,7 @@ const Cabin = () => {
                   <h1 className="text-3xl md:text-4xl font-display text-white drop-shadow-md">
                     {profile.display_name}
                   </h1>
-                  {profile.is_pines_plus && <PineConeBadge className="w-4 h-4" />}
+                  {isFounderProfile ? <FounderBadge className="w-4 h-4" /> : profile.is_pines_plus && <PineConeBadge className="w-4 h-4" />}
                 </div>
                 <p className="text-sm font-body text-white/60 mt-0.5">@{profile.handle}</p>
                 {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
@@ -333,7 +343,7 @@ const Cabin = () => {
             <div className="flex items-center justify-center gap-3 mb-3">
               {mood && <span className="text-3xl">{mood.emoji}</span>}
               <h1 className="text-4xl md:text-5xl font-display" style={{ color: atmos.text }}>{profile.display_name}</h1>
-              {profile.is_pines_plus && <PineConeBadge className="w-5 h-5" />}
+              {isFounderProfile ? <FounderBadge className="w-5 h-5" /> : profile.is_pines_plus && <PineConeBadge className="w-5 h-5" />}
             </div>
             <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
             {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
@@ -391,7 +401,7 @@ const Cabin = () => {
               <div className="flex items-center gap-2">
                 {mood && <span className="text-xl">{mood.emoji}</span>}
                 <h1 className="text-2xl font-display truncate" style={{ color: atmos.text }}>{profile.display_name}</h1>
-                {profile.is_pines_plus && <PineConeBadge className="w-3.5 h-3.5" />}
+                {isFounderProfile ? <FounderBadge className="w-3.5 h-3.5" /> : profile.is_pines_plus && <PineConeBadge className="w-3.5 h-3.5" />}
               </div>
               <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
               {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
@@ -432,7 +442,7 @@ const Cabin = () => {
                 <div className="flex items-center gap-2">
                   {mood && <span className="text-2xl">{mood.emoji}</span>}
                   <h1 className="text-3xl font-display" style={{ color: atmos.text }}>{profile.display_name}</h1>
-                  {profile.is_pines_plus && <PineConeBadge className="w-4 h-4" />}
+                  {isFounderProfile ? <FounderBadge className="w-4 h-4" /> : profile.is_pines_plus && <PineConeBadge className="w-4 h-4" />}
                 </div>
                 <p className="text-sm font-body mt-1" style={{ color: atmos.text, opacity: 0.5 }}>@{profile.handle}</p>
                 {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
@@ -653,6 +663,27 @@ const CabinCircleActions = ({ isOwner, user, profile, cabinMenuOpen, setCabinMen
     </div>
   );
 };
+
+const FounderBadge = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg
+    viewBox="0 0 16 16"
+    fill="currentColor"
+    className={`inline-block shrink-0 ${className}`}
+    style={{ color: 'hsl(142, 71%, 35%)' }}
+    aria-label="Founder"
+    role="img"
+  >
+    {/* Double pine trees */}
+    <path d="M5.5 2C5.5 2 4 4.5 4 5.3C4 5.8 4.6 6.2 5.5 6.3C6.4 6.2 7 5.8 7 5.3C7 4.5 5.5 2 5.5 2Z" opacity="0.9" />
+    <path d="M5.5 4.5C5.5 4.5 3.5 7 3.5 8C3.5 8.7 4.3 9.2 5.5 9.3C6.7 9.2 7.5 8.7 7.5 8C7.5 7 5.5 4.5 5.5 4.5Z" opacity="0.75" />
+    <path d="M5.5 7C5.5 7 3 9.5 3 10.5C3 11.3 4 11.8 5.5 12C7 11.8 8 11.3 8 10.5C8 9.5 5.5 7 5.5 7Z" opacity="0.6" />
+    <rect x="5" y="11.5" width="1" height="2" rx="0.3" />
+    <path d="M10.5 2C10.5 2 9 4.5 9 5.3C9 5.8 9.6 6.2 10.5 6.3C11.4 6.2 12 5.8 12 5.3C12 4.5 10.5 2 10.5 2Z" opacity="0.9" />
+    <path d="M10.5 4.5C10.5 4.5 8.5 7 8.5 8C8.5 8.7 9.3 9.2 10.5 9.3C11.7 9.2 12.5 8.7 12.5 8C12.5 7 10.5 4.5 10.5 4.5Z" opacity="0.75" />
+    <path d="M10.5 7C10.5 7 8 9.5 8 10.5C8 11.3 9 11.8 10.5 12C12 11.8 13 11.3 13 10.5C13 9.5 10.5 7 10.5 7Z" opacity="0.6" />
+    <rect x="10" y="11.5" width="1" height="2" rx="0.3" />
+  </svg>
+);
 
 const PineConeBadge = ({ className = 'w-4 h-4' }: { className?: string }) => (
   <svg
