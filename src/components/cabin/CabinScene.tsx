@@ -143,23 +143,23 @@ function Starfield({ opacity }: { opacity: number }) {
 }
 
 // ─── Sun ───
-function SunRenderer({ sunPosition }: { sunPosition: number | null }) {
+function SunRenderer({ sunPosition, sunObscured }: { sunPosition: number | null; sunObscured: boolean }) {
   if (sunPosition === null) return null;
 
-  // viewBox 0 0 100 100, horizon at y=65, peak at y=15
   const horizonY = 65;
-  const maxHeight = 50; // peak amplitude
-  const sunR = 2.5; // ~5% diameter
-  const x = 5 + sunPosition * 90; // 5–95 range
+  const maxHeight = 50;
+  const sunR = 2.5;
+  const x = 5 + sunPosition * 90;
   const y = horizonY - Math.sin(sunPosition * Math.PI) * maxHeight;
 
-  // Horizon glow when within 10% of edges
   let glowOpacity = 0;
   if (sunPosition < 0.15) {
     glowOpacity = 1 - sunPosition / 0.15;
   } else if (sunPosition > 0.85) {
     glowOpacity = (sunPosition - 0.85) / 0.15;
   }
+
+  const glowR = sunObscured ? sunR * 1 : sunR * 3;
 
   return (
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
@@ -176,23 +176,19 @@ function SunRenderer({ sunPosition }: { sunPosition: number | null }) {
           <stop offset="100%" stopColor="#e8734a" stopOpacity="0" />
         </radialGradient>
       </defs>
-      {/* Horizon glow at sunrise/sunset */}
       {glowOpacity > 0 && (
         <ellipse cx={x} cy={horizonY} rx={15} ry={6}
           fill="url(#horizon-sun-glow)"
           opacity={glowOpacity * 0.8}
           style={{ transition: 'cx 60s linear, opacity 60s linear' }} />
       )}
-      {/* Sun glow (3x diameter) */}
-      <circle cx={x} cy={y} r={sunR * 3} fill="url(#sun-glow)"
-        style={{ transition: 'cx 60s linear, cy 60s linear' }} />
-      {/* Sun core */}
+      <circle className="sun-glow-outer" cx={x} cy={y} r={glowR} fill="url(#sun-glow)"
+        style={{ transition: 'cx 60s linear, cy 60s linear, r 1.5s ease' }} />
       <circle cx={x} cy={y} r={sunR} fill="#fff4c4"
         style={{ transition: 'cx 60s linear, cy 60s linear' }} />
     </svg>
   );
 }
-
 // ─── Moon ───
 // Moon opacity by time-of-day for smooth transitions
 function getMoonOpacity(renderTime: RenderTimeOfDay, moonPhase: number): number {
