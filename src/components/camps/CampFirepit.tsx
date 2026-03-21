@@ -89,11 +89,13 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
     setPosting(false);
   };
 
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
   const handleDelete = async (postId: string) => {
-    if (!confirm('Remove this post?')) return;
     await supabase.from('camp_posts').delete().eq('id', postId);
     setPosts(prev => prev.filter(p => p.id !== postId));
     toast('Post removed.');
+    setDeleteConfirmId(null);
   };
 
   const openComposer = (type: 'spark' | 'story' | 'ember') => {
