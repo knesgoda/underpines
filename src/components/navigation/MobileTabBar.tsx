@@ -34,11 +34,14 @@ const MobileTabBar = () => {
         {tabs.map((tab) => {
           if (tab.isComposer) {
             return (
-              <button
+               <button
                 key="composer"
                 onClick={() => setComposerOpen(true)}
                 className="flex items-center justify-center w-12 h-12 -mt-4 rounded-full bg-primary text-primary-foreground shadow-card"
+                aria-label="New post"
               >
+                <Plus size={22} />
+              </button>
                 <Plus size={22} />
               </button>
             );
