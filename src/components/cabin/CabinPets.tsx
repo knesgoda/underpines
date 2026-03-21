@@ -14,6 +14,7 @@ interface PetData {
   sprite_cache: Record<string, string>;
   is_pinned: boolean;
   is_memorial: boolean;
+  is_ambassador: boolean;
   display_order: number;
 }
 
