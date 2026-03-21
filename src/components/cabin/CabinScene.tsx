@@ -4,7 +4,7 @@
  * Now driven by useSolarCycle for real-time sun position and time-of-day.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 import { useWeather } from '@/hooks/useWeather';
 
@@ -116,6 +116,17 @@ const SCENE_CSS = `
   0%, 100% { transform: rotate(0deg); }
   50% { transform: rotate(var(--grass-sway, 0deg)); }
 }
+@keyframes cloud-drift {
+  0% { transform: translateX(110%); }
+  100% { transform: translateX(-30%); }
+}
+/* Sun occlusion dimming */
+.cabin-scene-root.sun-obscured [data-layer="sky-gradient"] {
+  filter: saturate(0.85) !important;
+}
+.cabin-scene-root.sun-obscured .sun-glow-outer {
+  r: 2.5 !important;
+}
 `;
 
 function Starfield({ opacity }: { opacity: number }) {
@@ -132,23 +143,23 @@ function Starfield({ opacity }: { opacity: number }) {
 }
 
 // ─── Sun ───
-function SunRenderer({ sunPosition }: { sunPosition: number | null }) {
+function SunRenderer({ sunPosition, sunObscured }: { sunPosition: number | null; sunObscured: boolean }) {
   if (sunPosition === null) return null;
 
-  // viewBox 0 0 100 100, horizon at y=65, peak at y=15
   const horizonY = 65;
-  const maxHeight = 50; // peak amplitude
-  const sunR = 2.5; // ~5% diameter
-  const x = 5 + sunPosition * 90; // 5–95 range
+  const maxHeight = 50;
+  const sunR = 2.5;
+  const x = 5 + sunPosition * 90;
   const y = horizonY - Math.sin(sunPosition * Math.PI) * maxHeight;
 
-  // Horizon glow when within 10% of edges
   let glowOpacity = 0;
   if (sunPosition < 0.15) {
     glowOpacity = 1 - sunPosition / 0.15;
   } else if (sunPosition > 0.85) {
     glowOpacity = (sunPosition - 0.85) / 0.15;
   }
+
+  const glowR = sunObscured ? sunR * 1 : sunR * 3;
 
   return (
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
@@ -165,23 +176,19 @@ function SunRenderer({ sunPosition }: { sunPosition: number | null }) {
           <stop offset="100%" stopColor="#e8734a" stopOpacity="0" />
         </radialGradient>
       </defs>
-      {/* Horizon glow at sunrise/sunset */}
       {glowOpacity > 0 && (
         <ellipse cx={x} cy={horizonY} rx={15} ry={6}
           fill="url(#horizon-sun-glow)"
           opacity={glowOpacity * 0.8}
           style={{ transition: 'cx 60s linear, opacity 60s linear' }} />
       )}
-      {/* Sun glow (3x diameter) */}
-      <circle cx={x} cy={y} r={sunR * 3} fill="url(#sun-glow)"
-        style={{ transition: 'cx 60s linear, cy 60s linear' }} />
-      {/* Sun core */}
+      <circle className="sun-glow-outer" cx={x} cy={y} r={glowR} fill="url(#sun-glow)"
+        style={{ transition: 'cx 60s linear, cy 60s linear, r 1.5s ease' }} />
       <circle cx={x} cy={y} r={sunR} fill="#fff4c4"
         style={{ transition: 'cx 60s linear, cy 60s linear' }} />
     </svg>
   );
 }
-
 // ─── Moon ───
 // Moon opacity by time-of-day for smooth transitions
 function getMoonOpacity(renderTime: RenderTimeOfDay, moonPhase: number): number {
@@ -500,6 +507,111 @@ function WindDebris({ windIntensity, fromLeft }: { windIntensity: string; fromLe
   );
 }
 
+// ─── Cloud Layer ───
+interface CloudDef {
+  variant: 'wispy' | 'puffy' | 'heavy';
+  y: number;       // % from top (0-40)
+  opacity: number;  // 0.7-0.95
+  delay: number;    // animation-delay in seconds
+  scale: number;    // size multiplier
+}
+
+function generateClouds(cloudCover: number): CloudDef[] {
+  let count = 0;
+  let variants: Array<'wispy' | 'puffy' | 'heavy'> = [];
+
+  if (cloudCover <= 10) return [];
+  if (cloudCover <= 30) { count = 1 + Math.round(Math.random()); variants = ['wispy']; }
+  else if (cloudCover <= 60) { count = 3 + Math.round(Math.random()); variants = ['wispy', 'puffy']; }
+  else if (cloudCover <= 80) { count = 5 + Math.round(Math.random()); variants = ['puffy', 'heavy', 'puffy']; }
+  else { count = 7 + Math.round(Math.random()); variants = ['heavy', 'heavy', 'puffy']; }
+
+  const rand = seededRandom(cloudCover * 7 + 13);
+  return Array.from({ length: count }, (_, i) => ({
+    variant: variants[i % variants.length],
+    y: 3 + rand() * 35,
+    opacity: 0.7 + rand() * 0.25,
+    delay: rand() * 60,
+    scale: 0.7 + rand() * 0.6,
+  }));
+}
+
+const WIND_SPEED_MAP: Record<string, number> = {
+  calm: 120, light: 80, moderate: 45, strong: 20, extreme: 10,
+};
+
+function CloudShape({ variant, isNight }: { variant: 'wispy' | 'puffy' | 'heavy'; isNight: boolean }) {
+  const fill = isNight ? '#3a3a5a' : '#f0f0f0';
+  const fill2 = isNight ? '#2e2e4a' : '#e8e8e8';
+  const fill3 = isNight ? '#34345a' : '#e0e0e0';
+
+  switch (variant) {
+    case 'wispy':
+      return (
+        <g>
+          <ellipse cx="30" cy="14" rx="22" ry="7" fill={fill} />
+          <ellipse cx="50" cy="12" rx="16" ry="5" fill={fill2} />
+        </g>
+      );
+    case 'puffy':
+      return (
+        <g>
+          <ellipse cx="30" cy="18" rx="24" ry="10" fill={fill} />
+          <ellipse cx="50" cy="14" rx="20" ry="12" fill={fill2} />
+          <ellipse cx="40" cy="10" rx="16" ry="9" fill={fill} />
+          <ellipse cx="55" cy="18" rx="14" ry="8" fill={fill3} />
+        </g>
+      );
+    case 'heavy':
+      return (
+        <g>
+          <ellipse cx="40" cy="20" rx="35" ry="14" fill={fill} />
+          <ellipse cx="60" cy="16" rx="28" ry="13" fill={fill2} />
+          <ellipse cx="30" cy="14" rx="22" ry="11" fill={fill} />
+          <ellipse cx="55" cy="10" rx="20" ry="10" fill={fill3} />
+          <ellipse cx="70" cy="20" rx="18" ry="10" fill={fill} />
+        </g>
+      );
+  }
+}
+
+function CloudLayer({ cloudCover, windIntensity, renderTime }: {
+  cloudCover: number; windIntensity: string; renderTime: RenderTimeOfDay;
+}) {
+  const isNight = renderTime === 'night' || renderTime === 'dusk';
+  const clouds = useMemo(() => generateClouds(cloudCover), [cloudCover]);
+  const duration = WIND_SPEED_MAP[windIntensity] || 120;
+
+  if (clouds.length === 0) return null;
+
+  return (
+    <div className="absolute inset-0 w-full h-full overflow-hidden">
+      {clouds.map((c, i) => (
+        <svg
+          key={i}
+          data-cloud
+          className="absolute"
+          viewBox="0 0 100 30"
+          preserveAspectRatio="xMidYMid meet"
+          style={{
+            width: `${12 * c.scale}%`,
+            height: 'auto',
+            top: `${c.y}%`,
+            left: 0,
+            opacity: isNight ? c.opacity * 0.5 : c.opacity,
+            animation: `cloud-drift ${duration + i * 5}s linear infinite`,
+            animationDelay: `${-c.delay}s`,
+            pointerEvents: 'none',
+            transition: 'opacity 1.5s ease',
+          }}
+        >
+          <CloudShape variant={c.variant} isNight={isNight} />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
 // ─── Main Component ───
 const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude }: CabinSceneProps) => {
   const solar = useSolarCycle(latitude, longitude);
@@ -507,8 +619,38 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   const renderTime = toRenderTime(solar.timeOfDay);
   const isGoldenHour = solar.timeOfDay === 'golden-hour';
   const windIntensity = weather.windIntensity || 'calm';
-  // Wind direction: 0-180° = from-right, 180-360° = from-left
   const fromLeft = (weather.windDirection ?? 0) >= 180;
+  const [sunObscured, setSunObscured] = useState(false);
+  const sceneRef = useRef<HTMLDivElement>(null);
+
+  // Sun occlusion check every 2s
+  useEffect(() => {
+    if (solar.sunPosition === null) { setSunObscured(false); return; }
+
+    const checkOcclusion = () => {
+      const container = sceneRef.current;
+      if (!container) return;
+      const clouds = container.querySelectorAll('[data-cloud]');
+      if (clouds.length === 0) { setSunObscured(false); return; }
+
+      const rect = container.getBoundingClientRect();
+      const sunX = rect.left + (5 + (solar.sunPosition ?? 0.5) * 90) / 100 * rect.width;
+      const sunY = rect.top + (65 - Math.sin((solar.sunPosition ?? 0.5) * Math.PI) * 50) / 100 * rect.height;
+
+      let obscured = false;
+      clouds.forEach(cloud => {
+        const cr = cloud.getBoundingClientRect();
+        if (sunX >= cr.left && sunX <= cr.right && sunY >= cr.top && sunY <= cr.bottom) {
+          obscured = true;
+        }
+      });
+      setSunObscured(obscured);
+    };
+
+    checkOcclusion();
+    const timer = setInterval(checkOcclusion, 2000);
+    return () => clearInterval(timer);
+  }, [solar.sunPosition]);
 
   const skyGradient = buildSkyGradient(renderTime);
 
@@ -516,12 +658,10 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
     return { tint: '#dcfce7', opacity: 0.08 };
   }, [atmosphere]);
 
-  // Golden hour amber overlay opacity
   const goldenOverlayOpacity = isGoldenHour && solar.goldenHourProgress !== null
     ? solar.goldenHourProgress * 0.12
     : 0;
 
-  // Granular star opacity for smooth transitions
   const starOpacity = useMemo(() => {
     switch (renderTime) {
       case 'night': return 1;
@@ -535,7 +675,8 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-xl"
+      ref={sceneRef}
+      className={`cabin-scene-root relative w-full overflow-hidden rounded-xl${sunObscured ? ' sun-obscured' : ''}`}
       style={{
         aspectRatio: 'var(--cabin-scene-ratio, 3/1)',
         '--biome-bg-far': '#7a9a8a',
@@ -555,27 +696,38 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       {/* Layer 1: sky-gradient + starfield */}
       <div className={layerBase} style={{
         zIndex: 1, background: skyGradient, pointerEvents: 'none',
-        transition: 'background 60s linear',
+        transition: 'background 60s linear, filter 1.5s ease',
+        filter: sunObscured ? 'saturate(0.85)' : 'none',
       }} data-layer="sky-gradient">
         <Starfield opacity={starOpacity} />
       </div>
 
       {/* Layer 2: background-landscape */}
-      <div className={layerBase} style={{ zIndex: 2, pointerEvents: 'none' }} data-layer="background-landscape">
+      <div className={layerBase} style={{
+        zIndex: 2, pointerEvents: 'none',
+        filter: sunObscured ? 'brightness(0.9)' : 'none',
+        transition: 'filter 1.5s ease',
+      }} data-layer="background-landscape">
         <BackgroundHills renderTime={renderTime} />
       </div>
 
       {/* Layer 3: celestial-bodies (sun + moon) */}
       <div className={layerBase} style={{ zIndex: 3, pointerEvents: 'none' }} data-layer="celestial-bodies">
-        <SunRenderer sunPosition={solar.sunPosition} />
+        <SunRenderer sunPosition={solar.sunPosition} sunObscured={sunObscured} />
         <MoonPhaseRenderer moonPhase={moonPhase} moonPosition={solar.moonPosition} renderTime={renderTime} />
       </div>
 
       {/* Layer 4: cloud-layer */}
-      <div className={layerBase} style={{ zIndex: 4, pointerEvents: 'none' }} data-layer="cloud-layer" />
+      <div className={layerBase} style={{ zIndex: 4, pointerEvents: 'none' }} data-layer="cloud-layer">
+        <CloudLayer cloudCover={weather.cloudCover} windIntensity={windIntensity} renderTime={renderTime} />
+      </div>
 
       {/* Layer 5: midground-trees */}
-      <div className={layerBase} style={{ zIndex: 5, pointerEvents: 'none' }} data-layer="midground-trees">
+      <div className={layerBase} style={{
+        zIndex: 5, pointerEvents: 'none',
+        filter: sunObscured ? 'brightness(0.9)' : 'none',
+        transition: 'filter 1.5s ease',
+      }} data-layer="midground-trees">
         <MidgroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
       </div>
 
@@ -596,12 +748,10 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       <div className={layerBase} style={{
         zIndex: 9, pointerEvents: 'none',
       }} data-layer="atmosphere-wash">
-        {/* Base atmosphere tint */}
         <div className="absolute inset-0" style={{
           backgroundColor: atmosphereTint.tint,
           opacity: atmosphereTint.opacity,
         }} />
-        {/* Golden hour amber overlay */}
         {goldenOverlayOpacity > 0 && (
           <div className="absolute inset-0" style={{
             backgroundColor: '#f4a460',
@@ -609,7 +759,6 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
             transition: 'opacity 60s linear',
           }} />
         )}
-        {/* Moonlight glow — visible at night when moon is bright enough */}
         {(renderTime === 'night' || renderTime === 'dusk') && moonPhase > 0.35 && solar.moonPosition !== null && (
           <div className="absolute inset-0" style={{
             background: `radial-gradient(ellipse 40% 60% at ${5 + solar.moonPosition * 90}% ${65 - Math.sin(solar.moonPosition * Math.PI) * 45}%, #c4d4f0 0%, transparent 100%)`,
