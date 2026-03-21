@@ -247,8 +247,9 @@ const Cabin = () => {
         <CabinScene
           memberName={isTrailhead ? '' : profile.display_name}
           atmosphere={profile.atmosphere}
-          timeOfDay={getTimeOfDay()}
           moonPhase={getMoonPhase()}
+          latitude={profile.latitude ?? undefined}
+          longitude={profile.longitude ?? undefined}
         />
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
