@@ -8,6 +8,7 @@ import SeedlingBanner from '@/components/feed/SeedlingBanner';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
 import LightboxViewer from '@/components/feed/LightboxViewer';
 import SeasonalEventCard from '@/components/feed/SeasonalEventCard';
+import { SeasonalFeedGlyph } from '@/components/seasonal/SeasonalLayer';
 import InviteBanner from '@/components/feed/InviteBanner';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { Settings } from 'lucide-react';
@@ -360,7 +361,8 @@ const Feed = () => {
         )}
       </AnimatePresence>
       {/* Feed preferences toggle (desktop) */}
-      <div className="hidden md:flex justify-end mb-2">
+      <div className="hidden md:flex justify-end items-center gap-2 mb-2">
+        <SeasonalFeedGlyph />
         <button
           onClick={() => setShowPrefs(!showPrefs)}
           className="p-1.5 rounded-md text-muted-foreground hover:bg-muted transition-colors"
