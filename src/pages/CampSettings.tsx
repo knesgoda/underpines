@@ -84,16 +84,20 @@ const CampSettings = () => {
     load();
   };
 
-  const passFirekeeping = async (memberId: string, userId: string) => {
-    if (!confirm('Pass Firekeeping to this member? You will become a regular member.')) return;
-    if (!id || !user) return;
+  const [passTarget, setPassTarget] = useState<{ memberId: string; userId: string; name: string } | null>(null);
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
-    // Update camp firekeeper
-    await supabase.from('camps').update({ firekeeper_id: userId }).eq('id', id);
-    // Update roles
-    await supabase.from('camp_members').update({ role: 'firekeeper' }).eq('id', memberId);
+  const passFirekeeping = (memberId: string, userId: string) => {
+    const member = members.find(m => m.id === memberId);
+    setPassTarget({ memberId, userId, name: member?.profile?.display_name || 'this member' });
+  };
+
+  const confirmPassFirekeeping = async () => {
+    if (!passTarget || !id || !user) return;
+    await supabase.from('camps').update({ firekeeper_id: passTarget.userId }).eq('id', id);
+    await supabase.from('camp_members').update({ role: 'firekeeper' }).eq('id', passTarget.memberId);
     await supabase.from('camp_members').update({ role: 'member' }).eq('camp_id', id).eq('user_id', user.id);
-
+    setPassTarget(null);
     toast.success('Firekeeping transferred.');
     navigate(`/camps/${id}`);
   };
