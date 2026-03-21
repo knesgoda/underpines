@@ -130,26 +130,6 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     setForm(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be under 5MB');
-      return;
-    }
-
-    const path = `${profile.id}/${Date.now()}.${file.name.split('.').pop()}`;
-    const { error } = await supabase.storage.from('cabin-headers').upload(path, file, { upsert: true });
-    if (error) {
-      toast.error('Could not upload image');
-      return;
-    }
-
-    const { data: urlData } = supabase.storage.from('cabin-headers').getPublicUrl(path);
-    await supabase.from('profiles').update({ header_image_url: urlData.publicUrl }).eq('id', profile.id);
-    onUpdate();
-    toast.success('Header updated');
-  };
 
   const tabs = [
     { key: 'you', label: 'You' },
