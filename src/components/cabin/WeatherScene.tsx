@@ -65,8 +65,11 @@ const WeatherScene = ({
   hour,
   season = 'summer',
   className = '',
-  reducedParticles = false,
+  reducedParticles: reducedParticlesProp,
 }: WeatherSceneProps) => {
+  // Auto-reduce particles on mobile for GPU performance
+  const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+  const reducedParticles = reducedParticlesProp ?? prefersReduced;
   const currentHour = hour ?? new Date().getHours();
   const condition = getWeatherCondition(weatherCode);
   const skyGradient = getSkyGradient(currentHour);
