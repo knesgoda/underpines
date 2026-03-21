@@ -343,7 +343,7 @@ const Cabin = () => {
             <div className="flex items-center justify-center gap-3 mb-3">
               {mood && <span className="text-3xl">{mood.emoji}</span>}
               <h1 className="text-4xl md:text-5xl font-display" style={{ color: atmos.text }}>{profile.display_name}</h1>
-              {profile.is_pines_plus && <PineConeBadge className="w-5 h-5" />}
+              {isFounderProfile ? <FounderBadge className="w-5 h-5" /> : profile.is_pines_plus && <PineConeBadge className="w-5 h-5" />}
             </div>
             <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
             {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
