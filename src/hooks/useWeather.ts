@@ -141,6 +141,7 @@ export const useWeather = (
         temperature: c?.temperature_2m ?? 20,
         isSnowing: snowfall > 0,
         isRaining: rain > 0,
+        unit: useFahrenheit ? 'F' : 'C',
       };
 
       setData(result);
