@@ -398,7 +398,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
 
             <div className="flex flex-col gap-2 pt-4 border-t border-border">
               <button
-                onClick={() => { onClose(); window.location.href = '/marketplace'; }}
+                onClick={() => { onClose(); navigate('/marketplace'); }}
                 className="w-full text-left px-4 py-3 rounded-xl bg-muted hover:bg-muted/80 transition-colors font-body text-sm text-foreground flex items-center gap-2"
               >
                 🏕️ Browse designs
