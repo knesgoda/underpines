@@ -85,6 +85,7 @@ const App = () => (
                   <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
                   <Route path="designs" element={<GroveDesigns />} />
+                  <Route path="companions" element={<GroveCompanions />} />
                 </Route>
 
                 {/* Main app routes */}
