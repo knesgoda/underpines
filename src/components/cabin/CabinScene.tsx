@@ -718,6 +718,12 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
     }
   }, [renderTime]);
 
+  const skyGradient = useMemo(() => buildSkyGradient(renderTime), [renderTime]);
+
+  const atmosphereTint = useMemo(() => {
+    return ATMOSPHERE_TINTS[atmosphere] || ATMOSPHERE_TINTS['morning-mist'];
+  }, [atmosphere]);
+
   return (
     <div
       ref={sceneRef}
