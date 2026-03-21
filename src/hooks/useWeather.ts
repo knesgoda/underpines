@@ -44,6 +44,7 @@ export interface WeatherData {
   temperature: number;
   isSnowing: boolean;
   isRaining: boolean;
+  unit: 'C' | 'F';
 }
 
 interface UseWeatherReturn extends WeatherData {
