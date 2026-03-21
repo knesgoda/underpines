@@ -7,6 +7,7 @@ import {
   TreePine, Plus, Pin, PinOff, MoreVertical, Pencil, RefreshCw,
   Moon, Sun, Heart, Trash2, X, Check, GripVertical,
 } from 'lucide-react';
+import PinePetCreationFlow from './PinePetCreationFlow';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
@@ -54,6 +55,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
   } | null>(null);
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+  const [creationOpen, setCreationOpen] = useState(false);
 
   const fetchPets = useCallback(async () => {
     if (!user) return;
@@ -199,7 +201,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
           variant="outline"
           size="sm"
           className="rounded-lg text-xs font-body gap-1.5 mb-4 border-dashed border-border hover:border-primary hover:text-primary"
-          onClick={() => toast.info('Pine Pet creation coming soon!')}
+          onClick={() => setCreationOpen(true)}
         >
           <Plus size={14} />
           Add a Pine Pet
@@ -396,6 +398,14 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Creation Flow */}
+      <PinePetCreationFlow
+        open={creationOpen}
+        onClose={() => setCreationOpen(false)}
+        onCreated={fetchPets}
+        activeAtmosphere={activeAtmosphere}
+      />
     </div>
   );
 };
