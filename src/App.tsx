@@ -67,12 +67,14 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
+    <SceneDebugProvider>
     <AuthProvider>
       <OnboardingProvider>
         <NavigationProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <SceneDebugPanel />
             <BrowserRouter>
               <ScrollToTop />
               <Routes>
