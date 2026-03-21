@@ -895,6 +895,17 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
           {memberName}
         </h2>
       </div>
+
+      {/* Debug: OVERRIDES ACTIVE indicator */}
+      {dbg?.active && (
+        <div className="absolute top-2 right-2" style={{
+          zIndex: 12, background: '#f59e0b', color: '#1a1a2a',
+          padding: '2px 6px', borderRadius: 4, fontSize: 9,
+          fontWeight: 700, letterSpacing: 1, fontFamily: 'system-ui',
+        }}>
+          OVERRIDES ACTIVE
+        </div>
+      )}
     </div>
   );
 };
