@@ -39,6 +39,8 @@ const COUNTRY_BIOME: Record<string, string> = {
   IT: 'mediterranean',
   GR: 'mediterranean',
   HR: 'mediterranean',
+  MT: 'mediterranean',
+  CY: 'mediterranean',
   FR: 'mediterranean',
   NO: 'nordic',
   SE: 'nordic',
