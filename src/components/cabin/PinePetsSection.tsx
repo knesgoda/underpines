@@ -398,6 +398,14 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Creation Flow */}
+      <PinePetCreationFlow
+        open={creationOpen}
+        onClose={() => setCreationOpen(false)}
+        onCreated={fetchPets}
+        activeAtmosphere={activeAtmosphere}
+      />
     </div>
   );
 };
