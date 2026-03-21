@@ -11,6 +11,15 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { creatureMap } from '@/config/creatures';
 
+// Import special memorial variants
+import { DirectGazeWave, MincingTrot, AlwaysPresentHover } from './companions';
+
+// Map movement_style → special component
+const SPECIAL_VARIANTS = {
+  direct_gaze_wave: DirectGazeWave,
+  mincing_trot: MincingTrot,
+};
+
 // Import all creature components
 import * as Common from './common';
 import * as Uncommon from './uncommon';
@@ -76,9 +85,10 @@ const POSITION_VARIANTS = [
 ];
 
 // ── Single companion renderer ────────────────────────────────
-function SingleCompanion({ companion, onComplete }) {
+function SingleCompanion({ companion, onComplete, isRaining = false }) {
   const Component = COMPONENT_MAP[companion.creature_key];
   const creature = creatureMap[companion.creature_key];
+  const SpecialVariant = companion.movement_style ? SPECIAL_VARIANTS[companion.movement_style] : null;
   const [phase, setPhase] = useState('idle'); // idle | entering | acting | exiting | done
   const [posVariant, setPosVariant] = useState(0);
   const timerRef = useRef(null);
@@ -90,6 +100,22 @@ function SingleCompanion({ companion, onComplete }) {
     }
     return companion.direction;
   }, [companion.direction]);
+
+  // ── Special variant: always_present hummingbird hover ──
+  if (companion.movement_style === 'always_present_hover' || 
+      (companion.behavior === 'always_present' && companion.creature_key === 'hummingbird')) {
+    return <AlwaysPresentHover isRaining={isRaining} />;
+  }
+
+  // ── Special variant: delegate to memorial-specific component ──
+  if (SpecialVariant) {
+    return (
+      <SpecialVariant
+        direction={dir}
+        onComplete={() => onComplete?.(companion.id, companion.behavior)}
+      />
+    );
+  }
 
   // ── always_present: cycle position every 3–5 min ──
   useEffect(() => {
@@ -190,6 +216,7 @@ export default function CompanionRenderer({
   companions = [],
   onDailyVisitComplete,
   onPassingComplete,
+  isRaining = false,
 }) {
   const handleComplete = useCallback((companionId, behavior) => {
     if (behavior === 'daily_visit') onDailyVisitComplete?.(companionId);
@@ -207,6 +234,7 @@ export default function CompanionRenderer({
           key={companion.id}
           companion={companion}
           onComplete={handleComplete}
+          isRaining={isRaining}
         />
       ))}
     </>
