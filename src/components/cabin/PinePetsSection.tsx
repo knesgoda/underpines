@@ -55,6 +55,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
   } | null>(null);
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+  const [creationOpen, setCreationOpen] = useState(false);
 
   const fetchPets = useCallback(async () => {
     if (!user) return;
