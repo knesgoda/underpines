@@ -258,6 +258,7 @@ const Cabin = () => {
           memberName={isTrailhead ? '' : profile.display_name}
           atmosphere={profile.atmosphere}
           timeOfDay={getTimeOfDay()}
+          moonPhase={getMoonPhase()}
         />
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
