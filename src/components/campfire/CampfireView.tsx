@@ -60,6 +60,7 @@ const REACTIONS = ['🔥', '🌲', '💚', '😂', '👀', '🫂', '🌧️', '�
 
 const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isScout, scoutDays }: Props) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [campfire, setCampfire] = useState<CampfireData | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
