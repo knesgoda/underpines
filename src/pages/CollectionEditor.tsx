@@ -195,6 +195,7 @@ const CollectionEditor = () => {
   if (loading) return <PineTreeLoading />;
 
   return (
+    <>
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-lg mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-6">
         <button onClick={() => step > 1 ? setStep(step - 1) : navigate(-1)} className="text-muted-foreground hover:text-foreground">

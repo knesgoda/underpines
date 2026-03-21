@@ -156,6 +156,7 @@ const CampView = () => {
   ];
 
   return (
+    <>
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="px-4 pt-6 pb-4">
