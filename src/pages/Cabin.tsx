@@ -59,16 +59,6 @@ const Cabin = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  // Determine time of day for CabinScene
-  const getTimeOfDay = (): 'night' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'dusk' => {
-    const h = new Date().getHours();
-    if (h >= 21 || h < 5) return 'night';
-    if (h < 7) return 'dawn';
-    if (h < 12) return 'morning';
-    if (h < 17) return 'afternoon';
-    if (h < 19) return 'golden-hour';
-    return 'dusk';
-  };
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -257,8 +247,9 @@ const Cabin = () => {
         <CabinScene
           memberName={isTrailhead ? '' : profile.display_name}
           atmosphere={profile.atmosphere}
-          timeOfDay={getTimeOfDay()}
           moonPhase={getMoonPhase()}
+          latitude={profile.latitude ?? undefined}
+          longitude={profile.longitude ?? undefined}
         />
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
