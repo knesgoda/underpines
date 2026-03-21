@@ -90,7 +90,7 @@ const ReportSheet = ({
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && handleClose()}>
-      <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh]">
+      <SheetContent side="bottom" className="rounded-t-2xl max-h-[85dvh]">
         {submitted ? (
           <div className="py-12 text-center space-y-3">
             <p className="font-body text-base text-foreground">
