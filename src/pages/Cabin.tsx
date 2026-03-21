@@ -264,10 +264,23 @@ const Cabin = () => {
           windSpeed={windSpeed}
           hour={currentHour}
           season={season}
-          className="opacity-80"
+          className={seasonalEvent ? "opacity-40" : "opacity-80"}
           reducedParticles={window.innerWidth < 768}
         />
-
+        {/* Seasonal event scene overlay */}
+        {seasonalEvent && seasonalProgress.phase !== 'none' && (
+          <div
+            className="absolute inset-0 seasonal-overlay"
+            style={{ opacity: seasonalProgress.opacity * 0.85 }}
+          >
+            <SceneForEvent
+              eventKey={seasonalEvent.key}
+              width={window.innerWidth < 768 ? window.innerWidth : 680}
+              height={isHollow ? 400 : isTrailhead ? 400 : isCanopy ? 200 : 280}
+              moonProps={getMoonSVGProps(new Date())}
+            />
+          </div>
+        )}
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
           <div className="absolute bottom-0 left-0 right-0 px-8 pb-6 pt-16" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)' }}>
