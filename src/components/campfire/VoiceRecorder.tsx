@@ -192,7 +192,7 @@ const VoiceRecorder = ({ onSend }: Props) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute bottom-full left-0 right-0 mb-1 px-3 py-2 bg-card border border-border rounded-xl flex items-center gap-3"
-            style={{ transform: `translateX(${slideX}px)` }}
+            style={{ transform: `translateX(${Math.max(slideX, -CANCEL_SLIDE_PX)}px)`, opacity: slideX < -CANCEL_SLIDE_PX * 0.5 ? 0.5 : 1 }}
           >
             <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
             <div className="flex-1 flex items-center gap-1 h-6">
