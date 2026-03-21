@@ -354,7 +354,7 @@ function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOf
 // ─── Foreground Framing Trees (Layer 8) ───
 function ForegroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOfDay; isGoldenHour: boolean }) {
   const tf = TIME_FILTERS[renderTime];
-  const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : tf.filter;
+  const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
   const darkCanopy = '#2a5a30';
   const darkTrunk = '#3a2a1a';
 
