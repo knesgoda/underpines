@@ -17,6 +17,35 @@ import { getBiomeConfig } from '@/config/biomes';
 import CreatureRenderer from '@/components/creatures/CreatureRenderer';
 import CompanionRenderer from '@/components/creatures/CompanionRenderer';
 
+// ── Biome component imports ──
+import { PNWBackground, PNWMidground, PNWForeground } from '@/components/biomes/PacificNorthwest';
+import { CaliforniaSWBackground, CaliforniaSWMidground, CaliforniaSWForeground } from '@/components/biomes/CaliforniaSW';
+import { NortheastBackground, NortheastMidground, NortheastForeground } from '@/components/biomes/Northeast';
+import { SoutheastBackground, SoutheastMidground, SoutheastForeground } from '@/components/biomes/Southeast';
+import { MidwestBackground, MidwestMidground, MidwestForeground } from '@/components/biomes/Midwest';
+import { MountainWestBackground, MountainWestMidground, MountainWestForeground } from '@/components/biomes/MountainWest';
+import { BritishIslesBackground, BritishIslesMidground, BritishIslesForeground } from '@/components/biomes/BritishIsles';
+import { NordicBackground, NordicMidground, NordicForeground } from '@/components/biomes/Nordic';
+import { MedBackground, MedMidground, MedForeground } from '@/components/biomes/Mediterranean';
+
+type BiomeComponents = {
+  Background: React.ComponentType<any>;
+  Midground: React.ComponentType<any>;
+  Foreground: React.ComponentType<any>;
+};
+
+const BIOME_COMPONENTS: Record<string, BiomeComponents> = {
+  'pacific-northwest': { Background: PNWBackground, Midground: PNWMidground, Foreground: PNWForeground },
+  'california-sw':     { Background: CaliforniaSWBackground, Midground: CaliforniaSWMidground, Foreground: CaliforniaSWForeground },
+  'northeast':         { Background: NortheastBackground, Midground: NortheastMidground, Foreground: NortheastForeground },
+  'southeast':         { Background: SoutheastBackground, Midground: SoutheastMidground, Foreground: SoutheastForeground },
+  'midwest':           { Background: MidwestBackground, Midground: MidwestMidground, Foreground: MidwestForeground },
+  'mountain-west':     { Background: MountainWestBackground, Midground: MountainWestMidground, Foreground: MountainWestForeground },
+  'british-isles':     { Background: BritishIslesBackground, Midground: BritishIslesMidground, Foreground: BritishIslesForeground },
+  'nordic':            { Background: NordicBackground, Midground: NordicMidground, Foreground: NordicForeground },
+  'mediterranean':     { Background: MedBackground, Midground: MedMidground, Foreground: MedForeground },
+};
+
 // All recognized time-of-day values — kept granular for smooth transitions
 type RenderTimeOfDay = 'night' | 'pre-dawn' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'sunset' | 'dusk';
 function toRenderTime(t: string): RenderTimeOfDay {
@@ -686,6 +715,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   const resolvedBiome = dbg?.biome || resolvedLocation?.biome || biomeProp || 'default';
 
   const biomeConfig = useMemo(() => getBiomeConfig(resolvedBiome), [resolvedBiome]);
+  const biomeSet = useMemo(() => BIOME_COMPONENTS[resolvedBiome] || BIOME_COMPONENTS['pacific-northwest'], [resolvedBiome]);
   const solarRaw = useSolarCycle(lat, lng);
   const weatherRaw = useWeather(lat, lng);
   const seasonalRaw = useWheelOfTheYear();
@@ -809,6 +839,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         transformOrigin: 'bottom center',
       }} data-layer="background-landscape">
         <BackgroundHills renderTime={renderTime} />
+        <biomeSet.Background />
       </div>
 
       {/* Layer 3: celestial-bodies (sun + moon) */}
@@ -829,6 +860,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         transition: 'filter 1.5s ease',
       }} data-layer="midground-trees">
         <MidgroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
+        <biomeSet.Midground />
       </div>
 
       {/* Layer 6: precipitation */}
@@ -852,6 +884,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       <div className={layerBase} style={{ zIndex: 8, pointerEvents: 'none' }} data-layer="foreground-elements">
         <ForegroundGround renderTime={renderTime} windIntensity={windIntensity} />
         <ForegroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
+        <biomeSet.Foreground timeOfDay={renderTime} />
         <WindDebris windIntensity={windIntensity} fromLeft={fromLeft} />
       </div>
 
