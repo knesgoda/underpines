@@ -674,7 +674,11 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       </div>
 
       {/* Layer 2: background-landscape */}
-      <div className={layerBase} style={{ zIndex: 2, pointerEvents: 'none' }} data-layer="background-landscape">
+      <div className={layerBase} style={{
+        zIndex: 2, pointerEvents: 'none',
+        filter: sunObscured ? 'brightness(0.9)' : 'none',
+        transition: 'filter 1.5s ease',
+      }} data-layer="background-landscape">
         <BackgroundHills renderTime={renderTime} />
       </div>
 
