@@ -201,7 +201,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
           variant="outline"
           size="sm"
           className="rounded-lg text-xs font-body gap-1.5 mb-4 border-dashed border-border hover:border-primary hover:text-primary"
-          onClick={() => toast.info('Pine Pet creation coming soon!')}
+          onClick={() => setCreationOpen(true)}
         >
           <Plus size={14} />
           Add a Pine Pet
