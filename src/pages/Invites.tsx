@@ -110,8 +110,8 @@ const Invites = () => {
 
   if (loading) return <PineTreeLoading />;
 
-  const inviteUrl = invite ? `https://underpines.lovable.app/invite/${invite.slug}` : '';
-  const displayUrl = invite ? `underpines.lovable.app/invite/${invite.slug}` : '';
+  const inviteUrl = invite ? `https://underpines.com/invite/${invite.slug}` : '';
+  const displayUrl = invite ? `underpines.com/invite/${invite.slug}` : '';
   const thirtyDaysAgo = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
   const hasInvites = invite?.is_infinite || (invite?.uses_remaining > 0);
 

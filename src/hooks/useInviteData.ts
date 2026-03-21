@@ -42,7 +42,7 @@ export const useInviteData = (): InviteData => {
     fetch();
   }, [user]);
 
-  const inviteUrl = invite ? `https://underpines.lovable.app/invite/${invite.slug}` : '';
+  const inviteUrl = invite ? `https://underpines.com/invite/${invite.slug}` : '';
 
   return {
     invite,
