@@ -219,50 +219,59 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
               return (
                 <div
                   key={pet.id}
-                  draggable
-                  onDragStart={() => handleDragStart(idx)}
+                  draggable={!pet.is_ambassador}
+                  onDragStart={() => !pet.is_ambassador && handleDragStart(idx)}
                   onDragOver={(e) => handleDragOver(e, idx)}
                   onDrop={() => handleDrop(idx)}
                   onDragEnd={() => { setDraggedIdx(null); setDragOverIdx(null); }}
-                  className={`relative rounded-lg border p-3 transition-all duration-200 cursor-grab active:cursor-grabbing group ${
+                  className={`relative rounded-lg border p-3 transition-all duration-200 ${pet.is_ambassador ? '' : 'cursor-grab active:cursor-grabbing'} group ${
                     dragOverIdx === idx ? 'ring-2 ring-primary/30' : ''
                   } ${pet.is_resting ? 'opacity-60' : ''}`}
                   style={{
                     borderColor: pet.is_memorial
                       ? 'hsl(45, 80%, 60%)'
+                      : pet.is_ambassador
+                      ? 'hsl(var(--primary) / 0.4)'
                       : 'hsl(var(--border))',
                     boxShadow: pet.is_memorial
                       ? '0 0 12px hsla(45, 80%, 60%, 0.2)'
+                      : pet.is_ambassador
+                      ? '0 0 12px hsl(var(--primary) / 0.15)'
                       : '0 1px 2px hsla(0, 0%, 0%, 0.05)',
                     backgroundColor: 'hsl(var(--card))',
                   }}
                 >
-                  {/* Drag handle */}
-                  <div className="absolute top-1.5 left-1.5 opacity-0 group-hover:opacity-40 transition-opacity">
-                    <GripVertical size={12} />
-                  </div>
+                  {/* Drag handle — not for ambassadors */}
+                  {!pet.is_ambassador && (
+                    <div className="absolute top-1.5 left-1.5 opacity-0 group-hover:opacity-40 transition-opacity">
+                      <GripVertical size={12} />
+                    </div>
+                  )}
 
-                  {/* Pin toggle */}
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => togglePin(pet)}
-                          className="absolute top-1.5 right-8 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-muted"
-                        >
-                          {pet.is_pinned
-                            ? <Pin size={12} className="text-primary" />
-                            : <PinOff size={12} className="text-muted-foreground" />
-                          }
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs">
-                        {pet.is_pinned ? 'Unpin from scene' : 'Pin to scene'}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  {/* Pin toggle — not for ambassadors */}
+                  {!pet.is_ambassador && (
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => togglePin(pet)}
+                            className="absolute top-1.5 right-8 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-muted"
+                          >
+                            {pet.is_pinned
+                              ? <Pin size={12} className="text-primary" />
+                              : <PinOff size={12} className="text-muted-foreground" />
+                            }
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-xs">
+                          {pet.is_pinned ? 'Unpin from scene' : 'Pin to scene'}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
 
-                  {/* Kebab menu */}
+                  {/* Kebab menu — not for ambassadors */}
+                  {!pet.is_ambassador && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-muted">
@@ -301,6 +310,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                  )}
 
                   {/* Sprite */}
                   <div className="w-full aspect-square rounded-md bg-muted/30 flex items-center justify-center mb-2 overflow-hidden">
