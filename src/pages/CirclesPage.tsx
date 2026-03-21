@@ -152,10 +152,19 @@ const CirclesPage = () => {
     loadAll();
   };
 
-  const removeFromCircle = async (member: CircleMember) => {
-    if (!confirm(`Leave ${member.display_name}'s trail? They won't be notified, and you can always reconnect.`)) return;
-    await supabase.from('circles').update({ status: 'declined' }).eq('id', member.circleId);
+  const [leaveCircleId, setLeaveCircleId] = useState<string | null>(null);
+  const [leaveCircleName, setLeaveCircleName] = useState('');
+
+  const removeFromCircle = (member: CircleMember) => {
+    setLeaveCircleId(member.circleId);
+    setLeaveCircleName(member.display_name);
     setMenuOpen(null);
+  };
+
+  const confirmRemoveFromCircle = async () => {
+    if (!leaveCircleId) return;
+    await supabase.from('circles').update({ status: 'declined' }).eq('id', leaveCircleId);
+    setLeaveCircleId(null);
     loadAll();
   };
 
