@@ -10,6 +10,7 @@ import InstallPrompt from '@/components/pwa/InstallPrompt';
 import UpdatePrompt from '@/components/pwa/UpdatePrompt';
 import SuspendedPage from '@/pages/Suspended';
 import AgeGateInterstitial from '@/components/onboarding/AgeGateInterstitial';
+import SeasonalDebugPanel from '@/components/seasonal/SeasonalDebugPanel';
 
 const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story', '/privacy', '/terms'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
@@ -96,6 +97,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Mobile tab bar */}
       <MobileTabBar />
+      <SeasonalDebugPanel />
     </div>
   );
 };
