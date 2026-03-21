@@ -440,7 +440,9 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
 }
 
 // ─── Foreground Framing Trees (Layer 8) ───
-function ForegroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOfDay; isGoldenHour: boolean }) {
+function ForegroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
+  renderTime: RenderTimeOfDay; isGoldenHour: boolean; windIntensity: string; fromLeft: boolean;
+}) {
   const tf = TIME_FILTERS[renderTime];
   const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
   const darkCanopy = '#2a5a30';
@@ -450,18 +452,50 @@ function ForegroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeO
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
       preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
       style={{ filter: treeFilter, transition: 'filter 2s ease' }}>
-      <g className="tree-sway" style={{ transformOrigin: '40px 100px' }}>
+      <g className="tree-sway" style={{ transformOrigin: '40px 100px', ...getTreeSwayStyle(windIntensity, 10, fromLeft) }}>
         <rect x={30} y={20} width={8} height={80} fill={darkTrunk} rx={2} />
         <path d="M34,0 C40,-2 56,8 60,18 C58,20 64,28 66,36 C62,38 68,48 68,56 L0,56 C0,48 6,38 2,36 C4,28 10,20 8,18 C12,8 28,-2 34,0Z" fill={darkCanopy} opacity="0.9" />
       </g>
-      <g className="tree-sway" style={{ transformOrigin: '960px 100px' }}>
+      <g className="tree-sway" style={{ transformOrigin: '960px 100px', ...getTreeSwayStyle(windIntensity, 11, fromLeft) }}>
         <rect x={956} y={25} width={7} height={75} fill={darkTrunk} rx={2} />
         <path d="M960,5 C968,2 982,10 988,22 C994,30 996,40 992,48 C988,54 980,58 972,56 C964,58 950,52 946,44 C942,36 944,24 950,14 C952,10 956,6 960,5Z" fill={darkCanopy} opacity="0.85" />
       </g>
-      <g className="tree-sway" style={{ transformOrigin: '920px 100px' }}>
+      <g className="tree-sway" style={{ transformOrigin: '920px 100px', ...getTreeSwayStyle(windIntensity, 12, fromLeft) }}>
         <rect x={917} y={40} width={5} height={60} fill={darkTrunk} rx={1.5} />
         <path d="M920,12 C924,16 934,28 936,38 C932,40 938,50 938,56 L902,56 C902,50 908,40 904,38 C906,28 916,16 920,12Z" fill={darkCanopy} opacity="0.8" />
       </g>
+    </svg>
+  );
+}
+
+// ─── Wind Debris Leaves ───
+function WindDebris({ windIntensity, fromLeft }: { windIntensity: string; fromLeft: boolean }) {
+  const showDebris = windIntensity === 'strong' || windIntensity === 'extreme';
+  if (!showDebris) return null;
+
+  const count = windIntensity === 'extreme' ? 7 : 4;
+  const driftAnim = fromLeft ? 'leaf-drift-ltr' : 'leaf-drift-rtl';
+  const rand = seededRandom(99);
+
+  const leaves = Array.from({ length: count }, (_, i) => ({
+    y: 20 + rand() * 50,
+    size: 1 + rand() * 1.5,
+    duration: 3 + rand() * 4,
+    delay: rand() * 6,
+    color: rand() > 0.5 ? 'var(--biome-canopy, #3a7d44)' : '#5c4033',
+  }));
+
+  return (
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
+      preserveAspectRatio="none" style={{ pointerEvents: 'none' }}>
+      {leaves.map((l, i) => (
+        <ellipse key={i} cx={50} cy={l.y} rx={l.size * 0.6} ry={l.size * 0.3}
+          fill={l.color} opacity="0.7"
+          style={{
+            animation: `${driftAnim} ${l.duration}s linear infinite`,
+            animationDelay: `${l.delay}s`,
+          }} />
+      ))}
     </svg>
   );
 }
