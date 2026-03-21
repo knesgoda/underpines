@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -151,10 +152,19 @@ const CirclesPage = () => {
     loadAll();
   };
 
-  const removeFromCircle = async (member: CircleMember) => {
-    if (!confirm(`Leave ${member.display_name}'s trail? They won't be notified, and you can always reconnect.`)) return;
-    await supabase.from('circles').update({ status: 'declined' }).eq('id', member.circleId);
+  const [leaveCircleId, setLeaveCircleId] = useState<string | null>(null);
+  const [leaveCircleName, setLeaveCircleName] = useState('');
+
+  const removeFromCircle = (member: CircleMember) => {
+    setLeaveCircleId(member.circleId);
+    setLeaveCircleName(member.display_name);
     setMenuOpen(null);
+  };
+
+  const confirmRemoveFromCircle = async () => {
+    if (!leaveCircleId) return;
+    await supabase.from('circles').update({ status: 'declined' }).eq('id', leaveCircleId);
+    setLeaveCircleId(null);
     loadAll();
   };
 
@@ -419,6 +429,22 @@ const CirclesPage = () => {
           <Search size={14} /> Find people in the Pines
         </Link>
       </div>
+      <AlertDialog open={!!leaveCircleId} onOpenChange={(open) => !open && setLeaveCircleId(null)}>
+        <AlertDialogContent className="rounded-2xl max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-lg">Leave {leaveCircleName}'s trail?</AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              They won't be notified, and you can always reconnect.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-body text-sm rounded-full">Never mind</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveFromCircle} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Leave trail
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 };

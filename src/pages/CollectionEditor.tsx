@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -160,9 +161,12 @@ const CollectionEditor = () => {
     setSaving(false);
   };
 
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const handleDelete = async () => {
-    if (!id || !confirm('Delete this Collection? Your posts aren\'t deleted — only this Collection.')) return;
+    if (!id) return;
     await supabase.from('collections').update({ is_published: false }).eq('id', id);
+    setDeleteOpen(false);
     toast.success('Collection removed');
     navigate('/cabin');
   };
@@ -191,6 +195,7 @@ const CollectionEditor = () => {
   if (loading) return <PineTreeLoading />;
 
   return (
+    <>
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-lg mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-6">
         <button onClick={() => step > 1 ? setStep(step - 1) : navigate(-1)} className="text-muted-foreground hover:text-foreground">
@@ -358,7 +363,7 @@ const CollectionEditor = () => {
                 </div>
               )}
 
-              <button onClick={handleDelete} className="w-full mt-2 py-2.5 rounded-full border border-destructive/30 text-destructive font-body text-sm flex items-center justify-center gap-2">
+              <button onClick={() => setDeleteOpen(true)} className="w-full mt-2 py-2.5 rounded-full border border-destructive/30 text-destructive font-body text-sm flex items-center justify-center gap-2">
                 <Trash2 size={14} /> Delete Collection
               </button>
             </>
@@ -366,6 +371,25 @@ const CollectionEditor = () => {
         </div>
       )}
     </motion.div>
+
+    {/* Delete Collection confirmation */}
+    <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+      <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="font-display text-lg">Let this Collection go?</AlertDialogTitle>
+          <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+            Your posts aren't deleted — only this Collection.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 };
 

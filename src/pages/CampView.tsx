@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -92,12 +93,13 @@ const CampView = () => {
     setJoining(false);
   };
 
+  const [leaveOpen, setLeaveOpen] = useState(false);
+
   const handleLeave = async () => {
     if (!user || !id || !camp) return;
-    if (!confirm(`Leave ${camp.name}? You can rejoin anytime if it's an Open Camp.`)) return;
-
     await supabase.from('camp_members').delete().eq('camp_id', id).eq('user_id', user.id);
     await supabase.from('camps').update({ member_count: Math.max(0, (camp.member_count || 1) - 1) }).eq('id', id);
+    setLeaveOpen(false);
     toast('You\'ve left the Camp.');
     navigate('/camps');
   };
@@ -154,6 +156,7 @@ const CampView = () => {
   ];
 
   return (
+    <>
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="px-4 pt-6 pb-4">
@@ -176,7 +179,7 @@ const CampView = () => {
               </button>
             )}
             {!isFirekeeper && (
-              <button onClick={handleLeave} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Leave Camp">
+              <button onClick={() => setLeaveOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Leave Camp">
                 <LogOut size={18} className="text-muted-foreground" />
               </button>
             )}
@@ -229,6 +232,25 @@ const CampView = () => {
         )}
       </div>
     </motion.div>
+
+    {/* Leave Camp confirmation */}
+    <AlertDialog open={leaveOpen} onOpenChange={setLeaveOpen}>
+      <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="font-display text-lg">Leave {camp?.name}?</AlertDialogTitle>
+          <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+            You can rejoin anytime if it's an Open Camp.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="font-body text-sm rounded-full">Stay</AlertDialogCancel>
+          <AlertDialogAction onClick={handleLeave} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Leave Camp
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 };
 
