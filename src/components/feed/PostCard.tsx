@@ -164,7 +164,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                     {isOwner && (
                       <>
                         <div className="h-px bg-border" />
-                        <MenuBtn onClick={handleDelete} destructive><Trash2 size={14} /> Delete</MenuBtn>
+                        <MenuBtn onClick={() => { setDeleteConfirmOpen(true); setMenuOpen(false); }} destructive><Trash2 size={14} /> Delete</MenuBtn>
                       </>
                     )}
                   </motion.div>
