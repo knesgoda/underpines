@@ -524,8 +524,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl shadow-card"
-              style={{ maxHeight: '90vh' }}
+              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl shadow-card max-h-sheet"
             >
               <div className="w-12 h-1.5 rounded-full bg-border mx-auto mt-3" />
               {drawerContent}

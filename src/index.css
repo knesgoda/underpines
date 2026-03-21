@@ -266,6 +266,12 @@
     height: 100vh;
     height: 100dvh;
   }
+
+  /* Dynamic viewport height for bottom sheets */
+  .max-h-sheet {
+    max-height: 90vh;
+    max-height: 90dvh;
+  }
 }
 
 /* Reduced motion */
