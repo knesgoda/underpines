@@ -4,7 +4,7 @@
  * Now driven by useSolarCycle for real-time sun position and time-of-day.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 import { useWeather } from '@/hooks/useWeather';
 
