@@ -4,10 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import WeatherScene from '@/components/cabin/WeatherScene';
-import { useWheelOfTheYear } from '@/lib/wheelOfTheYear';
-import { getMoonSVGProps } from '@/lib/astronomyUtils';
-import SceneForEvent from '@/components/seasonal/SeasonalScenes';
+import CabinScene from '@/components/cabin/CabinScene';
 import CabinEditDrawer from '@/components/cabin/CabinEditDrawer';
 import WidgetShelf from '@/components/cabin/WidgetShelf';
 import CircleButton from '@/components/circles/CircleButton';
@@ -19,7 +16,6 @@ import SuggestionBox from '@/components/cabin/SuggestionBox';
 import InviteRow from '@/components/cabin/InviteRow';
 import CabinCircleStack from '@/components/cabin/CabinCircleStack';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
-import { getCurrentSeason } from '@/lib/weather';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
 import { Settings, Music, MoreHorizontal } from 'lucide-react';
@@ -62,7 +58,16 @@ const Cabin = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { event: seasonalEvent, progress: seasonalProgress } = useWheelOfTheYear();
+  // Determine time of day for CabinScene
+  const getTimeOfDay = (): 'night' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'dusk' => {
+    const h = new Date().getHours();
+    if (h >= 21 || h < 5) return 'night';
+    if (h < 7) return 'dawn';
+    if (h < 12) return 'morning';
+    if (h < 17) return 'afternoon';
+    if (h < 19) return 'golden-hour';
+    return 'dusk';
+  };
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,7 +80,7 @@ const Cabin = () => {
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
   const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
 
-  const { weatherCode, windSpeed, temperature, unit: tempUnit } = useWeather(profile?.latitude, profile?.longitude);
+  const { temperature, unit: tempUnit } = useWeather(profile?.latitude, profile?.longitude);
 
   // Load preview design from sessionStorage
   useEffect(() => {
@@ -213,8 +218,6 @@ const Cabin = () => {
     : getAtmosphere(profile.atmosphere, theme);
   const atmos = effectiveAtmos;
   const mood = cabinMoods.find(m => m.key === profile.cabin_mood);
-  const season = getCurrentSeason();
-  const currentHour = new Date().getHours();
   const effectiveLayout = previewDesign?.design_data?.layout || profile.layout;
   const isHollow = effectiveLayout === 'hollow';
   const isTrailhead = effectiveLayout === 'trailhead';
@@ -248,41 +251,13 @@ const Cabin = () => {
           </div>
         </div>
       )}
-      {/* Header with weather scene */}
-      <div className="relative w-full" style={{ height: isHollow ? 400 : isTrailhead ? 400 : isCanopy ? 200 : 280 }}>
-        {profile.header_image_url ? (
-          <img
-            src={profile.header_image_url}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : (
-          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${atmos.background}, ${atmos.accent}30)` }} />
-        )}
-        <WeatherScene
-          weatherCode={weatherCode}
-          windSpeed={windSpeed}
-          hour={currentHour}
-          season={season}
-          className={seasonalEvent ? "opacity-40" : "opacity-80"}
-          reducedParticles={window.innerWidth < 768}
+      {/* Illustrated scene header */}
+      <div className="relative w-full">
+        <CabinScene
+          memberName={isTrailhead ? '' : profile.display_name}
+          atmosphere={profile.atmosphere}
+          timeOfDay={getTimeOfDay()}
         />
-        {/* Seasonal event scene overlay */}
-        {seasonalEvent && seasonalProgress.phase !== 'none' && (
-          <div
-            className="absolute inset-0 seasonal-overlay overflow-hidden"
-            style={{ opacity: seasonalProgress.opacity * 0.85 }}
-          >
-            <div className="w-full h-full [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover" style={{ display: 'flex' }}>
-              <SceneForEvent
-                eventKey={seasonalEvent.key}
-                width={1200}
-                height={isHollow ? 400 : isTrailhead ? 400 : isCanopy ? 200 : 280}
-                moonProps={getMoonSVGProps(new Date())}
-              />
-            </div>
-          </div>
-        )}
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
           <div className="absolute bottom-0 left-0 right-0 px-8 pb-6 pt-16" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)' }}>
