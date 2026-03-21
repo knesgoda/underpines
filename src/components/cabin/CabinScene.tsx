@@ -219,7 +219,7 @@ function BackgroundHills({ renderTime }: { renderTime: RenderTimeOfDay }) {
   const showHorizonGlow = renderTime === 'dawn' || renderTime === 'golden-hour' || renderTime === 'pre-dawn' || renderTime === 'sunset';
 
   return (
-    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter }}>
+    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter, transition: 'filter 3s ease' }}>
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 333"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
