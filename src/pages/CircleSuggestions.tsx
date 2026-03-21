@@ -22,7 +22,6 @@ const CircleSuggestions = () => {
   useEffect(() => {
     if (!user || !handle) return;
     const load = async () => {
-      // Find inviter profile
       const { data: inviter } = await supabase
         .from('profiles')
         .select('id, display_name')
@@ -32,7 +31,6 @@ const CircleSuggestions = () => {
       if (!inviter) { setLoading(false); return; }
       setInviterName(inviter.display_name);
 
-      // Get inviter's circle members
       const { data: circles } = await supabase
         .from('circles')
         .select('requester_id, requestee_id')
@@ -69,16 +67,16 @@ const CircleSuggestions = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto px-4 py-8">
       <h1 className="font-display text-2xl text-foreground mb-2">
-        People in {inviterName}'s Circle
+        People on {inviterName}'s trail
       </h1>
       <p className="font-body text-sm text-muted-foreground mb-6">
-        These are people your friend knows. Maybe you'll find a few familiar faces.
+        These are people your inviter walks with. Maybe you'll find a few familiar faces.
       </p>
 
       {members.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-3xl mb-2">🌿</p>
-          <p className="font-body text-sm text-muted-foreground">{inviterName}'s Circle is quiet for now.</p>
+          <p className="font-body text-sm text-muted-foreground">{inviterName}'s trail is quiet for now.</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -94,13 +92,13 @@ const CircleSuggestions = () => {
                 </div>
               </div>
               {requestedIds.has(m.id) ? (
-                <span className="font-body text-xs text-muted-foreground">Requested</span>
+                <span className="font-body text-xs text-muted-foreground">Trail invite sent</span>
               ) : (
                 <button
                   onClick={() => sendRequest(m.id)}
                   className="px-3 py-1.5 rounded-full border-2 border-primary text-primary font-body text-xs font-medium hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
-                  Add to my Circle
+                  Follow the trail
                 </button>
               )}
             </div>
