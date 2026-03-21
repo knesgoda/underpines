@@ -879,7 +879,11 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       </div>
 
       {/* Layer 7: creature-layer */}
-      <div className={layerBase} style={{ zIndex: 7 }} data-layer="creature-layer" />
+      <div className={layerBase} style={{ zIndex: 7 }} data-layer="creature-layer">
+        {userId && (
+          <CabinPets ownerId={userId} atmosphere={atmosphere || 'morning_mist'} />
+        )}
+      </div>
 
       {/* Layer 8: foreground-elements */}
       <div className={layerBase} style={{ zIndex: 8, pointerEvents: 'none' }} data-layer="foreground-elements">
