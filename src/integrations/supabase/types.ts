@@ -109,6 +109,45 @@ export type Database = {
           },
         ]
       }
+      cabin_companions: {
+        Row: {
+          active_hours: string
+          behavior: string
+          created_at: string
+          creature_key: string
+          direction: string
+          id: string
+          movement_style: string | null
+          notes: string | null
+          priority: number
+          user_id: string
+        }
+        Insert: {
+          active_hours?: string
+          behavior: string
+          created_at?: string
+          creature_key: string
+          direction?: string
+          id?: string
+          movement_style?: string | null
+          notes?: string | null
+          priority?: number
+          user_id: string
+        }
+        Update: {
+          active_hours?: string
+          behavior?: string
+          created_at?: string
+          creature_key?: string
+          direction?: string
+          id?: string
+          movement_style?: string | null
+          notes?: string | null
+          priority?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       cabin_designs: {
         Row: {
           created_at: string | null
