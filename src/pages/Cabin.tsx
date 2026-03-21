@@ -126,6 +126,15 @@ const Cabin = () => {
       setProfile(data as Profile);
       setIsOwner(owner);
 
+      // Check founder status
+      const { data: founderRole } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', data.id)
+        .eq('role', 'founder')
+        .maybeSingle();
+      setIsFounderProfile(!!founderRole);
+
       // Check circle status
       if (user && !owner) {
         const { data: circle } = await supabase
