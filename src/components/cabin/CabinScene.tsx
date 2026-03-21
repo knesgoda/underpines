@@ -8,9 +8,10 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 import { useWeather } from '@/hooks/useWeather';
-import { useWheelOfTheYear } from '@/lib/wheelOfTheYear';
+import { useWheelOfTheYear, WHEEL_OF_THE_YEAR } from '@/lib/wheelOfTheYear';
 import { useCompanions } from '@/hooks/useCompanions';
 import { resolveLocation } from '@/lib/locationResolver';
+import { useSceneDebug } from '@/contexts/SceneDebugContext';
 import PrecipitationLayer from './PrecipitationLayer';
 import { getBiomeConfig } from '@/config/biomes';
 import CreatureRenderer from '@/components/creatures/CreatureRenderer';
