@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
@@ -86,10 +87,12 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
     setSaving(false);
   };
 
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
   const handleDelete = async (itemId: string) => {
-    if (!confirm('Remove this item?')) return;
     await supabase.from('camp_lodge_items').delete().eq('id', itemId);
     setItems(prev => prev.filter(i => i.id !== itemId));
+    setDeleteConfirmId(null);
   };
 
   const handlePin = async (itemId: string, pinned: boolean) => {
@@ -145,7 +148,7 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
                         <Pin size={12} className={item.is_pinned ? 'text-primary' : 'text-muted-foreground'} />
                       </button>
                     )}
-                    <button onClick={() => handleDelete(item.id)} className="p-1 rounded hover:bg-muted">
+                    <button onClick={() => setDeleteConfirmId(item.id)} className="p-1 rounded hover:bg-muted">
                       <Trash2 size={12} className="text-muted-foreground" />
                     </button>
                   </div>
@@ -210,6 +213,22 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
           )}
         </>
       )}
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <AlertDialogContent className="rounded-2xl max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-lg">Let this one go?</AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              This item will be removed from the lodge. This can't be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -88,11 +89,13 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
     setPosting(false);
   };
 
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
   const handleDelete = async (postId: string) => {
-    if (!confirm('Remove this post?')) return;
     await supabase.from('camp_posts').delete().eq('id', postId);
     setPosts(prev => prev.filter(p => p.id !== postId));
     toast('Post removed.');
+    setDeleteConfirmId(null);
   };
 
   const openComposer = (type: 'spark' | 'story' | 'ember') => {
@@ -207,7 +210,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
                     {menuOpenId === post.id && (
                       <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-10 py-1 min-w-[140px]">
                         <button
-                          onClick={() => { handleDelete(post.id); setMenuOpenId(null); }}
+                          onClick={() => { setDeleteConfirmId(post.id); setMenuOpenId(null); }}
                           className="w-full text-left px-3 py-1.5 font-body text-xs text-destructive hover:bg-muted flex items-center gap-2"
                         >
                           <Trash2 size={12} /> Remove post
@@ -224,6 +227,22 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
           ))}
         </div>
       )}
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <AlertDialogContent className="rounded-2xl max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-lg">Let this one go?</AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              This post will be removed from the camp. This can't be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

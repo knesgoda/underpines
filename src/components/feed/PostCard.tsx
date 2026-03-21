@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -74,10 +75,12 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
     if (data) setReactions(data);
   };
 
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+
   const handleDelete = async () => {
-    if (!confirm('Delete this post?')) return;
     await supabase.from('posts').delete().eq('id', post.id);
     onRemove?.(post.id);
+    setDeleteConfirmOpen(false);
     setMenuOpen(false);
   };
 
@@ -161,7 +164,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                     {isOwner && (
                       <>
                         <div className="h-px bg-border" />
-                        <MenuBtn onClick={handleDelete} destructive><Trash2 size={14} /> Delete</MenuBtn>
+                        <MenuBtn onClick={() => { setDeleteConfirmOpen(true); setMenuOpen(false); }} destructive><Trash2 size={14} /> Delete</MenuBtn>
                       </>
                     )}
                   </motion.div>
@@ -333,6 +336,23 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         reportedUserId={post.author_id}
       />
       <BlockConfirmDialog />
+      {/* Delete confirmation */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent className="rounded-2xl max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-lg">Let this one go?</AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              This post will be removed from your Cabin and everyone's feed. This can't be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 };
