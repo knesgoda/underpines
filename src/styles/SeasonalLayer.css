@@ -1,0 +1,167 @@
+/* SeasonalLayer.css — seasonal event palette + moon utility classes */
+
+/* --- ROOT DEFAULTS --- */
+:root {
+  --seasonal-opacity: 0;
+  --seasonal-primary: transparent;
+  --seasonal-sky-top: transparent;
+  --seasonal-sky-bottom: transparent;
+  --seasonal-ground-top: transparent;
+  --seasonal-ground-bottom: transparent;
+  --seasonal-accent: transparent;
+  --seasonal-particle: transparent;
+  --seasonal-glyph-opacity: 0;
+  --seasonal-transition: 6000ms;
+}
+
+/* --- TRANSITION RULE --- */
+.seasonal-overlay {
+  transition:
+    opacity var(--seasonal-transition) ease,
+    background var(--seasonal-transition) ease;
+}
+
+/* --- SEASONAL PALETTES --- */
+
+[data-season="imbolc"] {
+  --seasonal-opacity: 1;
+  --seasonal-primary: #b8cdb0;
+  --seasonal-sky-top: #dce8f0;
+  --seasonal-sky-bottom: #e8f0e4;
+  --seasonal-ground-top: #e0e8d8;
+  --seasonal-ground-bottom: #c8d8c0;
+  --seasonal-accent: #f5f0e8;
+  --seasonal-particle: #e8f0e4;
+}
+
+[data-season="ostara"] {
+  --seasonal-opacity: 1;
+  --seasonal-primary: #7c9e5a;
+  --seasonal-sky-top: #a8cce0;
+  --seasonal-sky-bottom: #d8eec8;
+  --seasonal-ground-top: #8ab84a;
+  --seasonal-ground-bottom: #5a8a28;
+  --seasonal-accent: #f5e6c8;
+  --seasonal-particle: #f0c8d0;
+}
+
+[data-season="beltane"] {
+  --seasonal-opacity: 1;
+  --seasonal-primary: #2d6a2d;
+  --seasonal-sky-top: #0a1408;
+  --seasonal-sky-bottom: #1a3010;
+  --seasonal-ground-top: #1a4010;
+  --seasonal-ground-bottom: #0a2008;
+  --seasonal-accent: #f07030;
+  --seasonal-particle: #f07030;
+}
+
+[data-season="litha"] {
+  --seasonal-opacity: 1;
+  --seasonal-primary: #d4a820;
+  --seasonal-sky-top: #f0c840;
+  --seasonal-sky-bottom: #f8e890;
+  --seasonal-ground-top: #5aaa28;
+  --seasonal-ground-bottom: #3a7818;
+  --seasonal-accent: #fff8d0;
+  --seasonal-particle: #f8f8a0;
+}
+
+[data-season="lammas"] {
+  --seasonal-opacity: 1;
+  --seasonal-primary: #c8902a;
+  --seasonal-sky-top: #d4a030;
+  --seasonal-sky-bottom: #e8c870;
+  --seasonal-ground-top: #c89828;
+  --seasonal-ground-bottom: #906818;
+  --seasonal-accent: #f8e8c0;
+  --seasonal-particle: #f0d080;
+}
+
+[data-season="mabon"] {
+  --seasonal-opacity: 1;
+  --seasonal-primary: #c04820;
+  --seasonal-sky-top: #604028;
+  --seasonal-sky-bottom: #8a6040;
+  --seasonal-ground-top: #6a3810;
+  --seasonal-ground-bottom: #3a1808;
+  --seasonal-accent: #f0a050;
+  --seasonal-particle: #d06020;
+}
+
+[data-season="samhain"] {
+  --seasonal-opacity: 1;
+  --seasonal-primary: #4a2060;
+  --seasonal-sky-top: #050208;
+  --seasonal-sky-bottom: #0a0414;
+  --seasonal-ground-top: #140820;
+  --seasonal-ground-bottom: #080410;
+  --seasonal-accent: #c04080;
+  --seasonal-particle: #ff6030;
+}
+
+[data-season="yule"] {
+  --seasonal-opacity: 1;
+  --seasonal-primary: #1a2a3a;
+  --seasonal-sky-top: #040608;
+  --seasonal-sky-bottom: #080c14;
+  --seasonal-ground-top: #e8f0f8;
+  --seasonal-ground-bottom: #c8d8e8;
+  --seasonal-accent: #f8d870;
+  --seasonal-particle: #ffffff;
+}
+
+/* --- UTILITY CLASSES --- */
+
+.seasonal-sky {
+  background: linear-gradient(to bottom, var(--seasonal-sky-top), var(--seasonal-sky-bottom));
+  transition: background var(--seasonal-transition) ease;
+}
+
+.seasonal-ground {
+  background: linear-gradient(to top, var(--seasonal-ground-bottom), var(--seasonal-ground-top));
+  transition: background var(--seasonal-transition) ease;
+}
+
+.seasonal-glyph {
+  opacity: var(--seasonal-glyph-opacity, 0);
+  transition: opacity 2000ms ease;
+  user-select: none;
+  pointer-events: none;
+}
+
+[data-season] .seasonal-glyph {
+  --seasonal-glyph-opacity: 1;
+}
+
+/* --- MOON UTILITY CLASSES --- */
+
+/*
+  Moon rendering uses two SVG shapes:
+  1. A full circle — the moon disc (#e8f0f8)
+  2. An overlapping ellipse — darkens the unlit half
+  The ellipse x-radius and position are driven by getMoonSVGProps()
+  from astronomyUtils.js and passed as inline SVG attributes.
+  These CSS classes handle only the glow and visibility.
+*/
+
+.moon-disc {
+  filter: drop-shadow(0 0 6px rgba(232, 240, 248, 0.5));
+  transition: opacity 3000ms ease;
+}
+
+.moon-disc--hidden {
+  opacity: 0;
+}
+
+.moon-disc--visible {
+  opacity: 1;
+}
+
+.moon-disc--crescent {
+  filter: drop-shadow(0 0 4px rgba(232, 240, 248, 0.35));
+}
+
+.moon-disc--full {
+  filter: drop-shadow(0 0 12px rgba(232, 240, 248, 0.65));
+}
