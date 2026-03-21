@@ -16,6 +16,7 @@ import PrecipitationLayer from './PrecipitationLayer';
 import { getBiomeConfig } from '@/config/biomes';
 import CreatureRenderer from '@/components/creatures/CreatureRenderer';
 import CompanionRenderer from '@/components/creatures/CompanionRenderer';
+import CabinPets from '@/components/cabin/CabinPets';
 
 // ── Biome component imports ──
 import { PNWBackground, PNWMidground, PNWForeground } from '@/components/biomes/PacificNorthwest';
