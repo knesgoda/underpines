@@ -6,6 +6,7 @@
 
 import { useMemo } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
+import { useWeather } from '@/hooks/useWeather';
 
 // All recognized time-of-day values — kept granular for smooth transitions
 type RenderTimeOfDay = 'night' | 'pre-dawn' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'sunset' | 'dusk';
@@ -78,6 +79,42 @@ const SCENE_CSS = `
 @keyframes cabin-twinkle {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
+}
+@keyframes tree-sway-light {
+  0%, 100% { transform: rotate(var(--sway-base, 0deg)); }
+  50% { transform: rotate(calc(var(--sway-base, 0deg) + var(--sway-max, 0.8deg))); }
+}
+@keyframes tree-sway-moderate {
+  0%, 100% { transform: rotate(var(--sway-base, 0deg)); }
+  50% { transform: rotate(calc(var(--sway-base, 0deg) + var(--sway-max, 2.5deg))); }
+}
+@keyframes canopy-flutter {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes tree-sway-strong {
+  0%, 100% { transform: rotate(var(--sway-base, 0deg)); }
+  50% { transform: rotate(calc(var(--sway-base, 0deg) + var(--sway-max, 5deg))); }
+}
+@keyframes tree-sway-extreme {
+  0%, 100% { transform: rotate(calc(var(--lean, 3deg) + 0deg)); }
+  50% { transform: rotate(calc(var(--lean, 3deg) + var(--sway-max, 8deg))); }
+}
+@keyframes leaf-drift-ltr {
+  0% { transform: translate(-5%, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.6; }
+  100% { transform: translate(110%, 15%) rotate(360deg); opacity: 0; }
+}
+@keyframes leaf-drift-rtl {
+  0% { transform: translate(105%, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.6; }
+  100% { transform: translate(-10%, 15%) rotate(-360deg); opacity: 0; }
+}
+@keyframes grass-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(var(--grass-sway, 0deg)); }
 }
 `;
 
@@ -246,11 +283,18 @@ function BackgroundHills({ renderTime }: { renderTime: RenderTimeOfDay }) {
 }
 
 // ─── Foreground Ground (Layer 8) ───
-function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
+function ForegroundGround({ renderTime, windIntensity }: { renderTime: RenderTimeOfDay; windIntensity: string }) {
   const tf = TIME_FILTERS[renderTime];
   const isNight = renderTime === 'night';
   const groundColor = isNight ? '#1a2e1a' : 'var(--biome-fg-ground, #2d5a3d)';
   const grassColor = isNight ? '#1a2e1a' : 'var(--biome-fg-ground, #3a7a4a)';
+
+  const grassSwayMap: Record<string, string> = {
+    calm: '0deg', light: '0.4deg', moderate: '1.2deg', strong: '2.5deg', extreme: '4deg',
+  };
+  const grassDuration: Record<string, string> = {
+    calm: '0s', light: '4s', moderate: '2.5s', strong: '1.5s', extreme: '1s',
+  };
 
   const grassSpikes = useMemo(() => {
     const rand = seededRandom(77);
@@ -265,12 +309,21 @@ function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
     return spikes.join(' ');
   }, []);
 
+  const grassAnim = windIntensity !== 'calm'
+    ? `grass-sway ${grassDuration[windIntensity] || '4s'} ease-in-out infinite`
+    : 'none';
+
   return (
-    <div className="absolute inset-0 w-full h-full" style={{ filter: tf.filter, transition: 'filter 3s ease' }}>
+    <div className="absolute inset-0 w-full h-full" style={{
+      filter: tf.filter, transition: 'filter 3s ease',
+      '--grass-sway': grassSwayMap[windIntensity] || '0deg',
+    } as React.CSSProperties}>
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d={`M0,85 ${grassSpikes} L1000,85 L1000,85 L0,85 Z`}
-          fill={grassColor} opacity="0.7" style={{ transition: 'fill 3s ease' }} />
+        <g style={{ transformOrigin: '500px 85px', animation: grassAnim }}>
+          <path d={`M0,85 ${grassSpikes} L1000,85 L1000,85 L0,85 Z`}
+            fill={grassColor} opacity="0.7" style={{ transition: 'fill 3s ease' }} />
+        </g>
         <path d="M0,85 C100,83 250,86 400,84 C550,82 700,86 850,84 C950,83 1000,85 1000,85 L1000,100 L0,100 Z"
           fill={groundColor} style={{ transition: 'fill 3s ease' }} />
       </svg>
@@ -281,8 +334,38 @@ function ForegroundGround({ renderTime }: { renderTime: RenderTimeOfDay }) {
   );
 }
 
+// ─── Wind sway style helper ───
+function getTreeSwayStyle(windIntensity: string, index: number, fromLeft: boolean): React.CSSProperties {
+  const rand = seededRandom(index * 137 + 42);
+  const delayOffset = 100 + rand() * 300; // 100-400ms
+  const rotVariance = (rand() - 0.5) * 1; // ±0.5deg
+
+  const leanDir = fromLeft ? 1 : -1;
+
+  const configs: Record<string, { anim: string; dur: number; maxRot: number; lean: number }> = {
+    calm:     { anim: 'none', dur: 0, maxRot: 0, lean: 0 },
+    light:    { anim: 'tree-sway-light', dur: 4, maxRot: 0.8, lean: 0 },
+    moderate: { anim: 'tree-sway-moderate', dur: 2.5, maxRot: 2.5, lean: 0 },
+    strong:   { anim: 'tree-sway-strong', dur: 1.5, maxRot: 5, lean: 0 },
+    extreme:  { anim: 'tree-sway-extreme', dur: 1, maxRot: 8, lean: 3 },
+  };
+
+  const cfg = configs[windIntensity] || configs.calm;
+  if (cfg.anim === 'none') return {};
+
+  return {
+    '--sway-max': `${(cfg.maxRot + rotVariance) * leanDir}deg`,
+    '--sway-base': '0deg',
+    '--lean': `${cfg.lean * leanDir}deg`,
+    animation: `${cfg.anim} ${cfg.dur}s ease-in-out infinite`,
+    animationDelay: `${delayOffset}ms`,
+  } as React.CSSProperties;
+}
+
 // ─── Midground Trees (Layer 5) ───
-function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOfDay; isGoldenHour: boolean }) {
+function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
+  renderTime: RenderTimeOfDay; isGoldenHour: boolean; windIntensity: string; fromLeft: boolean;
+}) {
   const tf = TIME_FILTERS[renderTime];
   const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
 
@@ -296,43 +379,48 @@ function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOf
     { x: 760, groundY: 72, scale: 0.75, type: 'deciduous-a' },
   ];
 
-  const renderCanopy = (type: string, cx: number, baseY: number, s: number) => {
+  const renderCanopy = (type: string, cx: number, baseY: number, s: number, treeIndex: number) => {
     const canopyColor = 'var(--biome-canopy, #3a7d44)';
     const trunkColor = '#5c4033';
+    const swayStyle = getTreeSwayStyle(windIntensity, treeIndex, fromLeft);
+    const flutterAnim = (windIntensity === 'moderate' || windIntensity === 'strong' || windIntensity === 'extreme')
+      ? { animation: `canopy-flutter ${windIntensity === 'moderate' ? '3s' : '2s'} ease-in-out infinite`, animationDelay: `${treeIndex * 200}ms` }
+      : {};
+
     switch (type) {
       case 'conifer-a':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 1.2 * s} y={baseY - 18 * s} width={2.4 * s} height={18 * s} fill={trunkColor} rx={0.5} />
-            <path d={`M${cx},${baseY - 38 * s} C${cx + 2 * s},${baseY - 34 * s} ${cx + 8 * s},${baseY - 28 * s} ${cx + 10 * s},${baseY - 22 * s} C${cx + 7 * s},${baseY - 20 * s} ${cx + 11 * s},${baseY - 14 * s} ${cx + 12 * s},${baseY - 8 * s} L${cx - 12 * s},${baseY - 8 * s} C${cx - 11 * s},${baseY - 14 * s} ${cx - 7 * s},${baseY - 20 * s} ${cx - 10 * s},${baseY - 22 * s} C${cx - 8 * s},${baseY - 28 * s} ${cx - 2 * s},${baseY - 34 * s} ${cx},${baseY - 38 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx},${baseY - 38 * s} C${cx + 2 * s},${baseY - 34 * s} ${cx + 8 * s},${baseY - 28 * s} ${cx + 10 * s},${baseY - 22 * s} C${cx + 7 * s},${baseY - 20 * s} ${cx + 11 * s},${baseY - 14 * s} ${cx + 12 * s},${baseY - 8 * s} L${cx - 12 * s},${baseY - 8 * s} C${cx - 11 * s},${baseY - 14 * s} ${cx - 7 * s},${baseY - 20 * s} ${cx - 10 * s},${baseY - 22 * s} C${cx - 8 * s},${baseY - 28 * s} ${cx - 2 * s},${baseY - 34 * s} ${cx},${baseY - 38 * s}Z`} fill={canopyColor} />
           </g>
         );
       case 'conifer-b':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 1.5 * s} y={baseY - 20 * s} width={3 * s} height={20 * s} fill={trunkColor} rx={0.6} />
-            <path d={`M${cx},${baseY - 44 * s} C${cx + 3 * s},${baseY - 38 * s} ${cx + 6 * s},${baseY - 32 * s} ${cx + 9 * s},${baseY - 26 * s} C${cx + 6 * s},${baseY - 24 * s} ${cx + 10 * s},${baseY - 18 * s} ${cx + 13 * s},${baseY - 10 * s} C${cx + 10 * s},${baseY - 9 * s} ${cx + 14 * s},${baseY - 4 * s} ${cx + 14 * s},${baseY - 4 * s} L${cx - 14 * s},${baseY - 4 * s} C${cx - 14 * s},${baseY - 4 * s} ${cx - 10 * s},${baseY - 9 * s} ${cx - 13 * s},${baseY - 10 * s} C${cx - 10 * s},${baseY - 18 * s} ${cx - 6 * s},${baseY - 24 * s} ${cx - 9 * s},${baseY - 26 * s} C${cx - 6 * s},${baseY - 32 * s} ${cx - 3 * s},${baseY - 38 * s} ${cx},${baseY - 44 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx},${baseY - 44 * s} C${cx + 3 * s},${baseY - 38 * s} ${cx + 6 * s},${baseY - 32 * s} ${cx + 9 * s},${baseY - 26 * s} C${cx + 6 * s},${baseY - 24 * s} ${cx + 10 * s},${baseY - 18 * s} ${cx + 13 * s},${baseY - 10 * s} C${cx + 10 * s},${baseY - 9 * s} ${cx + 14 * s},${baseY - 4 * s} ${cx + 14 * s},${baseY - 4 * s} L${cx - 14 * s},${baseY - 4 * s} C${cx - 14 * s},${baseY - 4 * s} ${cx - 10 * s},${baseY - 9 * s} ${cx - 13 * s},${baseY - 10 * s} C${cx - 10 * s},${baseY - 18 * s} ${cx - 6 * s},${baseY - 24 * s} ${cx - 9 * s},${baseY - 26 * s} C${cx - 6 * s},${baseY - 32 * s} ${cx - 3 * s},${baseY - 38 * s} ${cx},${baseY - 44 * s}Z`} fill={canopyColor} />
           </g>
         );
       case 'conifer-c':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 1 * s} y={baseY - 14 * s} width={2 * s} height={14 * s} fill={trunkColor} rx={0.4} />
-            <path d={`M${cx},${baseY - 30 * s} C${cx + 2 * s},${baseY - 26 * s} ${cx + 7 * s},${baseY - 18 * s} ${cx + 8 * s},${baseY - 12 * s} L${cx - 8 * s},${baseY - 12 * s} C${cx - 7 * s},${baseY - 18 * s} ${cx - 2 * s},${baseY - 26 * s} ${cx},${baseY - 30 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx},${baseY - 30 * s} C${cx + 2 * s},${baseY - 26 * s} ${cx + 7 * s},${baseY - 18 * s} ${cx + 8 * s},${baseY - 12 * s} L${cx - 8 * s},${baseY - 12 * s} C${cx - 7 * s},${baseY - 18 * s} ${cx - 2 * s},${baseY - 26 * s} ${cx},${baseY - 30 * s}Z`} fill={canopyColor} />
           </g>
         );
       case 'deciduous-a':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 1.5 * s} y={baseY - 16 * s} width={3 * s} height={16 * s} fill={trunkColor} rx={0.6} />
-            <path d={`M${cx - 14 * s},${baseY - 20 * s} C${cx - 16 * s},${baseY - 28 * s} ${cx - 12 * s},${baseY - 36 * s} ${cx - 6 * s},${baseY - 38 * s} C${cx - 3 * s},${baseY - 42 * s} ${cx + 3 * s},${baseY - 42 * s} ${cx + 6 * s},${baseY - 38 * s} C${cx + 12 * s},${baseY - 36 * s} ${cx + 16 * s},${baseY - 28 * s} ${cx + 14 * s},${baseY - 20 * s} C${cx + 12 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 16 * s} ${cx - 14 * s},${baseY - 20 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx - 14 * s},${baseY - 20 * s} C${cx - 16 * s},${baseY - 28 * s} ${cx - 12 * s},${baseY - 36 * s} ${cx - 6 * s},${baseY - 38 * s} C${cx - 3 * s},${baseY - 42 * s} ${cx + 3 * s},${baseY - 42 * s} ${cx + 6 * s},${baseY - 38 * s} C${cx + 12 * s},${baseY - 36 * s} ${cx + 16 * s},${baseY - 28 * s} ${cx + 14 * s},${baseY - 20 * s} C${cx + 12 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 16 * s} ${cx - 14 * s},${baseY - 20 * s}Z`} fill={canopyColor} />
           </g>
         );
       case 'deciduous-b':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 2 * s} y={baseY - 18 * s} width={4 * s} height={18 * s} fill={trunkColor} rx={0.8} />
-            <path d={`M${cx - 16 * s},${baseY - 22 * s} C${cx - 18 * s},${baseY - 30 * s} ${cx - 14 * s},${baseY - 40 * s} ${cx - 4 * s},${baseY - 44 * s} C${cx},${baseY - 46 * s} ${cx + 4 * s},${baseY - 44 * s} ${cx + 8 * s},${baseY - 42 * s} C${cx + 14 * s},${baseY - 38 * s} ${cx + 18 * s},${baseY - 30 * s} ${cx + 16 * s},${baseY - 22 * s} C${cx + 14 * s},${baseY - 18 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 16 * s},${baseY - 22 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx - 16 * s},${baseY - 22 * s} C${cx - 18 * s},${baseY - 30 * s} ${cx - 14 * s},${baseY - 40 * s} ${cx - 4 * s},${baseY - 44 * s} C${cx},${baseY - 46 * s} ${cx + 4 * s},${baseY - 44 * s} ${cx + 8 * s},${baseY - 42 * s} C${cx + 14 * s},${baseY - 38 * s} ${cx + 18 * s},${baseY - 30 * s} ${cx + 16 * s},${baseY - 22 * s} C${cx + 14 * s},${baseY - 18 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 16 * s},${baseY - 22 * s}Z`} fill={canopyColor} />
           </g>
         );
       default: return null;
@@ -344,7 +432,7 @@ function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOf
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         {trees.map((t, i) => (
-          <g key={i}>{renderCanopy(t.type, t.x, t.groundY, t.scale)}</g>
+          <g key={i}>{renderCanopy(t.type, t.x, t.groundY, t.scale, i)}</g>
         ))}
       </svg>
     </div>
@@ -352,7 +440,9 @@ function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOf
 }
 
 // ─── Foreground Framing Trees (Layer 8) ───
-function ForegroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOfDay; isGoldenHour: boolean }) {
+function ForegroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
+  renderTime: RenderTimeOfDay; isGoldenHour: boolean; windIntensity: string; fromLeft: boolean;
+}) {
   const tf = TIME_FILTERS[renderTime];
   const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
   const darkCanopy = '#2a5a30';
@@ -362,15 +452,15 @@ function ForegroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeO
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
       preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
       style={{ filter: treeFilter, transition: 'filter 2s ease' }}>
-      <g className="tree-sway" style={{ transformOrigin: '40px 100px' }}>
+      <g className="tree-sway" style={{ transformOrigin: '40px 100px', ...getTreeSwayStyle(windIntensity, 10, fromLeft) }}>
         <rect x={30} y={20} width={8} height={80} fill={darkTrunk} rx={2} />
         <path d="M34,0 C40,-2 56,8 60,18 C58,20 64,28 66,36 C62,38 68,48 68,56 L0,56 C0,48 6,38 2,36 C4,28 10,20 8,18 C12,8 28,-2 34,0Z" fill={darkCanopy} opacity="0.9" />
       </g>
-      <g className="tree-sway" style={{ transformOrigin: '960px 100px' }}>
+      <g className="tree-sway" style={{ transformOrigin: '960px 100px', ...getTreeSwayStyle(windIntensity, 11, fromLeft) }}>
         <rect x={956} y={25} width={7} height={75} fill={darkTrunk} rx={2} />
         <path d="M960,5 C968,2 982,10 988,22 C994,30 996,40 992,48 C988,54 980,58 972,56 C964,58 950,52 946,44 C942,36 944,24 950,14 C952,10 956,6 960,5Z" fill={darkCanopy} opacity="0.85" />
       </g>
-      <g className="tree-sway" style={{ transformOrigin: '920px 100px' }}>
+      <g className="tree-sway" style={{ transformOrigin: '920px 100px', ...getTreeSwayStyle(windIntensity, 12, fromLeft) }}>
         <rect x={917} y={40} width={5} height={60} fill={darkTrunk} rx={1.5} />
         <path d="M920,12 C924,16 934,28 936,38 C932,40 938,50 938,56 L902,56 C902,50 908,40 904,38 C906,28 916,16 920,12Z" fill={darkCanopy} opacity="0.8" />
       </g>
@@ -378,11 +468,47 @@ function ForegroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeO
   );
 }
 
+// ─── Wind Debris Leaves ───
+function WindDebris({ windIntensity, fromLeft }: { windIntensity: string; fromLeft: boolean }) {
+  const showDebris = windIntensity === 'strong' || windIntensity === 'extreme';
+  if (!showDebris) return null;
+
+  const count = windIntensity === 'extreme' ? 7 : 4;
+  const driftAnim = fromLeft ? 'leaf-drift-ltr' : 'leaf-drift-rtl';
+  const rand = seededRandom(99);
+
+  const leaves = Array.from({ length: count }, (_, i) => ({
+    y: 20 + rand() * 50,
+    size: 1 + rand() * 1.5,
+    duration: 3 + rand() * 4,
+    delay: rand() * 6,
+    color: rand() > 0.5 ? 'var(--biome-canopy, #3a7d44)' : '#5c4033',
+  }));
+
+  return (
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
+      preserveAspectRatio="none" style={{ pointerEvents: 'none' }}>
+      {leaves.map((l, i) => (
+        <ellipse key={i} cx={50} cy={l.y} rx={l.size * 0.6} ry={l.size * 0.3}
+          fill={l.color} opacity="0.7"
+          style={{
+            animation: `${driftAnim} ${l.duration}s linear infinite`,
+            animationDelay: `${l.delay}s`,
+          }} />
+      ))}
+    </svg>
+  );
+}
+
 // ─── Main Component ───
 const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude }: CabinSceneProps) => {
   const solar = useSolarCycle(latitude, longitude);
+  const weather = useWeather(latitude, longitude);
   const renderTime = toRenderTime(solar.timeOfDay);
   const isGoldenHour = solar.timeOfDay === 'golden-hour';
+  const windIntensity = weather.windIntensity || 'calm';
+  // Wind direction: 0-180° = from-right, 180-360° = from-left
+  const fromLeft = (weather.windDirection ?? 0) >= 180;
 
   const skyGradient = buildSkyGradient(renderTime);
 
@@ -399,10 +525,10 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   const starOpacity = useMemo(() => {
     switch (renderTime) {
       case 'night': return 1;
-      case 'dusk': return 0.85;        // fading in during dusk
-      case 'sunset': return 0.3;       // just starting to appear
-      case 'pre-dawn': return 0.5;     // fading out
-      case 'dawn': return 0;           // fully gone
+      case 'dusk': return 0.85;
+      case 'sunset': return 0.3;
+      case 'pre-dawn': return 0.5;
+      case 'dawn': return 0;
       default: return 0;
     }
   }, [renderTime]);
@@ -417,13 +543,13 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         '--biome-bg-near': '#3a6b48',
         '--biome-fg-ground': '#2d5a3d',
         '--biome-canopy': '#3a7d44',
+        '--wind-intensity': windIntensity,
       } as React.CSSProperties}
     >
       <style>{`
         @media (max-width: 767px) { :root { --cabin-scene-ratio: 2/1; } }
         @media (min-width: 768px) { :root { --cabin-scene-ratio: 3/1; } }
         ${SCENE_CSS}
-        .tree-sway { transform-origin: bottom center; }
       `}</style>
 
       {/* Layer 1: sky-gradient + starfield */}
@@ -450,7 +576,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
 
       {/* Layer 5: midground-trees */}
       <div className={layerBase} style={{ zIndex: 5, pointerEvents: 'none' }} data-layer="midground-trees">
-        <MidgroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} />
+        <MidgroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
       </div>
 
       {/* Layer 6: precipitation */}
@@ -461,8 +587,9 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
 
       {/* Layer 8: foreground-elements */}
       <div className={layerBase} style={{ zIndex: 8, pointerEvents: 'none' }} data-layer="foreground-elements">
-        <ForegroundGround renderTime={renderTime} />
-        <ForegroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} />
+        <ForegroundGround renderTime={renderTime} windIntensity={windIntensity} />
+        <ForegroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
+        <WindDebris windIntensity={windIntensity} fromLeft={fromLeft} />
       </div>
 
       {/* Layer 9: atmosphere-wash + golden hour overlay + moonlight glow */}
