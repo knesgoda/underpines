@@ -313,10 +313,19 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
               />
             </Field>
             <Field label="Location" hint="We use your zip to show weather. Never stored as precise location.">
+              <select
+                value={form.country_code}
+                onChange={e => updateField('country_code', e.target.value)}
+                className="w-full rounded-xl bg-background border border-input px-3 py-2 text-sm mb-2"
+              >
+                {COUNTRIES.map(c => (
+                  <option key={c.code} value={c.code}>{c.name}</option>
+                ))}
+              </select>
               <Input
                 value={form.zip_code}
                 onChange={e => updateField('zip_code', e.target.value)}
-                placeholder="Zip code"
+                placeholder={form.country_code === 'US' ? 'Zip code' : 'Postal code'}
                 className="rounded-xl bg-background"
               />
             </Field>
