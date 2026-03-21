@@ -7,6 +7,7 @@ import {
   TreePine, Plus, Pin, PinOff, MoreVertical, Pencil, RefreshCw,
   Moon, Sun, Heart, Trash2, X, Check, GripVertical,
 } from 'lucide-react';
+import PinePetCreationFlow from './PinePetCreationFlow';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
