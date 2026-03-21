@@ -7,6 +7,7 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 import { useWeather } from '@/hooks/useWeather';
+import PrecipitationLayer from './PrecipitationLayer';
 
 // All recognized time-of-day values — kept granular for smooth transitions
 type RenderTimeOfDay = 'night' | 'pre-dawn' | 'dawn' | 'morning' | 'afternoon' | 'golden-hour' | 'sunset' | 'dusk';
@@ -682,7 +683,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         '--biome-bg-far': '#7a9a8a',
         '--biome-bg-mid': '#4a7c59',
         '--biome-bg-near': '#3a6b48',
-        '--biome-fg-ground': '#2d5a3d',
+        '--biome-fg-ground': weather.isRaining ? '#1f4a2e' : '#2d5a3d',
         '--biome-canopy': '#3a7d44',
         '--wind-intensity': windIntensity,
       } as React.CSSProperties}
@@ -732,7 +733,15 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       </div>
 
       {/* Layer 6: precipitation */}
-      <div className={layerBase} style={{ zIndex: 6, pointerEvents: 'none' }} data-layer="precipitation" />
+      <div className={layerBase} style={{ zIndex: 6, pointerEvents: 'none' }} data-layer="precipitation">
+        <PrecipitationLayer
+          condition={weather.condition}
+          windIntensity={windIntensity}
+          windDirection={weather.windDirection}
+          isSnowing={weather.isSnowing}
+          isRaining={weather.isRaining}
+        />
+      </div>
 
       {/* Layer 7: creature-layer */}
       <div className={layerBase} style={{ zIndex: 7 }} data-layer="creature-layer" />
