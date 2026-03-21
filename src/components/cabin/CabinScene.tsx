@@ -8,9 +8,10 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 import { useWeather } from '@/hooks/useWeather';
-import { useWheelOfTheYear } from '@/lib/wheelOfTheYear';
+import { useWheelOfTheYear, WHEEL_OF_THE_YEAR } from '@/lib/wheelOfTheYear';
 import { useCompanions } from '@/hooks/useCompanions';
 import { resolveLocation } from '@/lib/locationResolver';
+import { useSceneDebug } from '@/contexts/SceneDebugContext';
 import PrecipitationLayer from './PrecipitationLayer';
 import { getBiomeConfig } from '@/config/biomes';
 import CreatureRenderer from '@/components/creatures/CreatureRenderer';
@@ -657,6 +658,9 @@ const ATMOSPHERE_TINTS: Record<string, { tint: string; opacity: number }> = {
 };
 
 const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude, biome: biomeProp, postalCode, countryCode, creatureKey, userId }: CabinSceneProps) => {
+  const debug = useSceneDebug();
+  const dbg = debug?.overrides;
+
   // ── Location resolution ──
   const [resolvedLocation, setResolvedLocation] = useState<{ latitude: number; longitude: number; countryCode: string; biome: string } | null>(null);
 
@@ -670,15 +674,50 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
     }
   }, [postalCode, countryCode, latitude, longitude, biomeProp]);
 
-  const lat = resolvedLocation?.latitude ?? 47.6;
-  const lng = resolvedLocation?.longitude ?? -122.3;
-  const resolvedBiome = resolvedLocation?.biome || biomeProp || 'default';
+  const lat = dbg?.latitude ?? resolvedLocation?.latitude ?? 47.6;
+  const lng = dbg?.longitude ?? resolvedLocation?.longitude ?? -122.3;
+  const resolvedBiome = dbg?.biome || resolvedLocation?.biome || biomeProp || 'default';
 
   const biomeConfig = useMemo(() => getBiomeConfig(resolvedBiome), [resolvedBiome]);
-  const solar = useSolarCycle(lat, lng);
-  const weather = useWeather(lat, lng);
-  const seasonal = useWheelOfTheYear();
+  const solarRaw = useSolarCycle(lat, lng);
+  const weatherRaw = useWeather(lat, lng);
+  const seasonalRaw = useWheelOfTheYear();
   const { companions, markDailyVisitComplete, markPassingComplete } = useCompanions(userId, { isViewingCabin: true });
+
+  // ── Apply debug overrides ──
+  const solar = useMemo(() => {
+    if (!dbg?.active || dbg.timeOverride == null) return solarRaw;
+    const mins = dbg.timeOverride;
+    const h = mins / 60;
+    let tod: string;
+    if (h < 5) tod = 'night';
+    else if (h < 6) tod = 'pre-dawn';
+    else if (h < 7.5) tod = 'dawn';
+    else if (h < 12) tod = 'morning';
+    else if (h < 16.5) tod = 'afternoon';
+    else if (h < 18) tod = 'golden-hour';
+    else if (h < 19.5) tod = 'sunset';
+    else if (h < 20.5) tod = 'dusk';
+    else tod = 'night';
+    return { ...solarRaw, timeOfDay: tod, goldenHourProgress: tod === 'golden-hour' ? 0.5 : null };
+  }, [solarRaw, dbg?.active, dbg?.timeOverride]);
+
+  const weather = useMemo(() => {
+    if (!dbg?.active) return weatherRaw;
+    return {
+      ...weatherRaw,
+      ...(dbg.weatherCondition != null ? { condition: dbg.weatherCondition, isRaining: dbg.weatherCondition.includes('rain'), isSnowing: dbg.weatherCondition.includes('snow') } : {}),
+      ...(dbg.windSpeed != null ? { windSpeed: dbg.windSpeed, windIntensity: dbg.windSpeed > 40 ? 'strong' : dbg.windSpeed > 20 ? 'moderate' : dbg.windSpeed > 5 ? 'light' : 'calm' } : {}),
+      ...(dbg.cloudCover != null ? { cloudCover: dbg.cloudCover } : {}),
+      ...(dbg.temperature != null ? { temperature: dbg.temperature, unit: 'C' as const } : {}),
+    };
+  }, [weatherRaw, dbg?.active, dbg?.weatherCondition, dbg?.windSpeed, dbg?.cloudCover, dbg?.temperature]);
+
+  const seasonal = useMemo(() => {
+    if (!dbg?.active || dbg.seasonalEvent == null) return seasonalRaw;
+    const ev = WHEEL_OF_THE_YEAR.find(e => e.key === dbg.seasonalEvent) || null;
+    return { ...seasonalRaw, event: ev, progress: ev ? { phase: 'active', opacity: 1 } : { phase: 'none', opacity: 0 } };
+  }, [seasonalRaw, dbg?.active, dbg?.seasonalEvent]);
 
   const renderTime = toRenderTime(solar.timeOfDay);
   const isGoldenHour = solar.timeOfDay === 'golden-hour';
@@ -701,7 +740,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   // Heat shimmer: clear + hot
   const showHeatShimmer = weather.condition === 'clear' && (weather.temperature ?? 0) > 32 && (weather.unit === 'C' || ((weather.temperature ?? 0) > 90 && weather.unit === 'F'));
 
-  const effectiveMoonPhase = seasonal.moonPhase ?? moonPhase;
+  const effectiveMoonPhase = dbg?.moonPhase ?? seasonal.moonPhase ?? moonPhase;
 
   const goldenOverlayOpacity = isGoldenHour && solar.goldenHourProgress !== null
     ? solar.goldenHourProgress * 0.12
@@ -717,6 +756,12 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       default: return 0;
     }
   }, [renderTime]);
+
+  const skyGradient = useMemo(() => buildSkyGradient(renderTime), [renderTime]);
+
+  const atmosphereTint = useMemo(() => {
+    return ATMOSPHERE_TINTS[atmosphere] || ATMOSPHERE_TINTS['morning-mist'];
+  }, [atmosphere]);
 
   return (
     <div
@@ -850,6 +895,17 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
           {memberName}
         </h2>
       </div>
+
+      {/* Debug: OVERRIDES ACTIVE indicator */}
+      {dbg?.active && (
+        <div className="absolute top-2 right-2" style={{
+          zIndex: 12, background: '#f59e0b', color: '#1a1a2a',
+          padding: '2px 6px', borderRadius: 4, fontSize: 9,
+          fontWeight: 700, letterSpacing: 1, fontFamily: 'system-ui',
+        }}>
+          OVERRIDES ACTIVE
+        </div>
+      )}
     </div>
   );
 };
