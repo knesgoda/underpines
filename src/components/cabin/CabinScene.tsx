@@ -587,8 +587,9 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
 
       {/* Layer 8: foreground-elements */}
       <div className={layerBase} style={{ zIndex: 8, pointerEvents: 'none' }} data-layer="foreground-elements">
-        <ForegroundGround renderTime={renderTime} />
-        <ForegroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} />
+        <ForegroundGround renderTime={renderTime} windIntensity={windIntensity} />
+        <ForegroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
+        <WindDebris windIntensity={windIntensity} fromLeft={fromLeft} />
       </div>
 
       {/* Layer 9: atmosphere-wash + golden hour overlay + moonlight glow */}
