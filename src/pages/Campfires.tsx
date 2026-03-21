@@ -63,50 +63,61 @@ const Campfires = () => {
       return;
     }
 
-    // Get last message for each campfire
-    const enriched: CampfireItem[] = [];
-    for (const c of campfireRows) {
-      const { data: lastMsg } = await supabase
-        .from('campfire_messages')
-        .select('content, created_at, sender_id')
-        .eq('campfire_id', c.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+    // Batch-fetch last messages for all campfires
+    const campfireIds = campfireRows.map(c => c.id);
 
-      // For 1-on-1, get other participant name
-      let otherName = '';
-      if (c.campfire_type === 'one_on_one') {
-        const { data: parts } = await supabase
-          .from('campfire_participants')
-          .select('user_id')
-          .eq('campfire_id', c.id)
-          .neq('user_id', user.id)
-          .limit(1)
-          .maybeSingle();
-        if (parts) {
-          const { data: prof } = await supabase
-            .from('profiles')
-            .select('display_name')
-            .eq('id', parts.user_id)
-            .maybeSingle();
-          otherName = prof?.display_name || '';
-        }
+    // Get all participants for the user's campfires (for 1-on-1 names)
+    const { data: allParticipants } = await supabase
+      .from('campfire_participants')
+      .select('campfire_id, user_id')
+      .in('campfire_id', campfireIds)
+      .neq('user_id', user.id);
+
+    // Get other participant profile IDs
+    const otherUserIds = [...new Set(allParticipants?.map(p => p.user_id) || [])];
+    const { data: otherProfiles } = otherUserIds.length > 0
+      ? await supabase.from('profiles').select('id, display_name').in('id', otherUserIds)
+      : { data: [] };
+    const profileMap = new Map(otherProfiles?.map(p => [p.id, p.display_name]) || []);
+
+    // Build participant lookup: campfireId -> other user's display name
+    const participantNameMap = new Map<string, string>();
+    for (const p of allParticipants || []) {
+      if (!participantNameMap.has(p.campfire_id)) {
+        participantNameMap.set(p.campfire_id, profileMap.get(p.user_id) || '');
       }
+    }
 
-      let daysSince: number | undefined;
-      if (lastMsg?.created_at) {
-        daysSince = Math.floor((Date.now() - new Date(lastMsg.created_at).getTime()) / 86400000);
+    // Fetch last message per campfire using a single query
+    const { data: recentMessages } = await supabase
+      .from('campfire_messages')
+      .select('campfire_id, content, created_at, sender_id')
+      .in('campfire_id', campfireIds)
+      .order('created_at', { ascending: false })
+      .limit(campfireIds.length * 2);
+
+    const lastMessageMap = new Map<string, { content: string | null; created_at: string; sender_id: string }>();
+    for (const msg of recentMessages || []) {
+      if (!lastMessageMap.has(msg.campfire_id)) {
+        lastMessageMap.set(msg.campfire_id, msg);
       }
+    }
 
-      enriched.push({
+    const enriched: CampfireItem[] = campfireRows.map(c => {
+      const lastMsg = lastMessageMap.get(c.id);
+      const otherName = c.campfire_type === 'one_on_one' ? (participantNameMap.get(c.id) || '') : '';
+      const daysSince = lastMsg?.created_at
+        ? Math.floor((Date.now() - new Date(lastMsg.created_at).getTime()) / 86400000)
+        : undefined;
+
+      return {
         ...c,
-        lastMessage: lastMsg?.content || (lastMsg ? 'Sent a photo' : undefined),
+        lastMessage: lastMsg?.content || (lastMsg ? '📷 Photo' : undefined),
         lastMessageTime: lastMsg?.created_at || undefined,
         otherParticipantName: otherName,
         daysSinceLastMessage: daysSince,
-      });
-    }
+      } as CampfireItem;
+    });
 
     setCampfires(enriched);
     setLoading(false);
