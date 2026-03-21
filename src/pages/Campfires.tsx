@@ -78,7 +78,7 @@ const Campfires = () => {
     const { data: otherProfiles } = otherUserIds.length > 0
       ? await supabase.from('profiles').select('id, display_name').in('id', otherUserIds)
       : { data: [] };
-    const profileMap = new Map(otherProfiles?.map(p => [p.id, p.display_name]) || []);
+    const profileMap = new Map<string, string>(otherProfiles?.map(p => [p.id, p.display_name || ''] as [string, string]) || []);
 
     // Build participant lookup: campfireId -> other user's display name
     const participantNameMap = new Map<string, string>();
