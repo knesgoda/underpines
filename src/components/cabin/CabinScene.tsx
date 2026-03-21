@@ -334,8 +334,38 @@ function ForegroundGround({ renderTime, windIntensity }: { renderTime: RenderTim
   );
 }
 
+// ─── Wind sway style helper ───
+function getTreeSwayStyle(windIntensity: string, index: number, fromLeft: boolean): React.CSSProperties {
+  const rand = seededRandom(index * 137 + 42);
+  const delayOffset = 100 + rand() * 300; // 100-400ms
+  const rotVariance = (rand() - 0.5) * 1; // ±0.5deg
+
+  const leanDir = fromLeft ? 1 : -1;
+
+  const configs: Record<string, { anim: string; dur: number; maxRot: number; lean: number }> = {
+    calm:     { anim: 'none', dur: 0, maxRot: 0, lean: 0 },
+    light:    { anim: 'tree-sway-light', dur: 4, maxRot: 0.8, lean: 0 },
+    moderate: { anim: 'tree-sway-moderate', dur: 2.5, maxRot: 2.5, lean: 0 },
+    strong:   { anim: 'tree-sway-strong', dur: 1.5, maxRot: 5, lean: 0 },
+    extreme:  { anim: 'tree-sway-extreme', dur: 1, maxRot: 8, lean: 3 },
+  };
+
+  const cfg = configs[windIntensity] || configs.calm;
+  if (cfg.anim === 'none') return {};
+
+  return {
+    '--sway-max': `${(cfg.maxRot + rotVariance) * leanDir}deg`,
+    '--sway-base': '0deg',
+    '--lean': `${cfg.lean * leanDir}deg`,
+    animation: `${cfg.anim} ${cfg.dur}s ease-in-out infinite`,
+    animationDelay: `${delayOffset}ms`,
+  } as React.CSSProperties;
+}
+
 // ─── Midground Trees (Layer 5) ───
-function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOfDay; isGoldenHour: boolean }) {
+function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
+  renderTime: RenderTimeOfDay; isGoldenHour: boolean; windIntensity: string; fromLeft: boolean;
+}) {
   const tf = TIME_FILTERS[renderTime];
   const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
 
@@ -349,43 +379,48 @@ function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOf
     { x: 760, groundY: 72, scale: 0.75, type: 'deciduous-a' },
   ];
 
-  const renderCanopy = (type: string, cx: number, baseY: number, s: number) => {
+  const renderCanopy = (type: string, cx: number, baseY: number, s: number, treeIndex: number) => {
     const canopyColor = 'var(--biome-canopy, #3a7d44)';
     const trunkColor = '#5c4033';
+    const swayStyle = getTreeSwayStyle(windIntensity, treeIndex, fromLeft);
+    const flutterAnim = (windIntensity === 'moderate' || windIntensity === 'strong' || windIntensity === 'extreme')
+      ? { animation: `canopy-flutter ${windIntensity === 'moderate' ? '3s' : '2s'} ease-in-out infinite`, animationDelay: `${treeIndex * 200}ms` }
+      : {};
+
     switch (type) {
       case 'conifer-a':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 1.2 * s} y={baseY - 18 * s} width={2.4 * s} height={18 * s} fill={trunkColor} rx={0.5} />
-            <path d={`M${cx},${baseY - 38 * s} C${cx + 2 * s},${baseY - 34 * s} ${cx + 8 * s},${baseY - 28 * s} ${cx + 10 * s},${baseY - 22 * s} C${cx + 7 * s},${baseY - 20 * s} ${cx + 11 * s},${baseY - 14 * s} ${cx + 12 * s},${baseY - 8 * s} L${cx - 12 * s},${baseY - 8 * s} C${cx - 11 * s},${baseY - 14 * s} ${cx - 7 * s},${baseY - 20 * s} ${cx - 10 * s},${baseY - 22 * s} C${cx - 8 * s},${baseY - 28 * s} ${cx - 2 * s},${baseY - 34 * s} ${cx},${baseY - 38 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx},${baseY - 38 * s} C${cx + 2 * s},${baseY - 34 * s} ${cx + 8 * s},${baseY - 28 * s} ${cx + 10 * s},${baseY - 22 * s} C${cx + 7 * s},${baseY - 20 * s} ${cx + 11 * s},${baseY - 14 * s} ${cx + 12 * s},${baseY - 8 * s} L${cx - 12 * s},${baseY - 8 * s} C${cx - 11 * s},${baseY - 14 * s} ${cx - 7 * s},${baseY - 20 * s} ${cx - 10 * s},${baseY - 22 * s} C${cx - 8 * s},${baseY - 28 * s} ${cx - 2 * s},${baseY - 34 * s} ${cx},${baseY - 38 * s}Z`} fill={canopyColor} />
           </g>
         );
       case 'conifer-b':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 1.5 * s} y={baseY - 20 * s} width={3 * s} height={20 * s} fill={trunkColor} rx={0.6} />
-            <path d={`M${cx},${baseY - 44 * s} C${cx + 3 * s},${baseY - 38 * s} ${cx + 6 * s},${baseY - 32 * s} ${cx + 9 * s},${baseY - 26 * s} C${cx + 6 * s},${baseY - 24 * s} ${cx + 10 * s},${baseY - 18 * s} ${cx + 13 * s},${baseY - 10 * s} C${cx + 10 * s},${baseY - 9 * s} ${cx + 14 * s},${baseY - 4 * s} ${cx + 14 * s},${baseY - 4 * s} L${cx - 14 * s},${baseY - 4 * s} C${cx - 14 * s},${baseY - 4 * s} ${cx - 10 * s},${baseY - 9 * s} ${cx - 13 * s},${baseY - 10 * s} C${cx - 10 * s},${baseY - 18 * s} ${cx - 6 * s},${baseY - 24 * s} ${cx - 9 * s},${baseY - 26 * s} C${cx - 6 * s},${baseY - 32 * s} ${cx - 3 * s},${baseY - 38 * s} ${cx},${baseY - 44 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx},${baseY - 44 * s} C${cx + 3 * s},${baseY - 38 * s} ${cx + 6 * s},${baseY - 32 * s} ${cx + 9 * s},${baseY - 26 * s} C${cx + 6 * s},${baseY - 24 * s} ${cx + 10 * s},${baseY - 18 * s} ${cx + 13 * s},${baseY - 10 * s} C${cx + 10 * s},${baseY - 9 * s} ${cx + 14 * s},${baseY - 4 * s} ${cx + 14 * s},${baseY - 4 * s} L${cx - 14 * s},${baseY - 4 * s} C${cx - 14 * s},${baseY - 4 * s} ${cx - 10 * s},${baseY - 9 * s} ${cx - 13 * s},${baseY - 10 * s} C${cx - 10 * s},${baseY - 18 * s} ${cx - 6 * s},${baseY - 24 * s} ${cx - 9 * s},${baseY - 26 * s} C${cx - 6 * s},${baseY - 32 * s} ${cx - 3 * s},${baseY - 38 * s} ${cx},${baseY - 44 * s}Z`} fill={canopyColor} />
           </g>
         );
       case 'conifer-c':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 1 * s} y={baseY - 14 * s} width={2 * s} height={14 * s} fill={trunkColor} rx={0.4} />
-            <path d={`M${cx},${baseY - 30 * s} C${cx + 2 * s},${baseY - 26 * s} ${cx + 7 * s},${baseY - 18 * s} ${cx + 8 * s},${baseY - 12 * s} L${cx - 8 * s},${baseY - 12 * s} C${cx - 7 * s},${baseY - 18 * s} ${cx - 2 * s},${baseY - 26 * s} ${cx},${baseY - 30 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx},${baseY - 30 * s} C${cx + 2 * s},${baseY - 26 * s} ${cx + 7 * s},${baseY - 18 * s} ${cx + 8 * s},${baseY - 12 * s} L${cx - 8 * s},${baseY - 12 * s} C${cx - 7 * s},${baseY - 18 * s} ${cx - 2 * s},${baseY - 26 * s} ${cx},${baseY - 30 * s}Z`} fill={canopyColor} />
           </g>
         );
       case 'deciduous-a':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 1.5 * s} y={baseY - 16 * s} width={3 * s} height={16 * s} fill={trunkColor} rx={0.6} />
-            <path d={`M${cx - 14 * s},${baseY - 20 * s} C${cx - 16 * s},${baseY - 28 * s} ${cx - 12 * s},${baseY - 36 * s} ${cx - 6 * s},${baseY - 38 * s} C${cx - 3 * s},${baseY - 42 * s} ${cx + 3 * s},${baseY - 42 * s} ${cx + 6 * s},${baseY - 38 * s} C${cx + 12 * s},${baseY - 36 * s} ${cx + 16 * s},${baseY - 28 * s} ${cx + 14 * s},${baseY - 20 * s} C${cx + 12 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 16 * s} ${cx - 14 * s},${baseY - 20 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx - 14 * s},${baseY - 20 * s} C${cx - 16 * s},${baseY - 28 * s} ${cx - 12 * s},${baseY - 36 * s} ${cx - 6 * s},${baseY - 38 * s} C${cx - 3 * s},${baseY - 42 * s} ${cx + 3 * s},${baseY - 42 * s} ${cx + 6 * s},${baseY - 38 * s} C${cx + 12 * s},${baseY - 36 * s} ${cx + 16 * s},${baseY - 28 * s} ${cx + 14 * s},${baseY - 20 * s} C${cx + 12 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 16 * s} ${cx - 14 * s},${baseY - 20 * s}Z`} fill={canopyColor} />
           </g>
         );
       case 'deciduous-b':
         return (
-          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px` }}>
+          <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <rect x={cx - 2 * s} y={baseY - 18 * s} width={4 * s} height={18 * s} fill={trunkColor} rx={0.8} />
-            <path d={`M${cx - 16 * s},${baseY - 22 * s} C${cx - 18 * s},${baseY - 30 * s} ${cx - 14 * s},${baseY - 40 * s} ${cx - 4 * s},${baseY - 44 * s} C${cx},${baseY - 46 * s} ${cx + 4 * s},${baseY - 44 * s} ${cx + 8 * s},${baseY - 42 * s} C${cx + 14 * s},${baseY - 38 * s} ${cx + 18 * s},${baseY - 30 * s} ${cx + 16 * s},${baseY - 22 * s} C${cx + 14 * s},${baseY - 18 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 16 * s},${baseY - 22 * s}Z`} fill={canopyColor} />
+            <path style={flutterAnim} d={`M${cx - 16 * s},${baseY - 22 * s} C${cx - 18 * s},${baseY - 30 * s} ${cx - 14 * s},${baseY - 40 * s} ${cx - 4 * s},${baseY - 44 * s} C${cx},${baseY - 46 * s} ${cx + 4 * s},${baseY - 44 * s} ${cx + 8 * s},${baseY - 42 * s} C${cx + 14 * s},${baseY - 38 * s} ${cx + 18 * s},${baseY - 30 * s} ${cx + 16 * s},${baseY - 22 * s} C${cx + 14 * s},${baseY - 18 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 16 * s},${baseY - 22 * s}Z`} fill={canopyColor} />
           </g>
         );
       default: return null;
@@ -397,7 +432,7 @@ function MidgroundTrees({ renderTime, isGoldenHour }: { renderTime: RenderTimeOf
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         {trees.map((t, i) => (
-          <g key={i}>{renderCanopy(t.type, t.x, t.groundY, t.scale)}</g>
+          <g key={i}>{renderCanopy(t.type, t.x, t.groundY, t.scale, i)}</g>
         ))}
       </svg>
     </div>
