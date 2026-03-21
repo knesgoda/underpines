@@ -223,32 +223,46 @@ function SunRenderer({ sunPosition, sunObscured }: { sunPosition: number | null;
 
   const glowR = sunObscured ? sunR * 1 : sunR * 3;
 
+  // We render the sun disc in a separate aspect-ratio-preserving SVG so
+  // circles stay perfectly round regardless of the banner's dimensions.
+  // The horizon glow (intentionally oblong) stays in a stretched SVG.
   return (
-    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
-      preserveAspectRatio="none">
-      <defs>
-        <radialGradient id="sun-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fff4c4" stopOpacity="1" />
-          <stop offset="33%" stopColor="#fff4c4" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#fff4c4" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="horizon-sun-glow" cx="50%" cy="0%" r="100%">
-          <stop offset="0%" stopColor="#f4a460" stopOpacity="0.7" />
-          <stop offset="40%" stopColor="#e8734a" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#e8734a" stopOpacity="0" />
-        </radialGradient>
-      </defs>
+    <>
+      {/* Horizon glow — intentionally stretched with the banner */}
       {glowOpacity > 0 && (
-        <ellipse cx={x} cy={horizonY} rx={15} ry={6}
-          fill="url(#horizon-sun-glow)"
-          opacity={glowOpacity * 0.8}
-          style={{ transition: 'cx 60s linear, opacity 60s linear' }} />
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
+          preserveAspectRatio="none" style={{ pointerEvents: 'none' }}>
+          <defs>
+            <radialGradient id="horizon-sun-glow" cx="50%" cy="0%" r="100%">
+              <stop offset="0%" stopColor="#f4a460" stopOpacity="0.7" />
+              <stop offset="40%" stopColor="#e8734a" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#e8734a" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <ellipse cx={x} cy={horizonY} rx={15} ry={6}
+            fill="url(#horizon-sun-glow)"
+            opacity={glowOpacity * 0.8}
+            style={{ transition: 'cx 60s linear, opacity 60s linear' }} />
+        </svg>
       )}
-      <circle className="sun-glow-outer" cx={x} cy={y} r={glowR} fill="url(#sun-glow)"
-        style={{ transition: 'cx 60s linear, cy 60s linear, r 1.5s ease' }} />
-      <circle cx={x} cy={y} r={sunR} fill="#fff4c4"
-        style={{ transition: 'cx 60s linear, cy 60s linear' }} />
-    </svg>
+
+      {/* Sun disc + glow — aspect-ratio preserved so circles stay round */}
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid meet" style={{ pointerEvents: 'none' }}>
+        <defs>
+          <radialGradient id="sun-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#fff4c4" stopOpacity="1" />
+            <stop offset="30%" stopColor="#fff4c4" stopOpacity="0.45" />
+            <stop offset="60%" stopColor="#ffeaa0" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#ffeaa0" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <circle className="sun-glow-outer" cx={x} cy={y} r={glowR} fill="url(#sun-glow)"
+          style={{ transition: 'cx 60s linear, cy 60s linear, r 1.5s ease' }} />
+        <circle cx={x} cy={y} r={sunR} fill="#fff4c4"
+          style={{ transition: 'cx 60s linear, cy 60s linear' }} />
+      </svg>
+    </>
   );
 }
 // ─── Moon ───
