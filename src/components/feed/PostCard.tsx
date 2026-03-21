@@ -75,10 +75,12 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
     if (data) setReactions(data);
   };
 
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+
   const handleDelete = async () => {
-    if (!confirm('Delete this post?')) return;
     await supabase.from('posts').delete().eq('id', post.id);
     onRemove?.(post.id);
+    setDeleteConfirmOpen(false);
     setMenuOpen(false);
   };
 
