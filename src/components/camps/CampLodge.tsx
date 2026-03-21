@@ -87,10 +87,12 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
     setSaving(false);
   };
 
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
   const handleDelete = async (itemId: string) => {
-    if (!confirm('Remove this item?')) return;
     await supabase.from('camp_lodge_items').delete().eq('id', itemId);
     setItems(prev => prev.filter(i => i.id !== itemId));
+    setDeleteConfirmId(null);
   };
 
   const handlePin = async (itemId: string, pinned: boolean) => {
