@@ -740,7 +740,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
   // Heat shimmer: clear + hot
   const showHeatShimmer = weather.condition === 'clear' && (weather.temperature ?? 0) > 32 && (weather.unit === 'C' || ((weather.temperature ?? 0) > 90 && weather.unit === 'F'));
 
-  const effectiveMoonPhase = seasonal.moonPhase ?? moonPhase;
+  const effectiveMoonPhase = dbg?.moonPhase ?? seasonal.moonPhase ?? moonPhase;
 
   const goldenOverlayOpacity = isGoldenHour && solar.goldenHourProgress !== null
     ? solar.goldenHourProgress * 0.12
