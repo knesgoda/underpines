@@ -119,8 +119,8 @@ const CampSettings = () => {
 
   const archiveCamp = async () => {
     if (!id || !camp) return;
-    if (!confirm(`Archive ${camp.name}? Members will lose access but nothing is deleted. This can be undone.`)) return;
     await supabase.from('camps').update({ is_active: false }).eq('id', id);
+    setArchiveOpen(false);
     toast('Camp archived.');
     navigate('/camps');
   };
