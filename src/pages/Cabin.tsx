@@ -270,15 +270,17 @@ const Cabin = () => {
         {/* Seasonal event scene overlay */}
         {seasonalEvent && seasonalProgress.phase !== 'none' && (
           <div
-            className="absolute inset-0 seasonal-overlay"
+            className="absolute inset-0 seasonal-overlay overflow-hidden"
             style={{ opacity: seasonalProgress.opacity * 0.85 }}
           >
-            <SceneForEvent
-              eventKey={seasonalEvent.key}
-              width={window.innerWidth < 768 ? window.innerWidth : 680}
-              height={isHollow ? 400 : isTrailhead ? 400 : isCanopy ? 200 : 280}
-              moonProps={getMoonSVGProps(new Date())}
-            />
+            <div className="w-full h-full [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover" style={{ display: 'flex' }}>
+              <SceneForEvent
+                eventKey={seasonalEvent.key}
+                width={1200}
+                height={isHollow ? 400 : isTrailhead ? 400 : isCanopy ? 200 : 280}
+                moonProps={getMoonSVGProps(new Date())}
+              />
+            </div>
           </div>
         )}
         {/* Trailhead: name overlaid on bottom of header */}

@@ -78,7 +78,7 @@ function Ground({ width, height, colorTop, colorBottom, y }) {
 function ImbolcScene({ width = 680, height = 280, moonProps }) {
   const groundY = height * 0.7;
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       {/* Sky */}
       <defs>
         <linearGradient id="imbolc-sky" x1="0" y1="0" x2="0" y2="1">
@@ -127,7 +127,7 @@ function ImbolcScene({ width = 680, height = 280, moonProps }) {
 function OstaraScene({ width = 680, height = 280, moonProps }) {
   const groundY = height * 0.68;
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="ostara-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#a8cce0" />
@@ -178,7 +178,7 @@ function OstaraScene({ width = 680, height = 280, moonProps }) {
 function BeltaneScene({ width = 680, height = 280 }) {
   const groundY = height * 0.72;
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="beltane-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#0a1408" />
@@ -244,7 +244,7 @@ function BeltaneScene({ width = 680, height = 280 }) {
 function LithaScene({ width = 680, height = 280 }) {
   const groundY = height * 0.7;
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="litha-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#f0c840" />
@@ -296,7 +296,7 @@ function LithaScene({ width = 680, height = 280 }) {
 function LammasScene({ width = 680, height = 280, moonProps }) {
   const groundY = height * 0.68;
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="lammas-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#d4a030" />
@@ -339,7 +339,7 @@ function LammasScene({ width = 680, height = 280, moonProps }) {
 function MabonScene({ width = 680, height = 280, moonProps }) {
   const groundY = height * 0.7;
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="mabon-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#604028" />
@@ -385,7 +385,7 @@ function MabonScene({ width = 680, height = 280, moonProps }) {
 function SamhainScene({ width = 680, height = 280, moonProps }) {
   const groundY = height * 0.72;
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="samhain-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#050208" />
@@ -439,7 +439,7 @@ function SamhainScene({ width = 680, height = 280, moonProps }) {
 function YuleScene({ width = 680, height = 280, moonProps }) {
   const groundY = height * 0.65;
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="yule-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#040608" />
