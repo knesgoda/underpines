@@ -667,7 +667,8 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       {/* Layer 1: sky-gradient + starfield */}
       <div className={layerBase} style={{
         zIndex: 1, background: skyGradient, pointerEvents: 'none',
-        transition: 'background 60s linear',
+        transition: 'background 60s linear, filter 1.5s ease',
+        filter: sunObscured ? 'saturate(0.85)' : 'none',
       }} data-layer="sky-gradient">
         <Starfield opacity={starOpacity} />
       </div>
