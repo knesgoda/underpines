@@ -112,6 +112,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     currently_type: profile.currently_type || '',
     currently_value: profile.currently_value || '',
     zip_code: profile.zip_code || '',
+    country_code: profile.country_code || 'US',
     atmosphere: profile.atmosphere,
     layout: profile.layout,
     accent_color: profile.accent_color,
