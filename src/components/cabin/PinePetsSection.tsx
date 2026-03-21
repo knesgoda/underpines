@@ -30,6 +30,7 @@ interface PinePet {
   is_pinned: boolean;
   is_resting: boolean;
   is_memorial: boolean;
+  is_ambassador: boolean;
   display_order: number;
   original_photo_path: string;
 }
