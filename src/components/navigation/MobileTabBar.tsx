@@ -37,16 +37,10 @@ const MobileTabBar = () => {
             return (
               <button
                 key="composer"
-                onClick={() => {
-                  if (location.pathname !== '/') {
-                    navigate('/');
-                    setTimeout(() => setComposerOpen(true), 100);
-                  } else {
-                    setComposerOpen(true);
-                  }
-                }}
-                className="flex items-center justify-center w-12 h-12 -mt-4 rounded-full bg-primary text-primary-foreground shadow-card"
+                onClick={() => setComposerOpen(true)}
+                className="flex items-center justify-center w-12 h-12 -mt-4 rounded-full bg-primary text-primary-foreground shadow-card active:scale-95 transition-transform"
                 aria-label="New post"
+                type="button"
               >
                 <Plus size={22} />
               </button>
