@@ -370,7 +370,7 @@ const Cabin = () => {
              {profile.bio && <p className="text-sm font-body max-w-xl" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
              <CabinPinnedSong profile={profile} atmos={atmos} />
              <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
-             <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
+             <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} onOpenInvite={() => setInviteSheetOpen(true)} />
           </div>
 
           {/* Two-column editorial */}
