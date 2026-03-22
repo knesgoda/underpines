@@ -208,7 +208,7 @@ const SubscriptionPage = () => {
             <p className="font-body text-xs text-muted-foreground font-medium mb-2">What Pines+ includes:</p>
             <ul className="space-y-1 font-body text-xs text-muted-foreground">
               <li>🌲 8 atmospheres (vs. 3 free)</li>
-              <li>🎟️ 25 invite slots (vs. 8 free)</li>
+              <li>🎟️ 8 invite slots (vs. 3 free)</li>
               <li>🔥 Campfire messages kept forever</li>
               <li>🧩 Widget shelf on your Cabin</li>
               <li>🔍 Campfire search (coming soon)</li>
