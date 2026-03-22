@@ -836,6 +836,21 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                       An interactive world map with your "Been here" and "Want to go" pins.
                     </p>
                   </div>
+                  <div className="rounded-xl border border-border p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span>🎵</span>
+                      <span className="text-sm font-body font-medium text-foreground">Your player</span>
+                    </div>
+                    <PlayerSelector
+                      current={(profile.cabin_player_type as PlayerType) || 'radio'}
+                      isPinesPlus={profile.is_pines_plus}
+                      onChange={async (type) => {
+                        await supabase.from('profiles').update({ cabin_player_type: type } as any).eq('id', profile.id);
+                        onUpdate();
+                      }}
+                      accent={getAtmosphere(profile.atmosphere, profile.accent_color).accent}
+                    />
+                  </div>
                 </div>
               </div>
             ) : (
@@ -845,6 +860,20 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                 <p className="text-sm text-muted-foreground font-body">Available with Pines+</p>
                 <p className="text-xs text-muted-foreground font-body leading-relaxed">
                   Personalize your Cabin with a bookshelf,<br />
+                  trail map, music player, and more.
+                </p>
+                <div className="mt-4 rounded-xl border border-border p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span>🎵</span>
+                    <span className="text-sm font-body font-medium text-foreground">Your player</span>
+                  </div>
+                  <PlayerSelector
+                    current="radio"
+                    isPinesPlus={false}
+                    onChange={() => {}}
+                    accent="hsl(var(--primary))"
+                  />
+                </div>
                   vinyl collection, trail map, and more.
                 </p>
                 <p className="text-xs text-muted-foreground font-body">
