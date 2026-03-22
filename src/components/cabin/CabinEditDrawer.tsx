@@ -514,6 +514,25 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
               />
             </Field>
 
+            <Field label="Ask me about" hint={`${form.ask_me_about.length}/3`}>
+              <div className="space-y-2">
+                {form.ask_me_about.map((topic, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <Input
+                      value={topic}
+                      onChange={e => updateAskMeAbout(i, e.target.value)}
+                      placeholder="A topic you love discussing"
+                      className="rounded-xl bg-background text-sm flex-1"
+                    />
+                    <button onClick={() => removeAskMeAbout(i)} className="text-xs text-muted-foreground hover:text-destructive px-1">✕</button>
+                  </div>
+                ))}
+                {form.ask_me_about.length < 3 && (
+                  <button onClick={addAskMeAbout} className="text-xs font-body text-primary hover:underline">+ Add topic</button>
+                )}
+              </div>
+            </Field>
+
             <Field label="Links" hint={`${form.links.length}/5`}>
               <div className="space-y-2">
                 {form.links.map((link, i) => (
