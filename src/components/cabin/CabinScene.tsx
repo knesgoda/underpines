@@ -1128,17 +1128,6 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
         )}
       </div>
 
-      {/* Member name */}
-      <div className="absolute bottom-0 left-0 px-5 pb-4" style={{ zIndex: 11 }}>
-        <h2 style={{
-          fontFamily: "'Cormorant Garamond', Georgia, serif",
-          fontSize: 22, fontWeight: 300, color: '#ffffff',
-          textShadow: '0 1px 4px rgba(0,0,0,0.45)',
-          margin: 0, lineHeight: 1.3,
-        }}>
-          {memberName}
-        </h2>
-      </div>
 
       {/* Debug: OVERRIDES ACTIVE indicator */}
       {dbg?.active && (
