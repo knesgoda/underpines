@@ -281,7 +281,6 @@ const Cabin = () => {
       {/* Illustrated scene header */}
       <div className="relative w-full">
         <CabinScene
-          memberName={isTrailhead ? '' : profile.display_name}
           atmosphere={profile.atmosphere}
           moonPhase={getMoonPhase()}
           latitude={profile.latitude ?? undefined}
