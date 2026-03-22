@@ -11,6 +11,7 @@ import CampfireLog from './CampfireLog';
 import VoiceRecorder from './VoiceRecorder';
 import VoiceMessageBubble from './VoiceMessageBubble';
 import CampfireSearch from './CampfireSearch';
+import CrossPostCard from './CrossPostCard';
 
 interface Message {
   id: string;
