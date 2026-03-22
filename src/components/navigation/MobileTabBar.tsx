@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { Home, Tent, Flame, Plus } from 'lucide-react';
 import LanternIcon from './LanternIcon';
@@ -22,6 +22,7 @@ const tabs: TabItem[] = [
 const MobileTabBar = () => {
   const { setComposerOpen } = useNavigation();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -36,7 +37,14 @@ const MobileTabBar = () => {
             return (
               <button
                 key="composer"
-                onClick={() => setComposerOpen(true)}
+                onClick={() => {
+                  if (location.pathname !== '/') {
+                    navigate('/');
+                    setTimeout(() => setComposerOpen(true), 100);
+                  } else {
+                    setComposerOpen(true);
+                  }
+                }}
                 className="flex items-center justify-center w-12 h-12 -mt-4 rounded-full bg-primary text-primary-foreground shadow-card"
                 aria-label="New post"
               >

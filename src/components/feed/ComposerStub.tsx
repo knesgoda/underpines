@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import SparkComposer from './SparkComposer';
@@ -17,12 +18,21 @@ interface ComposerStubProps {
 
 const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
   const navigate = useNavigate();
+  const { composerOpen, setComposerOpen } = useNavigation();
   const { isSeedling, daysLeft } = useSeedlingStatus();
   const [expanded, setExpanded] = useState(false);
   const [activeType, setActiveType] = useState<PostType>(null);
 
+  // Sync external trigger (sidebar / tab bar button) with local UI
+  useEffect(() => {
+    if (composerOpen) {
+      setExpanded(true);
+    }
+  }, [composerOpen]);
+
   const handleTypeSelect = (type: PostType) => {
     if (type === 'story') {
+      setComposerOpen(false);
       navigate('/new/story');
       return;
     }
@@ -32,12 +42,14 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
   const handleCancel = () => {
     setActiveType(null);
     setExpanded(false);
+    setComposerOpen(false);
   };
 
   const handlePost = (post: any) => {
     onPost(post);
     setActiveType(null);
     setExpanded(false);
+    setComposerOpen(false);
   };
 
   if (isSeedling) {
@@ -54,7 +66,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
     <div className="rounded-xl bg-card border border-border shadow-soft p-4 mb-4">
       {!expanded && !activeType ? (
         <button
-          onClick={() => setExpanded(true)}
+          onClick={() => { setExpanded(true); setComposerOpen(true); }}
           className="w-full flex items-center gap-3 text-left"
         >
           <UserAvatar

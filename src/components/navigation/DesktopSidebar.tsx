@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -65,6 +65,7 @@ const DesktopSidebar = () => {
   const { user, signOut } = useAuth();
   const { setComposerOpen } = useNavigation();
   const location = useLocation();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<{ display_name: string; handle: string; avatar_url: string | null; default_avatar_key: string | null } | null>(null);
 
   useEffect(() => {
@@ -171,7 +172,14 @@ const DesktopSidebar = () => {
       <div className="px-3 pb-2">
         <div className="h-px bg-border mb-2" />
         <button
-          onClick={() => setComposerOpen(true)}
+          onClick={() => {
+            if (location.pathname !== '/') {
+              navigate('/');
+              setTimeout(() => setComposerOpen(true), 100);
+            } else {
+              setComposerOpen(true);
+            }
+          }}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Plus size={16} />
