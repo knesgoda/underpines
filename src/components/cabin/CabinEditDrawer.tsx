@@ -176,6 +176,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
   }, [profile.id, profile.zip_code, profile.country_code, form.zip_code, form.country_code, onUpdate]);
 
   // Debounced auto-save
+  const JSON_FIELDS = ['links', 'ask_me_about', 'featured_photos', 'moments'] as const;
   useEffect(() => {
     const timer = setTimeout(() => {
       const changes: any = {};
@@ -183,13 +184,19 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
       for (const key of fields) {
         const profileVal = (profile as any)[key];
         const formVal = form[key];
-        if (key === 'links') {
-          // Compare serialized links
-          const profileLinks = JSON.stringify(Array.isArray(profileVal) ? profileVal : []);
-          const formLinks = JSON.stringify(formVal);
-          if (formLinks !== profileLinks) {
-            // Filter out empty links
-            changes[key] = (formVal as any[]).filter((l: any) => l.url || l.label);
+        if ((JSON_FIELDS as readonly string[]).includes(key)) {
+          const pv = JSON.stringify(Array.isArray(profileVal) ? profileVal : []);
+          const fv = JSON.stringify(formVal);
+          if (fv !== pv) {
+            if (key === 'links') {
+              changes[key] = (formVal as any[]).filter((l: any) => l.url || l.label);
+            } else if (key === 'ask_me_about') {
+              changes[key] = (formVal as string[]).filter(Boolean);
+            } else if (key === 'moments') {
+              changes[key] = (formVal as any[]).filter((m: any) => m.title);
+            } else {
+              changes[key] = formVal;
+            }
           }
         } else {
           const pv = profileVal || '';
@@ -204,6 +211,20 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     }, 800);
     return () => clearTimeout(timer);
   }, [form, profile, save]);
+
+  // Load own posts for pinned memory picker
+  useEffect(() => {
+    const loadPosts = async () => {
+      const { data } = await supabase
+        .from('posts')
+        .select('id, content, post_type, created_at')
+        .eq('author_id', profile.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (data) setOwnPosts(data);
+    };
+    loadPosts();
+  }, [profile.id]);
 
   const updateField = (key: string, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
