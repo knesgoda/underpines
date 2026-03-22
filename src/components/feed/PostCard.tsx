@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -44,6 +44,7 @@ interface PostCardProps {
 
 const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: PostCardProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [reactions, setReactions] = useState(post.reactions || []);
   const [quoteOpen, setQuoteOpen] = useState(false);
@@ -53,6 +54,13 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
   const isOwner = user?.id === post.author_id;
   const accent = post.author?.accent_color || 'hsl(var(--primary))';
   const moodIcon = post.author?.cabin_mood || '🕯️';
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, textarea, input, [role="button"], [data-no-navigate]')) return;
+    navigate(`/post/${post.id}`);
+  };
 
   const { openBlockDialog, handleMute, BlockConfirmDialog } = useBlockMute({
     targetUserId: post.author_id,
@@ -113,8 +121,9 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: post._optimistic ? 0.7 : 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] mb-3 overflow-hidden"
+      className="rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] mb-3 overflow-hidden cursor-pointer"
       style={{ borderLeft: `3px solid ${accent}` }}
+      onClick={handleCardClick}
     >
       <div className="p-5">
         {/* Header */}

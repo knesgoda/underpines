@@ -48,6 +48,7 @@ import Wrapped from "./pages/Wrapped";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import PostDetail from "./pages/PostDetail";
 
 // Grove (admin)
 import GroveLayout from "./pages/grove/GroveLayout";
@@ -133,6 +134,7 @@ const App = () => (
                       <Route path="/:handle/collections" element={<CollectionsList />} />
                       <Route path="/:handle/collections/:id" element={<CollectionView />} />
                       <Route path="/wrapped/:year" element={<Wrapped />} />
+                      <Route path="/post/:id" element={<PostDetail />} />
                       <Route path="/:handle" element={<Cabin />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
