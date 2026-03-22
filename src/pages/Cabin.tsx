@@ -623,6 +623,61 @@ const CabinMoreMenu = ({
 
 // --- Shared sub-components for layouts ---
 
+const CabinAboutSection = ({ profile, atmos, centered }: { profile: Profile; atmos: any; centered?: boolean }) => {
+  const links = Array.isArray(profile.links) ? profile.links.filter((l: any) => l.url) : [];
+  const interests = profile.interests ? profile.interests.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const hasContent = profile.hometown || profile.job || links.length > 0 || interests.length > 0 ||
+    profile.how_found || profile.sitting_question;
+
+  if (!hasContent) return null;
+
+  return (
+    <div className={`space-y-3 mt-4 ${centered ? 'text-center' : ''}`}>
+      {profile.job && (
+        <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.6 }}>{profile.job}</p>
+      )}
+      {profile.hometown && (
+        <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.45 }}>From {profile.hometown}</p>
+      )}
+      {profile.sitting_question && (
+        <p className="text-sm font-body italic" style={{ color: atmos.text, opacity: 0.55 }}>"{profile.sitting_question}"</p>
+      )}
+      {interests.length > 0 && (
+        <div className={`flex flex-wrap gap-1.5 ${centered ? 'justify-center' : ''}`}>
+          {interests.map((tag, i) => (
+            <span
+              key={i}
+              className="px-2.5 py-0.5 rounded-full text-xs font-body"
+              style={{ backgroundColor: `${atmos.accent}15`, color: atmos.accent }}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      {links.length > 0 && (
+        <div className={`flex flex-wrap gap-x-4 gap-y-1 text-xs font-body ${centered ? 'justify-center' : ''}`}>
+          {links.map((link: any, i: number) => (
+            <a
+              key={i}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 transition-opacity hover:opacity-100"
+              style={{ color: atmos.accent, opacity: 0.7 }}
+            >
+              {link.label || link.url}
+            </a>
+          ))}
+        </div>
+      )}
+      {profile.how_found && (
+        <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.3 }}>Found their way here: {profile.how_found}</p>
+      )}
+    </div>
+  );
+};
+
 const CabinMetaRow = ({ profile, temperature, tempUnit, atmos, centered }: {
   profile: Profile; temperature: number | null; tempUnit: 'C' | 'F'; atmos: any; centered?: boolean;
 }) => (
