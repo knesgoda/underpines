@@ -52,7 +52,8 @@ const CollectionsShelf = ({ profileId, handle, isOwner, atmosphere }: Props) => 
       className="rounded-2xl p-5 shadow-soft transition-colors duration-700"
       style={{ backgroundColor: atmosphere.cardBg, borderColor: atmosphere.border, borderWidth: 1 }}
     >
-      <h3 className="font-display text-sm mb-3" style={{ color: atmosphere.text, opacity: 0.6 }}>Collections</h3>
+      <h3 className="font-display text-sm mb-1" style={{ color: atmosphere.text, opacity: 0.6 }}>Collections</h3>
+      <p className="font-body text-sm mb-3 text-muted-foreground">Curated sets of posts organized around a theme — yours to keep, share, or sell.</p>
 
       {!hasCollections && !isOwner && (
         <p className="font-body text-xs" style={{ color: atmosphere.text, opacity: 0.35 }}>No Collections yet.</p>
