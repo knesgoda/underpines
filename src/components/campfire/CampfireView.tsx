@@ -647,33 +647,74 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               </p>
             </div>
           ) : (
-            <div className="border-t border-border px-3 py-2 flex items-end gap-2 shrink-0" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
-              <button onClick={sendPhoto} className="p-2 text-muted-foreground hover:text-foreground shrink-0">
-                <Camera size={18} />
-              </button>
-              <VoiceRecorder onSend={sendVoiceMessage} />
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Type a message..."
-                rows={1}
-                className="flex-1 resize-none max-h-[120px] py-2 px-3 rounded-xl border border-border bg-background font-body text-sm outline-none"
-                style={{ minHeight: '36px' }}
-                onInput={(e) => {
-                  const t = e.currentTarget;
-                  t.style.height = '36px';
-                  t.style.height = Math.min(t.scrollHeight, 120) + 'px';
-                }}
-              />
-              <button
-                onClick={sendMessage}
-                disabled={!input.trim() || sending}
-                className="p-2 text-primary hover:opacity-80 disabled:opacity-30 shrink-0"
-              >
-                <Send size={18} />
-              </button>
+            <div className="border-t border-border shrink-0" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
+              {/* Media preview strip */}
+              {stagedPreviews.length > 0 && (
+                <div className="px-3 pt-2 pb-1">
+                  <div className="flex gap-1.5 overflow-x-auto">
+                    {stagedPreviews.map((src, i) => (
+                      <div key={i} className="relative shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-border">
+                        {stagedFiles[i]?.type.startsWith('video') ? (
+                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                            <span className="text-lg">▶</span>
+                          </div>
+                        ) : (
+                          <img src={src} alt="" className="w-full h-full object-cover" />
+                        )}
+                        <button
+                          onClick={() => removeStagedFile(i)}
+                          className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center"
+                        >
+                          <X size={10} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Input row */}
+              <div className="px-3 py-2 flex items-end gap-2">
+                <input
+                  ref={mediaInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp,video/mp4"
+                  multiple
+                  className="hidden"
+                  onChange={handleMediaSelect}
+                />
+                <button
+                  onClick={() => mediaInputRef.current?.click()}
+                  className="p-2 text-muted-foreground hover:text-foreground shrink-0 active:scale-95 transition-transform"
+                  type="button"
+                  aria-label="Attach photo or video"
+                >
+                  <Camera size={18} />
+                </button>
+                <VoiceRecorder onSend={sendVoiceMessage} />
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type a message..."
+                  rows={1}
+                  className="flex-1 resize-none max-h-[120px] py-2 px-3 rounded-xl border border-border bg-background font-body text-sm outline-none"
+                  style={{ minHeight: '36px' }}
+                  onInput={(e) => {
+                    const t = e.currentTarget;
+                    t.style.height = '36px';
+                    t.style.height = Math.min(t.scrollHeight, 120) + 'px';
+                  }}
+                />
+                <button
+                  onClick={stagedFiles.length > 0 ? sendStagedMedia : sendMessage}
+                  disabled={stagedFiles.length === 0 && (!input.trim() || sending) || uploadingMedia}
+                  className="p-2 text-primary hover:opacity-80 disabled:opacity-30 shrink-0"
+                >
+                  <Send size={18} />
+                </button>
+              </div>
             </div>
           )}
         </div>
