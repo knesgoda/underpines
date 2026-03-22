@@ -140,7 +140,7 @@ const CrossPostCard = ({ postId, note, isMine }: CrossPostCardProps) => {
               avatarUrl={author.avatar_url}
               defaultAvatarKey={author.default_avatar_key}
               displayName={author.display_name}
-              size="xs"
+              size={20}
             />
             <span className="font-body text-xs font-medium text-foreground truncate">
               {author.display_name}
