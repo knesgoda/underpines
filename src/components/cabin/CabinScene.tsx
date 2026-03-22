@@ -580,20 +580,32 @@ function ForegroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: 
   const tf = TIME_FILTERS[renderTime];
   const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
   const darkCanopy = '#2a5a30';
+  const darkCanopyLight = '#3a7a42';
+  const darkCanopyShadow = '#1e4a24';
   const darkTrunk = '#3a2a1a';
 
   return (
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
       preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
       style={{ filter: treeFilter, transition: 'filter 2s ease' }}>
+      {/* Left foreground tree — large conifer */}
       <g className="tree-sway" style={{ transformOrigin: '40px 100px', ...getTreeSwayStyle(windIntensity, 10, fromLeft) }}>
         <rect x={30} y={20} width={8} height={80} fill={darkTrunk} rx={2} />
         <path d="M34,0 C40,-2 56,8 60,18 C58,20 64,28 66,36 C62,38 68,48 68,56 L0,56 C0,48 6,38 2,36 C4,28 10,20 8,18 C12,8 28,-2 34,0Z" fill={darkCanopy} opacity="0.9" />
       </g>
+      {/* Right foreground tree — broadleaf oak with spreading crown */}
       <g className="tree-sway" style={{ transformOrigin: '960px 100px', ...getTreeSwayStyle(windIntensity, 11, fromLeft) }}>
-        <rect x={956} y={25} width={7} height={75} fill={darkTrunk} rx={2} />
-        <path d="M960,5 C968,2 982,10 988,22 C994,30 996,40 992,48 C988,54 980,58 972,56 C964,58 950,52 946,44 C942,36 944,24 950,14 C952,10 956,6 960,5Z" fill={darkCanopy} opacity="0.85" />
+        {/* Tapered trunk */}
+        <path d="M957,30 L963,30 L966,100 L954,100 Z" fill={darkTrunk} />
+        {/* Shadow crown */}
+        <path d="M960,4 C968,2 984,12 990,24 C996,34 994,46 988,52 C982,58 974,60 966,58 C958,60 946,56 940,48 C934,40 936,26 944,16 C948,10 954,6 960,4Z" fill={darkCanopyShadow} opacity="0.7" />
+        {/* Main crown */}
+        <path d="M960,6 C966,4 980,12 986,22 C992,32 990,42 986,48 C980,54 974,56 966,54 C958,56 948,52 944,44 C938,36 940,24 948,16 C952,10 956,8 960,6Z" fill={darkCanopy} opacity="0.85" />
+        {/* Highlights */}
+        <ellipse cx={954} cy={32} rx={8} ry={7} fill={darkCanopyLight} opacity="0.3" />
+        <ellipse cx={970} cy={38} rx={6} ry={5} fill={darkCanopyLight} opacity="0.2" />
       </g>
+      {/* Right secondary tree — smaller conifer */}
       <g className="tree-sway" style={{ transformOrigin: '920px 100px', ...getTreeSwayStyle(windIntensity, 12, fromLeft) }}>
         <rect x={917} y={40} width={5} height={60} fill={darkTrunk} rx={1.5} />
         <path d="M920,12 C924,16 934,28 936,38 C932,40 938,50 938,56 L902,56 C902,50 908,40 904,38 C906,28 916,16 920,12Z" fill={darkCanopy} opacity="0.8" />
