@@ -62,6 +62,7 @@ interface Profile {
   trail_map_visible: boolean | null;
   spotify_track_id: string | null;
   spotify_preview_url: string | null;
+  cabin_player_type: string | null;
 }
 
 const Cabin = () => {
