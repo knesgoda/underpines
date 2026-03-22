@@ -40,7 +40,7 @@ const SPINE_COLORS = [
   '#0c4a6e', '#365314',
 ];
 
-const WidgetShelf = ({ userId, isPinesPlus, atmosphere, songTitle, songArtist, spotifyTrackId, spotifyPreviewUrl, onUpdate }: WidgetShelfProps) => {
+const WidgetShelf = ({ userId, isPinesPlus, atmosphere, songTitle, songArtist, spotifyTrackId, spotifyPreviewUrl, playerType, onUpdate }: WidgetShelfProps) => {
   const { user } = useAuth();
   const isOwner = user?.id === userId;
   const [bookshelf, setBookshelf] = useState<BookEntry[]>([]);
