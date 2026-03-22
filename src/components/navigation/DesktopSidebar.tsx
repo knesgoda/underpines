@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
+import { useCampfireUnread } from '@/hooks/useCampfireUnread';
 import { supabase } from '@/integrations/supabase/client';
 import { Home, Tent, Flame, Search, Settings, Plus, Users, Trees, Mail } from 'lucide-react';
 import logo from '@/assets/logo.png';
@@ -64,9 +65,15 @@ const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) =>
 const DesktopSidebar = () => {
   const { user, signOut } = useAuth();
   const { setComposerOpen } = useNavigation();
+  const { hasUnread, markSeen } = useCampfireUnread();
   const location = useLocation();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<{ display_name: string; handle: string; avatar_url: string | null; default_avatar_key: string | null } | null>(null);
+
+  // Mark seen when on campfires
+  useEffect(() => {
+    if (location.pathname.startsWith('/campfires')) markSeen();
+  }, [location.pathname, markSeen]);
 
   useEffect(() => {
     if (!user) return;
@@ -131,6 +138,8 @@ const DesktopSidebar = () => {
             );
           }
 
+          const isFiresUnread = item.path === '/campfires' && hasUnread;
+
           return (
             <Link
               key={item.label}
@@ -144,8 +153,11 @@ const DesktopSidebar = () => {
               {active && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
               )}
-              <ItemIcon size={18} />
-              <span>{item.label}</span>
+              <ItemIcon
+                size={18}
+                className={isFiresUnread ? 'text-orange-500 fill-orange-500 drop-shadow-[0_0_4px_hsl(25,95%,53%)]' : undefined}
+              />
+              <span className={isFiresUnread ? 'text-orange-500' : undefined}>{item.label}</span>
             </Link>
           );
         })}
