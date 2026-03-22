@@ -677,9 +677,6 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
           </g>
         );
       }
-          </g>
-        );
-      }
       default: return null;
     }
   };
