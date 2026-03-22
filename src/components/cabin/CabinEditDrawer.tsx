@@ -14,6 +14,8 @@ import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { getBiomeFromLocation } from '@/lib/biomeMapping';
+import { PlayerSelector } from '@/components/cabin/VintageRadio';
+import type { PlayerType } from '@/components/cabin/VintageRadio';
 
 const COUNTRIES = [
   { code: 'AU', name: 'Australia' },
@@ -82,6 +84,7 @@ interface Profile {
   trail_map_visible: boolean | null;
   spotify_track_id: string | null;
   spotify_preview_url: string | null;
+  cabin_player_type: string | null;
 }
 
 interface CabinEditDrawerProps {
@@ -833,6 +836,21 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                       An interactive world map with your "Been here" and "Want to go" pins.
                     </p>
                   </div>
+                  <div className="rounded-xl border border-border p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span>🎵</span>
+                      <span className="text-sm font-body font-medium text-foreground">Your player</span>
+                    </div>
+                    <PlayerSelector
+                      current={(profile.cabin_player_type as PlayerType) || 'radio'}
+                      isPinesPlus={profile.is_pines_plus}
+                      onChange={async (type) => {
+                        await supabase.from('profiles').update({ cabin_player_type: type } as any).eq('id', profile.id);
+                        onUpdate();
+                      }}
+                      accent={getAtmosphere(profile.atmosphere).accent}
+                    />
+                  </div>
                 </div>
               </div>
             ) : (
@@ -842,26 +860,32 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                 <p className="text-sm text-muted-foreground font-body">Available with Pines+</p>
                 <p className="text-xs text-muted-foreground font-body leading-relaxed">
                   Personalize your Cabin with a bookshelf,<br />
-                  vinyl collection, trail map, and more.
+                  trail map, music player, and more.
                 </p>
+                <div className="mt-4 rounded-xl border border-border p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span>🎵</span>
+                    <span className="text-sm font-body font-medium text-foreground">Your player</span>
+                  </div>
+                  <PlayerSelector
+                    current="radio"
+                    isPinesPlus={false}
+                    onChange={() => {}}
+                    accent="hsl(var(--primary))"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground font-body">
                   $10/year — less than a coffee
                 </p>
                 <div className="flex gap-2 justify-center mt-4">
                   <Button
-                    onClick={() => {
-                      onClose();
-                      navigate('/settings/subscription');
-                    }}
+                    onClick={() => { onClose(); navigate('/settings/subscription'); }}
                     className="rounded-pill text-sm font-body bg-primary text-primary-foreground"
                   >
                     $10/year
                   </Button>
                   <Button
-                    onClick={() => {
-                      onClose();
-                      navigate('/settings/subscription');
-                    }}
+                    onClick={() => { onClose(); navigate('/settings/subscription'); }}
                     variant="outline"
                     className="rounded-pill text-sm font-body"
                   >

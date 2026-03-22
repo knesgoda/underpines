@@ -2339,6 +2339,7 @@ export type Database = {
           biome: string | null
           birth_year: number | null
           cabin_mood: string | null
+          cabin_player_type: string | null
           city: string | null
           country_code: string | null
           created_at: string | null
@@ -2396,6 +2397,7 @@ export type Database = {
           biome?: string | null
           birth_year?: number | null
           cabin_mood?: string | null
+          cabin_player_type?: string | null
           city?: string | null
           country_code?: string | null
           created_at?: string | null
@@ -2453,6 +2455,7 @@ export type Database = {
           biome?: string | null
           birth_year?: number | null
           cabin_mood?: string | null
+          cabin_player_type?: string | null
           city?: string | null
           country_code?: string | null
           created_at?: string | null

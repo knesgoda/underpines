@@ -62,6 +62,7 @@ interface Profile {
   trail_map_visible: boolean | null;
   spotify_track_id: string | null;
   spotify_preview_url: string | null;
+  cabin_player_type: string | null;
 }
 
 const Cabin = () => {
@@ -372,7 +373,7 @@ const Cabin = () => {
           <CabinFeaturedPhotos profile={profile} atmos={atmos} />
           <CabinMoments profile={profile} atmos={atmos} />
           <CabinPinnedMemory profile={profile} atmos={atmos} />
-          {profile.is_pines_plus && <div className="py-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} songTitle={profile.pinned_song_title} songArtist={profile.pinned_song_artist} spotifyTrackId={profile.spotify_track_id} spotifyPreviewUrl={profile.spotify_preview_url} onUpdate={fetchProfile} /></div>}
+          {profile.is_pines_plus && <div className="py-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} songTitle={profile.pinned_song_title} songArtist={profile.pinned_song_artist} spotifyTrackId={profile.spotify_track_id} spotifyPreviewUrl={profile.spotify_preview_url} playerType={profile.cabin_player_type} onUpdate={fetchProfile} /></div>}
           <div className="py-12 space-y-6"><CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} /></div>
         </div>
 
@@ -403,7 +404,7 @@ const Cabin = () => {
             </div>
             <div className="md:col-span-2 space-y-6">
               <CollectionsShelf profileId={profile.id} handle={profile.handle} isOwner={isOwner} atmosphere={atmos} />
-              {profile.is_pines_plus && <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} songTitle={profile.pinned_song_title} songArtist={profile.pinned_song_artist} spotifyTrackId={profile.spotify_track_id} spotifyPreviewUrl={profile.spotify_preview_url} onUpdate={fetchProfile} />}
+              {profile.is_pines_plus && <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} songTitle={profile.pinned_song_title} songArtist={profile.pinned_song_artist} spotifyTrackId={profile.spotify_track_id} spotifyPreviewUrl={profile.spotify_preview_url} playerType={profile.cabin_player_type} onUpdate={fetchProfile} />}
             </div>
           </div>
         </div>
@@ -445,7 +446,7 @@ const Cabin = () => {
             <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
           </div>
 
-          {profile.is_pines_plus && <div className="pb-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} songTitle={profile.pinned_song_title} songArtist={profile.pinned_song_artist} spotifyTrackId={profile.spotify_track_id} spotifyPreviewUrl={profile.spotify_preview_url} onUpdate={fetchProfile} /></div>}
+          {profile.is_pines_plus && <div className="pb-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} songTitle={profile.pinned_song_title} songArtist={profile.pinned_song_artist} spotifyTrackId={profile.spotify_track_id} spotifyPreviewUrl={profile.spotify_preview_url} playerType={profile.cabin_player_type} onUpdate={fetchProfile} /></div>}
         </div>
 
       ) : (
@@ -497,7 +498,7 @@ const Cabin = () => {
             </div>
             <div className="space-y-6">
               <CollectionsShelf profileId={profile.id} handle={profile.handle} isOwner={isOwner} atmosphere={atmos} />
-              {profile.is_pines_plus && <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} songTitle={profile.pinned_song_title} songArtist={profile.pinned_song_artist} spotifyTrackId={profile.spotify_track_id} spotifyPreviewUrl={profile.spotify_preview_url} onUpdate={fetchProfile} />}
+              {profile.is_pines_plus && <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} songTitle={profile.pinned_song_title} songArtist={profile.pinned_song_artist} spotifyTrackId={profile.spotify_track_id} spotifyPreviewUrl={profile.spotify_preview_url} playerType={profile.cabin_player_type} onUpdate={fetchProfile} />}
             </div>
           </div>
           
