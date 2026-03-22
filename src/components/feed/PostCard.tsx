@@ -371,6 +371,75 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
   );
 };
 
+const REACTION_ICONS: Record<string, string> = {
+  fire: '🔥', grounded: '🌲', warmth: '💚', laughed: '😂',
+  noted: '👀', present: '🫂', heavy: '🌧️', delight: '✨',
+};
+
+const ReactionSummary = ({ reactions, isOwner }: {
+  reactions: { reaction_type: string; user_id: string }[];
+  isOwner: boolean;
+}) => {
+  const [reactorProfiles, setReactorProfiles] = useState<Record<string, { avatar_url: string | null; default_avatar_key: string | null; display_name: string }>>({});
+
+  // For owner view, fetch reactor profiles
+  useEffect(() => {
+    if (!isOwner || reactions.length === 0) return;
+    const userIds = [...new Set(reactions.map(r => r.user_id))];
+    if (userIds.length === 0) return;
+
+    supabase
+      .from('profiles')
+      .select('id, display_name, avatar_url, default_avatar_key')
+      .in('id', userIds)
+      .then(({ data }) => {
+        if (data) {
+          const map: Record<string, any> = {};
+          data.forEach(p => { map[p.id] = p; });
+          setReactorProfiles(map);
+        }
+      });
+  }, [isOwner, reactions]);
+
+  if (reactions.length === 0) return null;
+
+  // Owner view: avatar + emoji pairs
+  if (isOwner) {
+    return (
+      <div className="flex flex-wrap items-center gap-1.5 mt-3">
+        {reactions.map((r, i) => {
+          const profile = reactorProfiles[r.user_id];
+          const emoji = REACTION_ICONS[r.reaction_type] || '💚';
+          return (
+            <div key={`${r.user_id}-${r.reaction_type}-${i}`} className="flex items-center gap-0.5">
+              <UserAvatar
+                avatarUrl={profile?.avatar_url}
+                defaultAvatarKey={profile?.default_avatar_key}
+                displayName={profile?.display_name || ''}
+                size={18}
+              />
+              <span className="text-xs">{emoji}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Non-owner view: unique emoji icons only
+  const uniqueEmojis = [...new Set(reactions.map(r => r.reaction_type))]
+    .map(type => REACTION_ICONS[type])
+    .filter(Boolean);
+
+  return (
+    <div className="flex items-center gap-1 mt-3">
+      {uniqueEmojis.map((emoji, i) => (
+        <span key={i} className="text-sm">{emoji}</span>
+      ))}
+    </div>
+  );
+};
+
 const MenuBtn = ({ children, onClick, destructive }: { children: React.ReactNode; onClick: () => void; destructive?: boolean }) => (
   <button
     onClick={onClick}
