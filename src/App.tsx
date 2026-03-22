@@ -134,6 +134,7 @@ const App = () => (
                       <Route path="/:handle/collections" element={<CollectionsList />} />
                       <Route path="/:handle/collections/:id" element={<CollectionView />} />
                       <Route path="/wrapped/:year" element={<Wrapped />} />
+                      <Route path="/post/:id" element={<PostDetail />} />
                       <Route path="/:handle" element={<Cabin />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
