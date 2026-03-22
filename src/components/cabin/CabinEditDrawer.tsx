@@ -848,7 +848,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                         await supabase.from('profiles').update({ cabin_player_type: type } as any).eq('id', profile.id);
                         onUpdate();
                       }}
-                      accent={getAtmosphere(profile.atmosphere, profile.accent_color).accent}
+                      accent={getAtmosphere(profile.atmosphere).accent}
                     />
                   </div>
                 </div>
