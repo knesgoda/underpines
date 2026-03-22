@@ -324,6 +324,11 @@ const WidgetShelf = ({ userId, isPinesPlus, atmosphere }: WidgetShelfProps) => {
           </div>
         )}
       </div>
+
+      {/* Trail Map Widget */}
+      {trailMapVisible && (
+        <TrailMap userId={userId} atmosphere={atmosphere} />
+      )}
     </div>
   );
 };
