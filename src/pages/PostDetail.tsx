@@ -363,8 +363,9 @@ const PostDetail = () => {
       {/* Lightbox */}
       {lightboxImages.length > 0 && (
         <LightboxViewer
+          open={true}
           images={lightboxImages}
-          initialIndex={lightboxIndex}
+          startIndex={lightboxIndex}
           onClose={() => setLightboxImages([])}
         />
       )}
