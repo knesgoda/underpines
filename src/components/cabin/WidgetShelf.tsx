@@ -43,6 +43,19 @@ const WidgetShelf = ({ userId, isPinesPlus, atmosphere }: WidgetShelfProps) => {
   const [addingNote, setAddingNote] = useState(false);
   const [newBook, setNewBook] = useState({ title: '', author: '' });
   const [newNote, setNewNote] = useState('');
+  const [trailMapVisible, setTrailMapVisible] = useState(false);
+
+  useEffect(() => {
+    const fetchTrailMapVisibility = async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('trail_map_visible')
+        .eq('id', userId)
+        .single();
+      if (data) setTrailMapVisible(data.trail_map_visible ?? true);
+    };
+    fetchTrailMapVisibility();
+  }, [userId]);
 
   useEffect(() => {
     const fetchWidgets = async () => {
