@@ -566,8 +566,8 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
               <ellipse cx={cx + 10 * s} cy={baseY - 24 * s} rx={2.5 * s} ry={1.8 * s} fill={db_dark} opacity="0.22" />
               <ellipse cx={cx + 3 * s} cy={baseY - 22 * s} rx={2 * s} ry={1.5 * s} fill={db_dark} opacity="0.18" />
               {/* Drooping foliage at far edges */}
-              <ellipse cx={cx - 22 * s} cy={baseY - 20 * s} rx={3 * s} ry={2.5 * s} fill={da_dark} opacity="0.4" />
-              <ellipse cx={cx + 22 * s} cy={baseY - 20 * s} rx={3 * s} ry={2.5 * s} fill={da_dark} opacity="0.35" />
+              <ellipse cx={cx - 22 * s} cy={baseY - 20 * s} rx={3 * s} ry={2.5 * s} fill={db_dark} opacity="0.4" />
+              <ellipse cx={cx + 22 * s} cy={baseY - 20 * s} rx={3 * s} ry={2.5 * s} fill={db_dark} opacity="0.35" />
             </g>
           </g>
         );
