@@ -103,7 +103,7 @@ export const atmospheres: Atmosphere[] = [
     text: '#f0fdf4',
     border: '#166534',
     description: 'Dark greens, shadows, moody',
-    free: false,
+    free: true,
   },
   {
     key: 'first-snow',
