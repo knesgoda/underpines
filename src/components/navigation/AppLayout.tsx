@@ -21,6 +21,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const location = useLocation();
   const { suspension, checking } = useSuspensionCheck(user?.id);
+  const { isFounder } = useAdminCheck();
   const [needsAgeGate, setNeedsAgeGate] = useState(false);
   const [ageGateChecked, setAgeGateChecked] = useState(false);
 
