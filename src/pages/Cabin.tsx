@@ -364,7 +364,11 @@ const Cabin = () => {
              <CabinAboutSection profile={profile} atmos={atmos} centered />
              <CabinPinnedSong profile={profile} atmos={atmos} centered />
              <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
+             {!isOwner && <CabinFriendsSince profileId={profile.id} atmos={atmos} />}
            </div>
+          <CabinFeaturedPhotos profile={profile} atmos={atmos} />
+          <CabinMoments profile={profile} atmos={atmos} />
+          <CabinPinnedMemory profile={profile} atmos={atmos} />
           {profile.is_pines_plus && <div className="py-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} /></div>}
           <div className="py-12 space-y-6"><CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} /></div>
         </div>
