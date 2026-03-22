@@ -36,6 +36,13 @@ const SubscriptionPage = () => {
 
   useEffect(() => { checkSub(); }, [user]);
 
+  // Re-check when page regains focus (e.g. returning from Stripe checkout)
+  useEffect(() => {
+    const onFocus = () => { checkSub(); };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [user]);
+
   const handleUpgrade = async (plan: 'monthly' | 'annual') => {
     if (!user) return;
     setActionLoading(true);
