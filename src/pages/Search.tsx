@@ -68,9 +68,8 @@ const Search = () => {
     loadCtx();
   }, [user]);
 
-  /* Debounced search */
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+  /* Search only on explicit submit */
+  const handleSearch = useCallback(() => {
     if (!query.trim()) {
       setPosts([]);
       setPeople([]);
@@ -78,10 +77,7 @@ const Search = () => {
       setCampfireResults([]);
       return;
     }
-    debounceRef.current = setTimeout(() => {
-      runSearch(query.trim());
-    }, 400);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+    runSearch(query.trim());
   }, [query, activeTab]);
 
   const runSearch = useCallback(async (q: string) => {
