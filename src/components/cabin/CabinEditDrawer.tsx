@@ -186,7 +186,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
   const atmos = getAtmosphere(form.atmosphere, theme);
 
   const drawerContent = (
-    <div className="flex flex-col h-full bg-card">
+    <div className="flex flex-col min-h-0 flex-1 bg-card">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border">
         <div className="flex items-center gap-3">
@@ -553,9 +553,10 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl shadow-card max-h-sheet"
+              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl shadow-card flex flex-col"
+              style={{ maxHeight: '90dvh', paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
-              <div className="w-12 h-1.5 rounded-full bg-border mx-auto mt-3" />
+              <div className="w-12 h-1.5 rounded-full bg-border mx-auto mt-3 mb-1 shrink-0" />
               {drawerContent}
             </motion.div>
           ) : (
