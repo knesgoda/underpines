@@ -17,6 +17,7 @@ interface Reply {
 
 interface ReplyThreadProps {
   postId: string;
+  autoExpand?: boolean;
 }
 
 const ReplyThread = ({ postId }: ReplyThreadProps) => {
