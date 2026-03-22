@@ -628,6 +628,45 @@ const CabinMetaRow = ({ profile, temperature, tempUnit, atmos, centered }: {
   </div>
 );
 
+const CabinOwnerActions = ({ isOwner, user, profile, atmos, onEditCabin, navigate, centered, cabinMenuOpen, setCabinMenuOpen }: {
+  isOwner: boolean; user: any; profile: Profile; atmos: any; onEditCabin: () => void; navigate: (path: string) => void; centered?: boolean;
+  cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void;
+}) => {
+  if (isOwner) {
+    return (
+      <div className={`flex items-center gap-2 mt-3 ${centered ? 'justify-center' : ''}`}>
+        <button
+          onClick={() => navigate('/settings')}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-body text-muted-foreground hover:bg-muted transition-colors"
+        >
+          <Settings size={13} />
+          <span className="hidden md:inline">Settings</span>
+        </button>
+        <button
+          onClick={onEditCabin}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-body text-muted-foreground hover:bg-muted transition-colors"
+        >
+          <Pencil size={13} />
+          <span className="hidden md:inline">Edit Cabin</span>
+        </button>
+      </div>
+    );
+  }
+  if (!user || !profile) return null;
+  return (
+    <div className={`flex items-center gap-2 mt-3 ${centered ? 'justify-center' : ''}`}>
+      <CircleButton profileId={profile.id} profileName={profile.display_name} />
+      <CabinMoreMenu
+        targetUserId={profile.id}
+        targetDisplayName={profile.display_name}
+        open={cabinMenuOpen}
+        setOpen={setCabinMenuOpen}
+        navigate={navigate}
+      />
+    </div>
+  );
+};
+
 const CabinPinnedSong = ({ profile, atmos, centered }: { profile: Profile; atmos: any; centered?: boolean }) => {
   if (!profile.pinned_song_title) return null;
   return (
