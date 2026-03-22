@@ -138,6 +138,8 @@ const DesktopSidebar = () => {
             );
           }
 
+          const isFiresUnread = item.path === '/campfires' && hasUnread;
+
           return (
             <Link
               key={item.label}
@@ -151,8 +153,11 @@ const DesktopSidebar = () => {
               {active && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
               )}
-              <ItemIcon size={18} />
-              <span>{item.label}</span>
+              <ItemIcon
+                size={18}
+                className={isFiresUnread ? 'text-orange-500 fill-orange-500 drop-shadow-[0_0_4px_hsl(25,95%,53%)]' : undefined}
+              />
+              <span className={isFiresUnread ? 'text-orange-500' : undefined}>{item.label}</span>
             </Link>
           );
         })}
