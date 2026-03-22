@@ -201,7 +201,7 @@ const Lantern = () => {
                     navigate={navigate}
                   />
                 ) : group.type === 'reaction_batch' ? (
-                  <ReactionGroup items={group.items} />
+                  <ReactionGroup items={group.items} navigate={navigate} />
                 ) : group.type === 'invite_accepted' ? (
                   <InviteGroup items={group.items} actors={actors} navigate={navigate} />
                 ) : (
