@@ -835,7 +835,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       ref={sceneRef}
       className={`cabin-scene-root relative w-full overflow-hidden rounded-xl${sunObscured ? ' sun-obscured' : ''}${lightningFlash > 0 ? ' lightning-flash' : ''}`}
       style={{
-        aspectRatio: 'var(--cabin-scene-ratio, 3/1)',
+        maxHeight: 'var(--cabin-scene-max-h, 280px)',
         ...biomeConfig.cssVariables,
         // Wet-ground override when raining
         ...(weather.isRaining ? { '--biome-fg-ground': darkenColor(biomeConfig.cssVariables['--biome-fg-ground'] || '#2d5a3d') } : {}),
@@ -843,8 +843,10 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       } as React.CSSProperties}
     >
       <style>{`
-        @media (max-width: 767px) { :root { --cabin-scene-ratio: 2/1; } }
-        @media (min-width: 768px) { :root { --cabin-scene-ratio: 3/1; } }
+        :root { --cabin-scene-max-h: 280px; }
+        @media (max-width: 767px) { :root { --cabin-scene-max-h: 200px; } }
+        .cabin-scene-root { aspect-ratio: 3/1; }
+        @media (max-width: 767px) { .cabin-scene-root { aspect-ratio: 2/1; } }
         ${SCENE_CSS}
       `}</style>
 
