@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -43,7 +43,7 @@ const Search = () => {
   const [campfireResults, setCampfireResults] = useState<any[]>([]);
   const [circleIds, setCircleIds] = useState<string[]>([]);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
 
   /* Load circle ids + pines+ status */
   useEffect(() => {
@@ -68,9 +68,8 @@ const Search = () => {
     loadCtx();
   }, [user]);
 
-  /* Debounced search */
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+  /* Search only on explicit submit */
+  const handleSearch = useCallback(() => {
     if (!query.trim()) {
       setPosts([]);
       setPeople([]);
@@ -78,10 +77,7 @@ const Search = () => {
       setCampfireResults([]);
       return;
     }
-    debounceRef.current = setTimeout(() => {
-      runSearch(query.trim());
-    }, 400);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+    runSearch(query.trim());
   }, [query, activeTab]);
 
   const runSearch = useCallback(async (q: string) => {
@@ -198,7 +194,7 @@ const Search = () => {
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
       {/* Search Input */}
-      <div className="relative mb-2">
+      <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative mb-2">
         <SearchIcon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
@@ -206,7 +202,7 @@ const Search = () => {
           placeholder="Search the Pines..."
           className="pl-10 font-body bg-card border-border"
         />
-      </div>
+      </form>
       <p className="text-[11px] font-body text-muted-foreground/60 mb-4 pl-1">
         Your searches aren't saved or tracked.
       </p>

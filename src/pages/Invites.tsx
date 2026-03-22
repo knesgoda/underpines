@@ -13,10 +13,11 @@ import UserAvatar from '@/components/UserAvatar';
 const THIRTY_DAYS_MS = 30 * 86400000;
 
 const EARNING_CRITERIA = [
-  'Publish your first 10 posts',
-  'Keep an active Campfire for 30 days',
-  'Be a Trailblazer in a Camp for 60 days',
-  'Reach your one-year anniversary',
+  { text: 'Someone accepts your invite within 72 hours', slots: '+3' },
+  { text: 'Publish your first 10 posts', slots: '+1' },
+  { text: 'Keep an active Campfire for 30+ days', slots: '+1' },
+  { text: '3 of your invitees become active members', slots: '+2' },
+  { text: 'Your account turns 1 year old', slots: '+3' },
 ];
 
 const Invites = () => {
@@ -275,10 +276,11 @@ const Invites = () => {
                   Your invites are all out in the world. Here's how to earn more:
                 </p>
                 <ul className="space-y-2">
-                  {EARNING_CRITERIA.map((criterion) => (
-                    <li key={criterion} className="flex items-start gap-2 text-sm font-body text-muted-foreground">
+                  {EARNING_CRITERIA.map((c) => (
+                    <li key={c.text} className="flex items-start gap-2 text-sm font-body text-muted-foreground">
                       <span className="text-primary mt-0.5">🌲</span>
-                      {criterion}
+                      <span className="flex-1">{c.text}</span>
+                      <span className="text-primary/70 font-medium shrink-0">{c.slots}</span>
                     </li>
                   ))}
                 </ul>
@@ -328,10 +330,11 @@ const Invites = () => {
                 Your invites are coming soon. Here's how you'll earn them:
               </p>
               <ul className="space-y-2">
-                {EARNING_CRITERIA.map((criterion) => (
-                  <li key={criterion} className="flex items-start gap-2 text-sm font-body text-muted-foreground">
+                {EARNING_CRITERIA.map((c) => (
+                  <li key={c.text} className="flex items-start gap-2 text-sm font-body text-muted-foreground">
                     <span className="text-primary mt-0.5">🌲</span>
-                    {criterion}
+                    <span className="flex-1">{c.text}</span>
+                    <span className="text-primary/70 font-medium shrink-0">{c.slots}</span>
                   </li>
                 ))}
               </ul>
