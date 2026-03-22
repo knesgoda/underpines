@@ -81,6 +81,24 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
     if (data) setReactions(data);
   };
 
+  // Realtime: listen for reaction changes on this post
+  useEffect(() => {
+    const channel = supabase
+      .channel(`post-reactions-${post.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'reactions', filter: `post_id=eq.${post.id}` },
+        () => { fetchReactions(); }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [post.id]);
+
+  // Unique emoji types present (excluding current user's own for the summary)
+  const summaryEmojis = [...new Set(reactions.map(r => r.reaction_type))]
+    .map(type => REACTION_ICONS[type])
+    .filter(Boolean);
+
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const handleDelete = async () => {
