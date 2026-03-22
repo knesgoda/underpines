@@ -418,6 +418,9 @@ function ForegroundGround({ renderTime, windIntensity }: { renderTime: RenderTim
     } as React.CSSProperties}>
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Back grass line — slightly lighter, adds depth */}
+        <path d="M0,82 C80,80 180,83 300,81 C420,79 550,83 680,81 C800,79 920,82 1000,81 L1000,85 L0,85 Z"
+          fill={grassColor} opacity="0.35" style={{ transition: 'fill 3s ease' }} />
         <g style={{ transformOrigin: '500px 85px', animation: grassAnim }}>
           <path d={`M0,85 ${grassSpikes} L1000,85 L1000,85 L0,85 Z`}
             fill={grassColor} opacity="0.7" style={{ transition: 'fill 3s ease' }} />
