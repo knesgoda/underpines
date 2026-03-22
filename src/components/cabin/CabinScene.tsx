@@ -489,27 +489,96 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
       : {};
 
     switch (type) {
-      case 'conifer-a':
+      case 'conifer-a': {
+        // Ponderosa pine — tall straight trunk visible through open canopy, foliage clusters at branch tips
+        const pa_dark = 'var(--biome-canopy-shadow, #2d5a30)';
+        const pa_light = 'var(--biome-canopy-highlight, #4a9e52)';
+        const pTrunk = '#8B5A2B'; // warm reddish-brown bark
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
-            <rect x={cx - 1.2 * s} y={baseY - 18 * s} width={2.4 * s} height={18 * s} fill={trunkColor} rx={0.5} />
-            <path style={flutterAnim} d={`M${cx},${baseY - 38 * s} C${cx + 2 * s},${baseY - 34 * s} ${cx + 8 * s},${baseY - 28 * s} ${cx + 10 * s},${baseY - 22 * s} C${cx + 7 * s},${baseY - 20 * s} ${cx + 11 * s},${baseY - 14 * s} ${cx + 12 * s},${baseY - 8 * s} L${cx - 12 * s},${baseY - 8 * s} C${cx - 11 * s},${baseY - 14 * s} ${cx - 7 * s},${baseY - 20 * s} ${cx - 10 * s},${baseY - 22 * s} C${cx - 8 * s},${baseY - 28 * s} ${cx - 2 * s},${baseY - 34 * s} ${cx},${baseY - 38 * s}Z`} fill={canopyColor} />
+            {/* Tall straight trunk — slightly tapered, warm bark color */}
+            <path d={`M${cx - 1.8 * s},${baseY} L${cx + 1.8 * s},${baseY} L${cx + 1.2 * s},${baseY - 36 * s} L${cx - 1.2 * s},${baseY - 36 * s} Z`} fill={pTrunk} />
+            {/* Major branches — irregular, angled */}
+            <line x1={cx} y1={baseY - 28 * s} x2={cx - 10 * s} y2={baseY - 26 * s} stroke={pTrunk} strokeWidth={0.8 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 24 * s} x2={cx + 12 * s} y2={baseY - 22 * s} stroke={pTrunk} strokeWidth={0.7 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 18 * s} x2={cx - 8 * s} y2={baseY - 15 * s} stroke={pTrunk} strokeWidth={0.9 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 14 * s} x2={cx + 9 * s} y2={baseY - 12 * s} stroke={pTrunk} strokeWidth={0.8 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 32 * s} x2={cx + 7 * s} y2={baseY - 30 * s} stroke={pTrunk} strokeWidth={0.6 * s} strokeLinecap="round" />
+            <g style={flutterAnim}>
+              {/* Foliage clusters at branch tips — irregular, airy */}
+              <ellipse cx={cx} cy={baseY - 38 * s} rx={5 * s} ry={4 * s} fill={canopyColor} opacity="0.9" />
+              <ellipse cx={cx + 2 * s} cy={baseY - 36 * s} rx={4 * s} ry={3 * s} fill={pa_light} opacity="0.3" />
+              <ellipse cx={cx - 10 * s} cy={baseY - 27 * s} rx={5 * s} ry={3.5 * s} fill={canopyColor} opacity="0.85" />
+              <ellipse cx={cx - 9 * s} cy={baseY - 28 * s} rx={3 * s} ry={2 * s} fill={pa_light} opacity="0.25" />
+              <ellipse cx={cx + 12 * s} cy={baseY - 23 * s} rx={5.5 * s} ry={3.5 * s} fill={canopyColor} opacity="0.8" />
+              <ellipse cx={cx + 13 * s} cy={baseY - 24 * s} rx={3 * s} ry={2 * s} fill={pa_light} opacity="0.2" />
+              <ellipse cx={cx - 8 * s} cy={baseY - 16 * s} rx={5 * s} ry={3 * s} fill={canopyColor} opacity="0.8" />
+              <ellipse cx={cx + 9 * s} cy={baseY - 13 * s} rx={4.5 * s} ry={3 * s} fill={canopyColor} opacity="0.75" />
+              <ellipse cx={cx + 7 * s} cy={baseY - 31 * s} rx={4 * s} ry={3 * s} fill={canopyColor} opacity="0.8" />
+              <ellipse cx={cx + 8 * s} cy={baseY - 32 * s} rx={2.5 * s} ry={1.8 * s} fill={pa_light} opacity="0.2" />
+              {/* Shadow depth within clusters */}
+              <ellipse cx={cx - 3 * s} cy={baseY - 34 * s} rx={2 * s} ry={1.5 * s} fill={pa_dark} opacity="0.25" />
+              <ellipse cx={cx + 5 * s} cy={baseY - 20 * s} rx={2 * s} ry={1.5 * s} fill={pa_dark} opacity="0.2" />
+            </g>
           </g>
         );
-      case 'conifer-b':
+      }
+      case 'conifer-b': {
+        // Taller ponderosa — more foliage mass, same open structure
+        const pb_dark = 'var(--biome-canopy-shadow, #2d5a30)';
+        const pb_light = 'var(--biome-canopy-highlight, #4a9e52)';
+        const pTrunkB = '#8B5A2B';
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
-            <rect x={cx - 1.5 * s} y={baseY - 20 * s} width={3 * s} height={20 * s} fill={trunkColor} rx={0.6} />
-            <path style={flutterAnim} d={`M${cx},${baseY - 44 * s} C${cx + 3 * s},${baseY - 38 * s} ${cx + 6 * s},${baseY - 32 * s} ${cx + 9 * s},${baseY - 26 * s} C${cx + 6 * s},${baseY - 24 * s} ${cx + 10 * s},${baseY - 18 * s} ${cx + 13 * s},${baseY - 10 * s} C${cx + 10 * s},${baseY - 9 * s} ${cx + 14 * s},${baseY - 4 * s} ${cx + 14 * s},${baseY - 4 * s} L${cx - 14 * s},${baseY - 4 * s} C${cx - 14 * s},${baseY - 4 * s} ${cx - 10 * s},${baseY - 9 * s} ${cx - 13 * s},${baseY - 10 * s} C${cx - 10 * s},${baseY - 18 * s} ${cx - 6 * s},${baseY - 24 * s} ${cx - 9 * s},${baseY - 26 * s} C${cx - 6 * s},${baseY - 32 * s} ${cx - 3 * s},${baseY - 38 * s} ${cx},${baseY - 44 * s}Z`} fill={canopyColor} />
+            <path d={`M${cx - 2.2 * s},${baseY} L${cx + 2.2 * s},${baseY} L${cx + 1.4 * s},${baseY - 42 * s} L${cx - 1.4 * s},${baseY - 42 * s} Z`} fill={pTrunkB} />
+            {/* Branch structure */}
+            <line x1={cx} y1={baseY - 34 * s} x2={cx - 12 * s} y2={baseY - 31 * s} stroke={pTrunkB} strokeWidth={0.9 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 30 * s} x2={cx + 14 * s} y2={baseY - 27 * s} stroke={pTrunkB} strokeWidth={0.8 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 24 * s} x2={cx - 11 * s} y2={baseY - 20 * s} stroke={pTrunkB} strokeWidth={1 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 20 * s} x2={cx + 13 * s} y2={baseY - 17 * s} stroke={pTrunkB} strokeWidth={0.9 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 14 * s} x2={cx - 10 * s} y2={baseY - 10 * s} stroke={pTrunkB} strokeWidth={1 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 10 * s} x2={cx + 11 * s} y2={baseY - 7 * s} stroke={pTrunkB} strokeWidth={0.9 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 38 * s} x2={cx + 8 * s} y2={baseY - 36 * s} stroke={pTrunkB} strokeWidth={0.6 * s} strokeLinecap="round" />
+            <g style={flutterAnim}>
+              {/* Crown top cluster */}
+              <ellipse cx={cx} cy={baseY - 44 * s} rx={6 * s} ry={4.5 * s} fill={canopyColor} opacity="0.9" />
+              <ellipse cx={cx + 1 * s} cy={baseY - 45 * s} rx={3.5 * s} ry={2.5 * s} fill={pb_light} opacity="0.3" />
+              {/* Branch-tip foliage clusters */}
+              <ellipse cx={cx - 12 * s} cy={baseY - 32 * s} rx={6 * s} ry={4 * s} fill={canopyColor} opacity="0.85" />
+              <ellipse cx={cx + 14 * s} cy={baseY - 28 * s} rx={6.5 * s} ry={4 * s} fill={canopyColor} opacity="0.8" />
+              <ellipse cx={cx + 8 * s} cy={baseY - 37 * s} rx={5 * s} ry={3.5 * s} fill={canopyColor} opacity="0.8" />
+              <ellipse cx={cx - 11 * s} cy={baseY - 21 * s} rx={6 * s} ry={3.5 * s} fill={canopyColor} opacity="0.8" />
+              <ellipse cx={cx + 13 * s} cy={baseY - 18 * s} rx={5.5 * s} ry={3.5 * s} fill={canopyColor} opacity="0.75" />
+              <ellipse cx={cx - 10 * s} cy={baseY - 11 * s} rx={5.5 * s} ry={3 * s} fill={canopyColor} opacity="0.75" />
+              <ellipse cx={cx + 11 * s} cy={baseY - 8 * s} rx={5 * s} ry={3 * s} fill={canopyColor} opacity="0.7" />
+              {/* Highlights */}
+              <ellipse cx={cx - 11 * s} cy={baseY - 33 * s} rx={3 * s} ry={2 * s} fill={pb_light} opacity="0.25" />
+              <ellipse cx={cx + 15 * s} cy={baseY - 29 * s} rx={3 * s} ry={2 * s} fill={pb_light} opacity="0.2" />
+              {/* Depth shadows */}
+              <ellipse cx={cx + 2 * s} cy={baseY - 26 * s} rx={2.5 * s} ry={1.8 * s} fill={pb_dark} opacity="0.2" />
+              <ellipse cx={cx - 4 * s} cy={baseY - 16 * s} rx={2 * s} ry={1.5 * s} fill={pb_dark} opacity="0.18" />
+            </g>
           </g>
         );
-      case 'conifer-c':
+      }
+      case 'conifer-c': {
+        // Smaller young ponderosa
+        const pTrunkC = '#8B5A2B';
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
-            <rect x={cx - 1 * s} y={baseY - 14 * s} width={2 * s} height={14 * s} fill={trunkColor} rx={0.4} />
-            <path style={flutterAnim} d={`M${cx},${baseY - 30 * s} C${cx + 2 * s},${baseY - 26 * s} ${cx + 7 * s},${baseY - 18 * s} ${cx + 8 * s},${baseY - 12 * s} L${cx - 8 * s},${baseY - 12 * s} C${cx - 7 * s},${baseY - 18 * s} ${cx - 2 * s},${baseY - 26 * s} ${cx},${baseY - 30 * s}Z`} fill={canopyColor} />
+            <path d={`M${cx - 1.2 * s},${baseY} L${cx + 1.2 * s},${baseY} L${cx + 0.8 * s},${baseY - 28 * s} L${cx - 0.8 * s},${baseY - 28 * s} Z`} fill={pTrunkC} />
+            <line x1={cx} y1={baseY - 20 * s} x2={cx - 7 * s} y2={baseY - 18 * s} stroke={pTrunkC} strokeWidth={0.6 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 16 * s} x2={cx + 8 * s} y2={baseY - 14 * s} stroke={pTrunkC} strokeWidth={0.6 * s} strokeLinecap="round" />
+            <line x1={cx} y1={baseY - 24 * s} x2={cx + 5 * s} y2={baseY - 22 * s} stroke={pTrunkC} strokeWidth={0.5 * s} strokeLinecap="round" />
+            <g style={flutterAnim}>
+              <ellipse cx={cx} cy={baseY - 30 * s} rx={4.5 * s} ry={3.5 * s} fill={canopyColor} opacity="0.9" />
+              <ellipse cx={cx - 7 * s} cy={baseY - 19 * s} rx={4 * s} ry={2.5 * s} fill={canopyColor} opacity="0.8" />
+              <ellipse cx={cx + 8 * s} cy={baseY - 15 * s} rx={4.5 * s} ry={2.5 * s} fill={canopyColor} opacity="0.75" />
+              <ellipse cx={cx + 5 * s} cy={baseY - 23 * s} rx={3.5 * s} ry={2.5 * s} fill={canopyColor} opacity="0.8" />
+            </g>
           </g>
         );
+      }
       case 'deciduous-a': {
         // California live oak — wide spreading umbrella crown, gnarled trunk
         const da_dark = 'var(--biome-canopy-shadow, #2d6b33)';
