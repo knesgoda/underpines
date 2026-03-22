@@ -417,8 +417,9 @@ const Cabin = () => {
           </div>
 
           {profile.bio && (
-            <p className="text-sm font-body mb-6 max-w-lg" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>
+            <p className="text-sm font-body mb-4 max-w-lg" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>
           )}
+          <CabinAboutSection profile={profile} atmos={atmos} />
 
           {/* Masonry-style grid */}
           <div className="columns-2 md:columns-3 gap-4 pb-16 [column-fill:_balance]">
