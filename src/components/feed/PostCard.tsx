@@ -7,11 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/time';
 import ReactionBar from './ReactionBar';
-
-const REACTION_ICONS: Record<string, string> = {
-  fire: '🔥', grounded: '🌲', warmth: '💚', laughed: '😂',
-  noted: '👀', present: '🫂', heavy: '🌧️', delight: '✨',
-};
 import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
@@ -81,23 +76,6 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
     if (data) setReactions(data);
   };
 
-  // Realtime: listen for reaction changes on this post
-  useEffect(() => {
-    const channel = supabase
-      .channel(`post-reactions-${post.id}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'reactions', filter: `post_id=eq.${post.id}` },
-        () => { fetchReactions(); }
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [post.id]);
-
-  // Unique emoji types present (excluding current user's own for the summary)
-  const summaryEmojis = [...new Set(reactions.map(r => r.reaction_type))]
-    .map(type => REACTION_ICONS[type])
-    .filter(Boolean);
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
@@ -338,14 +316,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
           );
         })()}
 
-        {/* Reaction summary — emoji presence only */}
-        {summaryEmojis.length > 0 && (
-          <div className="flex items-center gap-1 mt-3">
-            {summaryEmojis.map((emoji, i) => (
-              <span key={i} className="text-sm">{emoji}</span>
-            ))}
-          </div>
-        )}
+
 
         {/* Actions */}
         <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/50">
