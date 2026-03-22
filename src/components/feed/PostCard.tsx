@@ -11,6 +11,7 @@ import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
 import ReportSheet from '@/components/reporting/ReportSheet';
+import UserAvatar from '@/components/UserAvatar';
 import { useBlockMute } from '@/hooks/useBlockMute';
 import { toast } from 'sonner';
 
@@ -25,7 +26,7 @@ export interface PostWithAuthor {
   is_quote_post: boolean | null;
   quoted_post_id: string | null;
   created_at: string;
-  author?: { display_name: string; handle: string; accent_color: string | null; cabin_mood: string | null };
+  author?: { display_name: string; handle: string; accent_color: string | null; cabin_mood: string | null; avatar_url?: string | null; default_avatar_key?: string | null };
   reactions?: { reaction_type: string; user_id: string }[];
   post_media?: { url: string; media_type: string; position: number }[];
   quoted_post?: PostWithAuthor | null;
@@ -117,15 +118,25 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
       <div className="p-5">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm">{moodIcon}</span>
+          <div className="flex items-center gap-2.5">
+            <Link to={`/${post.author?.handle}`}>
+              <UserAvatar
+                avatarUrl={post.author?.avatar_url}
+                defaultAvatarKey={post.author?.default_avatar_key}
+                displayName={post.author?.display_name}
+                size={32}
+              />
+            </Link>
             <div>
-              <Link
-                to={`/${post.author?.handle}`}
-                className="font-body text-sm font-medium text-foreground hover:opacity-80"
-              >
-                {post.author?.display_name}
-              </Link>
+              <div className="flex items-center gap-1.5">
+                <Link
+                  to={`/${post.author?.handle}`}
+                  className="font-body text-sm font-medium text-foreground hover:opacity-80"
+                >
+                  {post.author?.display_name}
+                </Link>
+                {moodIcon && <span className="text-xs">{moodIcon}</span>}
+              </div>
               <p className="font-body text-xs text-muted-foreground">
                 @{post.author?.handle}
               </p>
