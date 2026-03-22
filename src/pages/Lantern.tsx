@@ -323,17 +323,22 @@ const CircleRequestGroup = ({ items, actors, actionStates, onAccept, onDecline, 
   );
 };
 
-const ReactionGroup = ({ items }: { items: NotificationRow[] }) => {
+const ReactionGroup = ({ items, navigate }: { items: NotificationRow[]; navigate: (path: string) => void }) => {
   const reactionEmojis = '🔥🌲💚✨';
+  // Find the first item with a post_id for navigation
+  const tappablePostId = items.find(i => i.post_id)?.post_id;
   return (
-    <div className="py-1.5">
+    <button
+      onClick={() => tappablePostId ? navigate(`/post/${tappablePostId}`) : undefined}
+      className="w-full text-left py-1.5 hover:bg-muted/50 rounded-lg px-2 -mx-2 transition-colors"
+    >
       <p className="font-body text-sm text-foreground">
         {items.length} {items.length === 1 ? 'person' : 'people'} reacted to your posts
       </p>
       <p className="font-body text-xs text-muted-foreground mt-0.5">
         {reactionEmojis}
       </p>
-    </div>
+    </button>
   );
 };
 
