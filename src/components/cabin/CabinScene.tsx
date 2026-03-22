@@ -511,48 +511,63 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
           </g>
         );
       case 'deciduous-a': {
-        // Classic oak silhouette — wide spreading crown with organic variation
+        // California live oak — wide spreading umbrella crown, gnarled trunk
         const da_dark = 'var(--biome-canopy-shadow, #2d6b33)';
-        const da_light = 'var(--biome-canopy-highlight, #4a9e52)';
-        const trunkW = 3.5 * s;
-        const trunkH = 14 * s;
+        const da_mid = canopyColor;
+        const da_light = 'var(--biome-canopy-highlight, #5aad5a)';
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
-            {/* Tapered trunk — wider at base */}
-            <path d={`M${cx - trunkW * 0.35},${baseY - trunkH} L${cx + trunkW * 0.35},${baseY - trunkH} L${cx + trunkW * 0.55},${baseY} L${cx - trunkW * 0.55},${baseY} Z`} fill={trunkColor} />
-            {/* Back crown layer — darker, slightly wider */}
+            {/* Thick gnarled trunk — forks into two main branches */}
+            <path d={`M${cx - 2.5 * s},${baseY} L${cx + 2.5 * s},${baseY} L${cx + 2 * s},${baseY - 10 * s} L${cx + 5 * s},${baseY - 16 * s} L${cx + 3 * s},${baseY - 16 * s} L${cx + 1 * s},${baseY - 12 * s} L${cx - 1 * s},${baseY - 12 * s} L${cx - 3 * s},${baseY - 16 * s} L${cx - 5 * s},${baseY - 16 * s} L${cx - 2 * s},${baseY - 10 * s} Z`} fill={trunkColor} />
+            {/* Visible branch stubs poking through canopy */}
+            <line x1={cx - 8 * s} y1={baseY - 22 * s} x2={cx - 14 * s} y2={baseY - 20 * s} stroke={trunkColor} strokeWidth={1.2 * s} strokeLinecap="round" />
+            <line x1={cx + 7 * s} y1={baseY - 24 * s} x2={cx + 16 * s} y2={baseY - 22 * s} stroke={trunkColor} strokeWidth={1 * s} strokeLinecap="round" />
             <g style={flutterAnim}>
-              <path d={`M${cx},${baseY - 40 * s} C${cx - 5 * s},${baseY - 42 * s} ${cx - 16 * s},${baseY - 36 * s} ${cx - 18 * s},${baseY - 28 * s} C${cx - 19 * s},${baseY - 22 * s} ${cx - 15 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 15 * s} L${cx + 12 * s},${baseY - 15 * s} C${cx + 15 * s},${baseY - 16 * s} ${cx + 19 * s},${baseY - 22 * s} ${cx + 18 * s},${baseY - 28 * s} C${cx + 16 * s},${baseY - 36 * s} ${cx + 5 * s},${baseY - 42 * s} ${cx},${baseY - 40 * s}Z`} fill={da_dark} opacity="0.85" />
-              {/* Main crown — primary canopy color, organic bumpy edge */}
-              <path d={`M${cx - 2 * s},${baseY - 39 * s} C${cx - 7 * s},${baseY - 40 * s} ${cx - 14 * s},${baseY - 35 * s} ${cx - 16 * s},${baseY - 28 * s} C${cx - 17 * s},${baseY - 23 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 10 * s},${baseY - 17 * s} C${cx - 6 * s},${baseY - 16 * s} ${cx + 6 * s},${baseY - 16 * s} ${cx + 10 * s},${baseY - 17 * s} C${cx + 14 * s},${baseY - 18 * s} ${cx + 17 * s},${baseY - 23 * s} ${cx + 16 * s},${baseY - 28 * s} C${cx + 14 * s},${baseY - 35 * s} ${cx + 7 * s},${baseY - 40 * s} ${cx + 2 * s},${baseY - 39 * s} C${cx + 1 * s},${baseY - 41 * s} ${cx - 1 * s},${baseY - 41 * s} ${cx - 2 * s},${baseY - 39 * s}Z`} fill={canopyColor} />
-              {/* Highlight patches — lighter dappled areas */}
-              <ellipse cx={cx - 5 * s} cy={baseY - 30 * s} rx={4 * s} ry={3.5 * s} fill={da_light} opacity="0.35" />
-              <ellipse cx={cx + 6 * s} cy={baseY - 26 * s} rx={3.5 * s} ry={3 * s} fill={da_light} opacity="0.25" />
-              <ellipse cx={cx + 1 * s} cy={baseY - 35 * s} rx={3 * s} ry={2.5 * s} fill={da_light} opacity="0.2" />
+              {/* Back shadow mass — widest extent, drooping edges */}
+              <path d={`M${cx - 22 * s},${baseY - 18 * s} C${cx - 24 * s},${baseY - 22 * s} ${cx - 22 * s},${baseY - 30 * s} ${cx - 16 * s},${baseY - 34 * s} C${cx - 10 * s},${baseY - 38 * s} ${cx - 4 * s},${baseY - 38 * s} ${cx},${baseY - 36 * s} C${cx + 4 * s},${baseY - 38 * s} ${cx + 12 * s},${baseY - 38 * s} ${cx + 18 * s},${baseY - 34 * s} C${cx + 24 * s},${baseY - 30 * s} ${cx + 24 * s},${baseY - 22 * s} ${cx + 22 * s},${baseY - 18 * s} C${cx + 20 * s},${baseY - 15 * s} ${cx + 14 * s},${baseY - 14 * s} ${cx},${baseY - 15 * s} C${cx - 14 * s},${baseY - 14 * s} ${cx - 20 * s},${baseY - 15 * s} ${cx - 22 * s},${baseY - 18 * s}Z`} fill={da_dark} opacity="0.75" />
+              {/* Main canopy — bumpy clustered edge like foliage masses */}
+              <path d={`M${cx - 20 * s},${baseY - 19 * s} C${cx - 21 * s},${baseY - 23 * s} ${cx - 20 * s},${baseY - 28 * s} ${cx - 17 * s},${baseY - 32 * s} C${cx - 15 * s},${baseY - 35 * s} ${cx - 12 * s},${baseY - 36 * s} ${cx - 8 * s},${baseY - 34 * s} C${cx - 6 * s},${baseY - 37 * s} ${cx - 3 * s},${baseY - 37 * s} ${cx},${baseY - 35 * s} C${cx + 3 * s},${baseY - 37 * s} ${cx + 7 * s},${baseY - 36 * s} ${cx + 10 * s},${baseY - 34 * s} C${cx + 14 * s},${baseY - 36 * s} ${cx + 17 * s},${baseY - 34 * s} ${cx + 19 * s},${baseY - 30 * s} C${cx + 21 * s},${baseY - 26 * s} ${cx + 20 * s},${baseY - 21 * s} ${cx + 18 * s},${baseY - 18 * s} C${cx + 14 * s},${baseY - 15 * s} ${cx + 6 * s},${baseY - 15 * s} ${cx},${baseY - 16 * s} C${cx - 6 * s},${baseY - 15 * s} ${cx - 14 * s},${baseY - 15 * s} ${cx - 18 * s},${baseY - 18 * s} C${cx - 20 * s},${baseY - 18 * s} ${cx - 20 * s},${baseY - 19 * s} ${cx - 20 * s},${baseY - 19 * s}Z`} fill={da_mid} />
+              {/* Upper highlight clusters — sunlit foliage */}
+              <ellipse cx={cx - 10 * s} cy={baseY - 30 * s} rx={5 * s} ry={4 * s} fill={da_light} opacity="0.35" />
+              <ellipse cx={cx + 4 * s} cy={baseY - 32 * s} rx={4.5 * s} ry={3.5 * s} fill={da_light} opacity="0.3" />
+              <ellipse cx={cx + 14 * s} cy={baseY - 27 * s} rx={4 * s} ry={3 * s} fill={da_light} opacity="0.25" />
+              {/* Interior shadow gaps — suggest branch structure */}
+              <ellipse cx={cx - 3 * s} cy={baseY - 24 * s} rx={2.5 * s} ry={2 * s} fill={da_dark} opacity="0.25" />
+              <ellipse cx={cx + 9 * s} cy={baseY - 22 * s} rx={2 * s} ry={1.5 * s} fill={da_dark} opacity="0.2" />
             </g>
           </g>
         );
       }
       case 'deciduous-b': {
-        // Larger spreading oak — asymmetric crown
+        // Larger California live oak — massive spreading crown, asymmetric
         const db_dark = 'var(--biome-canopy-shadow, #2d6b33)';
-        const db_light = 'var(--biome-canopy-highlight, #4a9e52)';
-        const trunkWb = 4.5 * s;
-        const trunkHb = 16 * s;
+        const db_mid = canopyColor;
+        const db_light = 'var(--biome-canopy-highlight, #5aad5a)';
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
-            {/* Tapered trunk */}
-            <path d={`M${cx - trunkWb * 0.3},${baseY - trunkHb} L${cx + trunkWb * 0.3},${baseY - trunkHb} L${cx + trunkWb * 0.6},${baseY} L${cx - trunkWb * 0.6},${baseY} Z`} fill={trunkColor} />
-            {/* Back shadow crown */}
+            {/* Massive gnarled trunk — thick, splitting */}
+            <path d={`M${cx - 3.5 * s},${baseY} L${cx + 3.5 * s},${baseY} L${cx + 3 * s},${baseY - 8 * s} L${cx + 1 * s},${baseY - 14 * s} L${cx + 4 * s},${baseY - 14 * s} L${cx + 7 * s},${baseY - 18 * s} L${cx + 5 * s},${baseY - 18 * s} L${cx + 2 * s},${baseY - 15 * s} L${cx},${baseY - 13 * s} L${cx - 2 * s},${baseY - 15 * s} L${cx - 5 * s},${baseY - 18 * s} L${cx - 7 * s},${baseY - 18 * s} L${cx - 4 * s},${baseY - 14 * s} L${cx - 1 * s},${baseY - 14 * s} L${cx - 3 * s},${baseY - 8 * s} Z`} fill={trunkColor} />
+            {/* Branch stubs */}
+            <line x1={cx - 10 * s} y1={baseY - 26 * s} x2={cx - 20 * s} y2={baseY - 22 * s} stroke={trunkColor} strokeWidth={1.3 * s} strokeLinecap="round" />
+            <line x1={cx + 10 * s} y1={baseY - 28 * s} x2={cx + 22 * s} y2={baseY - 24 * s} stroke={trunkColor} strokeWidth={1.1 * s} strokeLinecap="round" />
+            <line x1={cx - 2 * s} y1={baseY - 30 * s} x2={cx - 6 * s} y2={baseY - 38 * s} stroke={trunkColor} strokeWidth={0.8 * s} strokeLinecap="round" />
             <g style={flutterAnim}>
-              <path d={`M${cx - 3 * s},${baseY - 46 * s} C${cx - 10 * s},${baseY - 47 * s} ${cx - 20 * s},${baseY - 40 * s} ${cx - 20 * s},${baseY - 30 * s} C${cx - 20 * s},${baseY - 22 * s} ${cx - 16 * s},${baseY - 18 * s} ${cx - 12 * s},${baseY - 17 * s} L${cx + 14 * s},${baseY - 17 * s} C${cx + 18 * s},${baseY - 18 * s} ${cx + 22 * s},${baseY - 24 * s} ${cx + 20 * s},${baseY - 32 * s} C${cx + 18 * s},${baseY - 40 * s} ${cx + 8 * s},${baseY - 46 * s} ${cx + 3 * s},${baseY - 45 * s} C${cx + 1 * s},${baseY - 48 * s} ${cx - 1 * s},${baseY - 48 * s} ${cx - 3 * s},${baseY - 46 * s}Z`} fill={db_dark} opacity="0.8" />
-              {/* Main crown — wider, asymmetric */}
-              <path d={`M${cx - 1 * s},${baseY - 44 * s} C${cx - 8 * s},${baseY - 45 * s} ${cx - 18 * s},${baseY - 38 * s} ${cx - 18 * s},${baseY - 28 * s} C${cx - 18 * s},${baseY - 22 * s} ${cx - 14 * s},${baseY - 19 * s} ${cx - 10 * s},${baseY - 18 * s} C${cx - 4 * s},${baseY - 17 * s} ${cx + 6 * s},${baseY - 17 * s} ${cx + 12 * s},${baseY - 18 * s} C${cx + 16 * s},${baseY - 19 * s} ${cx + 20 * s},${baseY - 24 * s} ${cx + 18 * s},${baseY - 32 * s} C${cx + 16 * s},${baseY - 38 * s} ${cx + 6 * s},${baseY - 44 * s} ${cx + 1 * s},${baseY - 44 * s} C${cx},${baseY - 46 * s} ${cx - 1 * s},${baseY - 46 * s} ${cx - 1 * s},${baseY - 44 * s}Z`} fill={canopyColor} />
-              {/* Highlight patches */}
-              <ellipse cx={cx - 7 * s} cy={baseY - 32 * s} rx={5 * s} ry={4 * s} fill={db_light} opacity="0.3" />
-              <ellipse cx={cx + 8 * s} cy={baseY - 28 * s} rx={4 * s} ry={3.5 * s} fill={db_light} opacity="0.25" />
-              <ellipse cx={cx - 2 * s} cy={baseY - 38 * s} rx={3.5 * s} ry={2.5 * s} fill={db_light} opacity="0.2" />
-              <ellipse cx={cx + 4 * s} cy={baseY - 35 * s} rx={2.5 * s} ry={2 * s} fill={db_light} opacity="0.15" />
+              {/* Deep shadow mass — entire spread, drooping at edges */}
+              <path d={`M${cx - 26 * s},${baseY - 20 * s} C${cx - 28 * s},${baseY - 26 * s} ${cx - 26 * s},${baseY - 34 * s} ${cx - 18 * s},${baseY - 40 * s} C${cx - 12 * s},${baseY - 44 * s} ${cx - 6 * s},${baseY - 44 * s} ${cx - 2 * s},${baseY - 42 * s} C${cx + 2 * s},${baseY - 45 * s} ${cx + 8 * s},${baseY - 44 * s} ${cx + 14 * s},${baseY - 42 * s} C${cx + 22 * s},${baseY - 38 * s} ${cx + 28 * s},${baseY - 30 * s} ${cx + 26 * s},${baseY - 22 * s} C${cx + 24 * s},${baseY - 18 * s} ${cx + 18 * s},${baseY - 16 * s} ${cx},${baseY - 17 * s} C${cx - 18 * s},${baseY - 16 * s} ${cx - 24 * s},${baseY - 18 * s} ${cx - 26 * s},${baseY - 20 * s}Z`} fill={db_dark} opacity="0.7" />
+              {/* Main canopy — irregular clustered silhouette */}
+              <path d={`M${cx - 24 * s},${baseY - 21 * s} C${cx - 25 * s},${baseY - 26 * s} ${cx - 23 * s},${baseY - 32 * s} ${cx - 19 * s},${baseY - 36 * s} C${cx - 16 * s},${baseY - 39 * s} ${cx - 13 * s},${baseY - 40 * s} ${cx - 9 * s},${baseY - 38 * s} C${cx - 7 * s},${baseY - 41 * s} ${cx - 4 * s},${baseY - 42 * s} ${cx},${baseY - 40 * s} C${cx + 4 * s},${baseY - 43 * s} ${cx + 8 * s},${baseY - 42 * s} ${cx + 12 * s},${baseY - 39 * s} C${cx + 16 * s},${baseY - 41 * s} ${cx + 20 * s},${baseY - 38 * s} ${cx + 22 * s},${baseY - 34 * s} C${cx + 25 * s},${baseY - 28 * s} ${cx + 24 * s},${baseY - 23 * s} ${cx + 22 * s},${baseY - 20 * s} C${cx + 18 * s},${baseY - 17 * s} ${cx + 8 * s},${baseY - 17 * s} ${cx},${baseY - 18 * s} C${cx - 8 * s},${baseY - 17 * s} ${cx - 18 * s},${baseY - 17 * s} ${cx - 22 * s},${baseY - 20 * s} C${cx - 24 * s},${baseY - 20 * s} ${cx - 24 * s},${baseY - 21 * s} ${cx - 24 * s},${baseY - 21 * s}Z`} fill={db_mid} />
+              {/* Sunlit foliage clusters */}
+              <ellipse cx={cx - 14 * s} cy={baseY - 33 * s} rx={6 * s} ry={4.5 * s} fill={db_light} opacity="0.35" />
+              <ellipse cx={cx + 2 * s} cy={baseY - 36 * s} rx={5 * s} ry={4 * s} fill={db_light} opacity="0.3" />
+              <ellipse cx={cx + 16 * s} cy={baseY - 30 * s} rx={5.5 * s} ry={4 * s} fill={db_light} opacity="0.28" />
+              <ellipse cx={cx - 6 * s} cy={baseY - 26 * s} rx={4 * s} ry={3 * s} fill={db_light} opacity="0.2" />
+              {/* Interior shadow gaps — branch structure peek-through */}
+              <ellipse cx={cx - 4 * s} cy={baseY - 28 * s} rx={3 * s} ry={2 * s} fill={db_dark} opacity="0.3" />
+              <ellipse cx={cx + 10 * s} cy={baseY - 24 * s} rx={2.5 * s} ry={1.8 * s} fill={db_dark} opacity="0.22" />
+              <ellipse cx={cx + 3 * s} cy={baseY - 22 * s} rx={2 * s} ry={1.5 * s} fill={db_dark} opacity="0.18" />
+              {/* Drooping foliage at far edges */}
+              <ellipse cx={cx - 22 * s} cy={baseY - 20 * s} rx={3 * s} ry={2.5 * s} fill={da_dark} opacity="0.4" />
+              <ellipse cx={cx + 22 * s} cy={baseY - 20 * s} rx={3 * s} ry={2.5 * s} fill={da_dark} opacity="0.35" />
             </g>
           </g>
         );
