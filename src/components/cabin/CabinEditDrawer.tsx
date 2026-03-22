@@ -11,6 +11,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { geocodeZip } from '@/lib/weather';
 import { defaultAvatars, getAvatarSrc } from '@/lib/default-avatars';
 import { toast } from 'sonner';
+import { Switch } from '@/components/ui/switch';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { getBiomeFromLocation } from '@/lib/biomeMapping';
 
@@ -78,6 +79,7 @@ interface Profile {
   pinned_memory_post_id: string | null;
   featured_photos: string[] | null;
   moments: { title: string; year?: string; note?: string }[] | null;
+  trail_map_visible: boolean | null;
 }
 
 interface CabinEditDrawerProps {
@@ -809,6 +811,24 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                     </div>
                     <p className="text-xs text-muted-foreground font-body">
                       A tiny public notebook. Up to 5 short notes (140 chars each). Newest at top.
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-border p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span>🗺️</span>
+                        <span className="text-sm font-body font-medium text-foreground">Trail Map</span>
+                      </div>
+                      <Switch
+                        checked={profile.trail_map_visible ?? true}
+                        onCheckedChange={async (checked) => {
+                          await supabase.from('profiles').update({ trail_map_visible: checked } as any).eq('id', profile.id);
+                          onUpdate();
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground font-body mt-1">
+                      An interactive world map with your "Been here" and "Want to go" pins.
                     </p>
                   </div>
                 </div>

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { X, Plus, Trash2, GripVertical } from 'lucide-react';
+import TrailMap from './TrailMap';
 import { toast } from 'sonner';
 
 interface BookEntry {
@@ -42,6 +43,19 @@ const WidgetShelf = ({ userId, isPinesPlus, atmosphere }: WidgetShelfProps) => {
   const [addingNote, setAddingNote] = useState(false);
   const [newBook, setNewBook] = useState({ title: '', author: '' });
   const [newNote, setNewNote] = useState('');
+  const [trailMapVisible, setTrailMapVisible] = useState(false);
+
+  useEffect(() => {
+    const fetchTrailMapVisibility = async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('trail_map_visible')
+        .eq('id', userId)
+        .single();
+      if (data) setTrailMapVisible(data.trail_map_visible ?? true);
+    };
+    fetchTrailMapVisibility();
+  }, [userId]);
 
   useEffect(() => {
     const fetchWidgets = async () => {
@@ -310,6 +324,11 @@ const WidgetShelf = ({ userId, isPinesPlus, atmosphere }: WidgetShelfProps) => {
           </div>
         )}
       </div>
+
+      {/* Trail Map Widget */}
+      {trailMapVisible && (
+        <TrailMap userId={userId} atmosphere={atmosphere} />
+      )}
     </div>
   );
 };
