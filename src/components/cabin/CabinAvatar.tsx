@@ -72,7 +72,7 @@ const CabinAvatar = ({
   return (
     <>
       <div
-        className="relative group"
+        className={`relative group ${isOwner ? 'cursor-pointer' : ''}`}
         style={{
           width: px,
           height: px,
@@ -83,6 +83,7 @@ const CabinAvatar = ({
         }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        onClick={isOwner ? () => fileRef.current?.click() : undefined}
       >
         <img
           src={src}
