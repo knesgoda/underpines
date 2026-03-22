@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSuspensionCheck } from '@/hooks/useSuspensionCheck';
+import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopSidebar from './DesktopSidebar';
 import MobileTabBar from './MobileTabBar';
@@ -10,6 +11,7 @@ import InstallPrompt from '@/components/pwa/InstallPrompt';
 import UpdatePrompt from '@/components/pwa/UpdatePrompt';
 import SuspendedPage from '@/pages/Suspended';
 import AgeGateInterstitial from '@/components/onboarding/AgeGateInterstitial';
+import SceneDebugPanel from '@/components/debug/SceneDebugPanel';
 
 
 const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story', '/privacy', '/terms'];
