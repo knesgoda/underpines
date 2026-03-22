@@ -14,6 +14,8 @@ import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { getBiomeFromLocation } from '@/lib/biomeMapping';
+import { PlayerSelector } from '@/components/cabin/VintageRadio';
+import type { PlayerType } from '@/components/cabin/VintageRadio';
 
 const COUNTRIES = [
   { code: 'AU', name: 'Australia' },
