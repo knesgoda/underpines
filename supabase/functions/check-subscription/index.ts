@@ -7,6 +7,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const logStep = (step: string, details?: any) => {
+  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
+  console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -28,44 +33,124 @@ serve(async (req) => {
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated");
 
+    logStep("User authenticated", { userId: user.id });
+
+    // First check our local table for cached subscription data
+    const { data: localSub } = await supabaseClient
+      .from("pines_plus_subscriptions")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     if (customers.data.length === 0) {
+      logStep("No Stripe customer found");
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const customerId = customers.data[0].id;
-    const subscriptions = await stripe.subscriptions.list({
+
+    // Query active subscriptions first
+    const activeSubs = await stripe.subscriptions.list({
       customer: customerId,
-      status: "all",
-      limit: 1,
+      status: "active",
+      limit: 10,
     });
 
-    if (subscriptions.data.length === 0) {
+    // Filter to only Pines+ subscriptions (not collection subs)
+    const monthlyPriceId = Deno.env.get("STRIPE_MONTHLY_PRICE_ID");
+    const annualPriceId = Deno.env.get("STRIPE_ANNUAL_PRICE_ID");
+    const pinesPriceIds = [monthlyPriceId, annualPriceId].filter(Boolean);
+
+    let pinesSub = activeSubs.data.find(s => {
+      const priceId = s.items.data[0]?.price.id;
+      return pinesPriceIds.includes(priceId);
+    });
+
+    // If no active, check trialing
+    if (!pinesSub) {
+      const trialSubs = await stripe.subscriptions.list({
+        customer: customerId,
+        status: "trialing",
+        limit: 10,
+      });
+      pinesSub = trialSubs.data.find(s => {
+        const priceId = s.items.data[0]?.price.id;
+        return pinesPriceIds.includes(priceId);
+      });
+    }
+
+    // If no active/trialing, check past_due
+    if (!pinesSub) {
+      const pastDueSubs = await stripe.subscriptions.list({
+        customer: customerId,
+        status: "past_due",
+        limit: 10,
+      });
+      pinesSub = pastDueSubs.data.find(s => {
+        const priceId = s.items.data[0]?.price.id;
+        return pinesPriceIds.includes(priceId);
+      });
+    }
+
+    if (!pinesSub) {
+      logStep("No Pines+ subscription found");
+
+      // Sync local state if it's stale
+      if (localSub && localSub.status === "active") {
+        await supabaseClient.from("pines_plus_subscriptions")
+          .update({ status: "expired" })
+          .eq("user_id", user.id);
+        await supabaseClient.from("profiles")
+          .update({ is_pines_plus: false })
+          .eq("id", user.id);
+      }
+
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const sub = subscriptions.data[0];
-    const monthlyPriceId = Deno.env.get("STRIPE_MONTHLY_PRICE_ID");
-    const priceId = sub.items.data[0]?.price.id;
+    const priceId = pinesSub.items.data[0]?.price.id;
+    const plan = priceId === monthlyPriceId ? "monthly" : "annual";
+    const periodEnd = new Date(pinesSub.current_period_end * 1000).toISOString();
+    const status = pinesSub.cancel_at_period_end ? "cancelled" : pinesSub.status;
+
+    logStep("Found Pines+ subscription", { plan, status, periodEnd });
+
+    // Sync local table
+    await supabaseClient.from("pines_plus_subscriptions").upsert({
+      user_id: user.id,
+      stripe_subscription_id: pinesSub.id,
+      stripe_customer_id: customerId,
+      plan,
+      status: status === "cancelled" ? "cancelled" : pinesSub.status,
+      current_period_end: periodEnd,
+    }, { onConflict: "user_id" });
+
+    // Ensure profile flag is correct
+    const isActive = pinesSub.status === "active" || pinesSub.status === "trialing";
+    await supabaseClient.from("profiles")
+      .update({ is_pines_plus: isActive })
+      .eq("id", user.id);
 
     return new Response(JSON.stringify({
-      subscribed: sub.status === "active" || sub.status === "trialing",
-      status: sub.cancel_at_period_end ? "cancelled" : sub.status,
-      plan: priceId === monthlyPriceId ? "monthly" : "annual",
-      subscription_end: new Date(sub.current_period_end * 1000).toISOString(),
-      cancel_at_period_end: sub.cancel_at_period_end,
+      subscribed: isActive,
+      status,
+      plan,
+      subscription_end: periodEnd,
+      cancel_at_period_end: pinesSub.cancel_at_period_end,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
+    logStep("ERROR", { message: error.message });
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
