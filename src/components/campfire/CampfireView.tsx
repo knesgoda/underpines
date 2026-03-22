@@ -242,29 +242,75 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
     inputRef.current?.focus();
   };
 
-  const sendPhoto = async () => {
-    if (!user) return;
-    const inp = document.createElement('input');
-    inp.type = 'file';
-    inp.accept = 'image/*';
-    inp.multiple = true;
-    inp.onchange = async (e: any) => {
-      const files = Array.from(e.target.files || []) as File[];
-      for (const file of files.slice(0, 10)) {
-        const path = `campfire-media/${user.id}/${campfireId}/${Date.now()}-${file.name}`;
-        const { error } = await supabase.storage.from('post-media').upload(path, file, { cacheControl: '31536000' });
-        if (!error) {
-          const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(path);
-          await supabase.from('campfire_messages').insert({
-            campfire_id: campfireId,
-            sender_id: user.id,
-            message_type: 'photo',
-            media_url: publicUrl,
-          });
-        }
+  const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files;
+    if (!selected) return;
+    e.target.value = '';
+
+    const arr = Array.from(selected);
+    const hasVideo = arr.some(f => f.type.startsWith('video'));
+    const valid: File[] = [];
+
+    for (const f of arr) {
+      if (f.size > 10 * 1024 * 1024) {
+        toast.error('Files must be under 10MB each');
+        continue;
       }
-    };
-    inp.click();
+      if (f.type.startsWith('video')) {
+        if (valid.some(v => v.type.startsWith('video')) || stagedFiles.some(v => v.type.startsWith('video'))) {
+          toast('Only one video per message');
+          continue;
+        }
+        valid.push(f);
+      } else if (f.type.startsWith('image')) {
+        valid.push(f);
+      }
+    }
+
+    const newFiles = [...stagedFiles, ...valid].slice(0, 10);
+    // Revoke old previews
+    stagedPreviews.forEach(u => URL.revokeObjectURL(u));
+    setStagedFiles(newFiles);
+    setStagedPreviews(newFiles.map(f => URL.createObjectURL(f)));
+  };
+
+  const removeStagedFile = (i: number) => {
+    URL.revokeObjectURL(stagedPreviews[i]);
+    setStagedFiles(f => f.filter((_, idx) => idx !== i));
+    setStagedPreviews(p => p.filter((_, idx) => idx !== i));
+  };
+
+  const clearStaged = () => {
+    stagedPreviews.forEach(u => URL.revokeObjectURL(u));
+    setStagedFiles([]);
+    setStagedPreviews([]);
+  };
+
+  const sendStagedMedia = async () => {
+    if (!user || stagedFiles.length === 0) return;
+    setUploadingMedia(true);
+
+    for (const file of stagedFiles) {
+      const ext = file.name.split('.').pop();
+      const path = `campfire-media/${user.id}/${campfireId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from('post-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
+      if (!error) {
+        const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(path);
+        const msgType = file.type.startsWith('video') ? 'video' : 'photo';
+        await supabase.from('campfire_messages').insert({
+          campfire_id: campfireId,
+          sender_id: user.id,
+          message_type: msgType,
+          media_url: publicUrl,
+          content: input.trim() || null,
+        });
+      }
+    }
+
+    clearStaged();
+    setInput('');
+    setUploadingMedia(false);
+    setAutoScroll(true);
   };
 
   const sendVoiceMessage = async (blob: Blob, durationSec: number, waveform: number[], mimeType: string) => {
