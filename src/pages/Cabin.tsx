@@ -479,10 +479,16 @@ const Cabin = () => {
                <div className="mt-4">
                  <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
                </div>
+               {!isOwner && <CabinFriendsSince profileId={profile.id} atmos={atmos} />}
             </div>
           </div>
+          <div className="px-8">
+            <CabinFeaturedPhotos profile={profile} atmos={atmos} />
+            <CabinMoments profile={profile} atmos={atmos} />
+            <CabinPinnedMemory profile={profile} atmos={atmos} />
+          </div>
 
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 pb-16">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 pb-16 px-6">
             <div className="md:col-span-2 space-y-6">
               <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} />
             </div>
