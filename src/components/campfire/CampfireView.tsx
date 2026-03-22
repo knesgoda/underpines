@@ -78,8 +78,12 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   const [flickerTimeLeft, setFlickerTimeLeft] = useState('');
   const [autoScroll, setAutoScroll] = useState(true);
   const [newMsgPill, setNewMsgPill] = useState(false);
+  const [stagedFiles, setStagedFiles] = useState<File[]>([]);
+  const [stagedPreviews, setStagedPreviews] = useState<string[]>([]);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus input when opened via "Stoke it?"
   useEffect(() => {
