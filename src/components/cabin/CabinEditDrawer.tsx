@@ -256,6 +256,66 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     setForm(prev => ({ ...prev, links: prev.links.filter((_, i) => i !== index) }));
   };
 
+  const updateAskMeAbout = (index: number, value: string) => {
+    setForm(prev => {
+      const arr = [...prev.ask_me_about];
+      arr[index] = value;
+      return { ...prev, ask_me_about: arr };
+    });
+  };
+
+  const addAskMeAbout = () => {
+    if (form.ask_me_about.length >= 3) return;
+    setForm(prev => ({ ...prev, ask_me_about: [...prev.ask_me_about, ''] }));
+  };
+
+  const removeAskMeAbout = (index: number) => {
+    setForm(prev => ({ ...prev, ask_me_about: prev.ask_me_about.filter((_, i) => i !== index) }));
+  };
+
+  const updateMoment = (index: number, field: string, value: string) => {
+    setForm(prev => {
+      const moments = [...prev.moments];
+      moments[index] = { ...moments[index], [field]: value };
+      return { ...prev, moments };
+    });
+  };
+
+  const addMoment = () => {
+    setForm(prev => ({ ...prev, moments: [...prev.moments, { title: '' }] }));
+  };
+
+  const removeMoment = (index: number) => {
+    setForm(prev => ({ ...prev, moments: prev.moments.filter((_, i) => i !== index) }));
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || form.featured_photos.length >= 6) return;
+    setUploadingPhoto(true);
+    const remaining = 6 - form.featured_photos.length;
+    const toUpload = Array.from(files).slice(0, remaining);
+    const newUrls: string[] = [];
+    for (const file of toUpload) {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${profile.id}/featured/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from('cabin-headers').upload(path, file);
+      if (!error) {
+        const { data: urlData } = supabase.storage.from('cabin-headers').getPublicUrl(path);
+        newUrls.push(urlData.publicUrl);
+      }
+    }
+    if (newUrls.length > 0) {
+      setForm(prev => ({ ...prev, featured_photos: [...prev.featured_photos, ...newUrls] }));
+    }
+    setUploadingPhoto(false);
+    e.target.value = '';
+  };
+
+  const removePhoto = (index: number) => {
+    setForm(prev => ({ ...prev, featured_photos: prev.featured_photos.filter((_, i) => i !== index) }));
+  };
+
   const atmos = getAtmosphere(form.atmosphere, theme);
 
   const drawerContent = (
