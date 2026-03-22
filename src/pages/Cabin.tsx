@@ -683,13 +683,6 @@ const CabinPinnedSong = ({ profile, atmos, centered }: { profile: Profile; atmos
   );
 };
 
-const CabinCircleActions = ({ isOwner, user, profile, cabinMenuOpen, setCabinMenuOpen, navigate }: {
-  isOwner: boolean; user: any; profile: Profile; cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void; navigate: (path: string) => void;
-}) => {
-  // Legacy bottom actions — only show if not owner (owner actions now inline)
-  if (isOwner || !user || !profile) return null;
-  return null; // Actions now handled by CabinOwnerActions inline
-};
 
 const FounderBadge = ({ className = 'w-4 h-4' }: { className?: string }) => (
   <svg
