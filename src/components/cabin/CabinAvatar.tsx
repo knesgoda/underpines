@@ -72,7 +72,7 @@ const CabinAvatar = ({
   return (
     <>
       <div
-        className="relative group"
+        className={`relative group ${isOwner ? 'cursor-pointer' : ''}`}
         style={{
           width: px,
           height: px,
@@ -83,6 +83,7 @@ const CabinAvatar = ({
         }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        onClick={isOwner ? () => fileRef.current?.click() : undefined}
       >
         <img
           src={src}
@@ -108,24 +109,6 @@ const CabinAvatar = ({
           </div>
         )}
 
-        {/* Camera badge — always visible for owner */}
-        {isOwner && (
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="absolute flex items-center justify-center rounded-full"
-            style={{
-              width: 28,
-              height: 28,
-              bottom: 2,
-              right: 2,
-              backgroundColor: 'rgba(0,0,0,0.65)',
-              border: '2px solid white',
-            }}
-            title="Change photo"
-          >
-            <Camera size={13} color="white" />
-          </button>
-        )}
 
         {isOwner && (
           <input
