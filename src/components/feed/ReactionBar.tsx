@@ -57,7 +57,7 @@ const ReactionBar = ({ postId, reactions, onReactionChange }: ReactionBarProps) 
           notification_type: 'reaction_batch',
           actor_id: user.id,
           post_id: postId,
-          is_delivered_in_ember: true,
+          is_delivered_in_ember: false,
         });
       }
     }
