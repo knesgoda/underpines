@@ -74,6 +74,7 @@ const Cabin = () => {
   const [previewDesign, setPreviewDesign] = useState<any>(null);
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
   const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
+  const [cabinVisitMode, setCabinVisitMode] = useState<string>('anonymous_count');
 
   const { temperature, unit: tempUnit } = useWeather(profile?.latitude, profile?.longitude);
 
