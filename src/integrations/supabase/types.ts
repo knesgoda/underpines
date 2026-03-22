@@ -2378,6 +2378,7 @@ export type Database = {
           seedling_ends_at: string | null
           sitting_question: string | null
           theme: string | null
+          trail_map_visible: boolean | null
           updated_at: string | null
           zip_code: string | null
         }
@@ -2432,6 +2433,7 @@ export type Database = {
           seedling_ends_at?: string | null
           sitting_question?: string | null
           theme?: string | null
+          trail_map_visible?: boolean | null
           updated_at?: string | null
           zip_code?: string | null
         }
@@ -2486,6 +2488,7 @@ export type Database = {
           seedling_ends_at?: string | null
           sitting_question?: string | null
           theme?: string | null
+          trail_map_visible?: boolean | null
           updated_at?: string | null
           zip_code?: string | null
         }
@@ -2904,6 +2907,44 @@ export type Database = {
             foreignKeyName: "suspensions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trail_map_pins: {
+        Row: {
+          created_at: string
+          id: string
+          lat: number
+          lng: number
+          note: string | null
+          pin_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lat: number
+          lng: number
+          note?: string | null
+          pin_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lat?: number
+          lng?: number
+          note?: string | null
+          pin_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trail_map_pins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
