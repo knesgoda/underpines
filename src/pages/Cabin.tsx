@@ -324,12 +324,8 @@ const Cabin = () => {
 
       </div>
 
-      {/* Mobile invite row for owner */}
-      {isOwner && isMobile && (
-        <div className="px-6 pt-4 md:hidden relative z-10">
-          <InviteRow />
-        </div>
-      )}
+      {/* Invite sheet */}
+      {isOwner && <InviteSheet open={inviteSheetOpen} onOpenChange={setInviteSheetOpen} />}
 
       {/* === HOLLOW LAYOUT === */}
       {isHollow ? (
