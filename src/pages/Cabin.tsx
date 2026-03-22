@@ -469,7 +469,7 @@ const Cabin = () => {
               {profile.is_pines_plus && <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} />}
             </div>
           </div>
-          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
+          
         </div>
       )}
 
