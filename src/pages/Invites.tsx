@@ -330,10 +330,11 @@ const Invites = () => {
                 Your invites are coming soon. Here's how you'll earn them:
               </p>
               <ul className="space-y-2">
-                {EARNING_CRITERIA.map((criterion) => (
-                  <li key={criterion} className="flex items-start gap-2 text-sm font-body text-muted-foreground">
+                {EARNING_CRITERIA.map((c) => (
+                  <li key={c.text} className="flex items-start gap-2 text-sm font-body text-muted-foreground">
                     <span className="text-primary mt-0.5">🌲</span>
-                    {criterion}
+                    <span className="flex-1">{c.text}</span>
+                    <span className="text-primary/70 font-medium shrink-0">{c.slots}</span>
                   </li>
                 ))}
               </ul>
