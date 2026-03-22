@@ -422,7 +422,6 @@ const Cabin = () => {
           </div>
 
           {profile.is_pines_plus && <div className="pb-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} /></div>}
-          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
         </div>
 
       ) : (
