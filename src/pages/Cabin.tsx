@@ -407,6 +407,7 @@ const Cabin = () => {
               {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
                 <p className="text-[10px] font-body mt-0.5" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
               )}
+              <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
             </div>
             <div className="hidden md:block text-right">
               <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} />
