@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
+import { useCampfireUnread } from '@/hooks/useCampfireUnread';
 import { supabase } from '@/integrations/supabase/client';
 import { Home, Tent, Flame, Search, Settings, Plus, Users, Trees, Mail } from 'lucide-react';
 import logo from '@/assets/logo.png';
