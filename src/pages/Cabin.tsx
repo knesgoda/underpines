@@ -432,7 +432,10 @@ const Cabin = () => {
             <p className="text-sm font-body mb-4 max-w-lg" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>
           )}
           <CabinAboutSection profile={profile} atmos={atmos} />
-
+          {!isOwner && <CabinFriendsSince profileId={profile.id} atmos={atmos} />}
+          <CabinFeaturedPhotos profile={profile} atmos={atmos} />
+          <CabinMoments profile={profile} atmos={atmos} />
+          <CabinPinnedMemory profile={profile} atmos={atmos} />
           {/* Masonry-style grid */}
           <div className="columns-2 md:columns-3 gap-4 pb-16 [column-fill:_balance]">
             <CollectionsShelf profileId={profile.id} handle={profile.handle} isOwner={isOwner} atmosphere={atmos} />
