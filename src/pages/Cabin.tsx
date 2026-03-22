@@ -630,8 +630,9 @@ const CabinMoreMenu = ({
 const CabinAboutSection = ({ profile, atmos, centered }: { profile: Profile; atmos: any; centered?: boolean }) => {
   const links = Array.isArray(profile.links) ? profile.links.filter((l: any) => l.url) : [];
   const interests = profile.interests ? profile.interests.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const askMeAbout = Array.isArray(profile.ask_me_about) ? profile.ask_me_about.filter(Boolean) : [];
   const hasContent = profile.hometown || profile.job || links.length > 0 || interests.length > 0 ||
-    profile.how_found || profile.sitting_question;
+    profile.how_found || profile.sitting_question || askMeAbout.length > 0;
 
   if (!hasContent) return null;
 
@@ -645,6 +646,22 @@ const CabinAboutSection = ({ profile, atmos, centered }: { profile: Profile; atm
       )}
       {profile.sitting_question && (
         <p className="text-sm font-body italic" style={{ color: atmos.text, opacity: 0.55 }}>"{profile.sitting_question}"</p>
+      )}
+      {askMeAbout.length > 0 && (
+        <div className={`space-y-1 ${centered ? 'text-center' : ''}`}>
+          <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.4 }}>Ask me about</p>
+          <div className={`flex flex-wrap gap-1.5 ${centered ? 'justify-center' : ''}`}>
+            {askMeAbout.map((topic, i) => (
+              <span
+                key={i}
+                className="px-2.5 py-0.5 rounded-full text-xs font-body"
+                style={{ backgroundColor: `${atmos.accent}20`, color: atmos.accent }}
+              >
+                {topic}
+              </span>
+            ))}
+          </div>
+        </div>
       )}
       {interests.length > 0 && (
         <div className={`flex flex-wrap gap-1.5 ${centered ? 'justify-center' : ''}`}>
@@ -679,6 +696,104 @@ const CabinAboutSection = ({ profile, atmos, centered }: { profile: Profile; atm
         <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.3 }}>Found their way here: {profile.how_found}</p>
       )}
     </div>
+  );
+};
+
+const CabinFeaturedPhotos = ({ profile, atmos }: { profile: Profile; atmos: any }) => {
+  const photos = Array.isArray(profile.featured_photos) ? profile.featured_photos.filter(Boolean) : [];
+  if (photos.length === 0) return null;
+  return (
+    <div className="mt-6">
+      <div className={`grid gap-1.5 ${photos.length <= 3 ? 'grid-cols-3' : 'grid-cols-3'}`}>
+        {photos.map((url, i) => (
+          <div key={i} className="aspect-square rounded-xl overflow-hidden">
+            <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const CabinMoments = ({ profile, atmos }: { profile: Profile; atmos: any }) => {
+  const moments = Array.isArray(profile.moments) ? profile.moments.filter((m: any) => m.title) : [];
+  if (moments.length === 0) return null;
+  return (
+    <div className="mt-6 space-y-0">
+      {moments.map((m: any, i: number) => (
+        <div key={i} className="flex gap-3 pb-4">
+          <div className="flex flex-col items-center">
+            <div className="w-2 h-2 rounded-full shrink-0 mt-1.5" style={{ backgroundColor: atmos.accent, opacity: 0.5 }} />
+            {i < moments.length - 1 && <div className="w-px flex-1 mt-1" style={{ backgroundColor: atmos.border }} />}
+          </div>
+          <div className="pb-1">
+            <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>
+              {m.title}
+              {m.year && <span className="ml-2 text-xs" style={{ opacity: 0.5 }}>({m.year})</span>}
+            </p>
+            {m.note && <p className="text-xs font-body mt-0.5" style={{ color: atmos.text, opacity: 0.4 }}>{m.note}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const CabinPinnedMemory = ({ profile, atmos }: { profile: Profile; atmos: any }) => {
+  const [post, setPost] = useState<{ content: string | null; post_type: string; created_at: string } | null>(null);
+  useEffect(() => {
+    if (!profile.pinned_memory_post_id) return;
+    supabase.from('posts').select('content, post_type, created_at').eq('id', profile.pinned_memory_post_id).maybeSingle()
+      .then(({ data }) => { if (data) setPost(data); });
+  }, [profile.pinned_memory_post_id]);
+
+  if (!profile.pinned_memory_post_id || !post) return null;
+
+  return (
+    <div className="mt-6">
+      <button
+        onClick={() => window.location.href = `/post/${profile.pinned_memory_post_id}`}
+        className="w-full text-left rounded-xl p-4 transition-colors"
+        style={{ backgroundColor: `${atmos.accent}08`, border: `1px solid ${atmos.border}` }}
+      >
+        <div className="flex items-center gap-1.5 mb-2">
+          <Pin size={12} style={{ color: atmos.accent, opacity: 0.6 }} />
+          <span className="text-xs font-body" style={{ color: atmos.text, opacity: 0.35 }}>A favorite from the archive</span>
+        </div>
+        <p className="text-sm font-body line-clamp-3" style={{ color: atmos.text, opacity: 0.7 }}>{post.content}</p>
+      </button>
+    </div>
+  );
+};
+
+const CabinFriendsSince = ({ profileId, atmos }: { profileId: string; atmos: any }) => {
+  const { user } = useAuth();
+  const [since, setSince] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user || user.id === profileId) return;
+    supabase
+      .from('circles')
+      .select('created_at')
+      .or(`and(requester_id.eq.${user.id},requestee_id.eq.${profileId}),and(requester_id.eq.${profileId},requestee_id.eq.${user.id})`)
+      .eq('status', 'accepted')
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.created_at) {
+          const d = new Date(data.created_at);
+          setSince(d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
+        }
+      });
+  }, [user, profileId]);
+
+  if (!since) return null;
+
+  return (
+    <p className="text-xs font-body italic mt-3" style={{ color: atmos.text, opacity: 0.3 }}>
+      You've been in each other's Circles since {since}.
+    </p>
   );
 };
 
