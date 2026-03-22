@@ -20,6 +20,13 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
   const [posting, setPosting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const captionRef = useRef<HTMLTextAreaElement>(null);
+
+  const scrollCaptionIntoView = useCallback(() => {
+    setTimeout(() => {
+      captionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+  }, []);
 
   const handleFiles = (selected: FileList | null) => {
     if (!selected) return;
