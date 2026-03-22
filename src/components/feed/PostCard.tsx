@@ -338,8 +338,17 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
           );
         })()}
 
+        {/* Reaction summary — emoji presence only */}
+        {summaryEmojis.length > 0 && (
+          <div className="flex items-center gap-1 mt-3">
+            {summaryEmojis.map((emoji, i) => (
+              <span key={i} className="text-sm">{emoji}</span>
+            ))}
+          </div>
+        )}
+
         {/* Actions */}
-        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/50">
+        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/50">
           <ReactionBar
             postId={post.id}
             reactions={reactions}
