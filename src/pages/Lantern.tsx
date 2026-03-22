@@ -201,7 +201,7 @@ const Lantern = () => {
                     navigate={navigate}
                   />
                 ) : group.type === 'reaction_batch' ? (
-                  <ReactionGroup items={group.items} />
+                  <ReactionGroup items={group.items} navigate={navigate} />
                 ) : group.type === 'invite_accepted' ? (
                   <InviteGroup items={group.items} actors={actors} navigate={navigate} />
                 ) : (
@@ -309,31 +309,34 @@ const CircleRequestGroup = ({ items, actors, actionStates, onAccept, onDecline, 
   }
 
   return (
-    <div className="py-1.5">
+    <button
+      onClick={() => navigate('/circles?tab=invites')}
+      className="w-full text-left py-1.5 hover:bg-muted/50 rounded-lg px-2 -mx-2 transition-colors"
+    >
       <p className="font-body text-sm text-foreground">
         {items.length} people want to join your Circle.
       </p>
-      <button
-        onClick={() => navigate('/circles')}
-        className="mt-2 px-3 py-1.5 rounded-full border border-border font-body text-xs text-foreground hover:bg-muted"
-      >
-        View requests →
-      </button>
-    </div>
+      <p className="font-body text-xs text-primary mt-1">View requests →</p>
+    </button>
   );
 };
 
-const ReactionGroup = ({ items }: { items: NotificationRow[] }) => {
+const ReactionGroup = ({ items, navigate }: { items: NotificationRow[]; navigate: (path: string) => void }) => {
   const reactionEmojis = '🔥🌲💚✨';
+  // Find the first item with a post_id for navigation
+  const tappablePostId = items.find(i => i.post_id)?.post_id;
   return (
-    <div className="py-1.5">
+    <button
+      onClick={() => tappablePostId ? navigate(`/post/${tappablePostId}`) : undefined}
+      className="w-full text-left py-1.5 hover:bg-muted/50 rounded-lg px-2 -mx-2 transition-colors"
+    >
       <p className="font-body text-sm text-foreground">
         {items.length} {items.length === 1 ? 'person' : 'people'} reacted to your posts
       </p>
       <p className="font-body text-xs text-muted-foreground mt-0.5">
         {reactionEmojis}
       </p>
-    </div>
+    </button>
   );
 };
 
@@ -476,22 +479,22 @@ function getNotificationContent(
     case 'circle_accepted':
       return {
         label: `${name} accepted your Circle request.`,
-        action: () => actor && navigate(`/@${actor.handle}`),
+        action: () => actor && navigate(`/${actor.handle}`),
       };
     case 'reply':
       return {
         label: `${name} replied to your post.`,
-        action: () => {},
+        action: () => item.post_id ? navigate(`/post/${item.post_id}`) : undefined,
       };
     case 'quote_post':
       return {
         label: `${name} quoted your post.`,
-        action: () => {},
+        action: () => item.post_id ? navigate(`/post/${item.post_id}`) : undefined,
       };
     case 'smoke_signal':
       return {
         label: 'Someone sent you a smoke signal.',
-        action: () => {},
+        action: () => navigate('/campfires'),
       };
     case 'system':
       return {
@@ -501,42 +504,47 @@ function getNotificationContent(
     case 'collection_subscriber':
       return {
         label: `${name} subscribed to your collection.`,
-        action: () => {},
+        action: () => item.collection_id ? navigate(`/collections/${item.collection_id}`) : navigate('/collections'),
       };
     case 'camp_join_request':
       return {
         label: `${name} wants to join your Camp.`,
-        action: () => {},
+        action: () => navigate('/camps/mine'),
       };
     case 'camp_join_accepted':
       return {
         label: 'Your Camp join request was accepted!',
-        action: () => {},
+        action: () => navigate('/camps/mine'),
       };
     case 'camp_role_changed':
       return {
         label: 'Your Camp role was updated.',
-        action: () => {},
+        action: () => navigate('/camps/mine'),
       };
     case 'camp_post_removed':
       return {
         label: 'A Trailblazer removed your post from a Camp.',
-        action: () => {},
+        action: () => navigate('/camps/mine'),
       };
     case 'bonfire_split':
       return {
         label: 'Your Bonfire has grown past 150 members. A second fire was started.',
-        action: () => {},
+        action: () => navigate('/campfires'),
       };
     case 'camp_newsletter':
       return {
         label: `${name} sent a newsletter from your Camp.`,
-        action: () => {},
+        action: () => navigate('/camps/mine'),
+      };
+    case 'design_purchased':
+      return {
+        label: `${name} purchased your Cabin design.`,
+        action: () => navigate('/my-designs'),
       };
     default:
       return {
         label: 'New notification',
-        action: () => {},
+        action: () => navigate('/'),
       };
   }
 }
