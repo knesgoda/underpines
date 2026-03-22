@@ -158,7 +158,7 @@ const Feed = () => {
       const authorIds = [...new Set([...allPosts.map(p => p.author_id), ...campPosts.map(p => p.author_id)])];
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, display_name, handle, accent_color, cabin_mood')
+        .select('id, display_name, handle, accent_color, cabin_mood, avatar_url, default_avatar_key')
         .in('id', authorIds.length > 0 ? authorIds : ['00000000-0000-0000-0000-000000000000']);
 
       // Fetch reactions for personal feed posts
