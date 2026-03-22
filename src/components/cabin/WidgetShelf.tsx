@@ -30,6 +30,7 @@ interface WidgetShelfProps {
   songArtist?: string | null;
   spotifyTrackId?: string | null;
   spotifyPreviewUrl?: string | null;
+  playerType?: string | null;
   onUpdate?: () => void;
 }
 
