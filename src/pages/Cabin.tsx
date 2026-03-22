@@ -55,6 +55,10 @@ interface Profile {
   interests: string | null;
   how_found: string | null;
   sitting_question: string | null;
+  ask_me_about: string[] | null;
+  pinned_memory_post_id: string | null;
+  featured_photos: string[] | null;
+  moments: { title: string; year?: string; note?: string }[] | null;
 }
 
 const Cabin = () => {
