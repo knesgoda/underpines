@@ -21,18 +21,18 @@ const Onboarding = () => {
     return <WalkThroughWoods onComplete={() => setStep(8)} />;
   }
 
-  if (step === 9) {
+  if (step === 8) {
     return (
       <HumanMoment
         inviterName={data.inviterName}
         inviteeCount={3}
-        onEnter={() => navigate('/cabin')}
+        onEnter={() => setStep(9)}
       />
     );
   }
 
-  // Step 8 redirects to cabin with setup mode
-  if (step === 8) {
+  // Step 9 redirects to cabin with setup mode
+  if (step === 9) {
     navigate('/cabin?setup=true');
     return null;
   }
