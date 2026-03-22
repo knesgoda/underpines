@@ -65,9 +65,15 @@ const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) =>
 const DesktopSidebar = () => {
   const { user, signOut } = useAuth();
   const { setComposerOpen } = useNavigation();
+  const { hasUnread, markSeen } = useCampfireUnread();
   const location = useLocation();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<{ display_name: string; handle: string; avatar_url: string | null; default_avatar_key: string | null } | null>(null);
+
+  // Mark seen when on campfires
+  useEffect(() => {
+    if (location.pathname.startsWith('/campfires')) markSeen();
+  }, [location.pathname, markSeen]);
 
   useEffect(() => {
     if (!user) return;
