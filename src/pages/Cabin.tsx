@@ -20,7 +20,7 @@ import CabinCircleStack from '@/components/cabin/CabinCircleStack';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
-import { Settings, Music, MoreHorizontal } from 'lucide-react';
+import { Settings, Music, MoreHorizontal, Pencil } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useBlockMute } from '@/hooks/useBlockMute';
 import { toast } from 'sonner';
