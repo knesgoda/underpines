@@ -135,7 +135,13 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     interests: profile.interests || '',
     how_found: profile.how_found || '',
     sitting_question: profile.sitting_question || '',
+    ask_me_about: (Array.isArray(profile.ask_me_about) ? profile.ask_me_about : []) as string[],
+    pinned_memory_post_id: profile.pinned_memory_post_id || '',
+    featured_photos: (Array.isArray(profile.featured_photos) ? profile.featured_photos : []) as string[],
+    moments: (Array.isArray(profile.moments) ? profile.moments : []) as { title: string; year?: string; note?: string }[],
   });
+  const [ownPosts, setOwnPosts] = useState<{ id: string; content: string | null; post_type: string; created_at: string }[]>([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const save = useCallback(async (updates: Partial<typeof form>) => {
     setSaving(true);
