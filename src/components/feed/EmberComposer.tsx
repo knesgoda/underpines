@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
@@ -20,6 +20,13 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
   const [posting, setPosting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const captionRef = useRef<HTMLTextAreaElement>(null);
+
+  const scrollCaptionIntoView = useCallback(() => {
+    setTimeout(() => {
+      captionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+  }, []);
 
   const handleFiles = (selected: FileList | null) => {
     if (!selected) return;
@@ -140,6 +147,19 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         onChange={e => { handleFiles(e.target.files); e.target.value = ''; }}
       />
 
+      {/* Caption — always visible when photos are attached */}
+      {previews.length > 0 && (
+        <textarea
+          ref={captionRef}
+          value={caption}
+          onChange={e => setCaption(e.target.value)}
+          onFocus={scrollCaptionIntoView}
+          placeholder="A thought, a story, a photo..."
+          className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground font-body text-sm outline-none resize-none placeholder:text-muted-foreground/50 min-h-[60px]"
+          rows={2}
+        />
+      )}
+
       {previews.length === 0 ? (
         <button
           onClick={() => inputRef.current?.click()}
@@ -179,13 +199,6 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
           )}
         </div>
       )}
-
-      <input
-        value={caption}
-        onChange={e => setCaption(e.target.value)}
-        placeholder="Add a caption (optional)"
-        className="w-full bg-transparent text-foreground font-body text-sm outline-none placeholder:text-muted-foreground/50"
-      />
 
       {/* Upload progress */}
       {posting && uploadProgress !== null && (
