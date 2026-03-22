@@ -15,7 +15,7 @@ import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import CabinAvatar from '@/components/cabin/CabinAvatar';
 import SuggestionBox from '@/components/cabin/SuggestionBox';
-import InviteRow from '@/components/cabin/InviteRow';
+import InviteSheet from '@/components/cabin/InviteSheet';
 import CabinCircleStack from '@/components/cabin/CabinCircleStack';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { useWeather } from '@/hooks/useWeather';
