@@ -493,7 +493,7 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
         // Ponderosa pine — tall straight trunk visible through open canopy, foliage clusters at branch tips
         const pa_dark = 'var(--biome-canopy-shadow, #2d5a30)';
         const pa_light = 'var(--biome-canopy-highlight, #4a9e52)';
-        const pTrunk = '#8B5A2B'; // warm reddish-brown bark
+        const pTrunk = '#8B3A1A'; // auburn Ponderosa bark
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             {/* Tall straight trunk — slightly tapered, warm bark color */}
