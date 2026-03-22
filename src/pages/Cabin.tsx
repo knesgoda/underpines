@@ -281,7 +281,6 @@ const Cabin = () => {
       {/* Illustrated scene header */}
       <div className="relative w-full">
         <CabinScene
-          memberName={isTrailhead ? '' : profile.display_name}
           atmosphere={profile.atmosphere}
           moonPhase={getMoonPhase()}
           latitude={profile.latitude ?? undefined}
@@ -360,7 +359,6 @@ const Cabin = () => {
            </div>
           {profile.is_pines_plus && <div className="py-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} /></div>}
           <div className="py-12 space-y-6"><CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle={isInCircle} atmosphere={atmos} /></div>
-          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
         </div>
 
       ) : isTrailhead ? (
@@ -388,7 +386,6 @@ const Cabin = () => {
               {profile.is_pines_plus && <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} />}
             </div>
           </div>
-          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
         </div>
 
       ) : isCanopy ? (
@@ -425,7 +422,6 @@ const Cabin = () => {
           </div>
 
           {profile.is_pines_plus && <div className="pb-8"><WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} /></div>}
-          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
         </div>
 
       ) : (
@@ -473,7 +469,7 @@ const Cabin = () => {
               {profile.is_pines_plus && <WidgetShelf userId={profile.id} isPinesPlus={profile.is_pines_plus} atmosphere={atmos} />}
             </div>
           </div>
-          <CabinCircleActions isOwner={isOwner} user={user} profile={profile} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} navigate={navigate} />
+          
         </div>
       )}
 
@@ -687,13 +683,6 @@ const CabinPinnedSong = ({ profile, atmos, centered }: { profile: Profile; atmos
   );
 };
 
-const CabinCircleActions = ({ isOwner, user, profile, cabinMenuOpen, setCabinMenuOpen, navigate }: {
-  isOwner: boolean; user: any; profile: Profile; cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void; navigate: (path: string) => void;
-}) => {
-  // Legacy bottom actions — only show if not owner (owner actions now inline)
-  if (isOwner || !user || !profile) return null;
-  return null; // Actions now handled by CabinOwnerActions inline
-};
 
 const FounderBadge = ({ className = 'w-4 h-4' }: { className?: string }) => (
   <svg

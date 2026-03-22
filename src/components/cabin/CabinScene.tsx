@@ -55,7 +55,6 @@ function toRenderTime(t: string): RenderTimeOfDay {
 }
 
 interface CabinSceneProps {
-  memberName: string;
   atmosphere?: string;
   moonPhase?: number;
   latitude?: number;
@@ -884,7 +883,7 @@ const ATMOSPHERE_TINTS: Record<string, { tint: string; opacity: number }> = {
   'autumn-amber':   { tint: '#fbbf24', opacity: 0.08 },
 };
 
-const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude, biome: biomeProp, postalCode, countryCode, creatureKey, userId }: CabinSceneProps) => {
+const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude, biome: biomeProp, postalCode, countryCode, creatureKey, userId }: CabinSceneProps) => {
   const debug = useSceneDebug();
   const dbg = debug?.overrides;
 
