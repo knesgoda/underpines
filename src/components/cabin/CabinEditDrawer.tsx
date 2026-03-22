@@ -125,6 +125,12 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     cabin_mood: profile.cabin_mood,
     pinned_song_title: profile.pinned_song_title || '',
     pinned_song_artist: profile.pinned_song_artist || '',
+    hometown: profile.hometown || '',
+    job: profile.job || '',
+    links: (Array.isArray(profile.links) ? profile.links : []) as { url: string; label: string }[],
+    interests: profile.interests || '',
+    how_found: profile.how_found || '',
+    sitting_question: profile.sitting_question || '',
   });
 
   const save = useCallback(async (updates: Partial<typeof form>) => {
