@@ -20,7 +20,7 @@ import CabinCircleStack from '@/components/cabin/CabinCircleStack';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
-import { Settings, Music, MoreHorizontal } from 'lucide-react';
+import { Settings, Music, MoreHorizontal, Pencil } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useBlockMute } from '@/hooks/useBlockMute';
 import { toast } from 'sonner';
@@ -322,21 +322,6 @@ const Cabin = () => {
           </div>
         )}
 
-        {isOwner && (
-          <button
-            onClick={() => setEditOpen(true)}
-            className="absolute top-4 right-4 z-20 flex items-center gap-2 px-4 py-2 rounded-pill text-sm font-body transition-all duration-300"
-            style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(8px)',
-              color: 'white',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-            }}
-          >
-            <Settings size={14} />
-            Edit Cabin
-          </button>
-        )}
       </div>
 
       {/* Mobile invite row for owner */}
@@ -362,6 +347,7 @@ const Cabin = () => {
             {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
               <p className="text-xs font-body mt-1" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
             )}
+            <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} centered cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
             {profile.mantra && (
               <p className="mt-8 text-xl md:text-2xl font-display italic leading-relaxed" style={{ color: atmos.text, opacity: 0.7 }}>"{profile.mantra}"</p>
             )}
@@ -389,6 +375,7 @@ const Cabin = () => {
              {profile.bio && <p className="text-sm font-body max-w-xl" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
              <CabinPinnedSong profile={profile} atmos={atmos} />
              <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
+             <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
           </div>
 
           {/* Two-column editorial */}
@@ -420,6 +407,7 @@ const Cabin = () => {
               {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
                 <p className="text-[10px] font-body mt-0.5" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
               )}
+              <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
             </div>
             <div className="hidden md:block text-right">
               <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} />
@@ -465,6 +453,7 @@ const Cabin = () => {
             </div>
             <div className="px-8 pb-6">
               {profile.mantra && <p className="mt-1 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>}
+              <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
               <div className="mt-3 h-px" style={{ backgroundColor: atmos.border }} />
               <div className="mt-4"><CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} /></div>
                {profile.bio && <p className="mt-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
@@ -643,6 +632,45 @@ const CabinMetaRow = ({ profile, temperature, tempUnit, atmos, centered }: {
   </div>
 );
 
+const CabinOwnerActions = ({ isOwner, user, profile, atmos, onEditCabin, navigate, centered, cabinMenuOpen, setCabinMenuOpen }: {
+  isOwner: boolean; user: any; profile: Profile; atmos: any; onEditCabin: () => void; navigate: (path: string) => void; centered?: boolean;
+  cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void;
+}) => {
+  if (isOwner) {
+    return (
+      <div className={`flex items-center gap-2 mt-3 ${centered ? 'justify-center' : ''}`}>
+        <button
+          onClick={() => navigate('/settings')}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-body text-muted-foreground hover:bg-muted transition-colors"
+        >
+          <Settings size={13} />
+          <span className="hidden md:inline">Settings</span>
+        </button>
+        <button
+          onClick={onEditCabin}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-body text-muted-foreground hover:bg-muted transition-colors"
+        >
+          <Pencil size={13} />
+          <span className="hidden md:inline">Edit Cabin</span>
+        </button>
+      </div>
+    );
+  }
+  if (!user || !profile) return null;
+  return (
+    <div className={`flex items-center gap-2 mt-3 ${centered ? 'justify-center' : ''}`}>
+      <CircleButton profileId={profile.id} profileName={profile.display_name} />
+      <CabinMoreMenu
+        targetUserId={profile.id}
+        targetDisplayName={profile.display_name}
+        open={cabinMenuOpen}
+        setOpen={setCabinMenuOpen}
+        navigate={navigate}
+      />
+    </div>
+  );
+};
+
 const CabinPinnedSong = ({ profile, atmos, centered }: { profile: Profile; atmos: any; centered?: boolean }) => {
   if (!profile.pinned_song_title) return null;
   return (
@@ -662,19 +690,9 @@ const CabinPinnedSong = ({ profile, atmos, centered }: { profile: Profile; atmos
 const CabinCircleActions = ({ isOwner, user, profile, cabinMenuOpen, setCabinMenuOpen, navigate }: {
   isOwner: boolean; user: any; profile: Profile; cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void; navigate: (path: string) => void;
 }) => {
+  // Legacy bottom actions — only show if not owner (owner actions now inline)
   if (isOwner || !user || !profile) return null;
-  return (
-    <div className="flex items-center justify-center gap-3 pb-12">
-      <CircleButton profileId={profile.id} profileName={profile.display_name} />
-      <CabinMoreMenu
-        targetUserId={profile.id}
-        targetDisplayName={profile.display_name}
-        open={cabinMenuOpen}
-        setOpen={setCabinMenuOpen}
-        navigate={navigate}
-      />
-    </div>
-  );
+  return null; // Actions now handled by CabinOwnerActions inline
 };
 
 const FounderBadge = ({ className = 'w-4 h-4' }: { className?: string }) => (
