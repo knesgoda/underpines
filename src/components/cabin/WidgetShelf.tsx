@@ -333,13 +333,15 @@ const WidgetShelf = ({ userId, isPinesPlus, atmosphere, songTitle, songArtist, s
         )}
       </div>
 
-      {/* Vintage Radio Widget */}
-      <VintageRadio
+      {/* Music Player Widget */}
+      <MusicPlayer
         userId={userId}
         songTitle={songTitle || null}
         songArtist={songArtist || null}
         spotifyTrackId={spotifyTrackId || null}
         spotifyPreviewUrl={spotifyPreviewUrl || null}
+        playerType={(playerType as PlayerType) || 'radio'}
+        isPinesPlus={isPinesPlus}
         atmosphere={atmosphere}
         onUpdate={onUpdate || (() => {})}
       />
