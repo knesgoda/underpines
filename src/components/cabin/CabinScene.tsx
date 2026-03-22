@@ -418,6 +418,9 @@ function ForegroundGround({ renderTime, windIntensity }: { renderTime: RenderTim
     } as React.CSSProperties}>
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Back grass line — slightly lighter, adds depth */}
+        <path d="M0,82 C80,80 180,83 300,81 C420,79 550,83 680,81 C800,79 920,82 1000,81 L1000,85 L0,85 Z"
+          fill={grassColor} opacity="0.35" style={{ transition: 'fill 3s ease' }} />
         <g style={{ transformOrigin: '500px 85px', animation: grassAnim }}>
           <path d={`M0,85 ${grassSpikes} L1000,85 L1000,85 L0,85 Z`}
             fill={grassColor} opacity="0.7" style={{ transition: 'fill 3s ease' }} />
@@ -507,20 +510,53 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
             <path style={flutterAnim} d={`M${cx},${baseY - 30 * s} C${cx + 2 * s},${baseY - 26 * s} ${cx + 7 * s},${baseY - 18 * s} ${cx + 8 * s},${baseY - 12 * s} L${cx - 8 * s},${baseY - 12 * s} C${cx - 7 * s},${baseY - 18 * s} ${cx - 2 * s},${baseY - 26 * s} ${cx},${baseY - 30 * s}Z`} fill={canopyColor} />
           </g>
         );
-      case 'deciduous-a':
+      case 'deciduous-a': {
+        // Classic oak silhouette — wide spreading crown with organic variation
+        const da_dark = 'var(--biome-canopy-shadow, #2d6b33)';
+        const da_light = 'var(--biome-canopy-highlight, #4a9e52)';
+        const trunkW = 3.5 * s;
+        const trunkH = 14 * s;
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
-            <rect x={cx - 1.5 * s} y={baseY - 16 * s} width={3 * s} height={16 * s} fill={trunkColor} rx={0.6} />
-            <path style={flutterAnim} d={`M${cx - 14 * s},${baseY - 20 * s} C${cx - 16 * s},${baseY - 28 * s} ${cx - 12 * s},${baseY - 36 * s} ${cx - 6 * s},${baseY - 38 * s} C${cx - 3 * s},${baseY - 42 * s} ${cx + 3 * s},${baseY - 42 * s} ${cx + 6 * s},${baseY - 38 * s} C${cx + 12 * s},${baseY - 36 * s} ${cx + 16 * s},${baseY - 28 * s} ${cx + 14 * s},${baseY - 20 * s} C${cx + 12 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 16 * s} ${cx - 14 * s},${baseY - 20 * s}Z`} fill={canopyColor} />
+            {/* Tapered trunk — wider at base */}
+            <path d={`M${cx - trunkW * 0.35},${baseY - trunkH} L${cx + trunkW * 0.35},${baseY - trunkH} L${cx + trunkW * 0.55},${baseY} L${cx - trunkW * 0.55},${baseY} Z`} fill={trunkColor} />
+            {/* Back crown layer — darker, slightly wider */}
+            <g style={flutterAnim}>
+              <path d={`M${cx},${baseY - 40 * s} C${cx - 5 * s},${baseY - 42 * s} ${cx - 16 * s},${baseY - 36 * s} ${cx - 18 * s},${baseY - 28 * s} C${cx - 19 * s},${baseY - 22 * s} ${cx - 15 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 15 * s} L${cx + 12 * s},${baseY - 15 * s} C${cx + 15 * s},${baseY - 16 * s} ${cx + 19 * s},${baseY - 22 * s} ${cx + 18 * s},${baseY - 28 * s} C${cx + 16 * s},${baseY - 36 * s} ${cx + 5 * s},${baseY - 42 * s} ${cx},${baseY - 40 * s}Z`} fill={da_dark} opacity="0.85" />
+              {/* Main crown — primary canopy color, organic bumpy edge */}
+              <path d={`M${cx - 2 * s},${baseY - 39 * s} C${cx - 7 * s},${baseY - 40 * s} ${cx - 14 * s},${baseY - 35 * s} ${cx - 16 * s},${baseY - 28 * s} C${cx - 17 * s},${baseY - 23 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 10 * s},${baseY - 17 * s} C${cx - 6 * s},${baseY - 16 * s} ${cx + 6 * s},${baseY - 16 * s} ${cx + 10 * s},${baseY - 17 * s} C${cx + 14 * s},${baseY - 18 * s} ${cx + 17 * s},${baseY - 23 * s} ${cx + 16 * s},${baseY - 28 * s} C${cx + 14 * s},${baseY - 35 * s} ${cx + 7 * s},${baseY - 40 * s} ${cx + 2 * s},${baseY - 39 * s} C${cx + 1 * s},${baseY - 41 * s} ${cx - 1 * s},${baseY - 41 * s} ${cx - 2 * s},${baseY - 39 * s}Z`} fill={canopyColor} />
+              {/* Highlight patches — lighter dappled areas */}
+              <ellipse cx={cx - 5 * s} cy={baseY - 30 * s} rx={4 * s} ry={3.5 * s} fill={da_light} opacity="0.35" />
+              <ellipse cx={cx + 6 * s} cy={baseY - 26 * s} rx={3.5 * s} ry={3 * s} fill={da_light} opacity="0.25" />
+              <ellipse cx={cx + 1 * s} cy={baseY - 35 * s} rx={3 * s} ry={2.5 * s} fill={da_light} opacity="0.2" />
+            </g>
           </g>
         );
-      case 'deciduous-b':
+      }
+      case 'deciduous-b': {
+        // Larger spreading oak — asymmetric crown
+        const db_dark = 'var(--biome-canopy-shadow, #2d6b33)';
+        const db_light = 'var(--biome-canopy-highlight, #4a9e52)';
+        const trunkWb = 4.5 * s;
+        const trunkHb = 16 * s;
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
-            <rect x={cx - 2 * s} y={baseY - 18 * s} width={4 * s} height={18 * s} fill={trunkColor} rx={0.8} />
-            <path style={flutterAnim} d={`M${cx - 16 * s},${baseY - 22 * s} C${cx - 18 * s},${baseY - 30 * s} ${cx - 14 * s},${baseY - 40 * s} ${cx - 4 * s},${baseY - 44 * s} C${cx},${baseY - 46 * s} ${cx + 4 * s},${baseY - 44 * s} ${cx + 8 * s},${baseY - 42 * s} C${cx + 14 * s},${baseY - 38 * s} ${cx + 18 * s},${baseY - 30 * s} ${cx + 16 * s},${baseY - 22 * s} C${cx + 14 * s},${baseY - 18 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 16 * s},${baseY - 22 * s}Z`} fill={canopyColor} />
+            {/* Tapered trunk */}
+            <path d={`M${cx - trunkWb * 0.3},${baseY - trunkHb} L${cx + trunkWb * 0.3},${baseY - trunkHb} L${cx + trunkWb * 0.6},${baseY} L${cx - trunkWb * 0.6},${baseY} Z`} fill={trunkColor} />
+            {/* Back shadow crown */}
+            <g style={flutterAnim}>
+              <path d={`M${cx - 3 * s},${baseY - 46 * s} C${cx - 10 * s},${baseY - 47 * s} ${cx - 20 * s},${baseY - 40 * s} ${cx - 20 * s},${baseY - 30 * s} C${cx - 20 * s},${baseY - 22 * s} ${cx - 16 * s},${baseY - 18 * s} ${cx - 12 * s},${baseY - 17 * s} L${cx + 14 * s},${baseY - 17 * s} C${cx + 18 * s},${baseY - 18 * s} ${cx + 22 * s},${baseY - 24 * s} ${cx + 20 * s},${baseY - 32 * s} C${cx + 18 * s},${baseY - 40 * s} ${cx + 8 * s},${baseY - 46 * s} ${cx + 3 * s},${baseY - 45 * s} C${cx + 1 * s},${baseY - 48 * s} ${cx - 1 * s},${baseY - 48 * s} ${cx - 3 * s},${baseY - 46 * s}Z`} fill={db_dark} opacity="0.8" />
+              {/* Main crown — wider, asymmetric */}
+              <path d={`M${cx - 1 * s},${baseY - 44 * s} C${cx - 8 * s},${baseY - 45 * s} ${cx - 18 * s},${baseY - 38 * s} ${cx - 18 * s},${baseY - 28 * s} C${cx - 18 * s},${baseY - 22 * s} ${cx - 14 * s},${baseY - 19 * s} ${cx - 10 * s},${baseY - 18 * s} C${cx - 4 * s},${baseY - 17 * s} ${cx + 6 * s},${baseY - 17 * s} ${cx + 12 * s},${baseY - 18 * s} C${cx + 16 * s},${baseY - 19 * s} ${cx + 20 * s},${baseY - 24 * s} ${cx + 18 * s},${baseY - 32 * s} C${cx + 16 * s},${baseY - 38 * s} ${cx + 6 * s},${baseY - 44 * s} ${cx + 1 * s},${baseY - 44 * s} C${cx},${baseY - 46 * s} ${cx - 1 * s},${baseY - 46 * s} ${cx - 1 * s},${baseY - 44 * s}Z`} fill={canopyColor} />
+              {/* Highlight patches */}
+              <ellipse cx={cx - 7 * s} cy={baseY - 32 * s} rx={5 * s} ry={4 * s} fill={db_light} opacity="0.3" />
+              <ellipse cx={cx + 8 * s} cy={baseY - 28 * s} rx={4 * s} ry={3.5 * s} fill={db_light} opacity="0.25" />
+              <ellipse cx={cx - 2 * s} cy={baseY - 38 * s} rx={3.5 * s} ry={2.5 * s} fill={db_light} opacity="0.2" />
+              <ellipse cx={cx + 4 * s} cy={baseY - 35 * s} rx={2.5 * s} ry={2 * s} fill={db_light} opacity="0.15" />
+            </g>
           </g>
         );
+      }
       default: return null;
     }
   };
@@ -544,20 +580,32 @@ function ForegroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: 
   const tf = TIME_FILTERS[renderTime];
   const treeFilter = isGoldenHour ? 'hue-rotate(-10deg) saturate(1.2)' : (tf.treeFilter || tf.filter);
   const darkCanopy = '#2a5a30';
+  const darkCanopyLight = '#3a7a42';
+  const darkCanopyShadow = '#1e4a24';
   const darkTrunk = '#3a2a1a';
 
   return (
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 100"
       preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
       style={{ filter: treeFilter, transition: 'filter 2s ease' }}>
+      {/* Left foreground tree — large conifer */}
       <g className="tree-sway" style={{ transformOrigin: '40px 100px', ...getTreeSwayStyle(windIntensity, 10, fromLeft) }}>
         <rect x={30} y={20} width={8} height={80} fill={darkTrunk} rx={2} />
         <path d="M34,0 C40,-2 56,8 60,18 C58,20 64,28 66,36 C62,38 68,48 68,56 L0,56 C0,48 6,38 2,36 C4,28 10,20 8,18 C12,8 28,-2 34,0Z" fill={darkCanopy} opacity="0.9" />
       </g>
+      {/* Right foreground tree — broadleaf oak with spreading crown */}
       <g className="tree-sway" style={{ transformOrigin: '960px 100px', ...getTreeSwayStyle(windIntensity, 11, fromLeft) }}>
-        <rect x={956} y={25} width={7} height={75} fill={darkTrunk} rx={2} />
-        <path d="M960,5 C968,2 982,10 988,22 C994,30 996,40 992,48 C988,54 980,58 972,56 C964,58 950,52 946,44 C942,36 944,24 950,14 C952,10 956,6 960,5Z" fill={darkCanopy} opacity="0.85" />
+        {/* Tapered trunk */}
+        <path d="M957,30 L963,30 L966,100 L954,100 Z" fill={darkTrunk} />
+        {/* Shadow crown */}
+        <path d="M960,4 C968,2 984,12 990,24 C996,34 994,46 988,52 C982,58 974,60 966,58 C958,60 946,56 940,48 C934,40 936,26 944,16 C948,10 954,6 960,4Z" fill={darkCanopyShadow} opacity="0.7" />
+        {/* Main crown */}
+        <path d="M960,6 C966,4 980,12 986,22 C992,32 990,42 986,48 C980,54 974,56 966,54 C958,56 948,52 944,44 C938,36 940,24 948,16 C952,10 956,8 960,6Z" fill={darkCanopy} opacity="0.85" />
+        {/* Highlights */}
+        <ellipse cx={954} cy={32} rx={8} ry={7} fill={darkCanopyLight} opacity="0.3" />
+        <ellipse cx={970} cy={38} rx={6} ry={5} fill={darkCanopyLight} opacity="0.2" />
       </g>
+      {/* Right secondary tree — smaller conifer */}
       <g className="tree-sway" style={{ transformOrigin: '920px 100px', ...getTreeSwayStyle(windIntensity, 12, fromLeft) }}>
         <rect x={917} y={40} width={5} height={60} fill={darkTrunk} rx={1.5} />
         <path d="M920,12 C924,16 934,28 936,38 C932,40 938,50 938,56 L902,56 C902,50 908,40 904,38 C906,28 916,16 920,12Z" fill={darkCanopy} opacity="0.8" />
@@ -835,7 +883,7 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       ref={sceneRef}
       className={`cabin-scene-root relative w-full overflow-hidden rounded-xl${sunObscured ? ' sun-obscured' : ''}${lightningFlash > 0 ? ' lightning-flash' : ''}`}
       style={{
-        aspectRatio: 'var(--cabin-scene-ratio, 3/1)',
+        maxHeight: 'var(--cabin-scene-max-h, 280px)',
         ...biomeConfig.cssVariables,
         // Wet-ground override when raining
         ...(weather.isRaining ? { '--biome-fg-ground': darkenColor(biomeConfig.cssVariables['--biome-fg-ground'] || '#2d5a3d') } : {}),
@@ -843,8 +891,10 @@ const CabinScene = ({ memberName, atmosphere = 'morning-mist', moonPhase = 0.5, 
       } as React.CSSProperties}
     >
       <style>{`
-        @media (max-width: 767px) { :root { --cabin-scene-ratio: 2/1; } }
-        @media (min-width: 768px) { :root { --cabin-scene-ratio: 3/1; } }
+        :root { --cabin-scene-max-h: 280px; }
+        @media (max-width: 767px) { :root { --cabin-scene-max-h: 200px; } }
+        .cabin-scene-root { aspect-ratio: 3/1; }
+        @media (max-width: 767px) { .cabin-scene-root { aspect-ratio: 2/1; } }
         ${SCENE_CSS}
       `}</style>
 

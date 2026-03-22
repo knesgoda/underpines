@@ -349,10 +349,10 @@ const Cabin = () => {
       {/* === HOLLOW LAYOUT === */}
       {isHollow ? (
         <div className="max-w-2xl mx-auto px-6 relative z-10">
-          <div className="flex justify-center -mt-8 mb-4">
+          <div className="flex justify-center -mt-12 md:-mt-14 mb-2">
             <CabinAvatar avatarUrl={profile.avatar_url} defaultAvatarKey={profile.default_avatar_key} isOwner={isOwner} isEditing={editOpen} profileId={profile.id} onUpdate={fetchProfile} size={isMobile ? 'sm' : 'lg'} />
           </div>
-          <div className="pt-4 pb-12 text-center">
+          <div className="pt-2 pb-8 text-center">
             <div className="flex items-center justify-center gap-3 mb-3">
               {mood && <span className="text-3xl">{mood.emoji}</span>}
               <h1 className="text-4xl md:text-5xl font-display" style={{ color: atmos.text }}>{profile.display_name}</h1>
@@ -442,15 +442,15 @@ const Cabin = () => {
 
       ) : (
         /* === HEARTH LAYOUT (default) === */
-        <div className="max-w-4xl mx-auto px-6 relative z-10" style={{ marginTop: isMobile ? -40 : -48 }}>
+        <div className="max-w-4xl mx-auto px-6 relative z-10" style={{ marginTop: isMobile ? -44 : -52 }}>
           <div
             className="rounded-2xl shadow-card transition-colors duration-700 relative"
             style={{ backgroundColor: atmos.cardBg, borderColor: atmos.border, borderWidth: 1 }}
           >
-            <div className="absolute" style={{ top: isMobile ? -40 : -48, left: 24 }}>
+            <div className="absolute" style={{ top: isMobile ? -44 : -52, left: 24 }}>
               <CabinAvatar avatarUrl={profile.avatar_url} defaultAvatarKey={profile.default_avatar_key} isOwner={isOwner} isEditing={editOpen} profileId={profile.id} onUpdate={fetchProfile} size={isMobile ? 'sm' : 'lg'} />
             </div>
-            <div className="flex items-start gap-4 pt-4 pr-8 pb-6" style={{ paddingLeft: isMobile ? 104 : 136 }}>
+            <div className="flex items-start gap-4 pt-3 pr-8 pb-4" style={{ paddingLeft: isMobile ? 104 : 136 }}>
               <div className="flex-1 pt-2">
                 <div className="flex items-center gap-2">
                   {mood && <span className="text-2xl">{mood.emoji}</span>}
@@ -463,9 +463,9 @@ const Cabin = () => {
                 )}
               </div>
             </div>
-            <div className="px-8 pb-8">
-              {profile.mantra && <p className="mt-2 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>}
-              <div className="mt-4 h-px" style={{ backgroundColor: atmos.border }} />
+            <div className="px-8 pb-6">
+              {profile.mantra && <p className="mt-1 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>}
+              <div className="mt-3 h-px" style={{ backgroundColor: atmos.border }} />
               <div className="mt-4"><CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} /></div>
                {profile.bio && <p className="mt-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
                <CabinPinnedSong profile={profile} atmos={atmos} />
