@@ -15,12 +15,12 @@ import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import CabinAvatar from '@/components/cabin/CabinAvatar';
 import SuggestionBox from '@/components/cabin/SuggestionBox';
-import InviteRow from '@/components/cabin/InviteRow';
+import InviteSheet from '@/components/cabin/InviteSheet';
 import CabinCircleStack from '@/components/cabin/CabinCircleStack';
 import { getAtmosphere, cabinMoods } from '@/lib/cabin-config';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
-import { Settings, Music, MoreHorizontal, Pencil } from 'lucide-react';
+import { Settings, Music, MoreHorizontal, Pencil, Flame } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useBlockMute } from '@/hooks/useBlockMute';
 import { toast } from 'sonner';
@@ -73,6 +73,7 @@ const Cabin = () => {
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
+  const [inviteSheetOpen, setInviteSheetOpen] = useState(false);
   const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
   const [cabinVisitMode, setCabinVisitMode] = useState<string>('anonymous_count');
 
@@ -323,12 +324,8 @@ const Cabin = () => {
 
       </div>
 
-      {/* Mobile invite row for owner */}
-      {isOwner && isMobile && (
-        <div className="px-6 pt-4 md:hidden relative z-10">
-          <InviteRow />
-        </div>
-      )}
+      {/* Invite sheet */}
+      {isOwner && <InviteSheet open={inviteSheetOpen} onOpenChange={setInviteSheetOpen} />}
 
       {/* === HOLLOW LAYOUT === */}
       {isHollow ? (
@@ -346,7 +343,7 @@ const Cabin = () => {
             {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
               <p className="text-xs font-body mt-1" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
             )}
-            <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} centered cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
+            <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} centered cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} onOpenInvite={() => setInviteSheetOpen(true)} />
             {profile.mantra && (
               <p className="mt-8 text-xl md:text-2xl font-display italic leading-relaxed" style={{ color: atmos.text, opacity: 0.7 }}>"{profile.mantra}"</p>
             )}
@@ -373,7 +370,7 @@ const Cabin = () => {
              {profile.bio && <p className="text-sm font-body max-w-xl" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
              <CabinPinnedSong profile={profile} atmos={atmos} />
              <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
-             <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
+             <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} onOpenInvite={() => setInviteSheetOpen(true)} />
           </div>
 
           {/* Two-column editorial */}
@@ -404,7 +401,7 @@ const Cabin = () => {
               {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
                 <p className="text-[10px] font-body mt-0.5" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
               )}
-              <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
+              <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} onOpenInvite={() => setInviteSheetOpen(true)} />
             </div>
             <div className="hidden md:block text-right">
               <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} />
@@ -449,7 +446,7 @@ const Cabin = () => {
             </div>
             <div className="px-8 pb-6">
               {profile.mantra && <p className="mt-1 text-lg font-display italic" style={{ color: atmos.text, opacity: 0.8 }}>"{profile.mantra}"</p>}
-              <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} />
+              <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} onOpenInvite={() => setInviteSheetOpen(true)} />
               <div className="mt-3 h-px" style={{ backgroundColor: atmos.border }} />
               <div className="mt-4"><CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} /></div>
                {profile.bio && <p className="mt-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
@@ -628,9 +625,9 @@ const CabinMetaRow = ({ profile, temperature, tempUnit, atmos, centered }: {
   </div>
 );
 
-const CabinOwnerActions = ({ isOwner, user, profile, atmos, onEditCabin, navigate, centered, cabinMenuOpen, setCabinMenuOpen }: {
+const CabinOwnerActions = ({ isOwner, user, profile, atmos, onEditCabin, navigate, centered, cabinMenuOpen, setCabinMenuOpen, onOpenInvite }: {
   isOwner: boolean; user: any; profile: Profile; atmos: any; onEditCabin: () => void; navigate: (path: string) => void; centered?: boolean;
-  cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void;
+  cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void; onOpenInvite?: () => void;
 }) => {
   if (isOwner) {
     return (
@@ -648,6 +645,13 @@ const CabinOwnerActions = ({ isOwner, user, profile, atmos, onEditCabin, navigat
         >
           <Pencil size={13} />
           <span className="hidden md:inline">Edit Cabin</span>
+        </button>
+        <button
+          onClick={onOpenInvite}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-body text-muted-foreground hover:bg-muted transition-colors"
+        >
+          <Flame size={13} />
+          <span className="hidden md:inline">Invite</span>
         </button>
       </div>
     );
