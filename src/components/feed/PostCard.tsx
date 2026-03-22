@@ -25,7 +25,7 @@ export interface PostWithAuthor {
   is_quote_post: boolean | null;
   quoted_post_id: string | null;
   created_at: string;
-  author?: { display_name: string; handle: string; accent_color: string | null; cabin_mood: string | null };
+  author?: { display_name: string; handle: string; accent_color: string | null; cabin_mood: string | null; avatar_url?: string | null; default_avatar_key?: string | null };
   reactions?: { reaction_type: string; user_id: string }[];
   post_media?: { url: string; media_type: string; position: number }[];
   quoted_post?: PostWithAuthor | null;
