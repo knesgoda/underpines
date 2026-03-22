@@ -131,7 +131,7 @@ const Cabin = () => {
         }
       }
 
-      setProfile(data as Profile);
+      setProfile({ ...data, links: Array.isArray(data.links) ? data.links : [] } as unknown as Profile);
       setIsOwner(owner);
 
       // Check founder status
