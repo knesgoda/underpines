@@ -74,6 +74,7 @@ const Cabin = () => {
   const [previewDesign, setPreviewDesign] = useState<any>(null);
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
   const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
+  const [cabinVisitMode, setCabinVisitMode] = useState<string>('anonymous_count');
 
   const { temperature, unit: tempUnit } = useWeather(profile?.latitude, profile?.longitude);
 
@@ -174,17 +175,29 @@ const Cabin = () => {
         setEditOpen(true);
       }
 
-      // Fetch monthly visit count for owner
+      // Fetch monthly visit count and privacy setting for owner
       if (owner) {
-        const now = new Date();
-        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-        const { data: visits } = await supabase
-          .from('cabin_visits')
-          .select('visit_count')
-          .eq('profile_id', data.id)
-          .gte('visit_date', monthStart);
-        if (visits) {
-          setMonthlyVisits(visits.reduce((sum, v) => sum + (v.visit_count || 0), 0));
+        const { data: privData } = await supabase
+          .from('privacy_settings')
+          .select('cabin_visit_mode')
+          .eq('user_id', data.id)
+          .maybeSingle();
+        const mode = privData?.cabin_visit_mode ?? 'anonymous_count';
+        setCabinVisitMode(mode);
+
+        if (mode !== 'hidden') {
+          const now = new Date();
+          const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+          const { data: visits } = await supabase
+            .from('cabin_visits')
+            .select('visit_count')
+            .eq('profile_id', data.id)
+            .gte('visit_date', monthStart);
+          if (visits) {
+            setMonthlyVisits(visits.reduce((sum, v) => sum + (v.visit_count || 0), 0));
+          }
+        } else {
+          setMonthlyVisits(null);
         }
       }
     }
@@ -301,7 +314,7 @@ const Cabin = () => {
                   {isFounderProfile ? <FounderBadge className="w-4 h-4" /> : profile.is_pines_plus && <PineConeBadge className="w-4 h-4" />}
                 </div>
                 <p className="text-sm font-body text-white/60 mt-0.5">@{profile.handle}</p>
-                {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+                {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
                   <p className="text-xs font-body text-white/30 mt-1">{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
                 )}
               </div>
@@ -346,7 +359,7 @@ const Cabin = () => {
               {isFounderProfile ? <FounderBadge className="w-5 h-5" /> : profile.is_pines_plus && <PineConeBadge className="w-5 h-5" />}
             </div>
             <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
-            {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+            {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
               <p className="text-xs font-body mt-1" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
             )}
             {profile.mantra && (
@@ -404,7 +417,7 @@ const Cabin = () => {
                 {isFounderProfile ? <FounderBadge className="w-3.5 h-3.5" /> : profile.is_pines_plus && <PineConeBadge className="w-3.5 h-3.5" />}
               </div>
               <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.4 }}>@{profile.handle}</p>
-              {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+              {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
                 <p className="text-[10px] font-body mt-0.5" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
               )}
             </div>
@@ -445,7 +458,7 @@ const Cabin = () => {
                   {isFounderProfile ? <FounderBadge className="w-4 h-4" /> : profile.is_pines_plus && <PineConeBadge className="w-4 h-4" />}
                 </div>
                 <p className="text-sm font-body mt-1" style={{ color: atmos.text, opacity: 0.5 }}>@{profile.handle}</p>
-                {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+                {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
                   <p className="text-xs font-body mt-1" style={{ color: atmos.text, opacity: 0.25 }}>{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
                 )}
               </div>
