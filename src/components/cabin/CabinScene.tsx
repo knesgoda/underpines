@@ -563,7 +563,7 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
       }
       case 'conifer-c': {
         // Smaller young ponderosa
-        const pTrunkC = '#8B5A2B';
+        const pTrunkC = '#8B3A1A';
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <path d={`M${cx - 1.2 * s},${baseY} L${cx + 1.2 * s},${baseY} L${cx + 0.8 * s},${baseY - 28 * s} L${cx - 0.8 * s},${baseY - 28 * s} Z`} fill={pTrunkC} />
