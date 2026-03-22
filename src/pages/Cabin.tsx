@@ -314,7 +314,7 @@ const Cabin = () => {
                   {isFounderProfile ? <FounderBadge className="w-4 h-4" /> : profile.is_pines_plus && <PineConeBadge className="w-4 h-4" />}
                 </div>
                 <p className="text-sm font-body text-white/60 mt-0.5">@{profile.handle}</p>
-                {isOwner && monthlyVisits != null && monthlyVisits > 0 && (
+                {isOwner && cabinVisitMode !== 'hidden' && monthlyVisits != null && monthlyVisits > 0 && (
                   <p className="text-xs font-body text-white/30 mt-1">{monthlyVisits} visit{monthlyVisits !== 1 ? 's' : ''} this month</p>
                 )}
               </div>
