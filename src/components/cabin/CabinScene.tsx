@@ -527,7 +527,7 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
         // Taller ponderosa — more foliage mass, same open structure
         const pb_dark = 'var(--biome-canopy-shadow, #2d5a30)';
         const pb_light = 'var(--biome-canopy-highlight, #4a9e52)';
-        const pTrunkB = '#8B5A2B';
+        const pTrunkB = '#8B3A1A';
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <path d={`M${cx - 2.2 * s},${baseY} L${cx + 2.2 * s},${baseY} L${cx + 1.4 * s},${baseY - 42 * s} L${cx - 1.4 * s},${baseY - 42 * s} Z`} fill={pTrunkB} />
