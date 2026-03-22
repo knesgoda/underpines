@@ -43,7 +43,7 @@ const Search = () => {
   const [campfireResults, setCampfireResults] = useState<any[]>([]);
   const [circleIds, setCircleIds] = useState<string[]>([]);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
 
   /* Load circle ids + pines+ status */
   useEffect(() => {
