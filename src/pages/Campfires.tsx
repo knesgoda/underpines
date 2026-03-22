@@ -119,11 +119,32 @@ const Campfires = () => {
       } as CampfireItem;
     });
 
+    // Sort by most recent message first, then by created_at for campfires with no messages
+    enriched.sort((a, b) => {
+      const timeA = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
+      const timeB = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
+      return timeB - timeA;
+    });
+
     setCampfires(enriched);
     setLoading(false);
   }, [user]);
 
   useEffect(() => { loadCampfires(); }, [loadCampfires]);
+
+  // Realtime: re-sort list when any campfire message arrives
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel('campfire-list-reorder')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'campfire_messages' },
+        () => { loadCampfires(); }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, loadCampfires]);
 
   const filtered = campfires.filter(c => {
     if (filter === 'active') return c.is_active && !c.is_embers && c.campfire_type !== 'flicker';
