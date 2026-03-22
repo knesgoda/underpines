@@ -147,6 +147,19 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         onChange={e => { handleFiles(e.target.files); e.target.value = ''; }}
       />
 
+      {/* Caption — always visible when photos are attached */}
+      {previews.length > 0 && (
+        <textarea
+          ref={captionRef}
+          value={caption}
+          onChange={e => setCaption(e.target.value)}
+          onFocus={scrollCaptionIntoView}
+          placeholder="A thought, a story, a photo..."
+          className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground font-body text-sm outline-none resize-none placeholder:text-muted-foreground/50 min-h-[60px]"
+          rows={2}
+        />
+      )}
+
       {previews.length === 0 ? (
         <button
           onClick={() => inputRef.current?.click()}
@@ -186,13 +199,6 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
           )}
         </div>
       )}
-
-      <input
-        value={caption}
-        onChange={e => setCaption(e.target.value)}
-        placeholder="Add a caption (optional)"
-        className="w-full bg-transparent text-foreground font-body text-sm outline-none placeholder:text-muted-foreground/50"
-      />
 
       {/* Upload progress */}
       {posting && uploadProgress !== null && (
