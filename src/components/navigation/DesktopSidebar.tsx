@@ -65,6 +65,7 @@ const DesktopSidebar = () => {
   const { user, signOut } = useAuth();
   const { setComposerOpen } = useNavigation();
   const location = useLocation();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<{ display_name: string; handle: string; avatar_url: string | null; default_avatar_key: string | null } | null>(null);
 
   useEffect(() => {
