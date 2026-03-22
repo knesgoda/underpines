@@ -25,6 +25,11 @@ interface WidgetShelfProps {
   userId: string;
   isPinesPlus: boolean;
   atmosphere: { cardBg: string; text: string; border: string; accent: string; background: string };
+  songTitle?: string | null;
+  songArtist?: string | null;
+  spotifyTrackId?: string | null;
+  spotifyPreviewUrl?: string | null;
+  onUpdate?: () => void;
 }
 
 const SPINE_COLORS = [
