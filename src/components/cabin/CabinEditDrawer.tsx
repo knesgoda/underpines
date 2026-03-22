@@ -74,6 +74,10 @@ interface Profile {
   interests: string | null;
   how_found: string | null;
   sitting_question: string | null;
+  ask_me_about: string[] | null;
+  pinned_memory_post_id: string | null;
+  featured_photos: string[] | null;
+  moments: { title: string; year?: string; note?: string }[] | null;
 }
 
 interface CabinEditDrawerProps {
@@ -131,7 +135,13 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     interests: profile.interests || '',
     how_found: profile.how_found || '',
     sitting_question: profile.sitting_question || '',
+    ask_me_about: (Array.isArray(profile.ask_me_about) ? profile.ask_me_about : []) as string[],
+    pinned_memory_post_id: profile.pinned_memory_post_id || '',
+    featured_photos: (Array.isArray(profile.featured_photos) ? profile.featured_photos : []) as string[],
+    moments: (Array.isArray(profile.moments) ? profile.moments : []) as { title: string; year?: string; note?: string }[],
   });
+  const [ownPosts, setOwnPosts] = useState<{ id: string; content: string | null; post_type: string; created_at: string }[]>([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const save = useCallback(async (updates: Partial<typeof form>) => {
     setSaving(true);
@@ -166,6 +176,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
   }, [profile.id, profile.zip_code, profile.country_code, form.zip_code, form.country_code, onUpdate]);
 
   // Debounced auto-save
+  const JSON_FIELDS = ['links', 'ask_me_about', 'featured_photos', 'moments'] as const;
   useEffect(() => {
     const timer = setTimeout(() => {
       const changes: any = {};
@@ -173,13 +184,19 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
       for (const key of fields) {
         const profileVal = (profile as any)[key];
         const formVal = form[key];
-        if (key === 'links') {
-          // Compare serialized links
-          const profileLinks = JSON.stringify(Array.isArray(profileVal) ? profileVal : []);
-          const formLinks = JSON.stringify(formVal);
-          if (formLinks !== profileLinks) {
-            // Filter out empty links
-            changes[key] = (formVal as any[]).filter((l: any) => l.url || l.label);
+        if ((JSON_FIELDS as readonly string[]).includes(key)) {
+          const pv = JSON.stringify(Array.isArray(profileVal) ? profileVal : []);
+          const fv = JSON.stringify(formVal);
+          if (fv !== pv) {
+            if (key === 'links') {
+              changes[key] = (formVal as any[]).filter((l: any) => l.url || l.label);
+            } else if (key === 'ask_me_about') {
+              changes[key] = (formVal as string[]).filter(Boolean);
+            } else if (key === 'moments') {
+              changes[key] = (formVal as any[]).filter((m: any) => m.title);
+            } else {
+              changes[key] = formVal;
+            }
           }
         } else {
           const pv = profileVal || '';
@@ -194,6 +211,20 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     }, 800);
     return () => clearTimeout(timer);
   }, [form, profile, save]);
+
+  // Load own posts for pinned memory picker
+  useEffect(() => {
+    const loadPosts = async () => {
+      const { data } = await supabase
+        .from('posts')
+        .select('id, content, post_type, created_at')
+        .eq('author_id', profile.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (data) setOwnPosts(data);
+    };
+    loadPosts();
+  }, [profile.id]);
 
   const updateField = (key: string, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -223,6 +254,66 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
 
   const removeLink = (index: number) => {
     setForm(prev => ({ ...prev, links: prev.links.filter((_, i) => i !== index) }));
+  };
+
+  const updateAskMeAbout = (index: number, value: string) => {
+    setForm(prev => {
+      const arr = [...prev.ask_me_about];
+      arr[index] = value;
+      return { ...prev, ask_me_about: arr };
+    });
+  };
+
+  const addAskMeAbout = () => {
+    if (form.ask_me_about.length >= 3) return;
+    setForm(prev => ({ ...prev, ask_me_about: [...prev.ask_me_about, ''] }));
+  };
+
+  const removeAskMeAbout = (index: number) => {
+    setForm(prev => ({ ...prev, ask_me_about: prev.ask_me_about.filter((_, i) => i !== index) }));
+  };
+
+  const updateMoment = (index: number, field: string, value: string) => {
+    setForm(prev => {
+      const moments = [...prev.moments];
+      moments[index] = { ...moments[index], [field]: value };
+      return { ...prev, moments };
+    });
+  };
+
+  const addMoment = () => {
+    setForm(prev => ({ ...prev, moments: [...prev.moments, { title: '' }] }));
+  };
+
+  const removeMoment = (index: number) => {
+    setForm(prev => ({ ...prev, moments: prev.moments.filter((_, i) => i !== index) }));
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || form.featured_photos.length >= 6) return;
+    setUploadingPhoto(true);
+    const remaining = 6 - form.featured_photos.length;
+    const toUpload = Array.from(files).slice(0, remaining);
+    const newUrls: string[] = [];
+    for (const file of toUpload) {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${profile.id}/featured/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from('cabin-headers').upload(path, file);
+      if (!error) {
+        const { data: urlData } = supabase.storage.from('cabin-headers').getPublicUrl(path);
+        newUrls.push(urlData.publicUrl);
+      }
+    }
+    if (newUrls.length > 0) {
+      setForm(prev => ({ ...prev, featured_photos: [...prev.featured_photos, ...newUrls] }));
+    }
+    setUploadingPhoto(false);
+    e.target.value = '';
+  };
+
+  const removePhoto = (index: number) => {
+    setForm(prev => ({ ...prev, featured_photos: prev.featured_photos.filter((_, i) => i !== index) }));
   };
 
   const atmos = getAtmosphere(form.atmosphere, theme);
@@ -423,6 +514,25 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
               />
             </Field>
 
+            <Field label="Ask me about" hint={`${form.ask_me_about.length}/3`}>
+              <div className="space-y-2">
+                {form.ask_me_about.map((topic, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <Input
+                      value={topic}
+                      onChange={e => updateAskMeAbout(i, e.target.value)}
+                      placeholder="A topic you love discussing"
+                      className="rounded-xl bg-background text-sm flex-1"
+                    />
+                    <button onClick={() => removeAskMeAbout(i)} className="text-xs text-muted-foreground hover:text-destructive px-1">✕</button>
+                  </div>
+                ))}
+                {form.ask_me_about.length < 3 && (
+                  <button onClick={addAskMeAbout} className="text-xs font-body text-primary hover:underline">+ Add topic</button>
+                )}
+              </div>
+            </Field>
+
             <Field label="Links" hint={`${form.links.length}/5`}>
               <div className="space-y-2">
                 {form.links.map((link, i) => (
@@ -585,6 +695,91 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                 placeholder="Artist"
                 className="rounded-xl bg-background"
               />
+            </Field>
+
+            <Field label="Pinned memory" hint="Pin one of your posts to the top of your Cabin">
+              {ownPosts.length > 0 ? (
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {form.pinned_memory_post_id && (
+                    <button
+                      onClick={() => updateField('pinned_memory_post_id', '')}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-body text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      ✕ Remove pinned memory
+                    </button>
+                  )}
+                  {ownPosts.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => updateField('pinned_memory_post_id', p.id)}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-body transition-all border ${
+                        form.pinned_memory_post_id === p.id ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted'
+                      }`}
+                    >
+                      <span className="line-clamp-1">{p.content?.slice(0, 80) || `${p.post_type} post`}</span>
+                      <span className="block text-muted-foreground mt-0.5">{new Date(p.created_at).toLocaleDateString()}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs font-body text-muted-foreground">No posts yet. Write something first!</p>
+              )}
+            </Field>
+
+            <Field label="Featured photos" hint={`${form.featured_photos.length}/6`}>
+              <div className="grid grid-cols-3 gap-2 mb-2">
+                {form.featured_photos.map((url, i) => (
+                  <div key={i} className="relative group aspect-square rounded-xl overflow-hidden">
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => removePhoto(i)}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {form.featured_photos.length < 6 && (
+                <label className="inline-flex items-center gap-1.5 text-xs font-body text-primary hover:underline cursor-pointer">
+                  + Add photo
+                  <input type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
+                </label>
+              )}
+              {uploadingPhoto && <p className="text-xs text-muted-foreground mt-1">Uploading…</p>}
+            </Field>
+
+            <Field label="Moments" hint="Personal milestones">
+              <div className="space-y-3">
+                {form.moments.map((m, i) => (
+                  <div key={i} className="rounded-xl border border-border p-3 space-y-1.5">
+                    <div className="flex gap-2">
+                      <Input
+                        value={m.title}
+                        onChange={e => updateMoment(i, 'title', e.target.value)}
+                        placeholder="What happened"
+                        className="rounded-xl bg-background text-sm flex-1"
+                      />
+                      <Input
+                        value={m.year || ''}
+                        onChange={e => updateMoment(i, 'year', e.target.value)}
+                        placeholder="Year"
+                        className="rounded-xl bg-background text-sm w-20"
+                      />
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        value={m.note || ''}
+                        onChange={e => updateMoment(i, 'note', e.target.value)}
+                        placeholder="A short note (optional)"
+                        className="rounded-xl bg-background text-xs flex-1"
+                      />
+                      <button onClick={() => removeMoment(i)} className="text-xs text-muted-foreground hover:text-destructive px-1">✕</button>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addMoment} className="text-xs font-body text-primary hover:underline">+ Add moment</button>
+              </div>
             </Field>
           </>
         )}

@@ -2332,6 +2332,7 @@ export type Database = {
           account_status: string | null
           age_bracket: string | null
           applied_design_id: string | null
+          ask_me_about: Json | null
           atmosphere: string | null
           avatar_url: string | null
           bio: string | null
@@ -2346,6 +2347,7 @@ export type Database = {
           default_avatar_key: string | null
           display_name: string
           ember_unsubscribed: boolean | null
+          featured_photos: Json | null
           feed_scroll_reminder: boolean | null
           feed_show_camp_posts: boolean | null
           feed_show_embers: boolean | null
@@ -2367,6 +2369,8 @@ export type Database = {
           links: Json | null
           longitude: number | null
           mantra: string | null
+          moments: Json | null
+          pinned_memory_post_id: string | null
           pinned_song_artist: string | null
           pinned_song_preview_url: string | null
           pinned_song_title: string | null
@@ -2382,6 +2386,7 @@ export type Database = {
           account_status?: string | null
           age_bracket?: string | null
           applied_design_id?: string | null
+          ask_me_about?: Json | null
           atmosphere?: string | null
           avatar_url?: string | null
           bio?: string | null
@@ -2396,6 +2401,7 @@ export type Database = {
           default_avatar_key?: string | null
           display_name: string
           ember_unsubscribed?: boolean | null
+          featured_photos?: Json | null
           feed_scroll_reminder?: boolean | null
           feed_show_camp_posts?: boolean | null
           feed_show_embers?: boolean | null
@@ -2417,6 +2423,8 @@ export type Database = {
           links?: Json | null
           longitude?: number | null
           mantra?: string | null
+          moments?: Json | null
+          pinned_memory_post_id?: string | null
           pinned_song_artist?: string | null
           pinned_song_preview_url?: string | null
           pinned_song_title?: string | null
@@ -2432,6 +2440,7 @@ export type Database = {
           account_status?: string | null
           age_bracket?: string | null
           applied_design_id?: string | null
+          ask_me_about?: Json | null
           atmosphere?: string | null
           avatar_url?: string | null
           bio?: string | null
@@ -2446,6 +2455,7 @@ export type Database = {
           default_avatar_key?: string | null
           display_name?: string
           ember_unsubscribed?: boolean | null
+          featured_photos?: Json | null
           feed_scroll_reminder?: boolean | null
           feed_show_camp_posts?: boolean | null
           feed_show_embers?: boolean | null
@@ -2467,6 +2477,8 @@ export type Database = {
           links?: Json | null
           longitude?: number | null
           mantra?: string | null
+          moments?: Json | null
+          pinned_memory_post_id?: string | null
           pinned_song_artist?: string | null
           pinned_song_preview_url?: string | null
           pinned_song_title?: string | null
@@ -2483,6 +2495,13 @@ export type Database = {
             columns: ["applied_design_id"]
             isOneToOne: false
             referencedRelation: "cabin_designs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_pinned_memory_post_id_fkey"
+            columns: ["pinned_memory_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
         ]
