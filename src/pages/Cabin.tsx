@@ -76,7 +76,7 @@ const Cabin = () => {
   const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
   const [cabinVisitMode, setCabinVisitMode] = useState<string>('anonymous_count');
 
-  const { temperature, unit: tempUnit } = useWeather(profile?.latitude, profile?.longitude);
+  const { temperature, unit: tempUnit } = useWeather(profile?.latitude, profile?.longitude, profile?.zip_code, profile?.country_code);
 
   // Load preview design from sessionStorage
   useEffect(() => {
