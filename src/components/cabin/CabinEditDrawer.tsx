@@ -87,7 +87,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { theme } = useTheme();
-  const [tab, setTab] = useState<'you' | 'appearance' | 'details' | 'widgets'>('you');
+  const [tab, setTab] = useState<'you' | 'about' | 'appearance' | 'details' | 'widgets'>('you');
   const [saving, setSaving] = useState(false);
 
   // Lock body scroll when drawer is open
