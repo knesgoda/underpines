@@ -479,22 +479,22 @@ function getNotificationContent(
     case 'circle_accepted':
       return {
         label: `${name} accepted your Circle request.`,
-        action: () => actor && navigate(`/@${actor.handle}`),
+        action: () => actor && navigate(`/${actor.handle}`),
       };
     case 'reply':
       return {
         label: `${name} replied to your post.`,
-        action: () => {},
+        action: () => item.post_id ? navigate(`/post/${item.post_id}`) : undefined,
       };
     case 'quote_post':
       return {
         label: `${name} quoted your post.`,
-        action: () => {},
+        action: () => item.post_id ? navigate(`/post/${item.post_id}`) : undefined,
       };
     case 'smoke_signal':
       return {
         label: 'Someone sent you a smoke signal.',
-        action: () => {},
+        action: () => navigate('/campfires'),
       };
     case 'system':
       return {
@@ -504,42 +504,47 @@ function getNotificationContent(
     case 'collection_subscriber':
       return {
         label: `${name} subscribed to your collection.`,
-        action: () => {},
+        action: () => item.collection_id ? navigate(`/collections/${item.collection_id}`) : navigate('/collections'),
       };
     case 'camp_join_request':
       return {
         label: `${name} wants to join your Camp.`,
-        action: () => {},
+        action: () => navigate('/camps/mine'),
       };
     case 'camp_join_accepted':
       return {
         label: 'Your Camp join request was accepted!',
-        action: () => {},
+        action: () => navigate('/camps/mine'),
       };
     case 'camp_role_changed':
       return {
         label: 'Your Camp role was updated.',
-        action: () => {},
+        action: () => navigate('/camps/mine'),
       };
     case 'camp_post_removed':
       return {
         label: 'A Trailblazer removed your post from a Camp.',
-        action: () => {},
+        action: () => navigate('/camps/mine'),
       };
     case 'bonfire_split':
       return {
         label: 'Your Bonfire has grown past 150 members. A second fire was started.',
-        action: () => {},
+        action: () => navigate('/campfires'),
       };
     case 'camp_newsletter':
       return {
         label: `${name} sent a newsletter from your Camp.`,
-        action: () => {},
+        action: () => navigate('/camps/mine'),
+      };
+    case 'design_purchased':
+      return {
+        label: `${name} purchased your Cabin design.`,
+        action: () => navigate('/my-designs'),
       };
     default:
       return {
         label: 'New notification',
-        action: () => {},
+        action: () => navigate('/'),
       };
   }
 }
