@@ -507,20 +507,53 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
             <path style={flutterAnim} d={`M${cx},${baseY - 30 * s} C${cx + 2 * s},${baseY - 26 * s} ${cx + 7 * s},${baseY - 18 * s} ${cx + 8 * s},${baseY - 12 * s} L${cx - 8 * s},${baseY - 12 * s} C${cx - 7 * s},${baseY - 18 * s} ${cx - 2 * s},${baseY - 26 * s} ${cx},${baseY - 30 * s}Z`} fill={canopyColor} />
           </g>
         );
-      case 'deciduous-a':
+      case 'deciduous-a': {
+        // Classic oak silhouette — wide spreading crown with organic variation
+        const da_dark = 'var(--biome-canopy-shadow, #2d6b33)';
+        const da_light = 'var(--biome-canopy-highlight, #4a9e52)';
+        const trunkW = 3.5 * s;
+        const trunkH = 14 * s;
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
-            <rect x={cx - 1.5 * s} y={baseY - 16 * s} width={3 * s} height={16 * s} fill={trunkColor} rx={0.6} />
-            <path style={flutterAnim} d={`M${cx - 14 * s},${baseY - 20 * s} C${cx - 16 * s},${baseY - 28 * s} ${cx - 12 * s},${baseY - 36 * s} ${cx - 6 * s},${baseY - 38 * s} C${cx - 3 * s},${baseY - 42 * s} ${cx + 3 * s},${baseY - 42 * s} ${cx + 6 * s},${baseY - 38 * s} C${cx + 12 * s},${baseY - 36 * s} ${cx + 16 * s},${baseY - 28 * s} ${cx + 14 * s},${baseY - 20 * s} C${cx + 12 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 16 * s} ${cx - 14 * s},${baseY - 20 * s}Z`} fill={canopyColor} />
+            {/* Tapered trunk — wider at base */}
+            <path d={`M${cx - trunkW * 0.35},${baseY - trunkH} L${cx + trunkW * 0.35},${baseY - trunkH} L${cx + trunkW * 0.55},${baseY} L${cx - trunkW * 0.55},${baseY} Z`} fill={trunkColor} />
+            {/* Back crown layer — darker, slightly wider */}
+            <g style={flutterAnim}>
+              <path d={`M${cx},${baseY - 40 * s} C${cx - 5 * s},${baseY - 42 * s} ${cx - 16 * s},${baseY - 36 * s} ${cx - 18 * s},${baseY - 28 * s} C${cx - 19 * s},${baseY - 22 * s} ${cx - 15 * s},${baseY - 16 * s} ${cx - 12 * s},${baseY - 15 * s} L${cx + 12 * s},${baseY - 15 * s} C${cx + 15 * s},${baseY - 16 * s} ${cx + 19 * s},${baseY - 22 * s} ${cx + 18 * s},${baseY - 28 * s} C${cx + 16 * s},${baseY - 36 * s} ${cx + 5 * s},${baseY - 42 * s} ${cx},${baseY - 40 * s}Z`} fill={da_dark} opacity="0.85" />
+              {/* Main crown — primary canopy color, organic bumpy edge */}
+              <path d={`M${cx - 2 * s},${baseY - 39 * s} C${cx - 7 * s},${baseY - 40 * s} ${cx - 14 * s},${baseY - 35 * s} ${cx - 16 * s},${baseY - 28 * s} C${cx - 17 * s},${baseY - 23 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 10 * s},${baseY - 17 * s} C${cx - 6 * s},${baseY - 16 * s} ${cx + 6 * s},${baseY - 16 * s} ${cx + 10 * s},${baseY - 17 * s} C${cx + 14 * s},${baseY - 18 * s} ${cx + 17 * s},${baseY - 23 * s} ${cx + 16 * s},${baseY - 28 * s} C${cx + 14 * s},${baseY - 35 * s} ${cx + 7 * s},${baseY - 40 * s} ${cx + 2 * s},${baseY - 39 * s} C${cx + 1 * s},${baseY - 41 * s} ${cx - 1 * s},${baseY - 41 * s} ${cx - 2 * s},${baseY - 39 * s}Z`} fill={canopyColor} />
+              {/* Highlight patches — lighter dappled areas */}
+              <ellipse cx={cx - 5 * s} cy={baseY - 30 * s} rx={4 * s} ry={3.5 * s} fill={da_light} opacity="0.35" />
+              <ellipse cx={cx + 6 * s} cy={baseY - 26 * s} rx={3.5 * s} ry={3 * s} fill={da_light} opacity="0.25" />
+              <ellipse cx={cx + 1 * s} cy={baseY - 35 * s} rx={3 * s} ry={2.5 * s} fill={da_light} opacity="0.2" />
+            </g>
           </g>
         );
-      case 'deciduous-b':
+      }
+      case 'deciduous-b': {
+        // Larger spreading oak — asymmetric crown
+        const db_dark = 'var(--biome-canopy-shadow, #2d6b33)';
+        const db_light = 'var(--biome-canopy-highlight, #4a9e52)';
+        const trunkWb = 4.5 * s;
+        const trunkHb = 16 * s;
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
-            <rect x={cx - 2 * s} y={baseY - 18 * s} width={4 * s} height={18 * s} fill={trunkColor} rx={0.8} />
-            <path style={flutterAnim} d={`M${cx - 16 * s},${baseY - 22 * s} C${cx - 18 * s},${baseY - 30 * s} ${cx - 14 * s},${baseY - 40 * s} ${cx - 4 * s},${baseY - 44 * s} C${cx},${baseY - 46 * s} ${cx + 4 * s},${baseY - 44 * s} ${cx + 8 * s},${baseY - 42 * s} C${cx + 14 * s},${baseY - 38 * s} ${cx + 18 * s},${baseY - 30 * s} ${cx + 16 * s},${baseY - 22 * s} C${cx + 14 * s},${baseY - 18 * s} ${cx - 14 * s},${baseY - 18 * s} ${cx - 16 * s},${baseY - 22 * s}Z`} fill={canopyColor} />
+            {/* Tapered trunk */}
+            <path d={`M${cx - trunkWb * 0.3},${baseY - trunkHb} L${cx + trunkWb * 0.3},${baseY - trunkHb} L${cx + trunkWb * 0.6},${baseY} L${cx - trunkWb * 0.6},${baseY} Z`} fill={trunkColor} />
+            {/* Back shadow crown */}
+            <g style={flutterAnim}>
+              <path d={`M${cx - 3 * s},${baseY - 46 * s} C${cx - 10 * s},${baseY - 47 * s} ${cx - 20 * s},${baseY - 40 * s} ${cx - 20 * s},${baseY - 30 * s} C${cx - 20 * s},${baseY - 22 * s} ${cx - 16 * s},${baseY - 18 * s} ${cx - 12 * s},${baseY - 17 * s} L${cx + 14 * s},${baseY - 17 * s} C${cx + 18 * s},${baseY - 18 * s} ${cx + 22 * s},${baseY - 24 * s} ${cx + 20 * s},${baseY - 32 * s} C${cx + 18 * s},${baseY - 40 * s} ${cx + 8 * s},${baseY - 46 * s} ${cx + 3 * s},${baseY - 45 * s} C${cx + 1 * s},${baseY - 48 * s} ${cx - 1 * s},${baseY - 48 * s} ${cx - 3 * s},${baseY - 46 * s}Z`} fill={db_dark} opacity="0.8" />
+              {/* Main crown — wider, asymmetric */}
+              <path d={`M${cx - 1 * s},${baseY - 44 * s} C${cx - 8 * s},${baseY - 45 * s} ${cx - 18 * s},${baseY - 38 * s} ${cx - 18 * s},${baseY - 28 * s} C${cx - 18 * s},${baseY - 22 * s} ${cx - 14 * s},${baseY - 19 * s} ${cx - 10 * s},${baseY - 18 * s} C${cx - 4 * s},${baseY - 17 * s} ${cx + 6 * s},${baseY - 17 * s} ${cx + 12 * s},${baseY - 18 * s} C${cx + 16 * s},${baseY - 19 * s} ${cx + 20 * s},${baseY - 24 * s} ${cx + 18 * s},${baseY - 32 * s} C${cx + 16 * s},${baseY - 38 * s} ${cx + 6 * s},${baseY - 44 * s} ${cx + 1 * s},${baseY - 44 * s} C${cx},${baseY - 46 * s} ${cx - 1 * s},${baseY - 46 * s} ${cx - 1 * s},${baseY - 44 * s}Z`} fill={canopyColor} />
+              {/* Highlight patches */}
+              <ellipse cx={cx - 7 * s} cy={baseY - 32 * s} rx={5 * s} ry={4 * s} fill={db_light} opacity="0.3" />
+              <ellipse cx={cx + 8 * s} cy={baseY - 28 * s} rx={4 * s} ry={3.5 * s} fill={db_light} opacity="0.25" />
+              <ellipse cx={cx - 2 * s} cy={baseY - 38 * s} rx={3.5 * s} ry={2.5 * s} fill={db_light} opacity="0.2" />
+              <ellipse cx={cx + 4 * s} cy={baseY - 35 * s} rx={2.5 * s} ry={2 * s} fill={db_light} opacity="0.15" />
+            </g>
           </g>
         );
+      }
       default: return null;
     }
   };
