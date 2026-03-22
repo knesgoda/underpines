@@ -325,7 +325,7 @@ const Cabin = () => {
 
       {/* Mobile invite row for owner */}
       {isOwner && isMobile && (
-        <div className="px-6 pt-4 md:hidden">
+        <div className="px-6 pt-4 md:hidden relative z-20">
           <InviteRow />
         </div>
       )}
