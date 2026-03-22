@@ -252,7 +252,7 @@ const Cabin = () => {
 
   return (
     <div
-      className="min-h-screen transition-colors duration-700 pt-14"
+      className="min-h-screen transition-colors duration-700 pt-[env(safe-area-inset-top)]"
       style={{ backgroundColor: atmos.background, color: atmos.text }}
     >
       {/* Design Preview Banner */}
