@@ -121,8 +121,9 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: post._optimistic ? 0.7 : 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] mb-3 overflow-hidden"
+      className="rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] mb-3 overflow-hidden cursor-pointer"
       style={{ borderLeft: `3px solid ${accent}` }}
+      onClick={handleCardClick}
     >
       <div className="p-5">
         {/* Header */}
