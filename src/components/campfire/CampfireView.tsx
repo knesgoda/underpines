@@ -11,6 +11,7 @@ import CampfireLog from './CampfireLog';
 import VoiceRecorder from './VoiceRecorder';
 import VoiceMessageBubble from './VoiceMessageBubble';
 import CampfireSearch from './CampfireSearch';
+import CrossPostCard from './CrossPostCard';
 
 interface Message {
   id: string;
@@ -569,14 +570,12 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           onPlay={() => setPlayingVoiceId(msg.id)}
                           onPause={() => setPlayingVoiceId(null)}
                         />
-                      ) : msg.message_type === 'cross_post' ? (
-                        <div
-                          className={`px-3 py-2 rounded-2xl border border-border bg-card ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
-                          onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
-                        >
-                          <p className="font-body text-[10px] text-muted-foreground mb-1">Shared a post</p>
-                          {msg.content && <p className="font-body text-sm text-foreground">{msg.content}</p>}
-                        </div>
+                      ) : msg.message_type === 'cross_post' && msg.cross_post_id ? (
+                        <CrossPostCard
+                          postId={msg.cross_post_id}
+                          note={msg.content}
+                          isMine={isMine}
+                        />
                       ) : (
                         <div
                           className={`px-3 py-2 rounded-2xl ${
