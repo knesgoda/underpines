@@ -386,8 +386,12 @@ const Cabin = () => {
              <CabinAboutSection profile={profile} atmos={atmos} />
              <CabinPinnedSong profile={profile} atmos={atmos} />
              <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
+             {!isOwner && <CabinFriendsSince profileId={profile.id} atmos={atmos} />}
              <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} onOpenInvite={() => setInviteSheetOpen(true)} />
           </div>
+          <CabinFeaturedPhotos profile={profile} atmos={atmos} />
+          <CabinMoments profile={profile} atmos={atmos} />
+          <CabinPinnedMemory profile={profile} atmos={atmos} />
 
           {/* Two-column editorial */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-5 gap-8 pb-16">
