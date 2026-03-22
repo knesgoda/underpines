@@ -22,6 +22,7 @@ const tabs: TabItem[] = [
 const MobileTabBar = () => {
   const { setComposerOpen } = useNavigation();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
