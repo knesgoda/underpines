@@ -72,6 +72,7 @@ const CirclesPage = () => {
       const accepted: CircleMember[] = [];
       const sentPending: CircleMember[] = [];
       const receivedPending: CircleMember[] = [];
+      const seen = new Set<string>();
 
       circles.forEach(c => {
         const otherId = c.requester_id === user.id ? c.requestee_id : c.requester_id;
@@ -89,9 +90,15 @@ const CirclesPage = () => {
           direction: c.requester_id === user.id ? 'sent' : 'received',
         };
 
-        if (c.status === 'accepted') accepted.push(member);
-        else if (c.status === 'pending' && c.requester_id === user.id) sentPending.push(member);
-        else if (c.status === 'pending' && c.requestee_id === user.id) receivedPending.push(member);
+        if (c.status === 'accepted') {
+          if (seen.has(otherId)) return;
+          seen.add(otherId);
+          accepted.push(member);
+        } else if (c.status === 'pending' && c.requester_id === user.id) {
+          sentPending.push(member);
+        } else if (c.status === 'pending' && c.requestee_id === user.id) {
+          receivedPending.push(member);
+        }
       });
 
       setMembers(accepted);
