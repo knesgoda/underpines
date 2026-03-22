@@ -304,7 +304,7 @@ const Feed = () => {
     }
     setPosts(prev => [{
       ...post,
-      author: profile ? { display_name: profile.display_name, handle: profile.handle, accent_color: profile.accent_color, cabin_mood: profile.cabin_mood } : undefined,
+      author: profile ? { display_name: profile.display_name, handle: profile.handle, accent_color: profile.accent_color, cabin_mood: profile.cabin_mood, avatar_url: profile.avatar_url, default_avatar_key: profile.default_avatar_key } : undefined,
       reactions: [],
       post_media: [],
     }, ...prev]);
