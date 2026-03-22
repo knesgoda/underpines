@@ -55,7 +55,6 @@ function toRenderTime(t: string): RenderTimeOfDay {
 }
 
 interface CabinSceneProps {
-  memberName: string;
   atmosphere?: string;
   moonPhase?: number;
   latitude?: number;
