@@ -625,9 +625,9 @@ const CabinMetaRow = ({ profile, temperature, tempUnit, atmos, centered }: {
   </div>
 );
 
-const CabinOwnerActions = ({ isOwner, user, profile, atmos, onEditCabin, navigate, centered, cabinMenuOpen, setCabinMenuOpen }: {
+const CabinOwnerActions = ({ isOwner, user, profile, atmos, onEditCabin, navigate, centered, cabinMenuOpen, setCabinMenuOpen, onOpenInvite }: {
   isOwner: boolean; user: any; profile: Profile; atmos: any; onEditCabin: () => void; navigate: (path: string) => void; centered?: boolean;
-  cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void;
+  cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void; onOpenInvite?: () => void;
 }) => {
   if (isOwner) {
     return (
@@ -645,6 +645,13 @@ const CabinOwnerActions = ({ isOwner, user, profile, atmos, onEditCabin, navigat
         >
           <Pencil size={13} />
           <span className="hidden md:inline">Edit Cabin</span>
+        </button>
+        <button
+          onClick={onOpenInvite}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-body text-muted-foreground hover:bg-muted transition-colors"
+        >
+          <Flame size={13} />
+          <span className="hidden md:inline">Invite</span>
         </button>
       </div>
     );
