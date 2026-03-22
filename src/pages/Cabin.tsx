@@ -322,21 +322,6 @@ const Cabin = () => {
           </div>
         )}
 
-        {isOwner && (
-          <button
-            onClick={() => setEditOpen(true)}
-            className="absolute top-4 right-4 z-20 flex items-center gap-2 px-4 py-2 rounded-pill text-sm font-body transition-all duration-300"
-            style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(8px)',
-              color: 'white',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-            }}
-          >
-            <Settings size={14} />
-            Edit Cabin
-          </button>
-        )}
       </div>
 
       {/* Mobile invite row for owner */}
