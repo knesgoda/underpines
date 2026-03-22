@@ -44,6 +44,7 @@ interface PostCardProps {
 
 const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: PostCardProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [reactions, setReactions] = useState(post.reactions || []);
   const [quoteOpen, setQuoteOpen] = useState(false);
@@ -53,6 +54,13 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
   const isOwner = user?.id === post.author_id;
   const accent = post.author?.accent_color || 'hsl(var(--primary))';
   const moodIcon = post.author?.cabin_mood || '🕯️';
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, textarea, input, [role="button"], [data-no-navigate]')) return;
+    navigate(`/post/${post.id}`);
+  };
 
   const { openBlockDialog, handleMute, BlockConfirmDialog } = useBlockMute({
     targetUserId: post.author_id,
