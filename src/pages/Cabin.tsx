@@ -349,10 +349,10 @@ const Cabin = () => {
       {/* === HOLLOW LAYOUT === */}
       {isHollow ? (
         <div className="max-w-2xl mx-auto px-6 relative z-10">
-          <div className="flex justify-center -mt-8 mb-4">
+          <div className="flex justify-center -mt-12 md:-mt-14 mb-2">
             <CabinAvatar avatarUrl={profile.avatar_url} defaultAvatarKey={profile.default_avatar_key} isOwner={isOwner} isEditing={editOpen} profileId={profile.id} onUpdate={fetchProfile} size={isMobile ? 'sm' : 'lg'} />
           </div>
-          <div className="pt-4 pb-12 text-center">
+          <div className="pt-2 pb-8 text-center">
             <div className="flex items-center justify-center gap-3 mb-3">
               {mood && <span className="text-3xl">{mood.emoji}</span>}
               <h1 className="text-4xl md:text-5xl font-display" style={{ color: atmos.text }}>{profile.display_name}</h1>
