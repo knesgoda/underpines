@@ -9,7 +9,7 @@ import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { SceneDebugProvider } from "@/contexts/SceneDebugContext";
-import SceneDebugPanel from "@/components/debug/SceneDebugPanel";
+
 import AppLayout from "@/components/navigation/AppLayout";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
@@ -74,7 +74,7 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            {import.meta.env.DEV && <SceneDebugPanel />}
+            
             <BrowserRouter>
               <ScrollToTop />
               <Routes>
