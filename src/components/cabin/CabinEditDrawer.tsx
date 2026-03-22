@@ -11,6 +11,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { geocodeZip } from '@/lib/weather';
 import { defaultAvatars, getAvatarSrc } from '@/lib/default-avatars';
 import { toast } from 'sonner';
+import { Switch } from '@/components/ui/switch';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { getBiomeFromLocation } from '@/lib/biomeMapping';
 
