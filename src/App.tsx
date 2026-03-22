@@ -48,6 +48,7 @@ import Wrapped from "./pages/Wrapped";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import PostDetail from "./pages/PostDetail";
 
 // Grove (admin)
 import GroveLayout from "./pages/grove/GroveLayout";
