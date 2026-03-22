@@ -11,6 +11,7 @@ import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
 import ReportSheet from '@/components/reporting/ReportSheet';
+import UserAvatar from '@/components/UserAvatar';
 import { useBlockMute } from '@/hooks/useBlockMute';
 import { toast } from 'sonner';
 
