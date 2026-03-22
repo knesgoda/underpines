@@ -59,6 +59,7 @@ interface Profile {
   pinned_memory_post_id: string | null;
   featured_photos: string[] | null;
   moments: { title: string; year?: string; note?: string }[] | null;
+  trail_map_visible: boolean | null;
 }
 
 const Cabin = () => {
