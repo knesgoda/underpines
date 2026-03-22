@@ -190,10 +190,28 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
 
   const tabs = [
     { key: 'you', label: 'You' },
-    { key: 'appearance', label: 'Appearance' },
+    { key: 'about', label: 'About' },
+    { key: 'appearance', label: 'Look' },
     { key: 'details', label: 'Details' },
     { key: 'widgets', label: 'Widgets' },
   ] as const;
+
+  const updateLink = (index: number, field: 'url' | 'label', value: string) => {
+    setForm(prev => {
+      const links = [...prev.links];
+      links[index] = { ...links[index], [field]: value };
+      return { ...prev, links };
+    });
+  };
+
+  const addLink = () => {
+    if (form.links.length >= 5) return;
+    setForm(prev => ({ ...prev, links: [...prev.links, { url: '', label: '' }] }));
+  };
+
+  const removeLink = (index: number) => {
+    setForm(prev => ({ ...prev, links: prev.links.filter((_, i) => i !== index) }));
+  };
 
   const atmos = getAtmosphere(form.atmosphere, theme);
 
