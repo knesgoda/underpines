@@ -171,9 +171,21 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
       const changes: any = {};
       const fields = Object.keys(form) as (keyof typeof form)[];
       for (const key of fields) {
-        const profileVal = (profile as any)[key] || '';
-        if (form[key] !== profileVal) {
-          changes[key] = form[key] || null;
+        const profileVal = (profile as any)[key];
+        const formVal = form[key];
+        if (key === 'links') {
+          // Compare serialized links
+          const profileLinks = JSON.stringify(Array.isArray(profileVal) ? profileVal : []);
+          const formLinks = JSON.stringify(formVal);
+          if (formLinks !== profileLinks) {
+            // Filter out empty links
+            changes[key] = (formVal as any[]).filter((l: any) => l.url || l.label);
+          }
+        } else {
+          const pv = profileVal || '';
+          if (formVal !== pv) {
+            changes[key] = formVal || null;
+          }
         }
       }
       if (Object.keys(changes).length > 0) {
