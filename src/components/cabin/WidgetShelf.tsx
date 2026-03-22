@@ -331,6 +331,17 @@ const WidgetShelf = ({ userId, isPinesPlus, atmosphere, songTitle, songArtist, s
         )}
       </div>
 
+      {/* Vintage Radio Widget */}
+      <VintageRadio
+        userId={userId}
+        songTitle={songTitle || null}
+        songArtist={songArtist || null}
+        spotifyTrackId={spotifyTrackId || null}
+        spotifyPreviewUrl={spotifyPreviewUrl || null}
+        atmosphere={atmosphere}
+        onUpdate={onUpdate || (() => {})}
+      />
+
       {/* Trail Map Widget */}
       {trailMapVisible && (
         <TrailMap userId={userId} atmosphere={atmosphere} />
