@@ -309,17 +309,15 @@ const CircleRequestGroup = ({ items, actors, actionStates, onAccept, onDecline, 
   }
 
   return (
-    <div className="py-1.5">
+    <button
+      onClick={() => navigate('/circles?tab=invites')}
+      className="w-full text-left py-1.5 hover:bg-muted/50 rounded-lg px-2 -mx-2 transition-colors"
+    >
       <p className="font-body text-sm text-foreground">
         {items.length} people want to join your Circle.
       </p>
-      <button
-        onClick={() => navigate('/circles')}
-        className="mt-2 px-3 py-1.5 rounded-full border border-border font-body text-xs text-foreground hover:bg-muted"
-      >
-        View requests →
-      </button>
-    </div>
+      <p className="font-body text-xs text-primary mt-1">View requests →</p>
+    </button>
   );
 };
 
