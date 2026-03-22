@@ -686,19 +686,9 @@ const CabinPinnedSong = ({ profile, atmos, centered }: { profile: Profile; atmos
 const CabinCircleActions = ({ isOwner, user, profile, cabinMenuOpen, setCabinMenuOpen, navigate }: {
   isOwner: boolean; user: any; profile: Profile; cabinMenuOpen: boolean; setCabinMenuOpen: (v: boolean) => void; navigate: (path: string) => void;
 }) => {
+  // Legacy bottom actions — only show if not owner (owner actions now inline)
   if (isOwner || !user || !profile) return null;
-  return (
-    <div className="flex items-center justify-center gap-3 pb-12">
-      <CircleButton profileId={profile.id} profileName={profile.display_name} />
-      <CabinMoreMenu
-        targetUserId={profile.id}
-        targetDisplayName={profile.display_name}
-        open={cabinMenuOpen}
-        setOpen={setCabinMenuOpen}
-        navigate={navigate}
-      />
-    </div>
-  );
+  return null; // Actions now handled by CabinOwnerActions inline
 };
 
 const FounderBadge = ({ className = 'w-4 h-4' }: { className?: string }) => (
