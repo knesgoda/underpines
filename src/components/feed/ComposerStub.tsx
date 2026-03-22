@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import SparkComposer from './SparkComposer';
@@ -19,16 +20,17 @@ interface ComposerStubProps {
 const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
   const navigate = useNavigate();
   const { composerOpen, setComposerOpen } = useNavigation();
+  const isMobile = useIsMobile();
   const { isSeedling, daysLeft } = useSeedlingStatus();
   const [expanded, setExpanded] = useState(false);
   const [activeType, setActiveType] = useState<PostType>(null);
 
-  // Sync external trigger (sidebar / tab bar button) with local UI
+  // Sync external trigger with local UI — only on desktop (mobile uses the sheet)
   useEffect(() => {
-    if (composerOpen) {
+    if (composerOpen && !isMobile) {
       setExpanded(true);
     }
-  }, [composerOpen]);
+  }, [composerOpen, isMobile]);
 
   const handleTypeSelect = (type: PostType) => {
     if (type === 'story') {

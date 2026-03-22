@@ -6,6 +6,7 @@ import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopSidebar from './DesktopSidebar';
 import MobileTabBar from './MobileTabBar';
+import MobileComposerSheet from '@/components/feed/MobileComposerSheet';
 import OfflineBanner from '@/components/pwa/OfflineBanner';
 import InstallPrompt from '@/components/pwa/InstallPrompt';
 import UpdatePrompt from '@/components/pwa/UpdatePrompt';
@@ -101,6 +102,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Mobile tab bar */}
       <MobileTabBar />
+
+      {/* Mobile composer bottom sheet */}
+      <MobileComposerSheet />
       
     </div>
   );
