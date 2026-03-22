@@ -362,6 +362,94 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
           </>
         )}
 
+        {tab === 'about' && (
+          <>
+            <p className="text-xs font-body text-muted-foreground mb-4">A little more about you</p>
+
+            <Field label="Hometown" hint="Optional">
+              <Input
+                value={form.hometown}
+                onChange={e => updateField('hometown', e.target.value)}
+                placeholder="Where you're from"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="What you do or make" hint="Optional">
+              <Input
+                value={form.job}
+                onChange={e => updateField('job', e.target.value)}
+                placeholder="What do you do or make?"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="Interests & hobbies" hint="Comma-separated">
+              <Input
+                value={form.interests}
+                onChange={e => updateField('interests', e.target.value)}
+                placeholder="hiking, bread baking, botany, jazz"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="How you found your way here" hint="Optional">
+              <Input
+                value={form.how_found}
+                onChange={e => updateField('how_found', e.target.value)}
+                placeholder="A friend, a link, a lucky accident…"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="A question you're sitting with" hint="Optional">
+              <Input
+                value={form.sitting_question}
+                onChange={e => updateField('sitting_question', e.target.value)}
+                placeholder="What are you mulling over?"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="Links" hint={`${form.links.length}/5`}>
+              <div className="space-y-2">
+                {form.links.map((link, i) => (
+                  <div key={i} className="flex gap-2 items-start">
+                    <div className="flex-1 space-y-1">
+                      <Input
+                        value={link.label}
+                        onChange={e => updateLink(i, 'label', e.target.value)}
+                        placeholder="Label (e.g. My blog)"
+                        className="rounded-xl bg-background text-xs"
+                      />
+                      <Input
+                        value={link.url}
+                        onChange={e => updateLink(i, 'url', e.target.value)}
+                        placeholder="https://…"
+                        className="rounded-xl bg-background text-xs"
+                      />
+                    </div>
+                    <button
+                      onClick={() => removeLink(i)}
+                      className="mt-1 text-xs text-muted-foreground hover:text-destructive transition-colors px-1"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+                {form.links.length < 5 && (
+                  <button
+                    onClick={addLink}
+                    className="text-xs font-body text-primary hover:underline"
+                  >
+                    + Add link
+                  </button>
+                )}
+              </div>
+            </Field>
+          </>
+        )}
+
         {tab === 'appearance' && (
           <>
             <Field label="Atmosphere">
