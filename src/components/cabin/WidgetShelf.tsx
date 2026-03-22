@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { X, Plus, Trash2, GripVertical } from 'lucide-react';
 import TrailMap from './TrailMap';
+import VintageRadio from './VintageRadio';
 import { toast } from 'sonner';
 
 interface BookEntry {
@@ -24,6 +25,11 @@ interface WidgetShelfProps {
   userId: string;
   isPinesPlus: boolean;
   atmosphere: { cardBg: string; text: string; border: string; accent: string; background: string };
+  songTitle?: string | null;
+  songArtist?: string | null;
+  spotifyTrackId?: string | null;
+  spotifyPreviewUrl?: string | null;
+  onUpdate?: () => void;
 }
 
 const SPINE_COLORS = [
@@ -32,7 +38,7 @@ const SPINE_COLORS = [
   '#0c4a6e', '#365314',
 ];
 
-const WidgetShelf = ({ userId, isPinesPlus, atmosphere }: WidgetShelfProps) => {
+const WidgetShelf = ({ userId, isPinesPlus, atmosphere, songTitle, songArtist, spotifyTrackId, spotifyPreviewUrl, onUpdate }: WidgetShelfProps) => {
   const { user } = useAuth();
   const isOwner = user?.id === userId;
   const [bookshelf, setBookshelf] = useState<BookEntry[]>([]);
@@ -324,6 +330,17 @@ const WidgetShelf = ({ userId, isPinesPlus, atmosphere }: WidgetShelfProps) => {
           </div>
         )}
       </div>
+
+      {/* Vintage Radio Widget */}
+      <VintageRadio
+        userId={userId}
+        songTitle={songTitle || null}
+        songArtist={songArtist || null}
+        spotifyTrackId={spotifyTrackId || null}
+        spotifyPreviewUrl={spotifyPreviewUrl || null}
+        atmosphere={atmosphere}
+        onUpdate={onUpdate || (() => {})}
+      />
 
       {/* Trail Map Widget */}
       {trailMapVisible && (

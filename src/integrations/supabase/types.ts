@@ -2377,6 +2377,8 @@ export type Database = {
           quiet_mode: boolean | null
           seedling_ends_at: string | null
           sitting_question: string | null
+          spotify_preview_url: string | null
+          spotify_track_id: string | null
           theme: string | null
           trail_map_visible: boolean | null
           updated_at: string | null
@@ -2432,6 +2434,8 @@ export type Database = {
           quiet_mode?: boolean | null
           seedling_ends_at?: string | null
           sitting_question?: string | null
+          spotify_preview_url?: string | null
+          spotify_track_id?: string | null
           theme?: string | null
           trail_map_visible?: boolean | null
           updated_at?: string | null
@@ -2487,6 +2491,8 @@ export type Database = {
           quiet_mode?: boolean | null
           seedling_ends_at?: string | null
           sitting_question?: string | null
+          spotify_preview_url?: string | null
+          spotify_track_id?: string | null
           theme?: string | null
           trail_map_visible?: boolean | null
           updated_at?: string | null
