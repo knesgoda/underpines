@@ -23,7 +23,7 @@ interface ReplyThreadProps {
 const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
   const { user } = useAuth();
   const [replies, setReplies] = useState<Reply[]>([]);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(autoExpand);
   const [composerOpen, setComposerOpen] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
