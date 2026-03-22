@@ -317,7 +317,26 @@ const CampfireList = ({
                     <div className="min-w-0 flex-1">
                       <p className="font-body text-sm font-medium text-foreground truncate">{displayName(c)}</p>
                       {expired ? (
-                        <p className="font-body text-xs text-muted-foreground italic">This Flicker has burned out.</p>
+                        <div className="flex items-center gap-1.5">
+                          <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0 opacity-60">
+                            <circle cx="4" cy="12" r="1.5" fill="hsl(var(--primary))" opacity="0.3">
+                              <animate attributeName="opacity" values="0.3;0.15;0.3" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="8" cy="11" r="2" fill="hsl(var(--primary))" opacity="0.25">
+                              <animate attributeName="opacity" values="0.25;0.1;0.25" dur="4s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="12" cy="12.5" r="1.2" fill="hsl(var(--primary))" opacity="0.2">
+                              <animate attributeName="opacity" values="0.2;0.08;0.2" dur="3.5s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="6" cy="10" r="0.6" fill="hsl(var(--destructive))" opacity="0.4">
+                              <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.5s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="10" cy="10.5" r="0.5" fill="hsl(var(--destructive))" opacity="0.35">
+                              <animate attributeName="opacity" values="0.35;0.1;0.35" dur="2.8s" repeatCount="indefinite" />
+                            </circle>
+                          </svg>
+                          <p className="font-body text-xs text-muted-foreground/60 italic">Burned down to embers</p>
+                        </div>
                       ) : (
                         <p className="font-body text-xs text-muted-foreground">
                           Burns out in <span className="text-foreground/70">{timeLeft}</span>
