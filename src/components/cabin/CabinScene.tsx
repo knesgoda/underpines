@@ -493,7 +493,7 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
         // Ponderosa pine — tall straight trunk visible through open canopy, foliage clusters at branch tips
         const pa_dark = 'var(--biome-canopy-shadow, #2d5a30)';
         const pa_light = 'var(--biome-canopy-highlight, #4a9e52)';
-        const pTrunk = '#8B5A2B'; // warm reddish-brown bark
+        const pTrunk = '#8B3A1A'; // auburn Ponderosa bark
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             {/* Tall straight trunk — slightly tapered, warm bark color */}
@@ -527,7 +527,7 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
         // Taller ponderosa — more foliage mass, same open structure
         const pb_dark = 'var(--biome-canopy-shadow, #2d5a30)';
         const pb_light = 'var(--biome-canopy-highlight, #4a9e52)';
-        const pTrunkB = '#8B5A2B';
+        const pTrunkB = '#8B3A1A';
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <path d={`M${cx - 2.2 * s},${baseY} L${cx + 2.2 * s},${baseY} L${cx + 1.4 * s},${baseY - 42 * s} L${cx - 1.4 * s},${baseY - 42 * s} Z`} fill={pTrunkB} />
@@ -563,7 +563,7 @@ function MidgroundTrees({ renderTime, isGoldenHour, windIntensity, fromLeft }: {
       }
       case 'conifer-c': {
         // Smaller young ponderosa
-        const pTrunkC = '#8B5A2B';
+        const pTrunkC = '#8B3A1A';
         return (
           <g className="tree-sway" style={{ transformOrigin: `${cx}px ${baseY}px`, ...swayStyle }}>
             <path d={`M${cx - 1.2 * s},${baseY} L${cx + 1.2 * s},${baseY} L${cx + 0.8 * s},${baseY - 28 * s} L${cx - 0.8 * s},${baseY - 28 * s} Z`} fill={pTrunkC} />
