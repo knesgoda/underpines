@@ -73,6 +73,7 @@ const Cabin = () => {
   const [showUpgradeWelcome, setShowUpgradeWelcome] = useState(false);
   const [previewDesign, setPreviewDesign] = useState<any>(null);
   const [cabinMenuOpen, setCabinMenuOpen] = useState(false);
+  const [inviteSheetOpen, setInviteSheetOpen] = useState(false);
   const [monthlyVisits, setMonthlyVisits] = useState<number | null>(null);
   const [cabinVisitMode, setCabinVisitMode] = useState<string>('anonymous_count');
 
