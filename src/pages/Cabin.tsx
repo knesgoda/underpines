@@ -49,6 +49,12 @@ interface Profile {
   default_avatar_key: string | null;
   country_code: string | null;
   biome: string | null;
+  hometown: string | null;
+  job: string | null;
+  links: { url: string; label: string }[] | null;
+  interests: string | null;
+  how_found: string | null;
+  sitting_question: string | null;
 }
 
 const Cabin = () => {
@@ -125,7 +131,7 @@ const Cabin = () => {
         }
       }
 
-      setProfile(data as Profile);
+      setProfile({ ...data, links: Array.isArray(data.links) ? data.links : [] } as unknown as Profile);
       setIsOwner(owner);
 
       // Check founder status
@@ -351,6 +357,7 @@ const Cabin = () => {
           <div className="py-12 space-y-6" style={{ borderTop: `1px solid ${atmos.border}` }}>
             <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} centered />
             {profile.bio && <p className="text-sm font-body text-center max-w-md mx-auto" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>}
+             <CabinAboutSection profile={profile} atmos={atmos} centered />
              <CabinPinnedSong profile={profile} atmos={atmos} centered />
              <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
            </div>
@@ -368,6 +375,7 @@ const Cabin = () => {
             )}
             <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} />
              {profile.bio && <p className="text-sm font-body max-w-xl" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
+             <CabinAboutSection profile={profile} atmos={atmos} />
              <CabinPinnedSong profile={profile} atmos={atmos} />
              <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
              <CabinOwnerActions isOwner={isOwner} user={user} profile={profile} atmos={atmos} onEditCabin={() => setEditOpen(true)} navigate={navigate} cabinMenuOpen={cabinMenuOpen} setCabinMenuOpen={setCabinMenuOpen} onOpenInvite={() => setInviteSheetOpen(true)} />
@@ -409,8 +417,9 @@ const Cabin = () => {
           </div>
 
           {profile.bio && (
-            <p className="text-sm font-body mb-6 max-w-lg" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>
+            <p className="text-sm font-body mb-4 max-w-lg" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>
           )}
+          <CabinAboutSection profile={profile} atmos={atmos} />
 
           {/* Masonry-style grid */}
           <div className="columns-2 md:columns-3 gap-4 pb-16 [column-fill:_balance]">
@@ -450,6 +459,7 @@ const Cabin = () => {
               <div className="mt-3 h-px" style={{ backgroundColor: atmos.border }} />
               <div className="mt-4"><CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} /></div>
                {profile.bio && <p className="mt-4 text-sm font-body" style={{ color: atmos.text, opacity: 0.7 }}>{profile.bio}</p>}
+               <CabinAboutSection profile={profile} atmos={atmos} />
                <CabinPinnedSong profile={profile} atmos={atmos} />
                <div className="mt-4">
                  <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
@@ -612,6 +622,61 @@ const CabinMoreMenu = ({
 };
 
 // --- Shared sub-components for layouts ---
+
+const CabinAboutSection = ({ profile, atmos, centered }: { profile: Profile; atmos: any; centered?: boolean }) => {
+  const links = Array.isArray(profile.links) ? profile.links.filter((l: any) => l.url) : [];
+  const interests = profile.interests ? profile.interests.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const hasContent = profile.hometown || profile.job || links.length > 0 || interests.length > 0 ||
+    profile.how_found || profile.sitting_question;
+
+  if (!hasContent) return null;
+
+  return (
+    <div className={`space-y-3 mt-4 ${centered ? 'text-center' : ''}`}>
+      {profile.job && (
+        <p className="text-sm font-body" style={{ color: atmos.text, opacity: 0.6 }}>{profile.job}</p>
+      )}
+      {profile.hometown && (
+        <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.45 }}>From {profile.hometown}</p>
+      )}
+      {profile.sitting_question && (
+        <p className="text-sm font-body italic" style={{ color: atmos.text, opacity: 0.55 }}>"{profile.sitting_question}"</p>
+      )}
+      {interests.length > 0 && (
+        <div className={`flex flex-wrap gap-1.5 ${centered ? 'justify-center' : ''}`}>
+          {interests.map((tag, i) => (
+            <span
+              key={i}
+              className="px-2.5 py-0.5 rounded-full text-xs font-body"
+              style={{ backgroundColor: `${atmos.accent}15`, color: atmos.accent }}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      {links.length > 0 && (
+        <div className={`flex flex-wrap gap-x-4 gap-y-1 text-xs font-body ${centered ? 'justify-center' : ''}`}>
+          {links.map((link: any, i: number) => (
+            <a
+              key={i}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 transition-opacity hover:opacity-100"
+              style={{ color: atmos.accent, opacity: 0.7 }}
+            >
+              {link.label || link.url}
+            </a>
+          ))}
+        </div>
+      )}
+      {profile.how_found && (
+        <p className="text-xs font-body" style={{ color: atmos.text, opacity: 0.3 }}>Found their way here: {profile.how_found}</p>
+      )}
+    </div>
+  );
+};
 
 const CabinMetaRow = ({ profile, temperature, tempUnit, atmos, centered }: {
   profile: Profile; temperature: number | null; tempUnit: 'C' | 'F'; atmos: any; centered?: boolean;

@@ -68,6 +68,12 @@ interface Profile {
   default_avatar_key: string | null;
   country_code: string | null;
   biome: string | null;
+  hometown: string | null;
+  job: string | null;
+  links: { url: string; label: string }[] | null;
+  interests: string | null;
+  how_found: string | null;
+  sitting_question: string | null;
 }
 
 interface CabinEditDrawerProps {
@@ -81,7 +87,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { theme } = useTheme();
-  const [tab, setTab] = useState<'you' | 'appearance' | 'details' | 'widgets'>('you');
+  const [tab, setTab] = useState<'you' | 'about' | 'appearance' | 'details' | 'widgets'>('you');
   const [saving, setSaving] = useState(false);
 
   // Lock body scroll when drawer is open
@@ -119,6 +125,12 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
     cabin_mood: profile.cabin_mood,
     pinned_song_title: profile.pinned_song_title || '',
     pinned_song_artist: profile.pinned_song_artist || '',
+    hometown: profile.hometown || '',
+    job: profile.job || '',
+    links: (Array.isArray(profile.links) ? profile.links : []) as { url: string; label: string }[],
+    interests: profile.interests || '',
+    how_found: profile.how_found || '',
+    sitting_question: profile.sitting_question || '',
   });
 
   const save = useCallback(async (updates: Partial<typeof form>) => {
@@ -159,9 +171,21 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
       const changes: any = {};
       const fields = Object.keys(form) as (keyof typeof form)[];
       for (const key of fields) {
-        const profileVal = (profile as any)[key] || '';
-        if (form[key] !== profileVal) {
-          changes[key] = form[key] || null;
+        const profileVal = (profile as any)[key];
+        const formVal = form[key];
+        if (key === 'links') {
+          // Compare serialized links
+          const profileLinks = JSON.stringify(Array.isArray(profileVal) ? profileVal : []);
+          const formLinks = JSON.stringify(formVal);
+          if (formLinks !== profileLinks) {
+            // Filter out empty links
+            changes[key] = (formVal as any[]).filter((l: any) => l.url || l.label);
+          }
+        } else {
+          const pv = profileVal || '';
+          if (formVal !== pv) {
+            changes[key] = formVal || null;
+          }
         }
       }
       if (Object.keys(changes).length > 0) {
@@ -178,10 +202,28 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
 
   const tabs = [
     { key: 'you', label: 'You' },
-    { key: 'appearance', label: 'Appearance' },
+    { key: 'about', label: 'About' },
+    { key: 'appearance', label: 'Look' },
     { key: 'details', label: 'Details' },
     { key: 'widgets', label: 'Widgets' },
   ] as const;
+
+  const updateLink = (index: number, field: 'url' | 'label', value: string) => {
+    setForm(prev => {
+      const links = [...prev.links];
+      links[index] = { ...links[index], [field]: value };
+      return { ...prev, links };
+    });
+  };
+
+  const addLink = () => {
+    if (form.links.length >= 5) return;
+    setForm(prev => ({ ...prev, links: [...prev.links, { url: '', label: '' }] }));
+  };
+
+  const removeLink = (index: number) => {
+    setForm(prev => ({ ...prev, links: prev.links.filter((_, i) => i !== index) }));
+  };
 
   const atmos = getAtmosphere(form.atmosphere, theme);
 
@@ -328,6 +370,94 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                 placeholder={form.country_code === 'US' ? 'Zip code' : 'Postal code'}
                 className="rounded-xl bg-background"
               />
+            </Field>
+          </>
+        )}
+
+        {tab === 'about' && (
+          <>
+            <p className="text-xs font-body text-muted-foreground mb-4">A little more about you</p>
+
+            <Field label="Hometown" hint="Optional">
+              <Input
+                value={form.hometown}
+                onChange={e => updateField('hometown', e.target.value)}
+                placeholder="Where you're from"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="What you do or make" hint="Optional">
+              <Input
+                value={form.job}
+                onChange={e => updateField('job', e.target.value)}
+                placeholder="What do you do or make?"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="Interests & hobbies" hint="Comma-separated">
+              <Input
+                value={form.interests}
+                onChange={e => updateField('interests', e.target.value)}
+                placeholder="hiking, bread baking, botany, jazz"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="How you found your way here" hint="Optional">
+              <Input
+                value={form.how_found}
+                onChange={e => updateField('how_found', e.target.value)}
+                placeholder="A friend, a link, a lucky accident…"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="A question you're sitting with" hint="Optional">
+              <Input
+                value={form.sitting_question}
+                onChange={e => updateField('sitting_question', e.target.value)}
+                placeholder="What are you mulling over?"
+                className="rounded-xl bg-background"
+              />
+            </Field>
+
+            <Field label="Links" hint={`${form.links.length}/5`}>
+              <div className="space-y-2">
+                {form.links.map((link, i) => (
+                  <div key={i} className="flex gap-2 items-start">
+                    <div className="flex-1 space-y-1">
+                      <Input
+                        value={link.label}
+                        onChange={e => updateLink(i, 'label', e.target.value)}
+                        placeholder="Label (e.g. My blog)"
+                        className="rounded-xl bg-background text-xs"
+                      />
+                      <Input
+                        value={link.url}
+                        onChange={e => updateLink(i, 'url', e.target.value)}
+                        placeholder="https://…"
+                        className="rounded-xl bg-background text-xs"
+                      />
+                    </div>
+                    <button
+                      onClick={() => removeLink(i)}
+                      className="mt-1 text-xs text-muted-foreground hover:text-destructive transition-colors px-1"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+                {form.links.length < 5 && (
+                  <button
+                    onClick={addLink}
+                    className="text-xs font-body text-primary hover:underline"
+                  >
+                    + Add link
+                  </button>
+                )}
+              </div>
             </Field>
           </>
         )}

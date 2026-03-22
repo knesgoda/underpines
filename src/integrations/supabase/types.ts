@@ -2354,12 +2354,17 @@ export type Database = {
           feed_show_stories: boolean | null
           handle: string
           header_image_url: string | null
+          hometown: string | null
+          how_found: string | null
           id: string
+          interests: string | null
           is_age_verified: boolean | null
           is_pines_plus: boolean | null
+          job: string | null
           last_active_at: string | null
           latitude: number | null
           layout: string | null
+          links: Json | null
           longitude: number | null
           mantra: string | null
           pinned_song_artist: string | null
@@ -2367,6 +2372,7 @@ export type Database = {
           pinned_song_title: string | null
           quiet_mode: boolean | null
           seedling_ends_at: string | null
+          sitting_question: string | null
           theme: string | null
           updated_at: string | null
           zip_code: string | null
@@ -2398,12 +2404,17 @@ export type Database = {
           feed_show_stories?: boolean | null
           handle: string
           header_image_url?: string | null
+          hometown?: string | null
+          how_found?: string | null
           id: string
+          interests?: string | null
           is_age_verified?: boolean | null
           is_pines_plus?: boolean | null
+          job?: string | null
           last_active_at?: string | null
           latitude?: number | null
           layout?: string | null
+          links?: Json | null
           longitude?: number | null
           mantra?: string | null
           pinned_song_artist?: string | null
@@ -2411,6 +2422,7 @@ export type Database = {
           pinned_song_title?: string | null
           quiet_mode?: boolean | null
           seedling_ends_at?: string | null
+          sitting_question?: string | null
           theme?: string | null
           updated_at?: string | null
           zip_code?: string | null
@@ -2442,12 +2454,17 @@ export type Database = {
           feed_show_stories?: boolean | null
           handle?: string
           header_image_url?: string | null
+          hometown?: string | null
+          how_found?: string | null
           id?: string
+          interests?: string | null
           is_age_verified?: boolean | null
           is_pines_plus?: boolean | null
+          job?: string | null
           last_active_at?: string | null
           latitude?: number | null
           layout?: string | null
+          links?: Json | null
           longitude?: number | null
           mantra?: string | null
           pinned_song_artist?: string | null
@@ -2455,6 +2472,7 @@ export type Database = {
           pinned_song_title?: string | null
           quiet_mode?: boolean | null
           seedling_ends_at?: string | null
+          sitting_question?: string | null
           theme?: string | null
           updated_at?: string | null
           zip_code?: string | null
