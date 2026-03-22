@@ -186,7 +186,7 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
   const atmos = getAtmosphere(form.atmosphere, theme);
 
   const drawerContent = (
-    <div className="flex flex-col h-full bg-card">
+    <div className="flex flex-col min-h-0 flex-1 bg-card">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border">
         <div className="flex items-center gap-3">
