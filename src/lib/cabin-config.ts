@@ -92,7 +92,7 @@ export const atmospheres: Atmosphere[] = [
     text: '#1e293b',
     border: '#cbd5e1',
     description: 'Muted grays, melancholy',
-    free: true,
+    free: false,
   },
   {
     key: 'deep-woods',
@@ -103,7 +103,7 @@ export const atmospheres: Atmosphere[] = [
     text: '#f0fdf4',
     border: '#166534',
     description: 'Dark greens, shadows, moody',
-    free: false,
+    free: true,
   },
   {
     key: 'first-snow',
