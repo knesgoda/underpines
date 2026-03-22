@@ -357,6 +357,7 @@ const Cabin = () => {
           <div className="py-12 space-y-6" style={{ borderTop: `1px solid ${atmos.border}` }}>
             <CabinMetaRow profile={profile} temperature={temperature} tempUnit={tempUnit} atmos={atmos} centered />
             {profile.bio && <p className="text-sm font-body text-center max-w-md mx-auto" style={{ color: atmos.text, opacity: 0.6 }}>{profile.bio}</p>}
+             <CabinAboutSection profile={profile} atmos={atmos} centered />
              <CabinPinnedSong profile={profile} atmos={atmos} centered />
              <CabinCircleStack profileId={profile.id} isOwner={isOwner} atmosphere={atmos} />
            </div>
