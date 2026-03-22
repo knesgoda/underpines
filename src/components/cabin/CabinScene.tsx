@@ -308,28 +308,43 @@ function MoonPhaseRenderer({ moonPhase, moonPosition, renderTime }: {
   const shadowCx = isWaxing ? cx - shadowOffsetX : cx + shadowOffsetX;
 
   return (
-    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
-      preserveAspectRatio="none" style={{
-        opacity: moonOpacity,
-        transition: 'opacity 3s ease',
-      }}>
-      <defs>
-        <clipPath id="cabin-moon-clip"><circle cx={cx} cy={cy} r={moonR} /></clipPath>
-        <radialGradient id="cabin-moon-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#f5f0c1" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#f5f0c1" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle cx={cx} cy={cy} r={moonR * 2} fill="url(#cabin-moon-glow)"
-        style={{ transition: 'cx 60s linear, cy 60s linear' }} />
-      <circle cx={cx} cy={cy} r={moonR} fill="#f5f0c1"
-        style={{ transition: 'cx 60s linear, cy 60s linear' }} />
-      {normalizedPhase < 0.98 && (
-        <circle cx={shadowCx} cy={cy} r={moonR} fill="#0c1445"
-          clipPath="url(#cabin-moon-clip)" opacity={0.92}
-          style={{ transition: 'cx 60s linear' }} />
-      )}
-    </svg>
+    <>
+      {/* Moon ambient glow — intentionally stretched with the banner */}
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
+        preserveAspectRatio="none" style={{
+          opacity: moonOpacity,
+          transition: 'opacity 3s ease',
+          pointerEvents: 'none',
+        }}>
+        <defs>
+          <radialGradient id="cabin-moon-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#f5f0c1" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#f5f0c1" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <circle cx={cx} cy={cy} r={moonR * 3} fill="url(#cabin-moon-glow)"
+          style={{ transition: 'cx 60s linear, cy 60s linear' }} />
+      </svg>
+
+      {/* Moon disc + phase shadow — aspect-ratio preserved so circles stay round */}
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid meet" style={{
+          opacity: moonOpacity,
+          transition: 'opacity 3s ease',
+          pointerEvents: 'none',
+        }}>
+        <defs>
+          <clipPath id="cabin-moon-clip"><circle cx={cx} cy={cy} r={moonR} /></clipPath>
+        </defs>
+        <circle cx={cx} cy={cy} r={moonR} fill="#f5f0c1"
+          style={{ transition: 'cx 60s linear, cy 60s linear' }} />
+        {normalizedPhase < 0.98 && (
+          <circle cx={shadowCx} cy={cy} r={moonR} fill="#0c1445"
+            clipPath="url(#cabin-moon-clip)" opacity={0.92}
+            style={{ transition: 'cx 60s linear' }} />
+        )}
+      </svg>
+    </>
   );
 }
 
