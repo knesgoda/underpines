@@ -194,7 +194,7 @@ const Search = () => {
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
       {/* Search Input */}
-      <div className="relative mb-2">
+      <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative mb-2">
         <SearchIcon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
@@ -202,7 +202,7 @@ const Search = () => {
           placeholder="Search the Pines..."
           className="pl-10 font-body bg-card border-border"
         />
-      </div>
+      </form>
       <p className="text-[11px] font-body text-muted-foreground/60 mb-4 pl-1">
         Your searches aren't saved or tracked.
       </p>

@@ -211,6 +211,7 @@ const SubscriptionPage = () => {
               <li>🎟️ 8 invite slots (vs. 3 free)</li>
               <li>🔥 Campfire messages kept forever</li>
               <li>🧩 Widget shelf on your Cabin</li>
+              <li>🌿 A quiet pine cone badge beside your name</li>
               <li>🔍 Campfire search (coming soon)</li>
             </ul>
           </div>
