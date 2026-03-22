@@ -696,6 +696,91 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                 className="rounded-xl bg-background"
               />
             </Field>
+
+            <Field label="Pinned memory" hint="Pin one of your posts to the top of your Cabin">
+              {ownPosts.length > 0 ? (
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {form.pinned_memory_post_id && (
+                    <button
+                      onClick={() => updateField('pinned_memory_post_id', '')}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-body text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      ✕ Remove pinned memory
+                    </button>
+                  )}
+                  {ownPosts.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => updateField('pinned_memory_post_id', p.id)}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-body transition-all border ${
+                        form.pinned_memory_post_id === p.id ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted'
+                      }`}
+                    >
+                      <span className="line-clamp-1">{p.content?.slice(0, 80) || `${p.post_type} post`}</span>
+                      <span className="block text-muted-foreground mt-0.5">{new Date(p.created_at).toLocaleDateString()}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs font-body text-muted-foreground">No posts yet. Write something first!</p>
+              )}
+            </Field>
+
+            <Field label="Featured photos" hint={`${form.featured_photos.length}/6`}>
+              <div className="grid grid-cols-3 gap-2 mb-2">
+                {form.featured_photos.map((url, i) => (
+                  <div key={i} className="relative group aspect-square rounded-xl overflow-hidden">
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => removePhoto(i)}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {form.featured_photos.length < 6 && (
+                <label className="inline-flex items-center gap-1.5 text-xs font-body text-primary hover:underline cursor-pointer">
+                  + Add photo
+                  <input type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
+                </label>
+              )}
+              {uploadingPhoto && <p className="text-xs text-muted-foreground mt-1">Uploading…</p>}
+            </Field>
+
+            <Field label="Moments" hint="Personal milestones">
+              <div className="space-y-3">
+                {form.moments.map((m, i) => (
+                  <div key={i} className="rounded-xl border border-border p-3 space-y-1.5">
+                    <div className="flex gap-2">
+                      <Input
+                        value={m.title}
+                        onChange={e => updateMoment(i, 'title', e.target.value)}
+                        placeholder="What happened"
+                        className="rounded-xl bg-background text-sm flex-1"
+                      />
+                      <Input
+                        value={m.year || ''}
+                        onChange={e => updateMoment(i, 'year', e.target.value)}
+                        placeholder="Year"
+                        className="rounded-xl bg-background text-sm w-20"
+                      />
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        value={m.note || ''}
+                        onChange={e => updateMoment(i, 'note', e.target.value)}
+                        placeholder="A short note (optional)"
+                        className="rounded-xl bg-background text-xs flex-1"
+                      />
+                      <button onClick={() => removeMoment(i)} className="text-xs text-muted-foreground hover:text-destructive px-1">✕</button>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addMoment} className="text-xs font-body text-primary hover:underline">+ Add moment</button>
+              </div>
+            </Field>
           </>
         )}
 
