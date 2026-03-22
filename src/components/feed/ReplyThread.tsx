@@ -20,7 +20,7 @@ interface ReplyThreadProps {
   autoExpand?: boolean;
 }
 
-const ReplyThread = ({ postId }: ReplyThreadProps) => {
+const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
   const { user } = useAuth();
   const [replies, setReplies] = useState<Reply[]>([]);
   const [expanded, setExpanded] = useState(false);
