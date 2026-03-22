@@ -84,6 +84,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="min-h-screen">
+      {isFounder && <SceneDebugPanel />}
       <OfflineBanner />
       <InstallPrompt />
       <UpdatePrompt />

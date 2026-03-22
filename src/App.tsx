@@ -74,7 +74,7 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            {import.meta.env.DEV && <SceneDebugPanel />}
+            
             <BrowserRouter>
               <ScrollToTop />
               <Routes>
