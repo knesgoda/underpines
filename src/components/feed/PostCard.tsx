@@ -317,6 +317,8 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         })()}
 
 
+        {/* Reaction summary */}
+        <ReactionSummary reactions={reactions} isOwner={isOwner} />
 
         {/* Actions */}
         <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/50">
