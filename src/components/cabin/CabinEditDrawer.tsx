@@ -874,26 +874,18 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
                     accent="hsl(var(--primary))"
                   />
                 </div>
-                  vinyl collection, trail map, and more.
-                </p>
                 <p className="text-xs text-muted-foreground font-body">
                   $10/year — less than a coffee
                 </p>
                 <div className="flex gap-2 justify-center mt-4">
                   <Button
-                    onClick={() => {
-                      onClose();
-                      navigate('/settings/subscription');
-                    }}
+                    onClick={() => { onClose(); navigate('/settings/subscription'); }}
                     className="rounded-pill text-sm font-body bg-primary text-primary-foreground"
                   >
                     $10/year
                   </Button>
                   <Button
-                    onClick={() => {
-                      onClose();
-                      navigate('/settings/subscription');
-                    }}
+                    onClick={() => { onClose(); navigate('/settings/subscription'); }}
                     variant="outline"
                     className="rounded-pill text-sm font-body"
                   >
