@@ -49,6 +49,12 @@ interface Profile {
   default_avatar_key: string | null;
   country_code: string | null;
   biome: string | null;
+  hometown: string | null;
+  job: string | null;
+  links: { url: string; label: string }[] | null;
+  interests: string | null;
+  how_found: string | null;
+  sitting_question: string | null;
 }
 
 const Cabin = () => {
