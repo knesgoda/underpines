@@ -102,6 +102,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Mobile tab bar */}
       <MobileTabBar />
+
+      {/* Mobile composer bottom sheet */}
+      <MobileComposerSheet />
       
     </div>
   );
