@@ -301,11 +301,10 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
         continue;
       }
       const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(path);
-      const msgType = file.type.startsWith('video') ? 'video' : 'photo';
       const { error: insertError } = await supabase.from('campfire_messages').insert({
         campfire_id: campfireId,
         sender_id: user.id,
-        message_type: msgType,
+        message_type: 'photo' as const,
         media_url: publicUrl,
         content: input.trim() || null,
       });
