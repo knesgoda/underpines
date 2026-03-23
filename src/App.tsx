@@ -147,6 +147,7 @@ const App = () => (
           </TooltipProvider>
         </NavigationProvider>
       </OnboardingProvider>
+      </RevenueCatProvider>
     </AuthProvider>
     </SceneDebugProvider>
     </ThemeProvider>
