@@ -1,6 +1,7 @@
 import { useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRevenueCat } from '@/contexts/RevenueCatContext';
+import { PackageType } from '@revenuecat/purchases-js';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import PineTreeLoading from '@/components/PineTreeLoading';
@@ -45,8 +46,8 @@ const SubscriptionPage = () => {
     ? new Date(activeEntitlement.expirationDate).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })
     : null;
 
-  const monthlyPkg = offerings.find(p => p.packageType === 'MONTHLY' || p.identifier === '$rc_monthly' || p.identifier?.toLowerCase().includes('monthly'));
-  const annualPkg = offerings.find(p => p.packageType === 'ANNUAL' || p.identifier === '$rc_annual' || p.identifier?.toLowerCase().includes('yearly') || p.identifier?.toLowerCase().includes('annual'));
+  const monthlyPkg = offerings.find(p => p.packageType === PackageType.Monthly);
+  const annualPkg = offerings.find(p => p.packageType === PackageType.Annual);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-lg mx-auto px-4 py-8">
@@ -68,7 +69,7 @@ const SubscriptionPage = () => {
           </div>
           <div className="h-px bg-border" />
           <div className="flex gap-2">
-            {activeEntitlement.managementURL && (
+            {customerInfo?.managementURL && (
               <button
                 onClick={manageSubscription}
                 className="px-4 py-2 rounded-full border border-border font-body text-xs text-foreground hover:bg-muted"
@@ -109,7 +110,7 @@ const SubscriptionPage = () => {
                 <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                   <p className="font-body text-sm font-medium text-foreground">Monthly</p>
                   <p className="font-display text-2xl text-foreground">
-                    {monthlyPkg.webBillingProduct?.pricePerPeriod?.formattedPrice ?? '$1'}
+                    {monthlyPkg.webBillingProduct.basePrice.formattedPrice}
                     <span className="text-sm font-body text-muted-foreground">/month</span>
                   </p>
                   <button
@@ -126,7 +127,7 @@ const SubscriptionPage = () => {
                   <div className="absolute -top-2.5 right-4 px-2 py-0.5 bg-primary text-primary-foreground font-body text-[10px] rounded-full">Best value</div>
                   <p className="font-body text-sm font-medium text-foreground">Annual</p>
                   <p className="font-display text-2xl text-foreground">
-                    {annualPkg.webBillingProduct?.pricePerPeriod?.formattedPrice ?? '$10'}
+                    {annualPkg.webBillingProduct.basePrice.formattedPrice}
                     <span className="text-sm font-body text-muted-foreground">/year</span>
                   </p>
                   <button

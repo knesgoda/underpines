@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import Purchases, { type CustomerInfo, type Package, type PurchasesError, ErrorCode } from '@revenuecat/purchases-js';
+import { Purchases, type CustomerInfo, type Package, type PurchasesError, ErrorCode, PackageType } from '@revenuecat/purchases-js';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -166,12 +166,8 @@ export const RevenueCatProvider = ({ children }: { children: ReactNode }) => {
   }, [initialized]);
 
   const manageSubscription = useCallback(() => {
-    if (!customerInfo) return;
-    // RevenueCat Web SDK manages subscriptions through the management URL
-    const activeEntitlement = customerInfo.entitlements.active[ENTITLEMENT_ID];
-    if (activeEntitlement?.managementURL) {
-      window.open(activeEntitlement.managementURL, '_blank');
-    }
+    if (!customerInfo?.managementURL) return;
+    window.open(customerInfo.managementURL, '_blank');
   }, [customerInfo]);
 
   return (
