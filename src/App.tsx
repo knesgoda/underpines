@@ -9,6 +9,7 @@ import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { SceneDebugProvider } from "@/contexts/SceneDebugContext";
+import { RevenueCatProvider } from "@/contexts/RevenueCatContext";
 
 import AppLayout from "@/components/navigation/AppLayout";
 import HomePage from "./pages/HomePage";
