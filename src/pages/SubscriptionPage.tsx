@@ -110,7 +110,7 @@ const SubscriptionPage = () => {
                 <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                   <p className="font-body text-sm font-medium text-foreground">Monthly</p>
                   <p className="font-display text-2xl text-foreground">
-                    {monthlyPkg.webBillingProduct.basePrice.formattedPrice}
+                    {monthlyPkg.webBillingProduct.price.formattedPrice}
                     <span className="text-sm font-body text-muted-foreground">/month</span>
                   </p>
                   <button
