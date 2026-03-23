@@ -563,7 +563,11 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
                           onDoubleClick={() => setReactionMsgId(msg.id)}
                         >
-                          <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
+                          {/\.(mp4|mov|webm)$/i.test(msg.media_url) ? (
+                            <video src={msg.media_url} className="max-w-full max-h-[240px] object-cover" controls playsInline preload="metadata" />
+                          ) : (
+                            <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
+                          )}
                         </div>
                       ) : msg.message_type === 'voice' && msg.media_url ? (
                         <VoiceMessageBubble
