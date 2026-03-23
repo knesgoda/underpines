@@ -127,7 +127,7 @@ const SubscriptionPage = () => {
                   <div className="absolute -top-2.5 right-4 px-2 py-0.5 bg-primary text-primary-foreground font-body text-[10px] rounded-full">Best value</div>
                   <p className="font-body text-sm font-medium text-foreground">Annual</p>
                   <p className="font-display text-2xl text-foreground">
-                    {annualPkg.webBillingProduct.basePrice.formattedPrice}
+                    {annualPkg.webBillingProduct.price.formattedPrice}
                     <span className="text-sm font-body text-muted-foreground">/year</span>
                   </p>
                   <button
