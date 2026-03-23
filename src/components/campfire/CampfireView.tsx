@@ -301,11 +301,10 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
         continue;
       }
       const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(path);
-      const msgType = file.type.startsWith('video') ? 'video' : 'photo';
       const { error: insertError } = await supabase.from('campfire_messages').insert({
         campfire_id: campfireId,
         sender_id: user.id,
-        message_type: msgType,
+        message_type: 'photo' as const,
         media_url: publicUrl,
         content: input.trim() || null,
       });
@@ -564,7 +563,11 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
                           onDoubleClick={() => setReactionMsgId(msg.id)}
                         >
-                          <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
+                          {/\.(mp4|mov|webm)$/i.test(msg.media_url) ? (
+                            <video src={msg.media_url} className="max-w-full max-h-[240px] object-cover" controls playsInline preload="metadata" />
+                          ) : (
+                            <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
+                          )}
                         </div>
                       ) : msg.message_type === 'voice' && msg.media_url ? (
                         <VoiceMessageBubble
