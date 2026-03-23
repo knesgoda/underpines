@@ -292,19 +292,26 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
     setUploadingMedia(true);
 
     for (const file of stagedFiles) {
-      const ext = file.name.split('.').pop();
+      const ext = file.name.split('.').pop() || 'jpg';
       const path = `${user.id}/campfire/${campfireId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage.from('post-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
-      if (!error) {
-        const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(path);
-        const msgType = file.type.startsWith('video') ? 'video' : 'photo';
-        await supabase.from('campfire_messages').insert({
-          campfire_id: campfireId,
-          sender_id: user.id,
-          message_type: msgType,
-          media_url: publicUrl,
-          content: input.trim() || null,
-        });
+      if (error) {
+        console.error('Campfire media upload error:', error);
+        toast.error('Failed to upload image');
+        continue;
+      }
+      const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(path);
+      const msgType = file.type.startsWith('video') ? 'video' : 'photo';
+      const { error: insertError } = await supabase.from('campfire_messages').insert({
+        campfire_id: campfireId,
+        sender_id: user.id,
+        message_type: msgType,
+        media_url: publicUrl,
+        content: input.trim() || null,
+      });
+      if (insertError) {
+        console.error('Campfire message insert error:', insertError);
+        toast.error('Failed to send image');
       }
     }
 
