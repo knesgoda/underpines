@@ -293,7 +293,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
 
     for (const file of stagedFiles) {
       const ext = file.name.split('.').pop();
-      const path = `campfire-media/${user.id}/${campfireId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+      const path = `${user.id}/campfire/${campfireId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage.from('post-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
       if (!error) {
         const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(path);
