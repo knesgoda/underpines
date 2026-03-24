@@ -358,7 +358,11 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      if (stagedFiles.length > 0) {
+        sendStagedMedia();
+      } else {
+        sendMessage();
+      }
     }
   };
 
