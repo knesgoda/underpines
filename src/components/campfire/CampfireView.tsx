@@ -719,7 +719,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                 />
                 <button
                   onClick={stagedFiles.length > 0 ? sendStagedMedia : sendMessage}
-                  disabled={stagedFiles.length === 0 && (!input.trim() || sending) || uploadingMedia}
+                  disabled={(stagedFiles.length === 0 && !input.trim()) || sending || uploadingMedia}
                   className="p-2 text-primary hover:opacity-80 disabled:opacity-30 shrink-0"
                 >
                   <Send size={18} />
