@@ -283,10 +283,15 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
     const snapshot = [...stagedFiles];
     if (snapshot.length === 0) return;
 
+    // Snapshot text now before clearing state
+    const captionText = input.trim() || null;
+
     setUploadingMedia(true);
+    setInput('');
     clearStaged();
 
-    for (const file of snapshot) {
+    for (let i = 0; i < snapshot.length; i++) {
+      const file = snapshot[i];
       const ext = file.name.split('.').pop() || 'jpg';
       const path = `${user.id}/campfire/${campfireId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
 
@@ -307,7 +312,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
         sender_id: user.id,
         message_type: 'photo',
         media_url: publicUrl,
-        content: input.trim() || null,
+        content: i === 0 ? captionText : null, // only attach text to first photo
       });
 
       if (insertError) {
@@ -316,7 +321,6 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
       }
     }
 
-    setInput('');
     setUploadingMedia(false);
     setAutoScroll(true);
   };
