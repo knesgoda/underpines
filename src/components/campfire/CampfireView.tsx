@@ -80,7 +80,6 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   const [autoScroll, setAutoScroll] = useState(true);
   const [newMsgPill, setNewMsgPill] = useState(false);
   const [stagedFiles, setStagedFiles] = useState<File[]>([]);
-  const stagedFilesRef = useRef<File[]>([]);
   const [stagedPreviews, setStagedPreviews] = useState<string[]>([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -245,85 +244,78 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   };
 
   const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files;
-    if (!selected) return;
-    const arr = Array.from(selected);
+    if (!e.target.files) return;
+    const incoming = Array.from(e.target.files);
     e.target.value = '';
 
-    const hasVideo = arr.some(f => f.type.startsWith('video'));
-    const valid: File[] = [];
-
-    for (const f of arr) {
-      if (f.size > 10 * 1024 * 1024) {
-        toast.error('Files must be under 10MB each');
+    const next: File[] = [...stagedFiles];
+    for (const f of incoming) {
+      if (f.size > 10 * 1024 * 1024) { toast.error('Files must be under 10MB'); continue; }
+      if (f.type.startsWith('video')) {
+        if (next.some(x => x.type.startsWith('video'))) { toast('Only one video per message'); continue; }
+      } else if (!f.type.startsWith('image')) {
         continue;
       }
-      if (f.type.startsWith('video')) {
-        if (valid.some(v => v.type.startsWith('video')) || stagedFiles.some(v => v.type.startsWith('video'))) {
-          toast('Only one video per message');
-          continue;
-        }
-        valid.push(f);
-      } else if (f.type.startsWith('image')) {
-        valid.push(f);
-      }
+      if (next.length < 10) next.push(f);
     }
 
-    const newFiles = [...stagedFiles, ...valid].slice(0, 10);
-    // Revoke old previews
     stagedPreviews.forEach(u => URL.revokeObjectURL(u));
-    stagedFilesRef.current = newFiles;
-    setStagedFiles(newFiles);
-    setStagedPreviews(newFiles.map(f => URL.createObjectURL(f)));
+    setStagedFiles(next);
+    setStagedPreviews(next.map(f => URL.createObjectURL(f)));
   };
 
-  const removeStagedFile = (i: number) => {
-    URL.revokeObjectURL(stagedPreviews[i]);
-    setStagedFiles(f => {
-      const next = f.filter((_, idx) => idx !== i);
-      stagedFilesRef.current = next;
-      return next;
-    });
-    setStagedPreviews(p => p.filter((_, idx) => idx !== i));
+  const removeStagedFile = (idx: number) => {
+    URL.revokeObjectURL(stagedPreviews[idx]);
+    const nextFiles = stagedFiles.filter((_, i) => i !== idx);
+    const nextPreviews = stagedPreviews.filter((_, i) => i !== idx);
+    setStagedFiles(nextFiles);
+    setStagedPreviews(nextPreviews);
   };
 
   const clearStaged = () => {
     stagedPreviews.forEach(u => URL.revokeObjectURL(u));
-    stagedFilesRef.current = [];
     setStagedFiles([]);
     setStagedPreviews([]);
   };
 
   const sendStagedMedia = async () => {
-    const files = stagedFilesRef.current;
-    if (!user || files.length === 0) return;
-    setUploadingMedia(true);
+    if (!user) return;
+    const snapshot = [...stagedFiles];
+    if (snapshot.length === 0) return;
 
-    for (const file of files) {
+    setUploadingMedia(true);
+    clearStaged();
+
+    for (const file of snapshot) {
       const ext = file.name.split('.').pop() || 'jpg';
-      const msgType = 'photo' as const;
       const path = `${user.id}/campfire/${campfireId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage.from('post-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
-      if (error) {
-        console.error('Campfire media upload error:', error);
-        toast.error('Failed to upload image');
+
+      const { error: uploadError } = await supabase.storage
+        .from('post-media')
+        .upload(path, file, { contentType: file.type, cacheControl: '31536000' });
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        toast.error('Failed to upload — ' + uploadError.message);
         continue;
       }
+
       const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(path);
+
       const { error: insertError } = await supabase.from('campfire_messages').insert({
         campfire_id: campfireId,
         sender_id: user.id,
-        message_type: msgType,
+        message_type: 'photo',
         media_url: publicUrl,
         content: input.trim() || null,
       });
+
       if (insertError) {
-        console.error('Campfire message insert error:', insertError);
-        toast.error('Failed to send image');
+        console.error('Insert error:', insertError);
+        toast.error('Failed to send — ' + insertError.message);
       }
     }
 
-    clearStaged();
     setInput('');
     setUploadingMedia(false);
     setAutoScroll(true);
@@ -726,8 +718,8 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   }}
                 />
                 <button
-                  onClick={stagedFilesRef.current.length > 0 ? sendStagedMedia : sendMessage}
-                  disabled={(stagedFilesRef.current.length === 0 && !input.trim()) || sending || uploadingMedia}
+                  onClick={stagedFiles.length > 0 ? sendStagedMedia : sendMessage}
+                  disabled={(stagedFiles.length === 0 && !input.trim()) || sending || uploadingMedia}
                   className="p-2 text-primary hover:opacity-80 disabled:opacity-30 shrink-0"
                 >
                   <Send size={18} />
