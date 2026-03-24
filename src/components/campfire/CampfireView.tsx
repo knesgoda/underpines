@@ -80,6 +80,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   const [autoScroll, setAutoScroll] = useState(true);
   const [newMsgPill, setNewMsgPill] = useState(false);
   const [stagedFiles, setStagedFiles] = useState<File[]>([]);
+  const stagedFilesRef = useRef<File[]>([]);
   const [stagedPreviews, setStagedPreviews] = useState<string[]>([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -271,27 +272,34 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
     const newFiles = [...stagedFiles, ...valid].slice(0, 10);
     // Revoke old previews
     stagedPreviews.forEach(u => URL.revokeObjectURL(u));
+    stagedFilesRef.current = newFiles;
     setStagedFiles(newFiles);
     setStagedPreviews(newFiles.map(f => URL.createObjectURL(f)));
   };
 
   const removeStagedFile = (i: number) => {
     URL.revokeObjectURL(stagedPreviews[i]);
-    setStagedFiles(f => f.filter((_, idx) => idx !== i));
+    setStagedFiles(f => {
+      const next = f.filter((_, idx) => idx !== i);
+      stagedFilesRef.current = next;
+      return next;
+    });
     setStagedPreviews(p => p.filter((_, idx) => idx !== i));
   };
 
   const clearStaged = () => {
     stagedPreviews.forEach(u => URL.revokeObjectURL(u));
+    stagedFilesRef.current = [];
     setStagedFiles([]);
     setStagedPreviews([]);
   };
 
   const sendStagedMedia = async () => {
-    if (!user || stagedFiles.length === 0) return;
+    const files = stagedFilesRef.current;
+    if (!user || files.length === 0) return;
     setUploadingMedia(true);
 
-    for (const file of stagedFiles) {
+    for (const file of files) {
       const ext = file.name.split('.').pop() || 'jpg';
       const msgType = 'photo' as const;
       const path = `${user.id}/campfire/${campfireId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
@@ -718,8 +726,8 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   }}
                 />
                 <button
-                  onClick={stagedFiles.length > 0 ? sendStagedMedia : sendMessage}
-                  disabled={(stagedFiles.length === 0 && !input.trim()) || sending || uploadingMedia}
+                  onClick={stagedFilesRef.current.length > 0 ? sendStagedMedia : sendMessage}
+                  disabled={(stagedFilesRef.current.length === 0 && !input.trim()) || sending || uploadingMedia}
                   className="p-2 text-primary hover:opacity-80 disabled:opacity-30 shrink-0"
                 >
                   <Send size={18} />
