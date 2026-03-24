@@ -246,9 +246,9 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files;
     if (!selected) return;
+    const arr = Array.from(selected);
     e.target.value = '';
 
-    const arr = Array.from(selected);
     const hasVideo = arr.some(f => f.type.startsWith('video'));
     const valid: File[] = [];
 
