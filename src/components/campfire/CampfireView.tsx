@@ -293,6 +293,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
 
     for (const file of stagedFiles) {
       const ext = file.name.split('.').pop() || 'jpg';
+      const msgType = 'photo' as const;
       const path = `${user.id}/campfire/${campfireId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage.from('post-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
       if (error) {
@@ -304,7 +305,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
       const { error: insertError } = await supabase.from('campfire_messages').insert({
         campfire_id: campfireId,
         sender_id: user.id,
-        message_type: 'photo' as const,
+        message_type: msgType,
         media_url: publicUrl,
         content: input.trim() || null,
       });
@@ -563,7 +564,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
                           onDoubleClick={() => setReactionMsgId(msg.id)}
                         >
-                          {/\.(mp4|mov|webm)$/i.test(msg.media_url) ? (
+                          {/\.(mp4|mov|webm)(?:\?.*)?$/i.test(msg.media_url) ? (
                             <video src={msg.media_url} className="max-w-full max-h-[240px] object-cover" controls playsInline preload="metadata" />
                           ) : (
                             <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
