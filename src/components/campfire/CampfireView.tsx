@@ -577,6 +577,9 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           ) : (
                             <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
                           )}
+                          {msg.content && (
+                            <p className={`font-body text-sm whitespace-pre-wrap px-3 py-1.5 ${isMine ? 'bg-primary/15' : 'bg-card border-t border-border'}`}>{msg.content}</p>
+                          )}
                         </div>
                       ) : msg.message_type === 'voice' && msg.media_url ? (
                         <VoiceMessageBubble
