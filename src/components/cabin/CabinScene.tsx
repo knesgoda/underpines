@@ -38,6 +38,7 @@ type BiomeComponents = {
 
 const BIOME_COMPONENTS: Record<string, BiomeComponents> = {
   'pacific-northwest': { Background: PNWBackground, Midground: PNWMidground, Foreground: PNWForeground },
+  'california-southwest': { Background: CaliforniaSWBackground, Midground: CaliforniaSWMidground, Foreground: CaliforniaSWForeground },
   'california-sw':     { Background: CaliforniaSWBackground, Midground: CaliforniaSWMidground, Foreground: CaliforniaSWForeground },
   'northeast':         { Background: NortheastBackground, Midground: NortheastMidground, Foreground: NortheastForeground },
   'southeast':         { Background: SoutheastBackground, Midground: SoutheastMidground, Foreground: SoutheastForeground },
