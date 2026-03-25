@@ -23,7 +23,7 @@ const navItems: NavItem[] = [
   { label: 'My Cabin', path: '/cabin', icon: `/icons/cabin_inactive.png${ICON_V}`, iconActive: `/icons/cabin_active.png${ICON_V}` },
   { label: 'Circles', path: '/circles', icon: `/icons/circle_active.png${ICON_V}`, iconActive: `/icons/circle_active.png${ICON_V}` },
   { label: 'Campfires', path: '/campfires', icon: `/icons/flame_inactive.png${ICON_V}`, iconActive: `/icons/flame_active.png${ICON_V}` },
-  { label: 'Camps', path: '/camps', icon: `/icons/tent_inactive.png${ICON_V}`, iconActive: `/icons/tent_active.png${ICON_V}` },
+  { label: 'Camps', path: '/camps', icon: `/icons/camp.png${ICON_V}`, iconActive: `/icons/camp.png${ICON_V}` },
   { label: 'Search', path: '/search', icon: `/icons/search.png${ICON_V}`, iconActive: `/icons/search.png${ICON_V}` },
 ];
 
@@ -47,7 +47,7 @@ const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) =>
           {active && (
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
           )}
-          <img src={`/icons/invite.png${ICON_V}`} alt="Invite" width={24} height={24} className="w-6 h-6" />
+          <img src={`/icons/invite.png${ICON_V}`} alt="Invite" width={32} height={32} className="w-8 h-8" />
           <span>Invite Friends</span>
           {!isInfinite && usesRemaining != null && usesRemaining > 0 && (
             <span className="ml-auto text-xs font-body text-muted-foreground/60">
@@ -154,12 +154,12 @@ const DesktopSidebar = () => {
                 <img
                   src={active ? item.iconActive : item.icon}
                   alt={`${item.label} ${active ? 'active' : 'inactive'} icon`}
-                  width={24}
-                  height={24}
-                  className="h-6 w-6"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8"
                 />
               ) : (
-                <span className="w-6 h-6" aria-hidden="true" />
+                <span className="w-8 h-8" aria-hidden="true" />
               )}
               <span>{item.label}</span>
             </Link>
