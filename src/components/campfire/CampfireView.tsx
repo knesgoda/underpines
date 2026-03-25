@@ -579,9 +579,16 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           ) : (
                             <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
                           )}
-                          {msg.content && (
-                            <p className={`font-body text-sm whitespace-pre-wrap px-3 py-1.5 ${isMine ? 'bg-primary/15' : 'bg-card border-t border-border'}`}>{linkifyText(msg.content)}</p>
-                          )}
+                          {msg.content && (() => {
+                            const url = extractFirstUrl(msg.content);
+                            const text = url ? stripFirstUrl(msg.content) : msg.content;
+                            return (
+                              <>
+                                {text && <p className={`font-body text-sm whitespace-pre-wrap px-3 py-1.5 ${isMine ? 'bg-primary/15' : 'bg-card border-t border-border'}`}>{text}</p>}
+                                {url && <div className="px-3 pb-2"><LinkPreviewCard url={url} /></div>}
+                              </>
+                            );
+                          })()}
                         </div>
                       ) : msg.message_type === 'voice' && msg.media_url ? (
                         <VoiceMessageBubble
