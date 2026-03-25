@@ -47,7 +47,7 @@ const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) =>
           {active && (
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
           )}
-          <img src={`/icons/invite.png${ICON_V}`} alt="Invite" width={32} height={32} className="w-8 h-8" />
+          <img src={`/icons/invite.png${ICON_V}`} alt="Invite" width={32} height={32} className="w-8 h-8 object-contain aspect-square" />
           <span>Invite Friends</span>
           {!isInfinite && usesRemaining != null && usesRemaining > 0 && (
             <span className="ml-auto text-xs font-body text-muted-foreground/60">
@@ -156,7 +156,7 @@ const DesktopSidebar = () => {
                   alt={`${item.label} ${active ? 'active' : 'inactive'} icon`}
                   width={32}
                   height={32}
-                  className="h-8 w-8"
+                  className="h-8 w-8 object-contain aspect-square"
                 />
               ) : (
                 <span className="w-8 h-8" aria-hidden="true" />
