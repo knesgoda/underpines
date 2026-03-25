@@ -857,44 +857,17 @@ const CabinEditDrawer = ({ open, onClose, profile, onUpdate }: CabinEditDrawerPr
               <div className="text-center space-y-4 py-4">
                 <span className="text-3xl">🌲</span>
                 <h4 className="font-display text-lg text-foreground">Widget Shelf</h4>
-                <p className="text-sm text-muted-foreground font-body">Available with Pines+</p>
+                <p className="text-sm text-muted-foreground font-body">Coming soon with Pines+</p>
                 <p className="text-xs text-muted-foreground font-body leading-relaxed">
                   Personalize your Cabin with a bookshelf,<br />
                   trail map, music player, and more.
                 </p>
-                <div className="mt-4 rounded-xl border border-border p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span>🎵</span>
-                    <span className="text-sm font-body font-medium text-foreground">Your player</span>
-                  </div>
-                  <PlayerSelector
-                    current="radio"
-                    isPinesPlus={false}
-                    onChange={() => {}}
-                    accent="hsl(var(--primary))"
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground font-body">
-                  $10/year — less than a coffee
+                <p className="text-xs text-muted-foreground font-body mt-2">
+                  $1/month or $10/year — coming soon.
                 </p>
-                <div className="flex gap-2 justify-center mt-4">
-                  <Button
-                    onClick={() => { onClose(); navigate('/settings/subscription'); }}
-                    className="rounded-pill text-sm font-body bg-primary text-primary-foreground"
-                  >
-                    $10/year
-                  </Button>
-                  <Button
-                    onClick={() => { onClose(); navigate('/settings/subscription'); }}
-                    variant="outline"
-                    className="rounded-pill text-sm font-body"
-                  >
-                    $1/month
-                  </Button>
-                  <Button variant="ghost" onClick={() => setTab('you')} className="rounded-pill text-sm font-body">
-                    Maybe later
-                  </Button>
-                </div>
+                <Button variant="ghost" onClick={() => setTab('you')} className="rounded-pill text-sm font-body">
+                  Got it
+                </Button>
               </div>
             )}
           </div>

@@ -1,10 +1,5 @@
-import { useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRevenueCat } from '@/contexts/RevenueCatContext';
-import { PackageType } from '@revenuecat/purchases-js';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
-import PineTreeLoading from '@/components/PineTreeLoading';
 
 const SubscriptionPage = () => {
   const navigate = useNavigate();
