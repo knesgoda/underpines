@@ -45,10 +45,10 @@ const MobileTabBar = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card md:hidden overflow-x-hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 8px)' }}
     >
-      <div className="flex items-center justify-around h-14">
+      <div className="flex items-center justify-around h-16">
         {tabs.map((tab) => {
           if (tab.isComposer) {
             return (
@@ -62,9 +62,9 @@ const MobileTabBar = () => {
                 <img
                   src={tabIcon('compose', false)}
                   alt="Compose"
-                  width={30}
-                  height={30}
-                  className="h-[30px] w-[30px] drop-shadow-[0_0_3px_hsl(142_76%_36%_/0.35)]"
+                  width={34}
+                  height={34}
+                  className="h-[34px] w-[34px] drop-shadow-[0_0_3px_hsl(142_76%_36%_/0.35)]"
                 />
               </button>
             );
@@ -75,14 +75,14 @@ const MobileTabBar = () => {
             <Link
               key={tab.key}
               to={tab.path}
-              className="flex flex-col items-center justify-center gap-0.5 min-w-[56px]"
+              className="flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1"
             >
               <img
                 src={tabIcon(tab.key, active)}
                 alt={`${tab.label} ${active ? 'active' : 'inactive'} icon`}
-                width={24}
-                height={24}
-                className="h-6 w-6"
+                width={28}
+                height={28}
+                className="h-7 w-7"
               />
               <span
                 className={`font-serif text-[10px] tracking-[0.03em] ${
