@@ -4,28 +4,28 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { useCampfireUnread } from '@/hooks/useCampfireUnread';
 import { supabase } from '@/integrations/supabase/client';
-import { Home, Tent, Flame, Search, Settings, Plus, Users, Trees, Mail } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import LanternIcon from './LanternIcon';
 import UserAvatar from '@/components/UserAvatar';
 import { useInviteData } from '@/hooks/useInviteData';
 
 interface NavItem {
   label: string;
-  icon: React.ElementType;
   path: string;
+  icon?: string;
+  iconActive?: string;
   comingSoon?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { label: 'Home', icon: Home, path: '/' },
-  { label: 'My Cabin', icon: Tent, path: '/cabin' },
-  { label: 'Circles', icon: Users, path: '/circles' },
-  { label: 'Campfires', icon: Flame, path: '/campfires' },
-  { label: 'Camps', icon: Trees, path: '/camps' },
-  { label: 'Search', icon: Search, path: '/search' },
+  { label: 'Home', path: '/', icon: '/icons/pine_tree_inactive.png', iconActive: '/icons/pine_tree_active.png' },
+  { label: 'My Cabin', path: '/cabin', icon: '/icons/cabin_inactive.png', iconActive: '/icons/cabin_active.png' },
+  { label: 'Circles', path: '/circles' },
+  { label: 'Campfires', path: '/campfires', icon: '/icons/flame_inactive.png', iconActive: '/icons/flame_active.png' },
+  { label: 'Camps', path: '/camps', icon: '/icons/tent_inactive.png', iconActive: '/icons/tent_active.png' },
+  { label: 'Search', path: '/search' },
 ];
+
 const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) => {
   const { usesRemaining, isInfinite, loading } = useInviteData();
   const active = isActive('/invites');
@@ -46,7 +46,7 @@ const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) =>
           {active && (
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
           )}
-          <Mail size={18} />
+          <span className="w-6 h-6" aria-hidden="true" />
           <span>Invite Friends</span>
           {!isInfinite && usesRemaining != null && usesRemaining > 0 && (
             <span className="ml-auto text-xs font-body text-muted-foreground/60">
@@ -63,14 +63,13 @@ const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) =>
 };
 
 const DesktopSidebar = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { setComposerOpen } = useNavigation();
-  const { hasUnread, markSeen } = useCampfireUnread();
+  const { markSeen } = useCampfireUnread();
   const location = useLocation();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<{ display_name: string; handle: string; avatar_url: string | null; default_avatar_key: string | null } | null>(null);
 
-  // Mark seen when on campfires
   useEffect(() => {
     if (location.pathname.startsWith('/campfires')) markSeen();
   }, [location.pathname, markSeen]);
@@ -91,7 +90,7 @@ const DesktopSidebar = () => {
   };
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-[260px] border-r border-border bg-card flex flex-col z-40">
+    <aside className="fixed left-0 top-14 bottom-0 w-[260px] border-r border-border bg-card flex flex-col z-40">
       <Link to="/" className="flex items-center gap-2.5 px-5 py-4 hover:opacity-80 transition-opacity">
         <img src={logo} alt="Under Pines" className="w-8 h-8 rounded-full object-cover" />
         <span className="font-display text-base font-medium text-foreground">Under Pines</span>
@@ -119,14 +118,13 @@ const DesktopSidebar = () => {
       <nav className="flex-1 px-3 py-3 space-y-0.5">
         {navItems.map((item) => {
           const active = isActive(item.path);
-          const ItemIcon = item.icon;
 
           if (item.comingSoon) {
             return (
               <Tooltip key={item.label}>
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-muted-foreground cursor-default transition-colors">
-                    <ItemIcon size={18} />
+                    <span className="w-6 h-6" aria-hidden="true" />
                     <span>{item.label}</span>
                     <span className="ml-auto text-[10px] font-body text-muted-foreground/50">soon</span>
                   </div>
@@ -137,8 +135,6 @@ const DesktopSidebar = () => {
               </Tooltip>
             );
           }
-
-          const isFiresUnread = item.path === '/campfires' && hasUnread;
 
           return (
             <Link
@@ -153,31 +149,22 @@ const DesktopSidebar = () => {
               {active && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
               )}
-              <ItemIcon
-                size={18}
-                className={isFiresUnread ? 'text-orange-500 fill-orange-500 drop-shadow-[0_0_4px_hsl(25,95%,53%)]' : undefined}
-              />
-              <span className={isFiresUnread ? 'text-orange-500' : undefined}>{item.label}</span>
+              {item.icon && item.iconActive ? (
+                <img
+                  src={active ? item.iconActive : item.icon}
+                  alt={`${item.label} ${active ? 'active' : 'inactive'} icon`}
+                  width={24}
+                  height={24}
+                  className="h-6 w-6"
+                />
+              ) : (
+                <span className="w-6 h-6" aria-hidden="true" />
+              )}
+              <span>{item.label}</span>
             </Link>
           );
         })}
 
-        {/* Lantern */}
-        <Link
-          to="/lantern"
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm transition-colors relative ${
-            isActive('/lantern')
-              ? 'bg-primary/8 text-foreground'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-          }`}
-        >
-          {isActive('/lantern') && (
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
-          )}
-          <LanternIcon active={isActive('/lantern')} />
-          <span>Lantern</span>
-        </Link>
-        {/* Invite Friends */}
         <InviteNavItem isActive={isActive} />
       </nav>
 
@@ -194,7 +181,7 @@ const DesktopSidebar = () => {
           }}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          <Plus size={16} />
+          <img src="/icons/compose.png" alt="Compose" width={30} height={30} className="h-[30px] w-[30px]" />
           New Post
         </button>
       </div>
@@ -209,7 +196,7 @@ const DesktopSidebar = () => {
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           }`}
         >
-          <Settings size={18} />
+          <span className="w-6 h-6" aria-hidden="true" />
           <span>Settings</span>
         </Link>
       </div>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSuspensionCheck } from '@/hooks/useSuspensionCheck';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopSidebar from './DesktopSidebar';
 import MobileTabBar from './MobileTabBar';
@@ -13,20 +14,33 @@ import UpdatePrompt from '@/components/pwa/UpdatePrompt';
 import SuspendedPage from '@/pages/Suspended';
 import AgeGateInterstitial from '@/components/onboarding/AgeGateInterstitial';
 import SceneDebugPanel from '@/components/debug/SceneDebugPanel';
-
+import LanternIcon from './LanternIcon';
 
 const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story', '/privacy', '/terms'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
 
+const titleForPath = (pathname: string) => {
+  if (pathname === '/') return 'Home';
+  if (pathname.startsWith('/camps')) return 'Camps';
+  if (pathname.startsWith('/campfires')) return 'Campfires';
+  if (pathname.startsWith('/cabin')) return 'Cabin';
+  if (pathname.startsWith('/lantern')) return 'Lantern';
+  if (pathname.startsWith('/circles')) return 'Circles';
+  if (pathname.startsWith('/search')) return 'Search';
+  if (pathname.startsWith('/settings')) return 'Settings';
+  return 'Under Pines';
+};
+
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { unreadCount } = useNavigation();
   const { suspension, checking } = useSuspensionCheck(user?.id);
   const { isFounder } = useAdminCheck();
   const [needsAgeGate, setNeedsAgeGate] = useState(false);
   const [ageGateChecked, setAgeGateChecked] = useState(false);
 
-  // LEGAL-REVIEW-NEEDED: Check if existing user needs age verification
   useEffect(() => {
     if (!user) {
       setAgeGateChecked(true);
@@ -39,7 +53,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         .eq('id', user.id)
         .maybeSingle();
 
-      // Check if this is the founder (admin) — exempt from age gate
       const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: user.id });
 
       if (profile && !profile.is_age_verified && !isAdmin) {
@@ -54,12 +67,10 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     FULL_SCREEN_ROUTES.includes(location.pathname) ||
     FULL_SCREEN_PREFIXES.some(p => location.pathname.startsWith(p));
 
-  // Show age gate interstitial for existing users who haven't verified
   if (user && ageGateChecked && needsAgeGate) {
     return <AgeGateInterstitial onComplete={() => setNeedsAgeGate(false)} />;
   }
 
-  // Show suspension page if user is suspended
   if (user && !checking && suspension) {
     return (
       <SuspendedPage
@@ -84,28 +95,37 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[hsl(210_20%_98%)]">
       {isFounder && <SceneDebugPanel />}
       <OfflineBanner />
       <InstallPrompt />
       <UpdatePrompt />
 
-      {/* Desktop sidebar */}
+      <header className="fixed top-0 left-0 right-0 z-30 h-14 border-b border-[hsl(220_13%_91%)] bg-[hsl(210_20%_98%)]">
+        <div className="mx-auto flex h-full items-center justify-between px-3 md:px-4">
+          <div className="h-11 w-11" aria-hidden="true" />
+          <h1 className="font-serif text-base tracking-[0.03em] text-[hsl(215_28%_17%)]">{titleForPath(location.pathname)}</h1>
+          <button
+            type="button"
+            onClick={() => navigate('/lantern')}
+            className="flex h-11 w-11 items-center justify-center rounded-lg"
+            aria-label={`Open notifications, ${unreadCount} unread`}
+          >
+            <LanternIcon size={22} />
+          </button>
+        </div>
+      </header>
+
       <div className="hidden md:block">
         <DesktopSidebar />
       </div>
 
-      {/* Main content */}
-      <main className="md:ml-[260px] pb-16 md:pb-0">
+      <main className="pb-16 pt-14 md:ml-[260px] md:pb-0">
         {children}
       </main>
 
-      {/* Mobile tab bar */}
       <MobileTabBar />
-
-      {/* Mobile composer bottom sheet */}
       <MobileComposerSheet />
-      
     </div>
   );
 };
