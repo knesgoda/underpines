@@ -12,6 +12,7 @@ import VoiceRecorder from './VoiceRecorder';
 import VoiceMessageBubble from './VoiceMessageBubble';
 import CampfireSearch from './CampfireSearch';
 import CrossPostCard from './CrossPostCard';
+import { linkifyText } from '@/lib/linkify';
 
 interface Message {
   id: string;
