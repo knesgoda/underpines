@@ -47,7 +47,7 @@ const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) =>
           {active && (
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
           )}
-          <span className="w-6 h-6" aria-hidden="true" />
+          <img src={`/icons/invite.png${ICON_V}`} alt="Invite" width={24} height={24} className="w-6 h-6" />
           <span>Invite Friends</span>
           {!isInfinite && usesRemaining != null && usesRemaining > 0 && (
             <span className="ml-auto text-xs font-body text-muted-foreground/60">
