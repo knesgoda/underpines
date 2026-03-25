@@ -17,12 +17,13 @@ interface NavItem {
   comingSoon?: boolean;
 }
 
+const ICON_V = '?v=3';
 const navItems: NavItem[] = [
-  { label: 'Home', path: '/', icon: '/icons/pine_tree_inactive.png', iconActive: '/icons/pine_tree_active.png' },
-  { label: 'My Cabin', path: '/cabin', icon: '/icons/cabin_inactive.png', iconActive: '/icons/cabin_active.png' },
+  { label: 'Home', path: '/', icon: `/icons/pine_tree_inactive.png${ICON_V}`, iconActive: `/icons/pine_tree_active.png${ICON_V}` },
+  { label: 'My Cabin', path: '/cabin', icon: `/icons/cabin_inactive.png${ICON_V}`, iconActive: `/icons/cabin_active.png${ICON_V}` },
   { label: 'Circles', path: '/circles' },
-  { label: 'Campfires', path: '/campfires', icon: '/icons/flame_inactive.png', iconActive: '/icons/flame_active.png' },
-  { label: 'Camps', path: '/camps', icon: '/icons/tent_inactive.png', iconActive: '/icons/tent_active.png' },
+  { label: 'Campfires', path: '/campfires', icon: `/icons/flame_inactive.png${ICON_V}`, iconActive: `/icons/flame_active.png${ICON_V}` },
+  { label: 'Camps', path: '/camps', icon: `/icons/tent_inactive.png${ICON_V}`, iconActive: `/icons/tent_active.png${ICON_V}` },
   { label: 'Search', path: '/search' },
 ];
 
@@ -181,7 +182,7 @@ const DesktopSidebar = () => {
           }}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          <img src="/icons/compose.png" alt="Compose" width={30} height={30} className="h-[30px] w-[30px]" />
+          <img src="/icons/compose.png?v=3" alt="Compose" width={30} height={30} className="h-[30px] w-[30px]" />
           New Post
         </button>
       </div>
