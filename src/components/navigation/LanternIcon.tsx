@@ -10,10 +10,10 @@ const LanternIcon = ({ className, size = 22 }: LanternIconProps) => {
 
   const src =
     unreadCount >= 5
-      ? '/icons/lantern_hot.png'
+      ? '/icons/lantern_hot.png?v=3'
       : unreadCount >= 1
-        ? '/icons/lantern_active.png'
-        : '/icons/lantern_inactive.png';
+        ? '/icons/lantern_active.png?v=3'
+        : '/icons/lantern_inactive.png?v=3';
 
   return (
     <img

@@ -18,12 +18,13 @@ const tabs: TabItem[] = [
   { key: 'cabin', label: 'Cabin', path: '/cabin' },
 ];
 
+const V = '?v=3';
 const tabIcon = (key: TabItem['key'], active: boolean) => {
-  if (key === 'compose') return '/icons/compose.png';
-  if (key === 'home') return active ? '/icons/pine_tree_active.png' : '/icons/pine_tree_inactive.png';
-  if (key === 'camps') return active ? '/icons/tent_active.png' : '/icons/tent_inactive.png';
-  if (key === 'campfires') return active ? '/icons/flame_active.png' : '/icons/flame_inactive.png';
-  return active ? '/icons/cabin_active.png' : '/icons/cabin_inactive.png';
+  if (key === 'compose') return `/icons/compose.png${V}`;
+  if (key === 'home') return active ? `/icons/pine_tree_active.png${V}` : `/icons/pine_tree_inactive.png${V}`;
+  if (key === 'camps') return active ? `/icons/tent_active.png${V}` : `/icons/tent_inactive.png${V}`;
+  if (key === 'campfires') return active ? `/icons/flame_active.png${V}` : `/icons/flame_inactive.png${V}`;
+  return active ? `/icons/cabin_active.png${V}` : `/icons/cabin_inactive.png${V}`;
 };
 
 const MobileTabBar = () => {

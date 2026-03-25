@@ -182,7 +182,7 @@ const DesktopSidebar = () => {
           }}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          <img src="/icons/compose.png" alt="Compose" width={30} height={30} className="h-[30px] w-[30px]" />
+          <img src="/icons/compose.png?v=3" alt="Compose" width={30} height={30} className="h-[30px] w-[30px]" />
           New Post
         </button>
       </div>
