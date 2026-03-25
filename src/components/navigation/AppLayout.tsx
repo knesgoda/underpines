@@ -95,16 +95,16 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[hsl(210_20%_98%)]">
+    <div className="min-h-screen bg-background">
       {isFounder && <SceneDebugPanel />}
       <OfflineBanner />
       <InstallPrompt />
       <UpdatePrompt />
 
-      <header className="fixed top-0 left-0 right-0 z-30 h-14 border-b border-[hsl(220_13%_91%)] bg-[hsl(210_20%_98%)]">
+      <header className="fixed top-0 left-0 right-0 z-30 h-14 border-b border-border bg-card">
         <div className="mx-auto flex h-full items-center justify-between px-3 md:px-4">
           <div className="h-11 w-11" aria-hidden="true" />
-          <h1 className="font-serif text-base tracking-[0.03em] text-[hsl(215_28%_17%)]">{titleForPath(location.pathname)}</h1>
+          <h1 className="font-serif text-base tracking-[0.03em] text-foreground">{titleForPath(location.pathname)}</h1>
           <button
             type="button"
             onClick={() => navigate('/lantern')}
