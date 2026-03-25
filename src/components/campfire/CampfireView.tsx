@@ -261,7 +261,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
     inputRef.current?.focus();
   };
 
-
+  const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const incoming = Array.from(e.target.files);
     e.target.value = '';
