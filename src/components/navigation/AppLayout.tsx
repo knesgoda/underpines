@@ -108,10 +108,10 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           <button
             type="button"
             onClick={() => navigate('/lantern')}
-            className="flex h-11 w-11 items-center justify-center rounded-lg"
+            className="flex items-center justify-center rounded-lg h-11 w-11 md:h-16 md:w-16"
             aria-label={`Open notifications, ${unreadCount} unread`}
           >
-            <LanternIcon size={44} />
+            <LanternIcon size={56} className="md:!w-[60px] md:!h-[60px]" />
           </button>
         </div>
       </header>
