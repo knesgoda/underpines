@@ -12,6 +12,7 @@ import LinkPreviewCard from './LinkPreviewCard';
 import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
+import RepostModal from './RepostModal';
 import ReportSheet from '@/components/reporting/ReportSheet';
 import UserAvatar from '@/components/UserAvatar';
 import { useBlockMute } from '@/hooks/useBlockMute';
