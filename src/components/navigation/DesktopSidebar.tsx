@@ -154,12 +154,12 @@ const DesktopSidebar = () => {
                 <img
                   src={active ? item.iconActive : item.icon}
                   alt={`${item.label} ${active ? 'active' : 'inactive'} icon`}
-                  width={24}
-                  height={24}
-                  className="h-6 w-6"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8"
                 />
               ) : (
-                <span className="w-6 h-6" aria-hidden="true" />
+                <span className="w-8 h-8" aria-hidden="true" />
               )}
               <span>{item.label}</span>
             </Link>
