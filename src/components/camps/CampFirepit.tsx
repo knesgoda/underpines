@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Trash2, Pin } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatTimeAgo } from '@/lib/time';
+import { linkifyText } from '@/lib/linkify';
 
 interface CampPost {
   id: string;
