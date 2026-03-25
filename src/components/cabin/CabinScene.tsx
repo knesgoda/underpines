@@ -16,6 +16,7 @@ import PrecipitationLayer from './PrecipitationLayer';
 import { getBiomeConfig } from '@/config/biomes';
 import CreatureRenderer from '@/components/creatures/CreatureRenderer';
 import CompanionRenderer from '@/components/creatures/CompanionRenderer';
+import BearWaveSpecial from '@/components/creatures/BearWaveSpecial';
 import CabinPets from '@/components/cabin/CabinPets';
 
 // ── Biome component imports ──
@@ -37,6 +38,7 @@ type BiomeComponents = {
 
 const BIOME_COMPONENTS: Record<string, BiomeComponents> = {
   'pacific-northwest': { Background: PNWBackground, Midground: PNWMidground, Foreground: PNWForeground },
+  'california-southwest': { Background: CaliforniaSWBackground, Midground: CaliforniaSWMidground, Foreground: CaliforniaSWForeground },
   'california-sw':     { Background: CaliforniaSWBackground, Midground: CaliforniaSWMidground, Foreground: CaliforniaSWForeground },
   'northeast':         { Background: NortheastBackground, Midground: NortheastMidground, Foreground: NortheastForeground },
   'southeast':         { Background: SoutheastBackground, Midground: SoutheastMidground, Foreground: SoutheastForeground },
@@ -64,6 +66,8 @@ interface CabinSceneProps {
   countryCode?: string;
   creatureKey?: string;
   userId?: string;
+  handle?: string;
+  visitorCreatureKey?: string;
 }
 
 // Sky gradient stops as RGB arrays for interpolation
@@ -883,7 +887,7 @@ const ATMOSPHERE_TINTS: Record<string, { tint: string; opacity: number }> = {
   'autumn-amber':   { tint: '#fbbf24', opacity: 0.08 },
 };
 
-const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude, biome: biomeProp, postalCode, countryCode, creatureKey, userId }: CabinSceneProps) => {
+const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, longitude, biome: biomeProp, postalCode, countryCode, creatureKey, userId, handle, visitorCreatureKey }: CabinSceneProps) => {
   const debug = useSceneDebug();
   const dbg = debug?.overrides;
 
@@ -1076,7 +1080,19 @@ const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, lo
       </div>
 
       {/* Layer 7: creature-layer */}
-      <div className={layerBase} style={{ zIndex: 7 }} data-layer="creature-layer">
+      <div className={layerBase} style={{ zIndex: 7, pointerEvents: 'none' }} data-layer="creature-layer">
+        {creatureKey && userId && (
+          <CreatureRenderer
+            creatureKey={creatureKey}
+            userId={userId}
+            biome={resolvedBiome}
+            timeOfDay={renderTime}
+            weather={weather}
+            seasonalEvent={seasonal.event}
+            visitorCreatureKey={visitorCreatureKey}
+          />
+        )}
+        {handle && <BearWaveSpecial handle={handle} />}
         {userId && (
           <CabinPets ownerId={userId} atmosphere={atmosphere || 'morning_mist'} />
         )}

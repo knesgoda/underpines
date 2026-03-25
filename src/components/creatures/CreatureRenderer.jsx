@@ -5,7 +5,7 @@
  * and the social cameo (visitor creature) system.
  */
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { getNextAppearance } from '@/lib/creatureScheduler';
 import { creatureMap } from '@/config/creatures';
 import { getBiomeConfig } from '@/config/biomes';
@@ -58,12 +58,12 @@ const COMPONENT_MAP = {
 // ── Movement classification ──────────────────────────────────────
 const FLYING_STYLES = new Set(['soar', 'hover', 'flit']);
 const WATER_STYLES = new Set(['swim', 'drift']);
-const PERCHING_KEYS = new Set(['owl', 'raven', 'witch']);
+const PERCHING_KEYS = new Set(['owl', 'raven', 'witch', 'vampire', 'great-horned-owl', 'tree-frog']);
 
 // Weather condition key map for weatherTrigger matching
 function matchesWeather(trigger, weather) {
-  if (!trigger) return true; // no trigger = always ok
-  if (!weather) return true; // no weather data = optimistic
+  if (!trigger) return true;
+  if (!weather) return true;
   const cond = weather.condition?.toLowerCase() || '';
   const map = {
     rain: cond.includes('rain') || cond.includes('drizzle'),
@@ -82,10 +82,6 @@ function matchesSeason(lock, seasonalEvent) {
 
 /**
  * Get Y-position (as %) based on creature movement style.
- *  - Flying: 8–25% (upper)
- *  - Ground: 68–82% (lower)
- *  - Water: 76–84% (water line)
- *  - Perching: 35–50% (branch level)
  */
 function getYPosition(creature, isPerching) {
   if (isPerching) return 38 + (hashQuick(creature.key) % 12);
@@ -117,11 +113,13 @@ if (typeof document !== 'undefined' && !document.getElementById(crossId)) {
 
 // ── Single creature render logic ────────────────────────────────
 function RenderSingleCreature({
-  creatureKey, userId, weather, seasonalEvent, biome, isCameo = false,
+  creatureKey, userId, weather, seasonalEvent, biome, isCameo = false, forceVisible = false,
 }) {
   const [now, setNow] = useState(() => new Date());
+  const [delayPassed, setDelayPassed] = useState(forceVisible);
+  const delayTimerRef = useRef(null);
 
-  // Re-check every 60 s
+  // Re-check every 60s
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(t);
@@ -129,31 +127,66 @@ function RenderSingleCreature({
 
   const creature = creatureMap[creatureKey];
   const Component = COMPONENT_MAP[creatureKey];
-  if (!creature || !Component) return null;
 
-  const biomeConfig = getBiomeConfig?.(biome) || {};
+  // If no SVG component exists for this key, try to render anyway
+  if (!creature) return null;
+  if (!Component) {
+    // No SVG component — silently skip
+    return null;
+  }
 
   // ── Gate: biome match ──
-  if (!creature.biomes.includes(biome || 'default')) return null;
+  // Normalize biome keys: both 'california-sw' and 'california-southwest' should match
+  if (!forceVisible) {
+    const biomeNorm = biome === 'california-sw' ? 'california-southwest' : (biome || 'default');
+    const creatureBiomes = creature.biomes.map(b => b === 'california-sw' ? 'california-southwest' : b);
+    if (!creatureBiomes.includes(biomeNorm) && !creatureBiomes.includes('default') && biomeNorm !== 'default') {
+      return null;
+    }
 
-  // ── Gate: water requirement ──
-  if (WATER_STYLES.has(creature.movementStyle) && !biomeConfig.hasWater) return null;
+    // ── Gate: weather trigger ──
+    if (creature.weatherTrigger && !matchesWeather(creature.weatherTrigger, weather)) return null;
 
-  // ── Gate: weather trigger ──
-  if (creature.weatherTrigger && !matchesWeather(creature.weatherTrigger, weather)) return null;
-
-  // ── Gate: season lock ──
-  if (creature.seasonLock && !matchesSeason(creature.seasonLock, seasonalEvent)) return null;
+    // ── Gate: season lock ──
+    if (creature.seasonLock && !matchesSeason(creature.seasonLock, seasonalEvent)) return null;
+  }
 
   // ── Scheduler ──
-  const weatherCond = weather?.condition || '';
-  const seasonCond = seasonalEvent?.key || '';
-  const appearance = getNextAppearance(creatureKey, userId, now, {
-    weather: weatherCond,
-    season: seasonCond,
-  });
+  let appearance;
+  if (forceVisible) {
+    appearance = {
+      isActive: true,
+      variant: 0,
+      direction: 'ltr',
+      duration: creature.animationDuration,
+      delayMs: 0,
+    };
+  } else {
+    const weatherCond = weather?.condition || '';
+    const seasonCond = seasonalEvent?.key || '';
+    appearance = getNextAppearance(creatureKey, userId, now, {
+      weather: weatherCond,
+      season: seasonCond,
+    });
+  }
 
   if (!appearance || !appearance.isActive) return null;
+
+  // ── Handle random delay ──
+  useEffect(() => {
+    if (forceVisible || isCameo) {
+      setDelayPassed(true);
+      return;
+    }
+    if (appearance?.delayMs > 0) {
+      delayTimerRef.current = setTimeout(() => setDelayPassed(true), appearance.delayMs);
+      return () => { if (delayTimerRef.current) clearTimeout(delayTimerRef.current); };
+    } else {
+      setDelayPassed(true);
+    }
+  }, [forceVisible, isCameo, appearance?.delayMs]);
+
+  if (!delayPassed && !forceVisible) return null;
 
   // ── Position & animation ──
   const isPerching = PERCHING_KEYS.has(creatureKey);
@@ -188,10 +221,11 @@ function RenderSingleCreature({
   // Crossing animation for the wrapper
   let wrapperAnimation;
   if (isPerching) {
-    wrapperAnimation = `creature-perch ${duration}s ease-in-out forwards`;
+    const perchDuration = 10 + (hashQuick(creatureKey) % 10); // 10–20s
+    wrapperAnimation = `creature-perch ${perchDuration}s ease-in-out forwards`;
   } else {
     const dir = direction === 'rtl' ? 'rtl' : 'ltr';
-    const crossDuration = isCameo ? Math.max(duration * 0.6, 4) : duration;
+    const crossDuration = isCameo ? Math.max(4, duration * 0.5) : duration;
     wrapperAnimation = `creature-cross-${dir} ${crossDuration}s linear forwards`;
   }
 
@@ -221,10 +255,15 @@ function RenderSingleCreature({
     ? { opacity: 0.85, filter: 'hue-rotate(20deg) saturate(0.9)' }
     : {};
 
+  // Sasquatch blur effect
+  const sasquatchFilter = creatureKey === 'sasquatch'
+    ? { filter: 'blur(0.5px)' }
+    : {};
+
   return (
     <div style={containerStyle} aria-hidden="true">
       <div style={wrapperStyle}>
-        <div style={{ ...soarStyle, ...creatureFilter, position: 'relative', display: 'inline-block' }}>
+        <div style={{ ...soarStyle, ...creatureFilter, ...sasquatchFilter, position: 'relative', display: 'inline-block' }}>
           <Component variant={isCameo ? 0 : variant} direction={direction} />
           {/* Snow trail */}
           {isSnowing && !isPerching && (
@@ -254,7 +293,15 @@ export default function CreatureRenderer({
   weather,
   seasonalEvent,
   visitorCreatureKey = null,
+  forceVisible = false,
 }) {
+  // Cameo probability: 25% chance when a visitor creature key is provided
+  const showCameo = useMemo(() => {
+    if (!visitorCreatureKey) return false;
+    const seed = hashQuick(`${userId}-${visitorCreatureKey}-cameo-${new Date().toISOString().slice(0, 10)}`);
+    return (seed % 100) < 25; // 25% chance
+  }, [visitorCreatureKey, userId]);
+
   return (
     <>
       <RenderSingleCreature
@@ -263,8 +310,9 @@ export default function CreatureRenderer({
         biome={biome}
         weather={weather}
         seasonalEvent={seasonalEvent}
+        forceVisible={forceVisible}
       />
-      {visitorCreatureKey && (
+      {showCameo && visitorCreatureKey && (
         <RenderSingleCreature
           creatureKey={visitorCreatureKey}
           userId={userId}
@@ -272,6 +320,7 @@ export default function CreatureRenderer({
           weather={weather}
           seasonalEvent={seasonalEvent}
           isCameo
+          forceVisible={forceVisible}
         />
       )}
     </>

@@ -305,6 +305,7 @@ const Cabin = () => {
           biome={profile.biome ?? undefined}
           creatureKey={profile.default_avatar_key ?? undefined}
           userId={profile.id}
+          handle={profile.handle}
         />
         {/* Trailhead: name overlaid on bottom of header */}
         {isTrailhead && (
