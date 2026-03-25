@@ -19,7 +19,7 @@ interface NavItem {
 
 const ICON_V = '?v=3';
 const navItems: NavItem[] = [
-  { label: 'Home', path: '/', icon: `/icons/pine_tree_inactive.png${ICON_V}`, iconActive: `/icons/pine_tree_active.png${ICON_V}` },
+  { label: 'Home', path: '/', icon: `/icons/home_feed.png${ICON_V}`, iconActive: `/icons/home_feed.png${ICON_V}` },
   { label: 'My Cabin', path: '/cabin', icon: `/icons/cabin_inactive.png${ICON_V}`, iconActive: `/icons/cabin_active.png${ICON_V}` },
   { label: 'Circles', path: '/circles', icon: `/icons/circle_active.png${ICON_V}`, iconActive: `/icons/circle_active.png${ICON_V}` },
   { label: 'Campfires', path: '/campfires', icon: `/icons/flame_inactive.png${ICON_V}`, iconActive: `/icons/flame_active.png${ICON_V}` },
