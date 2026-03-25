@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Trash2, Pin } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatTimeAgo } from '@/lib/time';
-import { linkifyText } from '@/lib/linkify';
+import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
+import LinkPreviewCard from '@/components/feed/LinkPreviewCard';
 
 interface CampPost {
   id: string;
