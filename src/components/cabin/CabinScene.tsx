@@ -66,6 +66,8 @@ interface CabinSceneProps {
   countryCode?: string;
   creatureKey?: string;
   userId?: string;
+  handle?: string;
+  visitorCreatureKey?: string;
 }
 
 // Sky gradient stops as RGB arrays for interpolation
