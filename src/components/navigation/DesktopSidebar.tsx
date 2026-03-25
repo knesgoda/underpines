@@ -24,7 +24,7 @@ const navItems: NavItem[] = [
   { label: 'Circles', path: '/circles', icon: `/icons/circle_active.png${ICON_V}`, iconActive: `/icons/circle_active.png${ICON_V}` },
   { label: 'Campfires', path: '/campfires', icon: `/icons/flame_inactive.png${ICON_V}`, iconActive: `/icons/flame_active.png${ICON_V}` },
   { label: 'Camps', path: '/camps', icon: `/icons/tent_inactive.png${ICON_V}`, iconActive: `/icons/tent_active.png${ICON_V}` },
-  { label: 'Search', path: '/search' },
+  { label: 'Search', path: '/search', icon: `/icons/search.png${ICON_V}`, iconActive: `/icons/search.png${ICON_V}` },
 ];
 
 const InviteNavItem = ({ isActive }: { isActive: (path: string) => boolean }) => {
