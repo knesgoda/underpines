@@ -128,7 +128,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
 
   // Desktop: inline compose card
   return (
-    <div className="rounded-lg bg-white border border-[#e5e7eb] shadow-sm mb-4">
+    <div className="rounded-lg bg-card border border-border shadow-sm mb-4">
       {activeType ? (
         <div className="p-4">
           <AnimatePresence mode="wait">
