@@ -141,7 +141,7 @@ const DesktopSidebar = () => {
             <Link
               key={item.label}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-1.5 rounded-xl font-body text-sm transition-colors relative ${
+              className={`flex items-center gap-3 px-3 py-[3px] rounded-xl font-body text-sm transition-colors relative ${
                 active
                   ? 'bg-primary/8 text-foreground'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
