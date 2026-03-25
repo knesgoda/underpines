@@ -60,7 +60,7 @@ interface Props {
   isScout?: boolean;
   scoutDays?: number | null;
 }
-const REACTIONS = ['🔥', '🌲', '💚', '😂', '👀', '🫂', '🌧️', '✨'];
+const REACTIONS = ['❤️', '😂', '😢', '🤔', '🫠', '🙄', '🌲', '✨', '🌕'];
 
 const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isScout, scoutDays }: Props) => {
   const { user } = useAuth();
