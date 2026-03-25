@@ -162,7 +162,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
           </button>
 
           {/* Divider */}
-          <div className="h-px bg-[#e5e7eb] mx-4" />
+          <div className="h-px bg-border mx-4" />
 
           {/* Post type shortcuts */}
           {expanded ? (
