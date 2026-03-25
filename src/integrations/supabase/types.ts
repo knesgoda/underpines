@@ -2594,6 +2594,7 @@ export type Database = {
           author_id: string
           content: string
           created_at: string | null
+          gif_url: string | null
           id: string
           parent_reply_id: string | null
           post_id: string
@@ -2602,6 +2603,7 @@ export type Database = {
           author_id: string
           content: string
           created_at?: string | null
+          gif_url?: string | null
           id?: string
           parent_reply_id?: string | null
           post_id: string
@@ -2610,6 +2612,7 @@ export type Database = {
           author_id?: string
           content?: string
           created_at?: string | null
+          gif_url?: string | null
           id?: string
           parent_reply_id?: string | null
           post_id?: string
