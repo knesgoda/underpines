@@ -4,14 +4,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
 const REACTIONS = [
-  { type: 'fire', icon: '🔥' },
-  { type: 'grounded', icon: '🌲' },
-  { type: 'warmth', icon: '💚' },
+  { type: 'warmth', icon: '❤️' },
   { type: 'laughed', icon: '😂' },
-  { type: 'noted', icon: '👀' },
-  { type: 'present', icon: '🫂' },
-  { type: 'heavy', icon: '🌧️' },
+  { type: 'heavy', icon: '😢' },
+  { type: 'noted', icon: '🤔' },
+  { type: 'relatable', icon: '🫠' },
+  { type: 'eyeroll', icon: '🙄' },
+  { type: 'grounded', icon: '🌲' },
   { type: 'delight', icon: '✨' },
+  { type: 'moonstruck', icon: '🌕' },
 ];
 
 interface ReactionBarProps {

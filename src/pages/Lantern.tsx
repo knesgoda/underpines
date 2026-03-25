@@ -322,7 +322,7 @@ const CircleRequestGroup = ({ items, actors, actionStates, onAccept, onDecline, 
 };
 
 const ReactionGroup = ({ items, navigate }: { items: NotificationRow[]; navigate: (path: string) => void }) => {
-  const reactionEmojis = '🔥🌲💚✨';
+  const reactionEmojis = '❤️😂😢🤔🫠🙄🌲✨🌕';
   // Find the first item with a post_id for navigation
   const tappablePostId = items.find(i => i.post_id)?.post_id;
   return (
