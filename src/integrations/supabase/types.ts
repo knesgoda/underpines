@@ -3026,6 +3026,10 @@ export type Database = {
         Args: { _invite_id: string; _ip_hash: string }
         Returns: Json
       }
+      has_camp_role: {
+        Args: { _camp_id: string; _roles: string[]; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3034,6 +3038,10 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_camp_member: {
+        Args: { _camp_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_campfire_participant: {
         Args: { _campfire_id: string; _user_id: string }
         Returns: boolean
