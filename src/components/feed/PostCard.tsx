@@ -258,58 +258,58 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                 <p className="font-body text-sm text-foreground/80 mb-2">{text}</p>
               )}
               {url && <LinkPreviewCard url={url} />}
-            )}
-            {post.post_media && post.post_media.length > 0 && (() => {
-              const sorted = [...post.post_media].sort((a, b) => a.position - b.position);
-              const imageUrls = sorted.filter(m => m.media_type !== 'video').map(m => m.url);
-              return (
-                <div className={`rounded-lg overflow-hidden ${
-                  sorted.length === 1 ? '' :
-                  sorted.length === 2 ? 'grid grid-cols-2 gap-1' :
-                  'grid grid-cols-3 gap-1'
-                }`}>
-                  {sorted.map((media, i) => (
-                    <div
-                      key={i}
-                      className={`relative ${i === 0 && sorted.length >= 3 ? 'col-span-2 row-span-2' : ''}`}
-                    >
-                      {media.media_type === 'video' ? (
-                        <video
-                          src={media.url}
-                          className="w-full h-auto rounded-lg"
-                          style={{ maxHeight: '600px' }}
-                          controls
-                          muted
-                        />
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => onImageClick?.(imageUrls, imageUrls.indexOf(media.url))}
-                          className="block w-full cursor-zoom-in"
-                          style={{ minHeight: '1px' }}
-                          aria-label="View full image"
-                        >
-                          <img
+              {post.post_media && post.post_media.length > 0 && (() => {
+                const sorted = [...post.post_media].sort((a, b) => a.position - b.position);
+                const imageUrls = sorted.filter(m => m.media_type !== 'video').map(m => m.url);
+                return (
+                  <div className={`rounded-lg overflow-hidden ${
+                    sorted.length === 1 ? '' :
+                    sorted.length === 2 ? 'grid grid-cols-2 gap-1' :
+                    'grid grid-cols-3 gap-1'
+                  }`}>
+                    {sorted.map((media, i) => (
+                      <div
+                        key={i}
+                        className={`relative ${i === 0 && sorted.length >= 3 ? 'col-span-2 row-span-2' : ''}`}
+                      >
+                        {media.media_type === 'video' ? (
+                          <video
                             src={media.url}
-                            alt=""
-                            className="block w-full h-auto rounded-lg bg-muted"
-                            style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
-                            loading="lazy"
+                            className="w-full h-auto rounded-lg"
+                            style={{ maxHeight: '600px' }}
+                            controls
+                            muted
                           />
-                        </button>
-                      )}
-                      {i === 0 && sorted.length > 3 && (
-                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-body px-2 py-0.5 rounded-full">
-                          +{sorted.length - 1} more
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              );
-            })()}
-          </div>
-        )}
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => onImageClick?.(imageUrls, imageUrls.indexOf(media.url))}
+                            className="block w-full cursor-zoom-in"
+                            style={{ minHeight: '1px' }}
+                            aria-label="View full image"
+                          >
+                            <img
+                              src={media.url}
+                              alt=""
+                              className="block w-full h-auto rounded-lg bg-muted"
+                              style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
+                              loading="lazy"
+                            />
+                          </button>
+                        )}
+                        {i === 0 && sorted.length > 3 && (
+                          <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-body px-2 py-0.5 rounded-full">
+                            +{sorted.length - 1} more
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+          );
+        })()}
 
         {/* Quoted post */}
         {post.is_quote_post && post.quoted_post && (() => {
