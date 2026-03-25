@@ -24,7 +24,7 @@ const tabIcon = (key: TabItem['key'], active: boolean) => {
   if (key === 'home') return `/icons/home_feed.png${V}`;
   if (key === 'camps') return `/icons/camp.png${V}`;
   if (key === 'campfires') return `/icons/campfire.png${V}`;
-  return active ? `/icons/cabin_active.png${V}` : `/icons/cabin_inactive.png${V}`;
+  return `/icons/cabin.png${V}`;
 };
 
 const MobileTabBar = () => {
