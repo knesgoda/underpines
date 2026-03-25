@@ -156,7 +156,7 @@ const DesktopSidebar = () => {
                   alt={`${item.label} ${active ? 'active' : 'inactive'} icon`}
                   width={32}
                   height={32}
-                  className="h-8 w-8"
+                  className="h-8 w-8 object-contain aspect-square"
                 />
               ) : (
                 <span className="w-8 h-8" aria-hidden="true" />
