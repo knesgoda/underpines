@@ -128,7 +128,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
 
   // Desktop: inline compose card
   return (
-    <div className="rounded-lg bg-white border border-[#e5e7eb] shadow-sm mb-4">
+    <div className="rounded-lg bg-card border border-border shadow-sm mb-4">
       {activeType ? (
         <div className="p-4">
           <AnimatePresence mode="wait">
@@ -153,16 +153,16 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
               displayName={profile?.display_name}
               size={40}
             />
-            <span className="flex-1 font-body text-sm text-[#9ca3af]">
+            <span className="flex-1 font-body text-sm text-muted-foreground">
               What's on your mind?
             </span>
-            <span className="shrink-0 px-3 py-1.5 rounded-md bg-[#16a34a] text-white font-body text-sm font-medium">
+            <span className="shrink-0 px-3 py-1.5 rounded-md bg-primary text-primary-foreground font-body text-sm font-medium">
               New Post
             </span>
           </button>
 
           {/* Divider */}
-          <div className="h-px bg-[#e5e7eb] mx-4" />
+          <div className="h-px bg-border mx-4" />
 
           {/* Post type shortcuts */}
           {expanded ? (
@@ -180,7 +180,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
                   <button
                     key={type}
                     onClick={() => handleTypeSelect(type)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-[#e5e7eb] hover:bg-muted transition-colors font-body text-sm"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border hover:bg-muted transition-colors font-body text-sm"
                   >
                     <span>{icon}</span>
                     <span>{label}</span>
@@ -204,11 +204,11 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
                 <span key={type} className="flex items-center">
                   <button
                     onClick={() => handleTypeSelect(type)}
-                    className="font-body text-sm text-[#6b7280] hover:text-foreground transition-colors"
+                    className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {icon} {label}
                   </button>
-                  {i < 2 && <span className="mx-1.5 text-[#d1d5db]">·</span>}
+                  {i < 2 && <span className="mx-1.5 text-border">·</span>}
                 </span>
               ))}
             </div>
