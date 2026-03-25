@@ -609,7 +609,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
                           onDoubleClick={() => setReactionMsgId(msg.id)}
                         >
-                          <p className="font-body text-sm whitespace-pre-wrap">{msg.content}</p>
+                          <p className="font-body text-sm whitespace-pre-wrap">{linkifyText(msg.content || '')}</p>
                         </div>
                       )}
 

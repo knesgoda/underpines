@@ -244,7 +244,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         {post.post_type === 'ember' && (
           <div>
             {post.content && (
-              <p className="font-body text-sm text-foreground/80 mb-2">{post.content}</p>
+              <p className="font-body text-sm text-foreground/80 mb-2">{linkifyText(post.content || '')}</p>
             )}
             {post.post_media && post.post_media.length > 0 && (() => {
               const sorted = [...post.post_media].sort((a, b) => a.position - b.position);
