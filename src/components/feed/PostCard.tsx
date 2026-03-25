@@ -7,7 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/time';
 import ReactionBar from './ReactionBar';
-import { linkifyText } from '@/lib/linkify';
+import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
+import LinkPreviewCard from './LinkPreviewCard';
 import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
@@ -197,30 +198,37 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         </div>
 
         {/* Content by type */}
-        {post.post_type === 'spark' && (
-          <div>
-            <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-              {linkifyText(post.content || '')}
-            </p>
-            {post.image_url && (
-              <button
-                type="button"
-                onClick={() => onImageClick?.([post.image_url!], 0)}
-                className="mt-3 rounded-lg overflow-hidden block w-full text-left cursor-zoom-in"
-                style={{ minHeight: '1px' }}
-                aria-label="View full image"
-              >
-                <img
-                  src={post.image_url}
-                  alt=""
-                  className="block w-full h-auto rounded-lg bg-muted"
-                  style={{ maxHeight: '600px', objectFit: 'contain' }}
-                  loading="lazy"
-                />
-              </button>
-            )}
-          </div>
-        )}
+        {post.post_type === 'spark' && (() => {
+          const url = extractFirstUrl(post.content || '');
+          const text = url ? stripFirstUrl(post.content || '') : (post.content || '');
+          return (
+            <div>
+              {text && (
+                <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                  {text}
+                </p>
+              )}
+              {url && <LinkPreviewCard url={url} />}
+              {post.image_url && (
+                <button
+                  type="button"
+                  onClick={() => onImageClick?.([post.image_url!], 0)}
+                  className="mt-3 rounded-lg overflow-hidden block w-full text-left cursor-zoom-in"
+                  style={{ minHeight: '1px' }}
+                  aria-label="View full image"
+                >
+                  <img
+                    src={post.image_url}
+                    alt=""
+                    className="block w-full h-auto rounded-lg bg-muted"
+                    style={{ maxHeight: '600px', objectFit: 'contain' }}
+                    loading="lazy"
+                  />
+                </button>
+              )}
+            </div>
+          );
+        })()}
 
         {post.post_type === 'story' && (
           <div>
@@ -230,7 +238,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
               </h3>
             )}
             <p className="font-body text-sm text-foreground/70 line-clamp-3">
-              {linkifyText(stripHtml(post.content || ''))}
+              {stripHtml(post.content || '')}
             </p>
             <Link
               to={`/${post.author?.handle}`}
@@ -241,62 +249,67 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
           </div>
         )}
 
-        {post.post_type === 'ember' && (
-          <div>
-            {post.content && (
-              <p className="font-body text-sm text-foreground/80 mb-2">{linkifyText(post.content || '')}</p>
-            )}
-            {post.post_media && post.post_media.length > 0 && (() => {
-              const sorted = [...post.post_media].sort((a, b) => a.position - b.position);
-              const imageUrls = sorted.filter(m => m.media_type !== 'video').map(m => m.url);
-              return (
-                <div className={`rounded-lg overflow-hidden ${
-                  sorted.length === 1 ? '' :
-                  sorted.length === 2 ? 'grid grid-cols-2 gap-1' :
-                  'grid grid-cols-3 gap-1'
-                }`}>
-                  {sorted.map((media, i) => (
-                    <div
-                      key={i}
-                      className={`relative ${i === 0 && sorted.length >= 3 ? 'col-span-2 row-span-2' : ''}`}
-                    >
-                      {media.media_type === 'video' ? (
-                        <video
-                          src={media.url}
-                          className="w-full h-auto rounded-lg"
-                          style={{ maxHeight: '600px' }}
-                          controls
-                          muted
-                        />
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => onImageClick?.(imageUrls, imageUrls.indexOf(media.url))}
-                          className="block w-full cursor-zoom-in"
-                          style={{ minHeight: '1px' }}
-                          aria-label="View full image"
-                        >
-                          <img
+        {post.post_type === 'ember' && (() => {
+          const url = extractFirstUrl(post.content || '');
+          const text = url ? stripFirstUrl(post.content || '') : (post.content || '');
+          return (
+            <div>
+              {text && (
+                <p className="font-body text-sm text-foreground/80 mb-2">{text}</p>
+              )}
+              {url && <LinkPreviewCard url={url} />}
+              {post.post_media && post.post_media.length > 0 && (() => {
+                const sorted = [...post.post_media].sort((a, b) => a.position - b.position);
+                const imageUrls = sorted.filter(m => m.media_type !== 'video').map(m => m.url);
+                return (
+                  <div className={`rounded-lg overflow-hidden ${
+                    sorted.length === 1 ? '' :
+                    sorted.length === 2 ? 'grid grid-cols-2 gap-1' :
+                    'grid grid-cols-3 gap-1'
+                  }`}>
+                    {sorted.map((media, i) => (
+                      <div
+                        key={i}
+                        className={`relative ${i === 0 && sorted.length >= 3 ? 'col-span-2 row-span-2' : ''}`}
+                      >
+                        {media.media_type === 'video' ? (
+                          <video
                             src={media.url}
-                            alt=""
-                            className="block w-full h-auto rounded-lg bg-muted"
-                            style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
-                            loading="lazy"
+                            className="w-full h-auto rounded-lg"
+                            style={{ maxHeight: '600px' }}
+                            controls
+                            muted
                           />
-                        </button>
-                      )}
-                      {i === 0 && sorted.length > 3 && (
-                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-body px-2 py-0.5 rounded-full">
-                          +{sorted.length - 1} more
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              );
-            })()}
-          </div>
-        )}
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => onImageClick?.(imageUrls, imageUrls.indexOf(media.url))}
+                            className="block w-full cursor-zoom-in"
+                            style={{ minHeight: '1px' }}
+                            aria-label="View full image"
+                          >
+                            <img
+                              src={media.url}
+                              alt=""
+                              className="block w-full h-auto rounded-lg bg-muted"
+                              style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
+                              loading="lazy"
+                            />
+                          </button>
+                        )}
+                        {i === 0 && sorted.length > 3 && (
+                          <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-body px-2 py-0.5 rounded-full">
+                            +{sorted.length - 1} more
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+          );
+        })()}
 
         {/* Quoted post */}
         {post.is_quote_post && post.quoted_post && (() => {
