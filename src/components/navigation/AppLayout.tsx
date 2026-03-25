@@ -111,7 +111,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             className="flex h-11 w-11 items-center justify-center rounded-lg"
             aria-label={`Open notifications, ${unreadCount} unread`}
           >
-            <LanternIcon size={22} />
+            <LanternIcon size={44} />
           </button>
         </div>
       </header>
