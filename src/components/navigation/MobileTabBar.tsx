@@ -62,9 +62,9 @@ const MobileTabBar = () => {
                 <img
                   src={tabIcon('compose', false)}
                   alt="Compose"
-                  width={34}
-                  height={34}
-                  className="h-[34px] w-[34px] drop-shadow-[0_0_3px_hsl(142_76%_36%_/0.35)]"
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 drop-shadow-[0_0_3px_hsl(142_76%_36%_/0.35)]"
                 />
               </button>
             );
@@ -80,9 +80,9 @@ const MobileTabBar = () => {
               <img
                 src={tabIcon(tab.key, active)}
                 alt={`${tab.label} ${active ? 'active' : 'inactive'} icon`}
-                width={28}
-                height={28}
-                className="h-7 w-7 object-contain aspect-square"
+                width={56}
+                height={56}
+                className="h-14 w-14 object-contain aspect-square"
               />
               <span
                 className={`font-serif text-[10px] tracking-[0.03em] ${
