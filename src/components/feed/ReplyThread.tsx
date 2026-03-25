@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { formatTimeAgo } from '@/lib/time';
 import { Flame } from 'lucide-react';
 import { toast } from 'sonner';
+import GifPickerModal from '@/components/GifPickerModal';
 
 interface Reply {
   id: string;
@@ -12,6 +13,7 @@ interface Reply {
   author_id: string;
   parent_reply_id: string | null;
   created_at: string;
+  gif_url?: string | null;
   author?: { display_name: string; handle: string };
 }
 
@@ -20,12 +22,23 @@ interface ReplyThreadProps {
   autoExpand?: boolean;
 }
 
+const ReplyContent = ({ reply }: { reply: Reply }) => (
+  <>
+    {reply.content && <p className="text-sm font-body text-foreground/80 mt-0.5">{reply.content}</p>}
+    {reply.gif_url && (
+      <img src={reply.gif_url} alt="GIF" className="mt-1 rounded-lg max-w-[240px] max-h-[180px] object-cover" />
+    )}
+  </>
+);
+
 const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
   const { user } = useAuth();
   const [replies, setReplies] = useState<Reply[]>([]);
   const [expanded, setExpanded] = useState(autoExpand);
   const [composerOpen, setComposerOpen] = useState(false);
   const [replyText, setReplyText] = useState('');
+  const [replyGifUrl, setReplyGifUrl] = useState<string | null>(null);
+  const [gifPickerOpen, setGifPickerOpen] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [posting, setPosting] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -38,7 +51,6 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
       .order('created_at', { ascending: true });
 
     if (data) {
-      // Fetch author profiles
       const authorIds = [...new Set(data.map(r => r.author_id))];
       const { data: profiles } = await supabase
         .from('profiles')
@@ -59,35 +71,40 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
   const nestedReplies = (parentId: string) => replies.filter(r => r.parent_reply_id === parentId);
 
   const handleReply = async () => {
-    if (!replyText.trim() || !user) return;
+    if ((!replyText.trim() && !replyGifUrl) || !user) return;
     setPosting(true);
+
+    const content = replyText.trim();
+    const gifUrl = replyGifUrl;
 
     const optimistic: Reply = {
       id: crypto.randomUUID(),
-      content: replyText.trim(),
+      content,
       author_id: user.id,
       parent_reply_id: replyingTo,
       created_at: new Date().toISOString(),
+      gif_url: gifUrl,
       author: { display_name: 'You', handle: '' },
     };
 
     setReplies(prev => [...prev, optimistic]);
     setReplyText('');
+    setReplyGifUrl(null);
     setComposerOpen(false);
     setReplyingTo(null);
 
     const { error } = await supabase.from('replies').insert({
       post_id: postId,
       author_id: user.id,
-      content: replyText.trim(),
+      content: content || '',
       parent_reply_id: replyingTo,
-    });
+      gif_url: gifUrl,
+    } as any);
 
     if (error) {
       setReplies(prev => prev.filter(r => r.id !== optimistic.id));
       toast.error("That reply didn't make it. Try again?");
     } else {
-      // Create notification
       const { data: post } = await supabase.from('posts').select('author_id').eq('id', postId).single();
       if (post && post.author_id !== user.id) {
         await supabase.from('notifications').insert({
@@ -134,24 +151,50 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
               rows={2}
               autoFocus
             />
-            <div className="flex items-center justify-end gap-2 mt-1">
+            {replyGifUrl && (
+              <div className="relative inline-block mt-1 mb-1">
+                <img src={replyGifUrl} alt="GIF" className="rounded-lg max-w-[160px] max-h-[120px] object-cover" />
+                <button
+                  onClick={() => setReplyGifUrl(null)}
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-foreground text-background flex items-center justify-center text-xs"
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            <div className="flex items-center justify-between mt-1">
               <button
-                onClick={() => { setComposerOpen(false); setReplyText(''); setReplyingTo(null); }}
-                className="text-xs font-body text-muted-foreground hover:text-foreground"
+                onClick={() => setGifPickerOpen(true)}
+                className="font-body text-[10px] font-semibold px-1.5 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
-                Cancel
+                GIF
               </button>
-              <button
-                onClick={handleReply}
-                disabled={!replyText.trim() || posting}
-                className="px-3 py-1 rounded-full bg-primary text-primary-foreground font-body text-xs font-medium disabled:opacity-40"
-              >
-                Reply ↑
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setComposerOpen(false); setReplyText(''); setReplyGifUrl(null); setReplyingTo(null); }}
+                  className="text-xs font-body text-muted-foreground hover:text-foreground"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleReply}
+                  disabled={(!replyText.trim() && !replyGifUrl) || posting}
+                  className="px-3 py-1 rounded-full bg-primary text-primary-foreground font-body text-xs font-medium disabled:opacity-40"
+                >
+                  Reply ↑
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* GIF Picker */}
+      <GifPickerModal
+        open={gifPickerOpen}
+        onClose={() => setGifPickerOpen(false)}
+        onSelect={(url) => setReplyGifUrl(url)}
+      />
 
       {/* Reply preview (when not expanded) */}
       {!expanded && previewReply && topLevelReplies.length > 0 && (
@@ -161,6 +204,9 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
             <span>· {formatTimeAgo(previewReply.created_at)}</span>
           </div>
           <p className="text-sm font-body text-foreground/80 mt-0.5 line-clamp-2">{previewReply.content}</p>
+          {previewReply.gif_url && (
+            <img src={previewReply.gif_url} alt="GIF" className="mt-1 rounded-lg max-w-[160px] max-h-[100px] object-cover" />
+          )}
           {topLevelReplies.length > 1 && (
             <button
               onClick={() => { setExpanded(true); fetchReplies(); }}
@@ -186,7 +232,7 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
                   <span className="font-medium text-foreground">{reply.author?.display_name}</span>
                   <span>· {formatTimeAgo(reply.created_at)}</span>
                 </div>
-                <p className="text-sm font-body text-foreground/80 mt-0.5">{reply.content}</p>
+                <ReplyContent reply={reply} />
 
                 {/* Depth-2 nested replies */}
                 {nestedReplies(reply.id).map(nested => {
@@ -197,7 +243,7 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
                         <span className="font-medium text-foreground">{nested.author?.display_name}</span>
                         <span>· {formatTimeAgo(nested.created_at)}</span>
                       </div>
-                      <p className="text-sm font-body text-foreground/80 mt-0.5">{nested.content}</p>
+                      <ReplyContent reply={nested} />
 
                       {/* Depth 3+ → campfire prompt */}
                       {depth3.length > 0 && (
