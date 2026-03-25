@@ -2,7 +2,8 @@
  * creatureScheduler.js — Determines when a creature appears in a user's cabin scene.
  *
  * Uses a seeded PRNG so appearances are deterministic per user-per-day
- * but feel random. Respects activeHours, weatherTrigger, and seasonLock.
+ * but feel random. Supports multiple appearance windows per day.
+ * Respects activeHours, weatherTrigger, and seasonLock.
  */
 
 import { creatureMap } from '@/config/creatures';
@@ -22,7 +23,7 @@ function hashString(str) {
   for (let i = 0; i < str.length; i++) {
     hash = (Math.imul(31, hash) + str.charCodeAt(i)) | 0;
   }
-  return hash >>> 0; // unsigned
+  return hash >>> 0;
 }
 
 // ── Time-of-day helpers ───────────────────────────────────────────
@@ -35,14 +36,40 @@ function getTimeSlot(date) {
   return 'night';
 }
 
+// Map creature's activeHours to hour ranges
+const HOUR_RANGES = {
+  dawn:      [5, 7],
+  morning:   [7, 12],
+  afternoon: [12, 17],
+  dusk:      [17, 20],
+  night:     [20, 5],
+};
+
+// How many appearance windows per day by tier
+const WINDOWS_PER_DAY = {
+  common:    3,
+  uncommon:  2,
+  rare:      1,
+  legendary: 1,
+};
+
+// How often a creature gets a day with appearances (1 = every day)
+const APPEARANCE_CHANCE = {
+  common:    1.0,   // every day
+  uncommon:  0.4,   // ~2-3 days
+  rare:      0.15,  // ~once a week
+  legendary: 0.07,  // ~once every 2 weeks
+};
+
 /**
- * Get the next (or current) appearance window for a creature.
+ * Get all appearance windows for a creature today, and whether
+ * the current time falls within one of them.
  *
  * @param {string} creatureKey
  * @param {string} userId
  * @param {Date}   currentTime
  * @param {object} [conditions] — { weather?: string, season?: string }
- * @returns {{ appearsAt: Date, duration: number, variant: number, direction: 'ltr'|'rtl', isActive: boolean } | null}
+ * @returns {{ appearsAt: Date, duration: number, variant: number, direction: 'ltr'|'rtl', isActive: boolean, delayMs: number } | null}
  */
 export function getNextAppearance(creatureKey, userId, currentTime, conditions = {}) {
   const creature = creatureMap[creatureKey];
@@ -57,75 +84,76 @@ export function getNextAppearance(creatureKey, userId, currentTime, conditions =
 
   // ── Weather trigger check ──
   if (creature.weatherTrigger && weather && creature.weatherTrigger !== weather) {
-    // Weather-triggered creatures only appear when their weather is active
-    // If no weather info provided, we allow the appearance (optimistic)
     if (weather) return null;
   }
 
   // ── Seed for today ──
-  const dayKey = currentTime.toISOString().slice(0, 10); // YYYY-MM-DD
+  const dayKey = currentTime.toISOString().slice(0, 10);
   const seed = hashString(`${userId}-${creatureKey}-${dayKey}`);
   const rng = mulberry32(seed);
 
-  // ── Determine appearance time for today ──
-  const { minHours, maxHours } = creature.frequency;
-  const intervalHours = minHours + rng() * (maxHours - minHours);
+  // ── Does this creature appear today? ──
+  const tier = creature.tier || 'common';
+  const chance = APPEARANCE_CHANCE[tier] ?? 1.0;
+  if (rng() > chance) return null;
 
-  // Map creature's activeHours to hour ranges
-  const hourRanges = {
-    dawn:      [5, 7],
-    morning:   [7, 12],
-    afternoon: [12, 17],
-    dusk:      [17, 20],
-    night:     [20, 5], // wraps
-  };
-
-  // Pick one of the creature's active time slots for today
+  // ── Generate multiple appearance windows ──
+  const windowCount = WINDOWS_PER_DAY[tier] ?? 1;
   const activeSlots = creature.activeHours;
-  const slotIndex = Math.floor(rng() * activeSlots.length);
-  const chosenSlot = activeSlots[slotIndex];
-  const [startHour, endHour] = hourRanges[chosenSlot] || [8, 12];
+  const duration = creature.animationDuration;
 
-  // Compute appearance time within the chosen slot
-  const appearsAt = new Date(currentTime);
-  appearsAt.setHours(0, 0, 0, 0); // start of day
+  for (let w = 0; w < windowCount; w++) {
+    // Pick a slot for this window
+    const slotSeed = hashString(`${userId}-${creatureKey}-${dayKey}-w${w}`);
+    const wRng = mulberry32(slotSeed);
 
-  if (chosenSlot === 'night' && startHour > endHour) {
-    // Night wraps — pick between 20–23 or 0–5
-    const nightHour = rng() < 0.7
-      ? startHour + rng() * (24 - startHour)
-      : rng() * endHour;
-    appearsAt.setHours(Math.floor(nightHour), Math.floor(rng() * 60));
-  } else {
-    const hour = startHour + rng() * (endHour - startHour);
-    appearsAt.setHours(Math.floor(hour), Math.floor(rng() * 60));
+    const slotIndex = Math.floor(wRng() * activeSlots.length);
+    const chosenSlot = activeSlots[slotIndex];
+    const [startHour, endHour] = HOUR_RANGES[chosenSlot] || [8, 12];
+
+    const appearsAt = new Date(currentTime);
+    appearsAt.setHours(0, 0, 0, 0);
+
+    if (chosenSlot === 'night' && startHour > endHour) {
+      const nightHour = wRng() < 0.7
+        ? startHour + wRng() * (24 - startHour)
+        : wRng() * endHour;
+      appearsAt.setHours(Math.floor(nightHour), Math.floor(wRng() * 60));
+    } else {
+      const hour = startHour + wRng() * (endHour - startHour);
+      appearsAt.setHours(Math.floor(hour), Math.floor(wRng() * 60));
+    }
+
+    // Window is active for duration + 90s buffer (for random delay)
+    const windowEnd = new Date(appearsAt.getTime() + (duration + 90) * 1000);
+
+    // Check if current time is within this window
+    const currentSlot = getTimeSlot(currentTime);
+    const isInWindow = currentTime >= appearsAt && currentTime <= windowEnd;
+    const isRightTimeOfDay = activeSlots.includes(currentSlot);
+
+    if (isInWindow && isRightTimeOfDay) {
+      // Random delay 0–90s so it doesn't fire instantly
+      const delayMs = Math.floor(wRng() * 90000);
+      const variant = Math.floor(wRng() * 3);
+      const direction = wRng() < 0.5 ? 'ltr' : 'rtl';
+
+      return {
+        appearsAt,
+        duration,
+        variant,
+        direction,
+        isActive: true,
+        delayMs,
+      };
+    }
   }
 
-  // ── Determine if we're currently within the appearance window ──
-  const duration = creature.animationDuration;
-  const endTime = new Date(appearsAt.getTime() + duration * 1000);
-
-  const isActive =
-    currentTime >= appearsAt &&
-    currentTime <= endTime &&
-    creature.activeHours.includes(getTimeSlot(currentTime));
-
-  // ── Animation variant & direction ──
-  const variant = Math.floor(rng() * 3); // 0, 1, or 2
-  const direction = rng() < 0.5 ? 'ltr' : 'rtl';
-
-  return {
-    appearsAt,
-    duration,
-    variant,
-    direction,
-    isActive,
-  };
+  return null;
 }
 
 /**
  * Check if a creature should be visible right now.
- * Convenience wrapper around getNextAppearance.
  */
 export function isCreatureVisible(creatureKey, userId, conditions = {}) {
   const result = getNextAppearance(creatureKey, userId, new Date(), conditions);
