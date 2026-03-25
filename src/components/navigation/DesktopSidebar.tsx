@@ -21,7 +21,7 @@ const ICON_V = '?v=3';
 const navItems: NavItem[] = [
   { label: 'Home', path: '/', icon: `/icons/home_feed.png${ICON_V}`, iconActive: `/icons/home_feed.png${ICON_V}` },
   { label: 'My Cabin', path: '/cabin', icon: `/icons/cabin.png${ICON_V}`, iconActive: `/icons/cabin.png${ICON_V}` },
-  { label: 'Circles', path: '/circles', icon: `/icons/circle_active.png${ICON_V}`, iconActive: `/icons/circle_active.png${ICON_V}` },
+  { label: 'Circles', path: '/circles', icon: `/icons/circle.png${ICON_V}`, iconActive: `/icons/circle.png${ICON_V}` },
   { label: 'Campfires', path: '/campfires', icon: `/icons/campfire.png${ICON_V}`, iconActive: `/icons/campfire.png${ICON_V}` },
   { label: 'Camps', path: '/camps', icon: `/icons/camp.png${ICON_V}`, iconActive: `/icons/camp.png${ICON_V}` },
   { label: 'Search', path: '/search', icon: `/icons/search.png${ICON_V}`, iconActive: `/icons/search.png${ICON_V}` },
