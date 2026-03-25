@@ -617,7 +617,16 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
                           onDoubleClick={() => setReactionMsgId(msg.id)}
                         >
-                          <p className="font-body text-sm whitespace-pre-wrap">{linkifyText(msg.content || '')}</p>
+                          {(() => {
+                            const url = extractFirstUrl(msg.content || '');
+                            const text = url ? stripFirstUrl(msg.content || '') : (msg.content || '');
+                            return (
+                              <>
+                                {text && <p className="font-body text-sm whitespace-pre-wrap">{text}</p>}
+                                {url && <LinkPreviewCard url={url} />}
+                              </>
+                            );
+                          })()}
                         </div>
                       )}
 

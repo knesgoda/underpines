@@ -224,7 +224,16 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
               </div>
 
               {post.title && <h3 className="font-display text-base text-foreground mb-1">{post.title}</h3>}
-              {post.content && <p className="font-body text-sm text-foreground whitespace-pre-wrap">{linkifyText(post.content)}</p>}
+              {post.content && (() => {
+                const url = extractFirstUrl(post.content);
+                const text = url ? stripFirstUrl(post.content) : post.content;
+                return (
+                  <>
+                    {text && <p className="font-body text-sm text-foreground whitespace-pre-wrap">{text}</p>}
+                    {url && <LinkPreviewCard url={url} />}
+                  </>
+                );
+              })()}
             </motion.div>
           ))}
         </div>
