@@ -153,10 +153,10 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
               displayName={profile?.display_name}
               size={40}
             />
-            <span className="flex-1 font-body text-sm text-[#9ca3af]">
+            <span className="flex-1 font-body text-sm text-muted-foreground">
               What's on your mind?
             </span>
-            <span className="shrink-0 px-3 py-1.5 rounded-md bg-[#16a34a] text-white font-body text-sm font-medium">
+            <span className="shrink-0 px-3 py-1.5 rounded-md bg-primary text-primary-foreground font-body text-sm font-medium">
               New Post
             </span>
           </button>
