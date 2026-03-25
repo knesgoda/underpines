@@ -180,7 +180,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
                   <button
                     key={type}
                     onClick={() => handleTypeSelect(type)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-[#e5e7eb] hover:bg-muted transition-colors font-body text-sm"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border hover:bg-muted transition-colors font-body text-sm"
                   >
                     <span>{icon}</span>
                     <span>{label}</span>
