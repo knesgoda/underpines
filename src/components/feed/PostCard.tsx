@@ -238,7 +238,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
               </h3>
             )}
             <p className="font-body text-sm text-foreground/70 line-clamp-3">
-              {linkifyText(stripHtml(post.content || ''))}
+              {stripHtml(post.content || '')}
             </p>
             <Link
               to={`/${post.author?.handle}`}
