@@ -95,7 +95,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[hsl(210_20%_98%)]">
+    <div className="min-h-screen bg-background">
       {isFounder && <SceneDebugPanel />}
       <OfflineBanner />
       <InstallPrompt />
