@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/time';
 import ReactionBar from './ReactionBar';
+import { linkifyText } from '@/lib/linkify';
 import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
