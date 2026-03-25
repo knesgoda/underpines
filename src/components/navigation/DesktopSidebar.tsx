@@ -154,9 +154,9 @@ const DesktopSidebar = () => {
                 <img
                   src={active ? item.iconActive : item.icon}
                   alt={`${item.label} ${active ? 'active' : 'inactive'} icon`}
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 object-contain aspect-square"
+                  width={36}
+                  height={36}
+                  className="h-9 w-9 object-contain aspect-square"
                 />
               ) : (
                 <span className="w-8 h-8" aria-hidden="true" />
