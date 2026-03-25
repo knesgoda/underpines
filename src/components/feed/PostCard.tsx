@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag } from 'lucide-react';
+import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag, Repeat2 } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/time';
 import ReactionBar from './ReactionBar';
 import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
@@ -12,6 +12,7 @@ import LinkPreviewCard from './LinkPreviewCard';
 import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
+import RepostModal from './RepostModal';
 import ReportSheet from '@/components/reporting/ReportSheet';
 import UserAvatar from '@/components/UserAvatar';
 import { useBlockMute } from '@/hooks/useBlockMute';
@@ -51,6 +52,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
   const [reactions, setReactions] = useState(post.reactions || []);
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [repostOpen, setRepostOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isOwner = user?.id === post.author_id;
@@ -173,7 +175,19 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="absolute right-0 top-full mt-1 w-44 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20"
                   >
+                    {!isOwner && (
+                      <>
+                        <MenuBtn onClick={() => { setRepostOpen(true); setMenuOpen(false); }}>
+                          <Repeat2 size={14} />
+                          <span className="flex flex-col items-start">
+                            <span>Repost</span>
+                            <span className="text-[10px] text-muted-foreground font-normal">Share as-is to your feed</span>
+                          </span>
+                        </MenuBtn>
+                      </>
+                    )}
                     <MenuBtn onClick={() => { setQuoteOpen(true); setMenuOpen(false); }}><Quote size={14} /> Quote post</MenuBtn>
+                    <div className="h-px bg-border" />
                     <MenuBtn onClick={() => { setShareOpen(true); setMenuOpen(false); }}><Flame size={14} /> Share to Campfire</MenuBtn>
                     <MenuBtn onClick={handleCopyLink}><Copy size={14} /> Copy link</MenuBtn>
                     {!isOwner && (
@@ -365,6 +379,12 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         postId={post.id}
         open={shareOpen}
         onClose={() => setShareOpen(false)}
+      />
+      <RepostModal
+        post={post}
+        open={repostOpen}
+        onClose={() => setRepostOpen(false)}
+        onReposted={onRefresh}
       />
       <ReportSheet
         open={reportOpen}
