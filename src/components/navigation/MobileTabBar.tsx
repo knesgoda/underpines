@@ -86,7 +86,8 @@ const MobileTabBar = () => {
               />
               <span
                 className={`font-serif text-[10px] tracking-[0.03em] ${
-                  active ? 'text-[hsl(142_76%_36%)]' : 'text-[hsl(215_14%_65%)]'
+                  active ? 'text-primary' : 'text-muted-foreground'
+                }`}
                 }`}
               >
                 {tab.label}
