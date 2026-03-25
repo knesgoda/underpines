@@ -732,15 +732,6 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                 >
                   <Camera size={18} />
                 </button>
-                <button
-                  onClick={() => setGifPickerOpen(true)}
-                  className="p-2 text-muted-foreground hover:text-foreground shrink-0 active:scale-95 transition-transform font-body text-[10px] font-semibold"
-                  type="button"
-                  aria-label="Send a GIF"
-                >
-                  GIF
-                </button>
-                <GifPickerModal open={gifPickerOpen} onClose={() => setGifPickerOpen(false)} onSelect={sendGif} />
                 <VoiceRecorder onSend={sendVoiceMessage} />
                 <textarea
                   ref={inputRef}
