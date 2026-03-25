@@ -84,7 +84,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   const [stagedFiles, setStagedFiles] = useState<File[]>([]);
   const [stagedPreviews, setStagedPreviews] = useState<string[]>([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
-  const [gifPickerOpen, setGifPickerOpen] = useState(false);
+  
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
