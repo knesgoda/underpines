@@ -289,7 +289,7 @@ export const PlayerSelector = ({
       </div>
       {!isPinesPlus && (
         <p className="text-[10px] font-body text-muted-foreground text-center">
-          Pines+ unlocks Walkman, Discman & MP3 Player
+          Pines+ coming soon — unlocks Walkman, Discman & MP3 Player
         </p>
       )}
     </div>

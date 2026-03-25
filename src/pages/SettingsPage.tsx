@@ -135,7 +135,7 @@ const SettingsPage = () => {
 
       {/* YOUR ACCOUNT */}
       <SettingsSection label="Your Account">
-        <SettingsItem emoji="🌲" label="Subscription" onClick={() => navigate('/settings/subscription')} />
+        <SettingsItem emoji="🌲" label="Pines+ (Coming Soon)" onClick={() => navigate('/settings/subscription')} />
         <SettingsItem emoji="💰" label="Payouts" onClick={() => navigate('/settings/payouts')} />
         <SettingsItem emoji="✉️" label="My Invites" onClick={() => navigate('/invites')} />
         <SettingsItem emoji="⭕" label="Circles" onClick={() => navigate('/circles')} />
