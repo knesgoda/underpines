@@ -10,6 +10,8 @@ import LightboxViewer from '@/components/feed/LightboxViewer';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import UserAvatar from '@/components/UserAvatar';
 import { formatTimeAgo } from '@/lib/time';
+import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
+import LinkPreviewCard from '@/components/feed/LinkPreviewCard';
 
 const REACTION_ICONS: Record<string, string> = {
   warmth: '❤️', laughed: '😂', heavy: '😢', noted: '🤔',
