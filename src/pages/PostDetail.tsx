@@ -269,9 +269,16 @@ const PostDetail = () => {
           </div>
 
           {/* Full content */}
-          <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-            {post.content}
-          </p>
+          {post.content && (() => {
+            const url = extractFirstUrl(post.content);
+            const text = url ? stripFirstUrl(post.content) : post.content;
+            return (
+              <>
+                {text && <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">{text}</p>}
+                {url && <LinkPreviewCard url={url} />}
+              </>
+            );
+          })()}
 
           {/* Spark image */}
           {post.post_type === 'spark' && post.image_url && (
