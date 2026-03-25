@@ -198,30 +198,37 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         </div>
 
         {/* Content by type */}
-        {post.post_type === 'spark' && (
-          <div>
-            <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-              {linkifyText(post.content || '')}
-            </p>
-            {post.image_url && (
-              <button
-                type="button"
-                onClick={() => onImageClick?.([post.image_url!], 0)}
-                className="mt-3 rounded-lg overflow-hidden block w-full text-left cursor-zoom-in"
-                style={{ minHeight: '1px' }}
-                aria-label="View full image"
-              >
-                <img
-                  src={post.image_url}
-                  alt=""
-                  className="block w-full h-auto rounded-lg bg-muted"
-                  style={{ maxHeight: '600px', objectFit: 'contain' }}
-                  loading="lazy"
-                />
-              </button>
-            )}
-          </div>
-        )}
+        {post.post_type === 'spark' && (() => {
+          const url = extractFirstUrl(post.content || '');
+          const text = url ? stripFirstUrl(post.content || '') : (post.content || '');
+          return (
+            <div>
+              {text && (
+                <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                  {text}
+                </p>
+              )}
+              {url && <LinkPreviewCard url={url} />}
+              {post.image_url && (
+                <button
+                  type="button"
+                  onClick={() => onImageClick?.([post.image_url!], 0)}
+                  className="mt-3 rounded-lg overflow-hidden block w-full text-left cursor-zoom-in"
+                  style={{ minHeight: '1px' }}
+                  aria-label="View full image"
+                >
+                  <img
+                    src={post.image_url}
+                    alt=""
+                    className="block w-full h-auto rounded-lg bg-muted"
+                    style={{ maxHeight: '600px', objectFit: 'contain' }}
+                    loading="lazy"
+                  />
+                </button>
+              )}
+            </div>
+          );
+        })()}
 
         {post.post_type === 'story' && (
           <div>
