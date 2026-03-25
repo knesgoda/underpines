@@ -204,11 +204,11 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
                 <span key={type} className="flex items-center">
                   <button
                     onClick={() => handleTypeSelect(type)}
-                    className="font-body text-sm text-[#6b7280] hover:text-foreground transition-colors"
+                    className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {icon} {label}
                   </button>
-                  {i < 2 && <span className="mx-1.5 text-[#d1d5db]">·</span>}
+                  {i < 2 && <span className="mx-1.5 text-border">·</span>}
                 </span>
               ))}
             </div>
