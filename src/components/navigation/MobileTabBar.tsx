@@ -22,7 +22,7 @@ const V = '?v=3';
 const tabIcon = (key: TabItem['key'], active: boolean) => {
   if (key === 'compose') return `/icons/compose.png${V}`;
   if (key === 'home') return `/icons/home_feed.png${V}`;
-  if (key === 'camps') return active ? `/icons/tent_active.png${V}` : `/icons/tent_inactive.png${V}`;
+  if (key === 'camps') return `/icons/camp.png${V}`;
   if (key === 'campfires') return active ? `/icons/flame_active.png${V}` : `/icons/flame_inactive.png${V}`;
   return active ? `/icons/cabin_active.png${V}` : `/icons/cabin_inactive.png${V}`;
 };
