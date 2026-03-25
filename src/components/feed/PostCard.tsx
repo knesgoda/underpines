@@ -380,6 +380,12 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         open={shareOpen}
         onClose={() => setShareOpen(false)}
       />
+      <RepostModal
+        post={post}
+        open={repostOpen}
+        onClose={() => setRepostOpen(false)}
+        onReposted={onRefresh}
+      />
       <ReportSheet
         open={reportOpen}
         onClose={() => setReportOpen(false)}
