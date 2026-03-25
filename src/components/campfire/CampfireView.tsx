@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GifPickerModal from '@/components/GifPickerModal';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -59,7 +60,7 @@ interface Props {
   isScout?: boolean;
   scoutDays?: number | null;
 }
-const REACTIONS = ['🔥', '🌲', '💚', '😂', '👀', '🫂', '🌧️', '✨'];
+const REACTIONS = ['❤️', '😂', '😢', '🤔', '🫠', '🙄', '🌲', '✨', '🌕'];
 
 const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isScout, scoutDays }: Props) => {
   const { user } = useAuth();
@@ -84,6 +85,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   const [stagedFiles, setStagedFiles] = useState<File[]>([]);
   const [stagedPreviews, setStagedPreviews] = useState<string[]>([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [gifPickerOpen, setGifPickerOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
@@ -241,6 +243,20 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
     });
 
     setSending(false);
+    setAutoScroll(true);
+    inputRef.current?.focus();
+  };
+  const sendGif = async (gifUrl: string) => {
+    if (!user) return;
+    const captionText = input.trim();
+    setInput('');
+    await supabase.from('campfire_messages').insert({
+      campfire_id: campfireId,
+      sender_id: user.id,
+      message_type: 'photo',
+      media_url: gifUrl,
+      content: captionText || null,
+    });
     setAutoScroll(true);
     inputRef.current?.focus();
   };
@@ -730,6 +746,15 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                 >
                   <Camera size={18} />
                 </button>
+                <button
+                  onClick={() => setGifPickerOpen(true)}
+                  className="p-2 text-muted-foreground hover:text-foreground shrink-0 active:scale-95 transition-transform font-body text-[10px] font-semibold"
+                  type="button"
+                  aria-label="Send a GIF"
+                >
+                  GIF
+                </button>
+                <GifPickerModal open={gifPickerOpen} onClose={() => setGifPickerOpen(false)} onSelect={sendGif} />
                 <VoiceRecorder onSend={sendVoiceMessage} />
                 <textarea
                   ref={inputRef}
