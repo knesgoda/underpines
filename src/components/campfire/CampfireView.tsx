@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import GifPickerModal from '@/components/GifPickerModal';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
