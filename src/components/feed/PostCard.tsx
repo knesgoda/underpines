@@ -249,10 +249,15 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
           </div>
         )}
 
-        {post.post_type === 'ember' && (
-          <div>
-            {post.content && (
-              <p className="font-body text-sm text-foreground/80 mb-2">{linkifyText(post.content || '')}</p>
+        {post.post_type === 'ember' && (() => {
+          const url = extractFirstUrl(post.content || '');
+          const text = url ? stripFirstUrl(post.content || '') : (post.content || '');
+          return (
+            <div>
+              {text && (
+                <p className="font-body text-sm text-foreground/80 mb-2">{text}</p>
+              )}
+              {url && <LinkPreviewCard url={url} />}
             )}
             {post.post_media && post.post_media.length > 0 && (() => {
               const sorted = [...post.post_media].sort((a, b) => a.position - b.position);
