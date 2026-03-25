@@ -45,7 +45,7 @@ const MobileTabBar = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-30 border-t border-[hsl(220_13%_91%)] bg-[hsl(210_20%_98%)] md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 8px)' }}
     >
       <div className="flex items-center justify-around h-14">
