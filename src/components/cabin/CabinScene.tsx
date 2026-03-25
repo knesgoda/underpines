@@ -1080,7 +1080,19 @@ const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, lo
       </div>
 
       {/* Layer 7: creature-layer */}
-      <div className={layerBase} style={{ zIndex: 7 }} data-layer="creature-layer">
+      <div className={layerBase} style={{ zIndex: 7, pointerEvents: 'none' }} data-layer="creature-layer">
+        {creatureKey && userId && (
+          <CreatureRenderer
+            creatureKey={creatureKey}
+            userId={userId}
+            biome={resolvedBiome}
+            timeOfDay={renderTime}
+            weather={weather}
+            seasonalEvent={seasonal.event}
+            visitorCreatureKey={visitorCreatureKey}
+          />
+        )}
+        {handle && <BearWaveSpecial handle={handle} />}
         {userId && (
           <CabinPets ownerId={userId} atmosphere={atmosphere || 'morning_mist'} />
         )}
