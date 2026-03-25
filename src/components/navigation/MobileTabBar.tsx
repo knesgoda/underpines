@@ -80,9 +80,9 @@ const MobileTabBar = () => {
               <img
                 src={tabIcon(tab.key, active)}
                 alt={`${tab.label} ${active ? 'active' : 'inactive'} icon`}
-                width={28}
-                height={28}
-                className="h-7 w-7 object-contain aspect-square"
+                width={56}
+                height={56}
+                className="h-14 w-14 object-contain aspect-square"
               />
               <span
                 className={`font-serif text-[10px] tracking-[0.03em] ${
