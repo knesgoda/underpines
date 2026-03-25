@@ -1,111 +1,36 @@
 
 
-# Under Pines — Phase 1 Implementation Plan
+## Problem
 
-## Overview
-Build the onboarding flow and Cabin (user profile) for an invite-only social platform with a warm, forest-inspired aesthetic. The app should feel like arriving at a place, not signing up for a product.
+The `camps` table has a **missing RLS SELECT policy for hidden camps and for the firekeeper's own camps**. Here are the existing SELECT policies:
 
----
+1. **"Ember camps visible to authenticated"** — matches only `visibility = 'ember'`
+2. **"Open camps visible to all authenticated"** — matches `visibility = 'open'` OR the user is already a `camp_members` row
 
-## 1. Foundation & Design System
-- Set up Google Fonts (Playfair Display for headings, Plus Jakarta Sans for body)
-- Implement the full pine/amber color palette as CSS custom properties
-- Create base components: textured backgrounds (subtle noise/paper feel), soft-shadow cards, pill buttons, rounded inputs
-- Build the loading state: an illustrated swaying pine tree (CSS animated SVG)
-- Add Framer Motion for page transitions (slow fade + upward drift)
+When creating a camp, the code does `.insert(...).select().single()` — which requires **SELECT** permission on the newly inserted row. But the `camp_members` row hasn't been created yet (it's inserted afterward), so:
 
-## 2. Database & Auth Setup (Supabase)
-- Create all tables: `profiles`, `invites`, `invite_uses`, `seedling_periods`, `cabin_widgets`, `cabin_visits`
-- Enable email+password auth
-- Create trigger to auto-insert skeleton profile on signup
-- Configure RLS policies (users read/write own profile, public read on other profiles)
-- Set up Supabase Storage bucket for header images
-- Generate initial founder invite
+- **Hidden camps**: Neither policy matches → SELECT fails → `camp` is null → "Could not create camp" error → camp_members and bonfire are never created, leaving an orphaned camp row.
+- **Open/Ember camps**: These work because the visibility-based policies match. But if someone picks "Hidden," it always fails.
 
-## 3. Onboarding Flow (8 Steps)
+## Fix
 
-**Step 0 — Invite Landing** (`/invite/[slug]`)
-- Dark forest background with weather scene at reduced opacity
-- Glass-morphism card showing inviter's name and welcome copy
-- Expired invite state with warm messaging
+**Add one new RLS SELECT policy** on `camps` so the firekeeper can always see their own camps:
 
-**Steps 1–5 — Account Creation** (`/onboarding`)
-- Shared layout with pine-needle step indicator (5 icons, opacity-based progress)
-- Step 1: Display name input
-- Step 2: Handle with debounced (400ms) real-time availability check
-- Step 3: Email input ("Daily Ember" framing)
-- Step 4: Password with gentle 8-char minimum messaging
-- Step 5: Phone verification with auto-advancing 6-digit code input
-- Each step cross-fades into the next
+```sql
+CREATE POLICY "Firekeeper can read own camps"
+  ON public.camps
+  FOR SELECT
+  TO authenticated
+  USING (firekeeper_id = auth.uid());
+```
 
-**Step 6 — Walk Through the Woods**
-- 40-second CSS/SVG animated scene: silhouette figure walks a forest path
-- 3 parallax background layers (trees at different depths)
-- 4 waypoints with fade-in captions about Cabin, Campfires, Camps
-- Fireflies (random opacity pulses), dusk sky, stars
-- Unskippable but brief; ends with "Step inside →"
+This single policy covers all visibility types for the camp creator and also fixes the existing gap where a firekeeper of a hidden camp can't manage it.
 
-**Step 7 — First Cabin View**
-- User's Cabin with their name, default Morning Mist atmosphere, placeholder header
-- Time-of-day awareness via browser/IP approximation
-- Three floating suggestion cards (header image, pin song, write mantra) with staggered fade-in
-- "I'll do this later" is a real, unjudged option
+No code changes needed — the `CreateCamp.tsx` logic is correct once RLS allows the read-back.
 
-**Step 8 — The Human Moment**
-- Full-screen gratitude moment acknowledging the inviter's trust
-- "Enter the Pines" button with breathing pulse animation
-- Forest scene brightens and dissolves into Cabin
+## Technical details
 
-## 4. The Cabin (Profile)
-
-**Layout & Structure**
-- Full-width header image (280px) with weather scene overlay
-- Display name, handle, mantra, currently status, location
-- Two-column layout below (posts placeholder + collections placeholder)
-- Hearth (default) and Hollow layouts fully implemented; Trailhead/Canopy show "coming soon"
-
-**Live Weather Scene**
-- Zip code → lat/lon (Nominatim API) → weather data (Open-Meteo API)
-- Sky gradient layer shifting by time of day (dawn through night, 6 periods)
-- Stars layer at night (20-30 dots with twinkle animations)
-- SVG pine tree silhouettes (3-5 trees) with wind-based sway animation
-- Particle systems: rain (diagonal lines), snow (drifting circles), fog (opacity layer)
-- Seasonal tree appearance based on current month
-- All animations GPU-accelerated (transform/opacity only)
-
-**Cabin Customization (Edit Drawer)**
-- Slide-in drawer (380px, bottom sheet on mobile) with live preview
-- **You tab**: name, handle, bio (200 chars), mantra (80 chars), currently, zip code
-- **Appearance tab**: 8 atmosphere picker (3 free, 5 Pines+), layout picker, 12 preset accent colors, cabin mood icon grid (8 options), header image upload
-- **Details tab**: pinned song (manual title/artist entry)
-- **Widgets tab**: Pines+ only — Bookshelf (6 books) and Field Notes (5 entries)
-- Auto-save with 800ms debounce, quiet "Saved" indicator
-- Atmosphere changes with 600ms CSS transition
-
-**Viewing Others' Cabins** (`/[handle]`)
-- Full Cabin renders with their atmosphere and weather
-- No edit controls; "Send a Campfire" button shows coming soon
-- Anonymous visit count tracked (daily aggregate, no visitor identity)
-
-## 5. Invite System
-- Each user gets invite link: `underpines.com/invite/[handle]`
-- Default 3 uses; founder gets infinite
-- Invite management page showing remaining count and invitee list
-- Warm empty/expired states
-
-## 6. Pines+ Mock Upgrade
-- Upgrade prompts in Widget Shelf lock state and Appearance tab
-- Modal with pricing ($1/mo or $10/yr), equal visual weight
-- Mock flow sets `is_pines_plus: true` in database
-- "Maybe later" dismisses for 30 days
-
-## 7. Navigation
-- Minimal top bar: logo wordmark + avatar dropdown
-- Dropdown: Visit Cabin, Edit Cabin, My Invites, Sign out
-
-## 8. Responsive Design
-- Mobile-first (375px base), tablet (768px), desktop (1280px)
-- Edit drawer → bottom sheet on mobile
-- Weather scene particle counts reduce on small viewports
-- 44×44px minimum touch targets
+- **One migration** adding the SELECT policy
+- No changes to existing policies (they remain for other users' access)
+- No application code changes required
 
