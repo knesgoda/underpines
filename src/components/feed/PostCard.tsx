@@ -200,7 +200,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         {post.post_type === 'spark' && (
           <div>
             <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-              {post.content}
+              {linkifyText(post.content || '')}
             </p>
             {post.image_url && (
               <button
