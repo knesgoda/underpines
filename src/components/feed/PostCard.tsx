@@ -175,7 +175,19 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="absolute right-0 top-full mt-1 w-44 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20"
                   >
+                    {!isOwner && (
+                      <>
+                        <MenuBtn onClick={() => { setRepostOpen(true); setMenuOpen(false); }}>
+                          <Repeat2 size={14} />
+                          <span className="flex flex-col items-start">
+                            <span>Repost</span>
+                            <span className="text-[10px] text-muted-foreground font-normal">Share as-is to your feed</span>
+                          </span>
+                        </MenuBtn>
+                      </>
+                    )}
                     <MenuBtn onClick={() => { setQuoteOpen(true); setMenuOpen(false); }}><Quote size={14} /> Quote post</MenuBtn>
+                    <div className="h-px bg-border" />
                     <MenuBtn onClick={() => { setShareOpen(true); setMenuOpen(false); }}><Flame size={14} /> Share to Campfire</MenuBtn>
                     <MenuBtn onClick={handleCopyLink}><Copy size={14} /> Copy link</MenuBtn>
                     {!isOwner && (
