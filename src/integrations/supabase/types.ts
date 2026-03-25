@@ -3022,6 +3022,10 @@ export type Database = {
         Args: { _invite_id: string; _new_user_id: string }
         Returns: undefined
       }
+      can_see_post: {
+        Args: { _post_id: string; _user_id: string }
+        Returns: boolean
+      }
       check_invite_rate_limit: {
         Args: { _invite_id: string; _ip_hash: string }
         Returns: Json
