@@ -246,8 +246,22 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
     setAutoScroll(true);
     inputRef.current?.focus();
   };
+  const sendGif = async (gifUrl: string) => {
+    if (!user) return;
+    const captionText = input.trim();
+    setInput('');
+    await supabase.from('campfire_messages').insert({
+      campfire_id: campfireId,
+      sender_id: user.id,
+      message_type: 'photo',
+      media_url: gifUrl,
+      content: captionText || null,
+    });
+    setAutoScroll(true);
+    inputRef.current?.focus();
+  };
 
-  const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+
     if (!e.target.files) return;
     const incoming = Array.from(e.target.files);
     e.target.value = '';
