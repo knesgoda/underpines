@@ -12,8 +12,9 @@ import UserAvatar from '@/components/UserAvatar';
 import { formatTimeAgo } from '@/lib/time';
 
 const REACTION_ICONS: Record<string, string> = {
-  fire: '🔥', grounded: '🌲', warmth: '💚', laughed: '😂',
-  noted: '👀', present: '🫂', heavy: '🌧️', delight: '✨',
+  warmth: '❤️', laughed: '😂', heavy: '😢', noted: '🤔',
+  relatable: '🫠', eyeroll: '🙄', grounded: '🌲', delight: '✨',
+  moonstruck: '🌕',
 };
 
 const stripHtml = (html: string): string => {
