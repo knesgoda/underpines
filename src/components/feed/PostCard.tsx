@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/time';
 import ReactionBar from './ReactionBar';
+import { linkifyText } from '@/lib/linkify';
 import ReplyThread from './ReplyThread';
 import QuoteComposer from './QuoteComposer';
 import ShareToCampfire from './ShareToCampfire';
@@ -199,7 +200,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         {post.post_type === 'spark' && (
           <div>
             <p className="font-body text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-              {post.content}
+              {linkifyText(post.content || '')}
             </p>
             {post.image_url && (
               <button
@@ -229,7 +230,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
               </h3>
             )}
             <p className="font-body text-sm text-foreground/70 line-clamp-3">
-              {stripHtml(post.content || '')}
+              {linkifyText(stripHtml(post.content || ''))}
             </p>
             <Link
               to={`/${post.author?.handle}`}
@@ -243,7 +244,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
         {post.post_type === 'ember' && (
           <div>
             {post.content && (
-              <p className="font-body text-sm text-foreground/80 mb-2">{post.content}</p>
+              <p className="font-body text-sm text-foreground/80 mb-2">{linkifyText(post.content || '')}</p>
             )}
             {post.post_media && post.post_media.length > 0 && (() => {
               const sorted = [...post.post_media].sort((a, b) => a.position - b.position);

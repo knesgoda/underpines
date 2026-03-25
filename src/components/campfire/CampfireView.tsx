@@ -12,6 +12,7 @@ import VoiceRecorder from './VoiceRecorder';
 import VoiceMessageBubble from './VoiceMessageBubble';
 import CampfireSearch from './CampfireSearch';
 import CrossPostCard from './CrossPostCard';
+import { linkifyText } from '@/lib/linkify';
 
 interface Message {
   id: string;
@@ -578,7 +579,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                             <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
                           )}
                           {msg.content && (
-                            <p className={`font-body text-sm whitespace-pre-wrap px-3 py-1.5 ${isMine ? 'bg-primary/15' : 'bg-card border-t border-border'}`}>{msg.content}</p>
+                            <p className={`font-body text-sm whitespace-pre-wrap px-3 py-1.5 ${isMine ? 'bg-primary/15' : 'bg-card border-t border-border'}`}>{linkifyText(msg.content)}</p>
                           )}
                         </div>
                       ) : msg.message_type === 'voice' && msg.media_url ? (
@@ -608,7 +609,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
                           onDoubleClick={() => setReactionMsgId(msg.id)}
                         >
-                          <p className="font-body text-sm whitespace-pre-wrap">{msg.content}</p>
+                          <p className="font-body text-sm whitespace-pre-wrap">{linkifyText(msg.content || '')}</p>
                         </div>
                       )}
 

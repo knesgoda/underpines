@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Trash2, Pin } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatTimeAgo } from '@/lib/time';
+import { linkifyText } from '@/lib/linkify';
 
 interface CampPost {
   id: string;
@@ -222,7 +223,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
               </div>
 
               {post.title && <h3 className="font-display text-base text-foreground mb-1">{post.title}</h3>}
-              {post.content && <p className="font-body text-sm text-foreground whitespace-pre-wrap">{post.content}</p>}
+              {post.content && <p className="font-body text-sm text-foreground whitespace-pre-wrap">{linkifyText(post.content)}</p>}
             </motion.div>
           ))}
         </div>
