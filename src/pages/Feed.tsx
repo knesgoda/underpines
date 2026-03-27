@@ -224,7 +224,17 @@ const Feed = () => {
     setLoading(false);
   }, [user, circleIds]);
 
-  useEffect(() => { loadPosts(); }, [loadPosts]);
+  // Load cached posts first, then refresh from network
+  useEffect(() => {
+    import('@/lib/feedCache').then(({ getCachedFeedPosts }) =>
+      getCachedFeedPosts().then(cached => {
+        if (cached.length > 0 && posts.length === 0) {
+          setPosts(cached.sort((a: any, b: any) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()));
+        }
+      })
+    ).catch(() => {});
+    loadPosts();
+  }, [loadPosts]);
 
   // Pull to refresh — use refs to avoid re-registering listeners on every frame
   const pullYRef = useRef(0);
