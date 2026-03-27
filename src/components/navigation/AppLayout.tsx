@@ -122,7 +122,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       <main className="pb-16 pt-14 md:ml-[260px] md:pb-0">
-        {children}
+        <ErrorBoundary>{children}</ErrorBoundary>
       </main>
 
       <MobileTabBar />

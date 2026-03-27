@@ -206,7 +206,7 @@ const PostDetail = () => {
             {/* Full story content */}
             <div
               className="font-body text-sm text-foreground/85 leading-relaxed prose prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: post.content || '' }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content || '') }}
             />
 
             {/* Reaction summary */}

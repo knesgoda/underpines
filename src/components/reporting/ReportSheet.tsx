@@ -55,7 +55,7 @@ const ReportSheet = ({
 
     setSubmitting(true);
     try {
-      const { error } = await supabase.from('reports').insert({
+      const { data: report, error } = await supabase.from('reports').insert({
         reporter_id: user.id,
         reported_user_id: reportedUserId || null,
         reported_post_id: reportedPostId || null,
@@ -64,14 +64,16 @@ const ReportSheet = ({
         reported_camp_id: reportedCampId || null,
         report_reason: reason,
         reporter_context: context || null,
-      });
+      }).select('id').single();
 
       if (error) throw error;
 
-      // Trigger AI triage
-      supabase.functions.invoke('triage-report', {
-        body: { reportId: (await supabase.from('reports').select('id').order('created_at', { ascending: false }).limit(1).single()).data?.id },
-      }).catch(() => {}); // Fire and forget
+      // Trigger AI triage using the returned report ID
+      if (report?.id) {
+        supabase.functions.invoke('triage-report', {
+          body: { reportId: report.id },
+        }).catch(() => {}); // Fire and forget
+      }
 
       setSubmitted(true);
     } catch {

@@ -283,9 +283,11 @@ const Feed = () => {
     };
   }, []); // stable — no re-registration
 
-  // Scroll timer for 20-minute nudge
+  // Scroll timer for 20-minute nudge — reset on mount
   useEffect(() => {
     if (!prefs.feed_scroll_reminder) return;
+
+    scrollTimerRef.current = 0;
 
     const startTimer = () => {
       scrollIntervalRef.current = window.setInterval(() => {

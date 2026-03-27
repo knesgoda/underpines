@@ -128,12 +128,15 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
             <textarea
               ref={textareaRef}
               value={replyText}
-              onChange={e => setReplyText(e.target.value)}
+              onChange={e => { if (e.target.value.length <= 500) setReplyText(e.target.value); }}
               placeholder="Add to the conversation..."
               className="w-full bg-transparent text-foreground font-body text-sm resize-none outline-none placeholder:text-muted-foreground/50 min-h-[52px]"
               rows={2}
               autoFocus
             />
+            {replyText.length >= 450 && (
+              <span className="text-xs font-body text-muted-foreground">{replyText.length}/500</span>
+            )}
             <div className="flex items-center justify-end gap-2 mt-1">
               <button
                 onClick={() => { setComposerOpen(false); setReplyText(''); setReplyingTo(null); }}
