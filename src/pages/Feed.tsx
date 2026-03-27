@@ -530,9 +530,6 @@ const EmptyState = ({ icon, title, subtitle, children }: { icon: string; title: 
   </div>
 );
 
-const LandingRedirect = () => {
-  // For non-authenticated users, show the existing Index page behavior
-  return null;
-};
+const LandingRedirect = () => <Navigate to="/" replace />;
 
 export default Feed;
