@@ -15,6 +15,7 @@ import SuspendedPage from '@/pages/Suspended';
 import AgeGateInterstitial from '@/components/onboarding/AgeGateInterstitial';
 import SceneDebugPanel from '@/components/debug/SceneDebugPanel';
 import LanternIcon from './LanternIcon';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story', '/privacy', '/terms'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
