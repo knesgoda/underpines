@@ -214,7 +214,10 @@ const Feed = () => {
         .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
         .slice(0, 50);
 
-      setPosts(merged);
+    setPosts(merged);
+
+      // Cache for offline use
+      import('@/lib/feedCache').then(({ cacheFeedPosts }) => cacheFeedPosts(merged)).catch(() => {});
     } else {
       setPosts([]);
     }
