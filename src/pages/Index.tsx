@@ -9,10 +9,13 @@ const Index = () => {
   const navigate = useNavigate();
 
   // If logged in, redirect to cabin
-  if (!loading && user) {
-    navigate('/cabin');
-    return null;
-  }
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/cabin', { replace: true });
+    }
+  }, [loading, user, navigate]);
+
+  if (!loading && user) return null;
 
   return (
     <div className="fixed inset-0 overflow-hidden">
