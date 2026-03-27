@@ -15,6 +15,7 @@ import SuspendedPage from '@/pages/Suspended';
 import AgeGateInterstitial from '@/components/onboarding/AgeGateInterstitial';
 import SceneDebugPanel from '@/components/debug/SceneDebugPanel';
 import LanternIcon from './LanternIcon';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story', '/privacy', '/terms'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
@@ -121,7 +122,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       <main className="pb-16 pt-14 md:ml-[260px] md:pb-0">
-        {children}
+        <ErrorBoundary>{children}</ErrorBoundary>
       </main>
 
       <MobileTabBar />

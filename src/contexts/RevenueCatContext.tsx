@@ -3,7 +3,7 @@ import { Purchases, type CustomerInfo, type Package, type PurchasesError, ErrorC
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
-const RC_API_KEY = 'test_yDcyukMSOIftLUVEMPyBENdGhaN';
+const RC_API_KEY = import.meta.env.VITE_REVENUECAT_API_KEY || 'test_yDcyukMSOIftLUVEMPyBENdGhaN';
 const ENTITLEMENT_ID = 'Under Pines Pro';
 
 interface RevenueCatContextType {

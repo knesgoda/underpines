@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -214,14 +214,27 @@ const Feed = () => {
         .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
         .slice(0, 50);
 
-      setPosts(merged);
+    setPosts(merged);
+
+      // Cache for offline use
+      import('@/lib/feedCache').then(({ cacheFeedPosts }) => cacheFeedPosts(merged)).catch(() => {});
     } else {
       setPosts([]);
     }
     setLoading(false);
   }, [user, circleIds]);
 
-  useEffect(() => { loadPosts(); }, [loadPosts]);
+  // Load cached posts first, then refresh from network
+  useEffect(() => {
+    import('@/lib/feedCache').then(({ getCachedFeedPosts }) =>
+      getCachedFeedPosts().then(cached => {
+        if (cached.length > 0 && posts.length === 0) {
+          setPosts(cached.sort((a: any, b: any) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()));
+        }
+      })
+    ).catch(() => {});
+    loadPosts();
+  }, [loadPosts]);
 
   // Pull to refresh — use refs to avoid re-registering listeners on every frame
   const pullYRef = useRef(0);
@@ -270,9 +283,11 @@ const Feed = () => {
     };
   }, []); // stable — no re-registration
 
-  // Scroll timer for 20-minute nudge
+  // Scroll timer for 20-minute nudge — reset on mount
   useEffect(() => {
     if (!prefs.feed_scroll_reminder) return;
+
+    scrollTimerRef.current = 0;
 
     const startTimer = () => {
       scrollIntervalRef.current = window.setInterval(() => {
@@ -530,9 +545,6 @@ const EmptyState = ({ icon, title, subtitle, children }: { icon: string; title: 
   </div>
 );
 
-const LandingRedirect = () => {
-  // For non-authenticated users, show the existing Index page behavior
-  return null;
-};
+const LandingRedirect = () => <Navigate to="/" replace />;
 
 export default Feed;

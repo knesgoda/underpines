@@ -64,7 +64,16 @@ import GroveSettings from "./pages/grove/GroveSettings";
 import GroveCompanions from "./pages/grove/GroveCompanions";
 import GroveDesigns from "./pages/grove/GroveDesigns";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,     // 5 minutes
+      gcTime: 10 * 60 * 1000,       // 10 minutes
+      retry: 2,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
