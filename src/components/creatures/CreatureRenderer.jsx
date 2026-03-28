@@ -300,7 +300,9 @@ function RenderSingleCreature({
     <div style={containerStyle} aria-hidden="true">
       <div style={wrapperStyle}>
         <div style={{ ...soarStyle, ...creatureFilter, ...sasquatchFilter, position: 'relative', display: 'inline-block' }}>
-          <Component variant={isCameo ? 0 : variant} direction={direction} />
+          <Suspense fallback={null}>
+            <Component variant={isCameo ? 0 : variant} direction={direction} />
+          </Suspense>
           {/* Snow trail */}
           {isSnowing && !isPerching && (
             <div style={{
