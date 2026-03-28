@@ -1070,7 +1070,7 @@ const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, lo
         transformOrigin: 'bottom center',
       }} data-layer="background-landscape">
         <BackgroundHills renderTime={renderTime} />
-        <biomeSet.Background />
+        <Suspense fallback={null}><biomeSet.Background /></Suspense>
       </div>
 
       {/* Layer 3: celestial-bodies (sun + moon) */}
