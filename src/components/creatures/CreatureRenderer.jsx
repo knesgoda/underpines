@@ -5,54 +5,90 @@
  * and the social cameo (visitor creature) system.
  */
 
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef, Suspense } from 'react';
 import { getNextAppearance } from '@/lib/creatureScheduler';
 import { creatureMap } from '@/config/creatures';
 import { getBiomeConfig } from '@/config/biomes';
 
-// ── Lazy component registry ──────────────────────────────────────
-import * as Common from './common';
-import * as Uncommon from './uncommon';
-import * as Rare from './rare';
-import * as Legendary from './legendary';
-import * as Mythical from './mythical';
-
-/** Map creature keys → React components */
+/** Map creature keys → lazy-loaded React components */
 const COMPONENT_MAP = {
   // Common
-  'rabbit': Common.Rabbit, 'raccoon': Common.Raccoon, 'badger': Common.Badger,
-  'hedgehog': Common.Hedgehog, 'squirrel': Common.Squirrel, 'red-fox': Common.RedFox,
-  'grey-fox': Common.GreyFox, 'finch': Common.Finch, 'hummingbird': Common.Hummingbird,
-  'robin': Common.Robin, 'frog': Common.Frog, 'otter': Common.Otter,
-  'beaver': Common.Beaver, 'fireflies': Common.Fireflies,
+  'rabbit': React.lazy(() => import('./common/Rabbit')),
+  'raccoon': React.lazy(() => import('./common/Raccoon')),
+  'badger': React.lazy(() => import('./common/Badger')),
+  'hedgehog': React.lazy(() => import('./common/Hedgehog')),
+  'squirrel': React.lazy(() => import('./common/Squirrel')),
+  'red-fox': React.lazy(() => import('./common/RedFox')),
+  'grey-fox': React.lazy(() => import('./common/GreyFox')),
+  'finch': React.lazy(() => import('./common/Finch')),
+  'hummingbird': React.lazy(() => import('./common/Hummingbird')),
+  'robin': React.lazy(() => import('./common/Robin')),
+  'frog': React.lazy(() => import('./common/Frog')),
+  'otter': React.lazy(() => import('./common/Otter')),
+  'beaver': React.lazy(() => import('./common/Beaver')),
+  'fireflies': React.lazy(() => import('./common/Fireflies')),
   // Uncommon
-  'white-tailed-deer': Uncommon.WhiteTailedDeer, 'red-deer-stag': Uncommon.RedDeerStag,
-  'elk': Uncommon.Elk, 'caribou': Uncommon.Caribou, 'moose': Uncommon.Moose,
-  'brown-bear': Uncommon.BrownBear, 'black-bear': Uncommon.BlackBear,
-  'coyote': Uncommon.Coyote, 'eagle': Uncommon.Eagle, 'hawk': Uncommon.Hawk,
-  'owl': Uncommon.Owl, 'raven': Uncommon.Raven, 'salmon': Uncommon.Salmon,
-  'wild-boar': Uncommon.WildBoar, 'stork': Uncommon.Stork, 'puffin': Uncommon.Puffin,
-  'arctic-fox': Uncommon.ArcticFox, 'fennec-fox': Uncommon.FennecFox,
+  'white-tailed-deer': React.lazy(() => import('./uncommon/WhiteTailedDeer')),
+  'red-deer-stag': React.lazy(() => import('./uncommon/RedDeerStag')),
+  'elk': React.lazy(() => import('./uncommon/Elk')),
+  'caribou': React.lazy(() => import('./uncommon/Caribou')),
+  'moose': React.lazy(() => import('./uncommon/Moose')),
+  'brown-bear': React.lazy(() => import('./uncommon/BrownBear')),
+  'black-bear': React.lazy(() => import('./uncommon/BlackBear')),
+  'coyote': React.lazy(() => import('./uncommon/Coyote')),
+  'eagle': React.lazy(() => import('./uncommon/Eagle')),
+  'hawk': React.lazy(() => import('./uncommon/Hawk')),
+  'owl': React.lazy(() => import('./uncommon/Owl')),
+  'raven': React.lazy(() => import('./uncommon/Raven')),
+  'salmon': React.lazy(() => import('./uncommon/Salmon')),
+  'wild-boar': React.lazy(() => import('./uncommon/WildBoar')),
+  'stork': React.lazy(() => import('./uncommon/Stork')),
+  'puffin': React.lazy(() => import('./uncommon/Puffin')),
+  'arctic-fox': React.lazy(() => import('./uncommon/ArcticFox')),
+  'fennec-fox': React.lazy(() => import('./uncommon/FennecFox')),
   // Rare
-  'timberwolf': Rare.Timberwolf, 'grey-wolf': Rare.GreyWolf, 'red-wolf': Rare.RedWolf,
-  'mountain-lion': Rare.MountainLion, 'lynx': Rare.Lynx, 'wolverine': Rare.Wolverine,
-  'orca': Rare.Orca, 'whale': Rare.Whale, 'shark': Rare.Shark,
-  'hippo': Rare.Hippo, 'rhino': Rare.Rhino, 'vulture': Rare.Vulture,
+  'timberwolf': React.lazy(() => import('./rare/Timberwolf')),
+  'grey-wolf': React.lazy(() => import('./rare/GreyWolf')),
+  'red-wolf': React.lazy(() => import('./rare/RedWolf')),
+  'mountain-lion': React.lazy(() => import('./rare/MountainLion')),
+  'lynx': React.lazy(() => import('./rare/Lynx')),
+  'wolverine': React.lazy(() => import('./rare/Wolverine')),
+  'orca': React.lazy(() => import('./rare/Orca')),
+  'whale': React.lazy(() => import('./rare/Whale')),
+  'shark': React.lazy(() => import('./rare/Shark')),
+  'hippo': React.lazy(() => import('./rare/Hippo')),
+  'rhino': React.lazy(() => import('./rare/Rhino')),
+  'vulture': React.lazy(() => import('./rare/Vulture')),
   // Legendary
-  'sasquatch': Legendary.Sasquatch, 'loch-ness-monster': Legendary.LochNessMonster,
-  'yeti': Legendary.Yeti, 'dire-wolf': Legendary.DireWolf,
-  'nuckelavee': Legendary.Nuckelavee, 'dragon': Legendary.Dragon,
-  'wendigo': Legendary.Wendigo, 'kraken': Legendary.Kraken,
-  'thunderbird': Legendary.Thunderbird, 'phoenix': Legendary.Phoenix,
+  'sasquatch': React.lazy(() => import('./legendary/Sasquatch')),
+  'loch-ness-monster': React.lazy(() => import('./legendary/LochNessMonster')),
+  'yeti': React.lazy(() => import('./legendary/Yeti')),
+  'dire-wolf': React.lazy(() => import('./legendary/DireWolf')),
+  'nuckelavee': React.lazy(() => import('./legendary/Nuckelavee')),
+  'dragon': React.lazy(() => import('./legendary/Dragon')),
+  'wendigo': React.lazy(() => import('./legendary/Wendigo')),
+  'kraken': React.lazy(() => import('./legendary/Kraken')),
+  'thunderbird': React.lazy(() => import('./legendary/Thunderbird')),
+  'phoenix': React.lazy(() => import('./legendary/Phoenix')),
   // Mythical
-  'fairy': Mythical.Fairy, 'leprechaun': Mythical.Leprechaun,
-  'will-o-the-wisp': Mythical.WillOTheWisp, 'mermaid': Mythical.Mermaid,
-  'selkie': Mythical.Selkie, 'ghost': Mythical.Ghost, 'witch': Mythical.Witch,
-  'jackalope': Mythical.Jackalope, 'vampire': Mythical.Vampire,
-  'werewolf': Mythical.Werewolf, 'banshee': Mythical.Banshee,
-  'kelpie': Mythical.Kelpie, 'troll': Mythical.Troll, 'huldra': Mythical.Huldra,
-  'puckwudgie': Mythical.Puckwudgie, 'zombie': Mythical.Zombie,
-  'ghoul': Mythical.Ghoul, 'headless-horseman': Mythical.HeadlessHorseman,
+  'fairy': React.lazy(() => import('./mythical/Fairy')),
+  'leprechaun': React.lazy(() => import('./mythical/Leprechaun')),
+  'will-o-the-wisp': React.lazy(() => import('./mythical/WillOTheWisp')),
+  'mermaid': React.lazy(() => import('./mythical/Mermaid')),
+  'selkie': React.lazy(() => import('./mythical/Selkie')),
+  'ghost': React.lazy(() => import('./mythical/Ghost')),
+  'witch': React.lazy(() => import('./mythical/Witch')),
+  'jackalope': React.lazy(() => import('./mythical/Jackalope')),
+  'vampire': React.lazy(() => import('./mythical/Vampire')),
+  'werewolf': React.lazy(() => import('./mythical/Werewolf')),
+  'banshee': React.lazy(() => import('./mythical/Banshee')),
+  'kelpie': React.lazy(() => import('./mythical/Kelpie')),
+  'troll': React.lazy(() => import('./mythical/Troll')),
+  'huldra': React.lazy(() => import('./mythical/Huldra')),
+  'puckwudgie': React.lazy(() => import('./mythical/Puckwudgie')),
+  'zombie': React.lazy(() => import('./mythical/Zombie')),
+  'ghoul': React.lazy(() => import('./mythical/Ghoul')),
+  'headless-horseman': React.lazy(() => import('./mythical/HeadlessHorseman')),
 };
 
 // ── Movement classification ──────────────────────────────────────
