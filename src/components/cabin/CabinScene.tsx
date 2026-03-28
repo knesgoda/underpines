@@ -5,7 +5,7 @@
  * CreatureRenderer, CompanionRenderer, and resolveLocation.
  */
 
-import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import useSolarCycle from '@/hooks/useSolarCycle';
 import { useWeather } from '@/hooks/useWeather';
 import { useWheelOfTheYear, WHEEL_OF_THE_YEAR } from '@/lib/wheelOfTheYear';
@@ -19,17 +19,6 @@ import CompanionRenderer from '@/components/creatures/CompanionRenderer';
 import BearWaveSpecial from '@/components/creatures/BearWaveSpecial';
 import CabinPets from '@/components/cabin/CabinPets';
 
-// ── Biome component imports ──
-import { PNWBackground, PNWMidground, PNWForeground } from '@/components/biomes/PacificNorthwest';
-import { CaliforniaSWBackground, CaliforniaSWMidground, CaliforniaSWForeground } from '@/components/biomes/CaliforniaSW';
-import { NortheastBackground, NortheastMidground, NortheastForeground } from '@/components/biomes/Northeast';
-import { SoutheastBackground, SoutheastMidground, SoutheastForeground } from '@/components/biomes/Southeast';
-import { MidwestBackground, MidwestMidground, MidwestForeground } from '@/components/biomes/Midwest';
-import { MountainWestBackground, MountainWestMidground, MountainWestForeground } from '@/components/biomes/MountainWest';
-import { BritishIslesBackground, BritishIslesMidground, BritishIslesForeground } from '@/components/biomes/BritishIsles';
-import { NordicBackground, NordicMidground, NordicForeground } from '@/components/biomes/Nordic';
-import { MedBackground, MedMidground, MedForeground } from '@/components/biomes/Mediterranean';
-
 type BiomeComponents = {
   Background: React.ComponentType<any>;
   Midground: React.ComponentType<any>;
@@ -37,16 +26,56 @@ type BiomeComponents = {
 };
 
 const BIOME_COMPONENTS: Record<string, BiomeComponents> = {
-  'pacific-northwest': { Background: PNWBackground, Midground: PNWMidground, Foreground: PNWForeground },
-  'california-southwest': { Background: CaliforniaSWBackground, Midground: CaliforniaSWMidground, Foreground: CaliforniaSWForeground },
-  'california-sw':     { Background: CaliforniaSWBackground, Midground: CaliforniaSWMidground, Foreground: CaliforniaSWForeground },
-  'northeast':         { Background: NortheastBackground, Midground: NortheastMidground, Foreground: NortheastForeground },
-  'southeast':         { Background: SoutheastBackground, Midground: SoutheastMidground, Foreground: SoutheastForeground },
-  'midwest':           { Background: MidwestBackground, Midground: MidwestMidground, Foreground: MidwestForeground },
-  'mountain-west':     { Background: MountainWestBackground, Midground: MountainWestMidground, Foreground: MountainWestForeground },
-  'british-isles':     { Background: BritishIslesBackground, Midground: BritishIslesMidground, Foreground: BritishIslesForeground },
-  'nordic':            { Background: NordicBackground, Midground: NordicMidground, Foreground: NordicForeground },
-  'mediterranean':     { Background: MedBackground, Midground: MedMidground, Foreground: MedForeground },
+  'pacific-northwest': {
+    Background: React.lazy(() => import('@/components/biomes/PacificNorthwest').then(m => ({ default: m.PNWBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/PacificNorthwest').then(m => ({ default: m.PNWMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/PacificNorthwest').then(m => ({ default: m.PNWForeground }))),
+  },
+  'california-southwest': {
+    Background: React.lazy(() => import('@/components/biomes/CaliforniaSW').then(m => ({ default: m.CaliforniaSWBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/CaliforniaSW').then(m => ({ default: m.CaliforniaSWMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/CaliforniaSW').then(m => ({ default: m.CaliforniaSWForeground }))),
+  },
+  'california-sw': {
+    Background: React.lazy(() => import('@/components/biomes/CaliforniaSW').then(m => ({ default: m.CaliforniaSWBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/CaliforniaSW').then(m => ({ default: m.CaliforniaSWMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/CaliforniaSW').then(m => ({ default: m.CaliforniaSWForeground }))),
+  },
+  'northeast': {
+    Background: React.lazy(() => import('@/components/biomes/Northeast').then(m => ({ default: m.NortheastBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/Northeast').then(m => ({ default: m.NortheastMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/Northeast').then(m => ({ default: m.NortheastForeground }))),
+  },
+  'southeast': {
+    Background: React.lazy(() => import('@/components/biomes/Southeast').then(m => ({ default: m.SoutheastBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/Southeast').then(m => ({ default: m.SoutheastMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/Southeast').then(m => ({ default: m.SoutheastForeground }))),
+  },
+  'midwest': {
+    Background: React.lazy(() => import('@/components/biomes/Midwest').then(m => ({ default: m.MidwestBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/Midwest').then(m => ({ default: m.MidwestMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/Midwest').then(m => ({ default: m.MidwestForeground }))),
+  },
+  'mountain-west': {
+    Background: React.lazy(() => import('@/components/biomes/MountainWest').then(m => ({ default: m.MountainWestBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/MountainWest').then(m => ({ default: m.MountainWestMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/MountainWest').then(m => ({ default: m.MountainWestForeground }))),
+  },
+  'british-isles': {
+    Background: React.lazy(() => import('@/components/biomes/BritishIsles').then(m => ({ default: m.BritishIslesBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/BritishIsles').then(m => ({ default: m.BritishIslesMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/BritishIsles').then(m => ({ default: m.BritishIslesForeground }))),
+  },
+  'nordic': {
+    Background: React.lazy(() => import('@/components/biomes/Nordic').then(m => ({ default: m.NordicBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/Nordic').then(m => ({ default: m.NordicMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/Nordic').then(m => ({ default: m.NordicForeground }))),
+  },
+  'mediterranean': {
+    Background: React.lazy(() => import('@/components/biomes/Mediterranean').then(m => ({ default: m.MedBackground }))),
+    Midground: React.lazy(() => import('@/components/biomes/Mediterranean').then(m => ({ default: m.MedMidground }))),
+    Foreground: React.lazy(() => import('@/components/biomes/Mediterranean').then(m => ({ default: m.MedForeground }))),
+  },
 };
 
 // All recognized time-of-day values — kept granular for smooth transitions
@@ -1041,7 +1070,7 @@ const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, lo
         transformOrigin: 'bottom center',
       }} data-layer="background-landscape">
         <BackgroundHills renderTime={renderTime} />
-        <biomeSet.Background />
+        <Suspense fallback={null}><biomeSet.Background /></Suspense>
       </div>
 
       {/* Layer 3: celestial-bodies (sun + moon) */}
@@ -1062,7 +1091,7 @@ const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, lo
         transition: 'filter 1.5s ease',
       }} data-layer="midground-trees">
         <MidgroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
-        <biomeSet.Midground />
+        <Suspense fallback={null}><biomeSet.Midground /></Suspense>
       </div>
 
       {/* Layer 6: precipitation */}
@@ -1102,7 +1131,7 @@ const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, lo
       <div className={layerBase} style={{ zIndex: 8, pointerEvents: 'none' }} data-layer="foreground-elements">
         <ForegroundGround renderTime={renderTime} windIntensity={windIntensity} />
         <ForegroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
-        <biomeSet.Foreground timeOfDay={renderTime} />
+        <Suspense fallback={null}><biomeSet.Foreground timeOfDay={renderTime} /></Suspense>
         <WindDebris windIntensity={windIntensity} fromLeft={fromLeft} />
       </div>
 
