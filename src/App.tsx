@@ -93,6 +93,7 @@ const App = () => (
             
             <BrowserRouter>
               <ScrollToTop />
+              <Suspense fallback={<PineTreeLoading />}>
               <Routes>
                 {/* Grove admin routes — outside AppLayout */}
                 <Route path="/grove" element={<GroveLayout />}>
@@ -156,6 +157,7 @@ const App = () => (
                   </AppLayout>
                 } />
               </Routes>
+              </Suspense>
             </BrowserRouter>
           </TooltipProvider>
         </NavigationProvider>
