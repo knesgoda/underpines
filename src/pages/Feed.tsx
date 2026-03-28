@@ -110,25 +110,20 @@ const Feed = () => {
     if (!user) return;
     setLoading(true);
 
-    // Get muted user IDs for frontend filtering
-    const { data: muteRows } = await supabase
-      .from('mutes')
-      .select('muted_id')
-      .eq('muter_id', user.id);
-    const mutedIds = new Set(muteRows?.map(m => m.muted_id) || []);
+    // Step 1: Fetch muted users and camp memberships in parallel
+    const [muteResult, campMemberResult] = await Promise.all([
+      supabase.from('mutes').select('muted_id').eq('muter_id', user.id),
+      supabase.from('camp_members').select('camp_id').eq('user_id', user.id),
+    ]);
 
-    // Get camp IDs user is a member of
-    const { data: campMemberRows } = await supabase
-      .from('camp_members')
-      .select('camp_id')
-      .eq('user_id', user.id);
-    const campIds = campMemberRows?.map(cm => cm.camp_id) || [];
+    const mutedIds = new Set(muteResult.data?.map(m => m.muted_id) || []);
+    const campIds = campMemberResult.data?.map(cm => cm.camp_id) || [];
 
     // Build the set of author IDs we want to see: self + circle members
     const allowedAuthorIds = [user.id, ...circleIds];
 
-    // Query posts only from allowed authors
-    let query = supabase
+    // Step 2: Fetch personal posts and camp posts in parallel
+    const postsQuery = supabase
       .from('posts')
       .select('*')
       .eq('is_published', true)
@@ -136,48 +131,45 @@ const Feed = () => {
       .order('created_at', { ascending: false })
       .limit(50);
 
-    const { data } = await query;
+    const campPostsQuery = campIds.length > 0
+      ? supabase
+          .from('camp_posts')
+          .select('*, camp:camps(name)')
+          .in('camp_id', campIds)
+          .eq('is_published', true)
+          .order('created_at', { ascending: false })
+          .limit(20)
+      : Promise.resolve({ data: [] as any[] });
 
-    // Also load camp posts from camps the user belongs to
-    let campPosts: any[] = [];
-    if (campIds.length > 0) {
-      const { data: cpData } = await supabase
-        .from('camp_posts')
-        .select('*, camp:camps(name)')
-        .in('camp_id', campIds)
-        .eq('is_published', true)
-        .order('created_at', { ascending: false })
-        .limit(20);
-      campPosts = cpData || [];
-    }
+    const [postsResult, campPostsResult] = await Promise.all([postsQuery, campPostsQuery]);
 
-    const allPosts = data || [];
+    const allPosts = postsResult.data || [];
+    const campPosts = campPostsResult.data || [];
 
     if (allPosts.length > 0 || campPosts.length > 0) {
-      // Fetch authors for personal feed posts
+      // Fetch authors for all posts
       const authorIds = [...new Set([...allPosts.map(p => p.author_id), ...campPosts.map(p => p.author_id)])];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, display_name, handle, accent_color, cabin_mood, avatar_url, default_avatar_key')
-        .in('id', authorIds.length > 0 ? authorIds : ['00000000-0000-0000-0000-000000000000']);
 
-      // Fetch reactions for personal feed posts
+      // Step 3: Fetch profiles, reactions, and media in parallel
       const postIds = allPosts.map(p => p.id);
-      const { data: allReactions } = postIds.length > 0
-        ? await supabase.from('reactions').select('post_id, reaction_type, user_id').in('post_id', postIds)
-        : { data: [] };
-
-      // Fetch media for ember posts
       const mediaPostIds = allPosts.filter(p => p.post_type === 'ember').map(p => p.id);
-      let allMedia: any[] = [];
-      if (mediaPostIds.length > 0) {
-        const { data: media } = await supabase
-          .from('post_media')
-          .select('*')
-          .in('post_id', mediaPostIds)
-          .order('position');
-        allMedia = media || [];
-      }
+
+      const [profilesResult, reactionsResult, mediaResult] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, display_name, handle, accent_color, cabin_mood, avatar_url, default_avatar_key')
+          .in('id', authorIds.length > 0 ? authorIds : ['00000000-0000-0000-0000-000000000000']),
+        postIds.length > 0
+          ? supabase.from('reactions').select('post_id, reaction_type, user_id').in('post_id', postIds)
+          : Promise.resolve({ data: [] as any[] }),
+        mediaPostIds.length > 0
+          ? supabase.from('post_media').select('*').in('post_id', mediaPostIds).order('position')
+          : Promise.resolve({ data: [] as any[] }),
+      ]);
+
+      const profiles = profilesResult.data;
+      const allReactions = reactionsResult.data || [];
+      const allMedia = mediaResult.data || [];
 
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
