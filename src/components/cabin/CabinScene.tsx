@@ -1091,7 +1091,7 @@ const CabinScene = ({ atmosphere = 'morning-mist', moonPhase = 0.5, latitude, lo
         transition: 'filter 1.5s ease',
       }} data-layer="midground-trees">
         <MidgroundTrees renderTime={renderTime} isGoldenHour={isGoldenHour} windIntensity={windIntensity} fromLeft={fromLeft} />
-        <biomeSet.Midground />
+        <Suspense fallback={null}><biomeSet.Midground /></Suspense>
       </div>
 
       {/* Layer 6: precipitation */}
