@@ -1,6 +1,7 @@
 // LEGAL-REVIEW-NEEDED: Parental consent email for COPPA compliance (ages 13-17)
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { requireUser } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,11 +14,24 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // The signed-in minor requests consent for their own account only —
+    // otherwise this endpoint would let anyone send consent emails to
+    // arbitrary addresses and probe which emails have accounts.
+    const auth = await requireUser(req, corsHeaders);
+    if ('response' in auth) return auth.response;
+
     const { parentEmail, childDisplayName, childEmail } = await req.json();
 
     if (!parentEmail || !childDisplayName || !childEmail) {
       return new Response(JSON.stringify({ error: 'Missing fields' }), {
         status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if ((auth.user.email ?? '').toLowerCase() !== String(childEmail).toLowerCase()) {
+      return new Response(JSON.stringify({ error: 'forbidden' }), {
+        status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
