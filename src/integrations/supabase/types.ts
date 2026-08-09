@@ -38,6 +38,83 @@ export type Database = {
         }
         Relationships: []
       }
+      album_media: {
+        Row: {
+          album_id: string
+          created_at: string
+          id: string
+          position: number
+          post_media_id: string
+        }
+        Insert: {
+          album_id: string
+          created_at?: string
+          id?: string
+          position?: number
+          post_media_id: string
+        }
+        Update: {
+          album_id?: string
+          created_at?: string
+          id?: string
+          position?: number
+          post_media_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "album_media_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "album_media_post_media_id_fkey"
+            columns: ["post_media_id"]
+            isOneToOne: false
+            referencedRelation: "post_media"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      albums: {
+        Row: {
+          cover_media_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          owner_id: string
+          position: number
+          title: string
+        }
+        Insert: {
+          cover_media_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id: string
+          position?: number
+          title?: string
+        }
+        Update: {
+          cover_media_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id?: string
+          position?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "albums_cover_media_id_fkey"
+            columns: ["cover_media_id"]
+            isOneToOne: false
+            referencedRelation: "post_media"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       block_threshold_log: {
         Row: {
           block_count: number | null
@@ -1621,6 +1698,7 @@ export type Database = {
           event_id: string
           id: string
           response_text: string | null
+          status: string
           user_id: string
         }
         Insert: {
@@ -1628,6 +1706,7 @@ export type Database = {
           event_id: string
           id?: string
           response_text?: string | null
+          status?: string
           user_id: string
         }
         Update: {
@@ -1635,6 +1714,7 @@ export type Database = {
           event_id?: string
           id?: string
           response_text?: string | null
+          status?: string
           user_id?: string
         }
         Relationships: [
@@ -1642,7 +1722,51 @@ export type Database = {
             foreignKeyName: "event_responses_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
-            referencedRelation: "seasonal_events"
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          camp_id: string | null
+          created_at: string
+          description: string | null
+          ends_at: string | null
+          host_id: string
+          id: string
+          location: string | null
+          starts_at: string
+          title: string
+        }
+        Insert: {
+          camp_id?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          host_id: string
+          id?: string
+          location?: string | null
+          starts_at: string
+          title: string
+        }
+        Update: {
+          camp_id?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          host_id?: string
+          id?: string
+          location?: string | null
+          starts_at?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
             referencedColumns: ["id"]
           },
         ]
@@ -2368,12 +2492,15 @@ export type Database = {
           is_pines_plus: boolean | null
           job: string | null
           last_active_at: string | null
+          last_seen_at: string | null
           latitude: number | null
           layout: string | null
           links: Json | null
           longitude: number | null
           mantra: string | null
+          messenger_skin: string
           moments: Json | null
+          onboarding_completed_at: string | null
           pinned_memory_post_id: string | null
           pinned_song_artist: string | null
           pinned_song_preview_url: string | null
@@ -2426,12 +2553,15 @@ export type Database = {
           is_pines_plus?: boolean | null
           job?: string | null
           last_active_at?: string | null
+          last_seen_at?: string | null
           latitude?: number | null
           layout?: string | null
           links?: Json | null
           longitude?: number | null
           mantra?: string | null
+          messenger_skin?: string
           moments?: Json | null
+          onboarding_completed_at?: string | null
           pinned_memory_post_id?: string | null
           pinned_song_artist?: string | null
           pinned_song_preview_url?: string | null
@@ -2484,12 +2614,15 @@ export type Database = {
           is_pines_plus?: boolean | null
           job?: string | null
           last_active_at?: string | null
+          last_seen_at?: string | null
           latitude?: number | null
           layout?: string | null
           links?: Json | null
           longitude?: number | null
           mantra?: string | null
+          messenger_skin?: string
           moments?: Json | null
+          onboarding_completed_at?: string | null
           pinned_memory_post_id?: string | null
           pinned_song_artist?: string | null
           pinned_song_preview_url?: string | null
@@ -2963,6 +3096,30 @@ export type Database = {
           },
         ]
       }
+      top_friends: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          owner_id: string
+          position: number
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          owner_id: string
+          position: number
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          owner_id?: string
+          position?: number
+        }
+        Relationships: []
+      }
       trail_map_pins: {
         Row: {
           created_at: string
@@ -3016,6 +3173,30 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      wall_notes: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          profile_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          profile_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
         }
         Relationships: []
       }
