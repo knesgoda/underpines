@@ -10,7 +10,6 @@ import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { SceneDebugProvider } from "@/contexts/SceneDebugContext";
-import { RevenueCatProvider } from "@/contexts/RevenueCatContext";
 import PineTreeLoading from "@/components/PineTreeLoading";
 
 import AppLayout from "@/components/navigation/AppLayout";
@@ -84,7 +83,6 @@ const App = () => (
     <ThemeProvider>
     <SceneDebugProvider>
     <AuthProvider>
-      <RevenueCatProvider>
       <OnboardingProvider>
         <NavigationProvider>
           <TooltipProvider>
@@ -162,7 +160,6 @@ const App = () => (
           </TooltipProvider>
         </NavigationProvider>
       </OnboardingProvider>
-      </RevenueCatProvider>
     </AuthProvider>
     </SceneDebugProvider>
     </ThemeProvider>
