@@ -192,6 +192,62 @@
 
 .module p { margin: 0; font-size: 14px; line-height: 1.55; color: hsl(var(--foreground) / 0.9); }
 
+/**
+ * A row of tabs sitting on a panel edge. Shared by Friends and Groups, so it
+ * lives here rather than in either one's stylesheet — the same mistake .module
+ * made.
+ */
+.tab-strip {
+  display: flex;
+  gap: 4px;
+  margin: 14px 0;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.tab-strip button {
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 3px 3px 0 0;
+  background: none;
+  color: hsl(var(--muted-foreground));
+  padding: 8px 14px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-bottom: -1px;
+}
+
+.tab-strip button:hover { color: hsl(var(--foreground)); }
+
+.tab-strip button.is-active {
+  border-color: hsl(var(--border));
+  background: hsl(var(--card));
+  color: hsl(var(--primary));
+}
+
+@media (max-width: 700px) {
+  .tab-strip button { flex: 1; padding: 8px 6px; font-size: 11.5px; }
+}
+
+/**
+ * Empty, missing and broken states — see components/StatePanel.tsx.
+ *
+ * Four screens had grown their own near-identical copy of this under four
+ * different names, each in its own route-scoped stylesheet. One shape, one
+ * definition, and it is available wherever StatePanel is used.
+ */
+.state-panel { padding: 54px 20px; text-align: center; }
+
+.state-panel .quiet {
+  margin: 0 0 5px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: hsl(var(--foreground));
+}
+
+.state-panel p { margin: 0; color: hsl(var(--muted-foreground)); font-size: 13.5px; }
+.state-panel .outline-button { margin-top: 16px; display: inline-block; }
+
 /** "See all" / "See the post" — a quiet link at the foot of a panel. */
 .album-link {
   display: inline-block;

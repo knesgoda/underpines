@@ -111,7 +111,7 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
       ) : items.length === 0 && !canWrite ? (
         <div className="text-center py-12">
           <p className="text-3xl mb-2">📋</p>
-          <p className="font-body text-sm text-muted-foreground">The Lodge is empty.</p>
+          <p className="font-body text-sm text-muted-foreground">Nothing on the noticeboard yet.</p>
         </div>
       ) : (
         <div className="space-y-3">

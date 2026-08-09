@@ -1,17 +1,23 @@
-import { useState, useEffect, useCallback } from 'react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { LogOut, Settings, Users } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { motion } from 'framer-motion';
-import { Settings, Flame, LogOut } from 'lucide-react';
-import { toast } from 'sonner';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { ErrorPanel } from '@/components/StatePanel';
 import CampFirepit from '@/components/camps/CampFirepit';
 import CampLodge from '@/components/camps/CampLodge';
 import CampBonfire from '@/components/camps/CampBonfire';
+import { roleLabel, settlingDaysLeft } from '@/hooks/useGroups';
+import '@/styles/groups.css';
 
-interface CampData {
+interface Group {
   id: string;
   name: string;
   description: string | null;
@@ -22,235 +28,227 @@ interface CampData {
   is_active: boolean | null;
 }
 
-type Tab = 'firepit' | 'lodge' | 'bonfire';
+type Tab = 'wall' | 'board' | 'chat';
 
+const TABS: { key: Tab; label: string }[] = [
+  { key: 'wall', label: 'Wall' },
+  { key: 'board', label: 'Noticeboard' },
+  { key: 'chat', label: 'Group chat' },
+];
+
+/**
+ * A group.
+ *
+ * The three tabs were "Firepit", "Lodge" and "Bonfire" — three fire-adjacent
+ * words for a wall, a pinned-notes board and a chat room, with nothing to tell
+ * you which was which. Roles come from useGroups so a member sees Owner and
+ * Moderator rather than Firekeeper and Trailblazer.
+ *
+ * The old page also required a session before it would render anything and
+ * never cleared its loading flag without one, so every group link shared
+ * outside the app led to a permanent spinner. Signed out now gets the same
+ * preview a non-member gets.
+ */
 const CampView = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [camp, setCamp] = useState<CampData | null>(null);
-  const [membership, setMembership] = useState<{ role: string; scout_ends_at: string | null } | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<Tab>('firepit');
+  const queryClient = useQueryClient();
+  const [tab, setTab] = useState<Tab>('wall');
   const [joining, setJoining] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
 
-  const load = useCallback(async () => {
-    if (!id || !user) return;
+  const { data: group, isLoading, isError } = useQuery({
+    queryKey: ['group', id],
+    enabled: !!id,
+    queryFn: async (): Promise<Group | null> => {
+      const { data, error } = await supabase.from('camps').select('*').eq('id', id!).maybeSingle();
+      if (error) throw error;
+      return data as Group | null;
+    },
+  });
 
-    const [campRes, memRes] = await Promise.all([
-      supabase.from('camps').select('*').eq('id', id).maybeSingle(),
-      supabase.from('camp_members').select('role, scout_ends_at').eq('camp_id', id).eq('user_id', user.id).maybeSingle(),
-    ]);
+  const { data: membership } = useQuery({
+    queryKey: ['group-membership', id, user?.id],
+    enabled: !!id && !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('camp_members')
+        .select('role, scout_ends_at')
+        .eq('camp_id', id!)
+        .eq('user_id', user!.id)
+        .maybeSingle();
+      return data;
+    },
+  });
 
-    setCamp(campRes.data as CampData | null);
-    setMembership(memRes.data);
-    setLoading(false);
-  }, [id, user]);
+  if (isLoading) return <PineTreeLoading />;
+  if (isError) return <div className="page-shell"><ErrorPanel what="this group" /></div>;
 
-  useEffect(() => { load(); }, [load]);
+  if (!group) {
+    return (
+      <div className="page-shell">
+        <section className="panel state-panel">
+          <p className="quiet">That branch snapped.</p>
+          <p>No group here. It may have been closed.</p>
+          <Link to="/groups" className="outline-button mt-4 inline-block">Browse groups</Link>
+        </section>
+      </div>
+    );
+  }
 
-  const handleJoin = async () => {
-    if (!user || !id || !camp) return;
+  const isOwner = membership?.role === 'firekeeper';
+  const canModerate = isOwner || membership?.role === 'trailblazer';
+  const isSettlingIn = membership?.role === 'scout';
+  const settlingDays = isSettlingIn ? settlingDaysLeft(membership?.scout_ends_at ?? null) : null;
+  const inviteOnly = group.visibility === 'ember' || group.visibility === 'hidden';
+
+  const cover = group.cover_image_url
+    ? <img src={group.cover_image_url} alt="" className="group-cover" />
+    : <span className="group-cover group-blank"><Users size={26} /></span>;
+
+  const join = async () => {
+    if (!user) { navigate('/login'); return; }
+    if (inviteOnly) { toast('Ask a member to send you an invite from inside the group.'); return; }
     setJoining(true);
 
-    if (camp.visibility === 'ember' || camp.visibility === 'hidden') {
-      toast('Ask someone who\'s a member to send you an invite link from inside the Camp.');
+    const { error } = await supabase.from('camp_members').insert({
+      camp_id: group.id,
+      user_id: user.id,
+      role: 'scout',
+      scout_ends_at: new Date(Date.now() + 14 * 86400000).toISOString(),
+    });
+
+    if (error) {
+      toast.error('Could not join.');
       setJoining(false);
       return;
     }
 
-    // Open camp: join directly as scout
-    const scoutEnds = new Date(Date.now() + 14 * 86400000).toISOString();
-    const { error } = await supabase.from('camp_members').insert({
-      camp_id: id,
-      user_id: user.id,
-      role: 'scout',
-      scout_ends_at: scoutEnds,
-    });
+    await supabase.from('camps')
+      .update({ member_count: (group.member_count ?? 1) + 1 })
+      .eq('id', group.id);
 
-    if (error) {
-      toast.error('Could not join camp');
-    } else {
-      // Update member count
-      await supabase.from('camps').update({ member_count: (camp.member_count || 1) + 1 }).eq('id', id);
+    const { data: chat } = await supabase
+      .from('campfires')
+      .select('id')
+      .eq('camp_id', group.id)
+      .eq('campfire_type', 'bonfire')
+      .is('bonfire_sub_group_of', null)
+      .maybeSingle();
 
-      // Add to bonfire
-      const { data: bonfire } = await supabase
-        .from('campfires')
-        .select('id')
-        .eq('camp_id', id)
-        .eq('campfire_type', 'bonfire')
-        .is('bonfire_sub_group_of', null)
-        .maybeSingle();
-
-      if (bonfire) {
-        await supabase.from('campfire_participants').insert({ campfire_id: bonfire.id, user_id: user.id });
-      }
-
-      toast.success('Welcome to the Camp!');
-      load();
+    if (chat) {
+      await supabase.from('campfire_participants').insert({ campfire_id: chat.id, user_id: user.id });
     }
+
+    toast.success(`You're in ${group.name}.`);
     setJoining(false);
+    queryClient.invalidateQueries({ queryKey: ['group-membership'] });
+    queryClient.invalidateQueries({ queryKey: ['my-groups'] });
   };
 
-  const [leaveOpen, setLeaveOpen] = useState(false);
-
-  const handleLeave = async () => {
-    if (!user || !id || !camp) return;
-    await supabase.from('camp_members').delete().eq('camp_id', id).eq('user_id', user.id);
-    await supabase.from('camps').update({ member_count: Math.max(0, (camp.member_count || 1) - 1) }).eq('id', id);
+  const leave = async () => {
+    if (!user) return;
+    await supabase.from('camp_members').delete().eq('camp_id', group.id).eq('user_id', user.id);
+    await supabase.from('camps')
+      .update({ member_count: Math.max(0, (group.member_count ?? 1) - 1) })
+      .eq('id', group.id);
     setLeaveOpen(false);
-    toast('You\'ve left the Camp.');
-    navigate('/camps');
+    toast('You left the group.');
+    navigate('/groups');
   };
 
-  if (loading) return <PineTreeLoading />;
-  if (!camp) return <div className="text-center py-16 font-body text-muted-foreground">Camp not found.</div>;
-
-  const isFirekeeper = membership?.role === 'firekeeper';
-  const isTrailblazer = membership?.role === 'trailblazer';
-  const isScout = membership?.role === 'scout';
-  const isMember = !!membership;
-
-  // Not a member — show join prompt
-  if (!isMember) {
+  // Not a member — the public face of the group.
+  if (!membership) {
     return (
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="max-w-lg mx-auto px-4 py-8 text-center">
-        {camp.cover_image_url ? (
-          <img src={camp.cover_image_url} alt="" className="w-24 h-24 rounded-2xl object-cover mx-auto mb-4" />
-        ) : (
-          <div className="w-24 h-24 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-4">
-            <Flame size={32} className="text-muted-foreground" />
-          </div>
-        )}
-        <h1 className="font-display text-xl text-foreground mb-1">{camp.name}</h1>
-        {camp.description && <p className="font-body text-sm text-muted-foreground mb-2">{camp.description}</p>}
-        <p className="font-body text-xs text-muted-foreground mb-6">{camp.member_count || 1} members</p>
+      <div className="page-shell">
+        <section className="panel group-intro">
+          {cover}
+          <h1>{group.name}</h1>
+          {group.description && <p>{group.description}</p>}
+          <small>{group.member_count ?? 1} member{(group.member_count ?? 1) === 1 ? '' : 's'}</small>
 
-        {camp.visibility === 'ember' || camp.visibility === 'hidden' ? (
-          <div className="space-y-2">
-            <p className="font-body text-sm text-amber-600">🔥 {camp.visibility === 'ember' ? 'Ember Camp' : 'Hidden Camp'}</p>
-            <p className="font-body text-xs text-muted-foreground">You'll need an invite from a member to join.</p>
-          </div>
-        ) : (
-          <button
-            onClick={handleJoin}
-            disabled={joining}
-            className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50"
-          >
-            {joining ? 'Joining...' : 'Join this Camp'}
-          </button>
-        )}
-      </motion.div>
+          {inviteOnly ? (
+            <p className="gated">Invite only. A member has to bring you in.</p>
+          ) : (
+            <button type="button" className="solid-button" onClick={join} disabled={joining}>
+              {joining ? 'Joining…' : user ? 'Join this group' : 'Sign in to join'}
+            </button>
+          )}
+        </section>
+      </div>
     );
   }
 
-  const scoutDays = isScout && membership?.scout_ends_at
-    ? Math.max(0, Math.ceil((new Date(membership.scout_ends_at).getTime() - Date.now()) / 86400000))
-    : null;
-
-  const tabs: { key: Tab; label: string; emoji: string }[] = [
-    { key: 'firepit', label: 'Firepit', emoji: '🔥' },
-    { key: 'lodge', label: 'Lodge', emoji: '📋' },
-    { key: 'bonfire', label: 'Bonfire', emoji: '🔥' },
-  ];
-
   return (
-    <>
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="px-4 pt-6 pb-4">
-        <div className="flex items-center gap-3 mb-3">
-          {camp.cover_image_url ? (
-            <img src={camp.cover_image_url} alt="" className="w-14 h-14 rounded-xl object-cover shrink-0" />
+    <div className="page-shell">
+      <section className="panel group-header">
+        {cover}
+        <div className="group-header-text">
+          <h1>{group.name}</h1>
+          <small>
+            {roleLabel(membership.role)} · {group.member_count ?? 1} member
+            {(group.member_count ?? 1) === 1 ? '' : 's'}
+          </small>
+          {group.description && <p>{group.description}</p>}
+        </div>
+        <div className="group-header-actions">
+          {isOwner ? (
+            <Link to={`/camps/${group.id}/settings`} aria-label="Group settings"><Settings size={17} /></Link>
           ) : (
-            <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center shrink-0">
-              <Flame size={24} className="text-muted-foreground" />
-            </div>
+            <button type="button" onClick={() => setLeaveOpen(true)} aria-label="Leave group"><LogOut size={17} /></button>
           )}
-          <div className="min-w-0 flex-1">
-            <h1 className="font-display text-lg text-foreground truncate">{camp.name}</h1>
-            {camp.description && <p className="font-body text-xs text-muted-foreground truncate">{camp.description}</p>}
-          </div>
-          <div className="flex items-center gap-1">
-            {isFirekeeper && (
-              <button onClick={() => navigate(`/camps/${id}/settings`)} className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Settings size={18} className="text-muted-foreground" />
-              </button>
-            )}
-            {!isFirekeeper && (
-              <button onClick={() => setLeaveOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Leave Camp">
-                <LogOut size={18} className="text-muted-foreground" />
-              </button>
-            )}
-          </div>
         </div>
+      </section>
 
-        {isScout && scoutDays !== null && (
-          <div className="px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 mb-3">
-            <p className="font-body text-xs text-amber-700 dark:text-amber-300">
-              🌱 You're a Scout. Full Firepit access in {scoutDays} days.
-            </p>
-          </div>
-        )}
+      {isSettlingIn && settlingDays !== null && (
+        <p className="group-settling">
+          You are still settling in — you can read everything, and post to the Wall in {settlingDays}{' '}
+          day{settlingDays === 1 ? '' : 's'}.
+        </p>
+      )}
 
-        {/* Tabs */}
-        <div className="flex gap-1 bg-muted rounded-lg p-0.5">
-          {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`flex-1 py-2 rounded-md font-body text-xs transition-colors ${
-                tab === t.key ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
-              }`}
+      <div className="tab-strip">
+        {TABS.map(t => (
+          <button key={t.key} onClick={() => setTab(t.key)} className={tab === t.key ? 'is-active' : ''}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'wall' && (
+        <CampFirepit
+          campId={group.id}
+          isScout={!!isSettlingIn}
+          scoutDays={settlingDays}
+          canModerate={canModerate}
+        />
+      )}
+      {tab === 'board' && <CampLodge campId={group.id} canWrite={canModerate} isFirekeeper={!!isOwner} />}
+      {tab === 'chat' && <CampBonfire campId={group.id} isScout={!!isSettlingIn} scoutDays={settlingDays} />}
+
+      <AlertDialog open={leaveOpen} onOpenChange={setLeaveOpen}>
+        <AlertDialogContent className="max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-lg">Leave {group.name}?</AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              {inviteOnly
+                ? 'This group is invite only, so you would need another invite to come back.'
+                : 'You can rejoin whenever you like.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-body text-sm">Stay</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={leave}
+              className="font-body text-sm bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {t.emoji} {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tab content */}
-      <div className="px-4 pb-8">
-        {tab === 'firepit' && (
-          <CampFirepit
-            campId={camp.id}
-            isScout={!!isScout}
-            scoutDays={scoutDays}
-            canModerate={isFirekeeper || isTrailblazer}
-          />
-        )}
-        {tab === 'lodge' && (
-          <CampLodge
-            campId={camp.id}
-            canWrite={isFirekeeper || isTrailblazer}
-            isFirekeeper={isFirekeeper}
-          />
-        )}
-        {tab === 'bonfire' && (
-          <CampBonfire campId={camp.id} isScout={!!isScout} scoutDays={scoutDays} />
-        )}
-      </div>
-    </motion.div>
-
-    {/* Leave Camp confirmation */}
-    <AlertDialog open={leaveOpen} onOpenChange={setLeaveOpen}>
-      <AlertDialogContent className="rounded-2xl max-w-sm">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="font-display text-lg">Leave {camp?.name}?</AlertDialogTitle>
-          <AlertDialogDescription className="font-body text-sm text-muted-foreground">
-            You can rejoin anytime if it's an Open Camp.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="font-body text-sm rounded-full">Stay</AlertDialogCancel>
-          <AlertDialogAction onClick={handleLeave} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
-            Leave Camp
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-    </>
+              Leave
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 };
 

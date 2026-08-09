@@ -9,6 +9,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { ErrorPanel } from '@/components/StatePanel';
 import UserAvatar from '@/components/UserAvatar';
 import { useFriendActions, useFriendLists, type Friend } from '@/hooks/useFriends';
 import '@/styles/friends.css';
@@ -26,7 +27,7 @@ type Tab = 'friends' | 'requests' | 'restricted';
 const CirclesPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { data: lists, isLoading } = useFriendLists();
+  const { data: lists, isLoading, isError } = useFriendLists();
   const actions = useFriendActions();
 
   const [tab, setTab] = useState<Tab>('friends');
@@ -34,11 +35,12 @@ const CirclesPage = () => {
   const [confirmRemove, setConfirmRemove] = useState<Friend | null>(null);
 
   if (isLoading) return <PineTreeLoading />;
+  if (isError) return <div className="page-shell"><ErrorPanel what="your friends" /></div>;
 
   if (!user) {
     return (
       <div className="page-shell">
-        <section className="panel empty-panel">
+        <section className="panel state-panel">
           <p>Sign in to see who you know here.</p>
           <Link to="/login" className="outline-button mt-4 inline-block">Sign in</Link>
         </section>
@@ -100,7 +102,7 @@ const CirclesPage = () => {
         <Link to="/explore" className="outline-button"><Search size={13} className="mr-1 inline" /> Find people</Link>
       </div>
 
-      <div className="friend-tabs">
+      <div className="tab-strip">
         {([
           ['friends', `Friends${friends.length ? ` (${friends.length})` : ''}`],
           ['requests', `Requests${requestCount ? ` (${requestCount})` : ''}`],

@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { supabase } from '@/integrations/supabase/client';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { ErrorPanel } from '@/components/StatePanel';
 import { useViewerProfile } from '@/hooks/queries';
 import { formatTimeAgo } from '@/lib/time';
 import '@/styles/updates.css';
@@ -73,7 +74,7 @@ const Lantern = () => {
   const { data: viewer } = useViewerProfile();
   const [acted, setActed] = useState<Record<string, 'accepted' | 'declined'>>({});
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['updates', user?.id],
     enabled: !!user,
     queryFn: async (): Promise<Loaded> => {
@@ -154,11 +155,12 @@ const Lantern = () => {
   };
 
   if (isLoading) return <PineTreeLoading />;
+  if (isError) return <div className="page-shell"><ErrorPanel what="your updates" /></div>;
 
   if (!user) {
     return (
       <div className="page-shell">
-        <section className="panel updates-empty">
+        <section className="panel state-panel">
           <p>Sign in to see your updates.</p>
         </section>
       </div>
@@ -231,7 +233,7 @@ const Lantern = () => {
       </div>
 
       {sections.length === 0 ? (
-        <section className="panel updates-empty">
+        <section className="panel state-panel">
           <p className="quiet">It's quiet under here.</p>
           <p>Nothing has happened yet. It will.</p>
         </section>

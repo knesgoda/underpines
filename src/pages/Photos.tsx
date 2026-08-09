@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { X } from 'lucide-react';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { ErrorPanel } from '@/components/StatePanel';
 import { usePageProfile } from '@/hooks/useProfilePage';
 import { useAlbums, type Photo } from '@/hooks/usePhotos';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,7 +19,7 @@ const Photos = () => {
   const { handle } = useParams<{ handle?: string }>();
   const { user } = useAuth();
   const { data: profile, isLoading } = usePageProfile(handle);
-  const { data: albums, isLoading: albumsLoading } = useAlbums(profile?.id);
+  const { data: albums, isLoading: albumsLoading, isError } = useAlbums(profile?.id);
   const [lightbox, setLightbox] = useState<Photo | null>(null);
 
   // Escape closes the viewer. Declared before the early returns so the hook
@@ -31,11 +32,12 @@ const Photos = () => {
   }, [lightbox]);
 
   if (isLoading || albumsLoading) return <PineTreeLoading />;
+  if (isError) return <div className="page-shell"><ErrorPanel what="these photos" /></div>;
 
   if (!profile) {
     return (
       <div className="page-shell">
-        <section className="panel photos-empty">
+        <section className="panel state-panel">
           <p className="quiet">That branch snapped.</p>
           <p>No page with that handle.</p>
         </section>
@@ -54,7 +56,7 @@ const Photos = () => {
       </div>
 
       {all.length === 0 ? (
-        <section className="panel photos-empty">
+        <section className="panel state-panel">
           <p className="quiet">It's quiet under here.</p>
           <p>
             {isOwner

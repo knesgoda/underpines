@@ -29,17 +29,6 @@
 
 .photo-grid button:hover img { outline: 2px solid hsl(var(--primary)); outline-offset: -2px; }
 
-.photos-empty { padding: 54px 20px; text-align: center; }
-
-.photos-empty .quiet {
-  margin: 0 0 5px;
-  font-family: var(--font-display);
-  font-size: 19px;
-  color: hsl(var(--foreground));
-}
-
-.photos-empty p { margin: 0; color: hsl(var(--muted-foreground)); font-size: 13.5px; }
-
 /* Viewer */
 .lightbox {
   position: fixed;
