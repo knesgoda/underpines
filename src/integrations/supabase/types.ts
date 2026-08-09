@@ -1988,6 +1988,24 @@ export type Database = {
           },
         ]
       }
+      internal_secrets: {
+        Row: {
+          created_at: string
+          name: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          name: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          name?: string
+          value?: string
+        }
+        Relationships: []
+      }
       invite_allowances: {
         Row: {
           available_passes: number
@@ -3898,7 +3916,17 @@ export type Database = {
         Args: { _invite_id: string; _ip_hash: string }
         Returns: Json
       }
+      create_trail_pass: {
+        Args: {
+          _invitee_email: string
+          _invitee_name?: string
+          _personal_message?: string
+        }
+        Returns: Json
+      }
+      email_hmac: { Args: { _email: string }; Returns: string }
       get_security_config: { Args: never; Returns: Json }
+      get_trail_pass_status: { Args: { _token: string }; Returns: Json }
       has_camp_role: {
         Args: { _camp_id: string; _roles: string[]; _user_id: string }
         Returns: boolean
@@ -3910,6 +3938,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      hash_invite_token: { Args: { _token: string }; Returns: string }
+      is_account_blocked: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_camp_member: {
         Args: { _camp_id: string; _user_id: string }
@@ -3920,8 +3950,19 @@ export type Database = {
         Returns: boolean
       }
       is_ranger: { Args: { _user_id: string }; Returns: boolean }
+      normalize_email: { Args: { _email: string }; Returns: string }
+      process_invite_maturation_for: {
+        Args: { _inviter_id: string }
+        Returns: number
+      }
       random_creature: { Args: never; Returns: string }
       ranger_level: { Args: { _user_id: string }; Returns: number }
+      redeem_trail_pass: { Args: { _token: string }; Returns: Json }
+      refresh_my_invites: { Args: never; Returns: Json }
+      revoke_trail_pass: {
+        Args: { _pass_id: string; _reason?: string }
+        Returns: Json
+      }
       rotate_invite_link: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
