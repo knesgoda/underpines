@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,9 @@ import WarmGround from '@/components/layout/WarmGround';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Where the visitor was headed before the gate sent them here.
+  const from = (location.state as { from?: string } | null)?.from;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +30,9 @@ const Login = () => {
       return;
     }
 
-    navigate('/cabin');
+    // Return the visitor to the page they originally tried to open, if the
+    // gate captured one; otherwise land on their own cabin.
+    navigate(from && from !== '/login' ? from : '/cabin', { replace: true });
   };
 
   return (
