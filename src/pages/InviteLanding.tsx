@@ -135,7 +135,9 @@ const InviteLanding = () => {
             }}
           >
              <p className="text-xl font-display text-pine-light leading-relaxed">
-               {inviter?.display_name || 'Someone special'} has saved you a seat by the fire.
+               {invite?.is_root
+                 ? "There's a seat by the fire, and it's yours."
+                 : `${inviter?.display_name || 'Someone special'} has saved you a seat by the fire.`}
              </p>
 
             <Button
@@ -149,10 +151,11 @@ const InviteLanding = () => {
           <div className="flex items-center gap-4 justify-center text-pine-light/30">
             <div className="h-px w-12 bg-pine-light/20" />
             <span className="text-xs font-body">
-              Invited by @{inviter?.handle || slug}
+              {invite?.is_root ? 'Under Pines' : `Invited by @${inviter?.handle || slug}`}
             </span>
             <div className="h-px w-12 bg-pine-light/20" />
           </div>
+
         </motion.div>
       </div>
     </div>
