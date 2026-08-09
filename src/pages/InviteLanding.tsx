@@ -44,21 +44,26 @@ const InviteLanding = () => {
         return;
       }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('display_name, handle')
-        .eq('id', inv.inviter_id)
-        .maybeSingle();
+      const isRoot = !!(inv as any).is_root;
+
+      const { data: profile } = isRoot
+        ? { data: null as any }
+        : await supabase
+            .from('profiles')
+            .select('display_name, handle')
+            .eq('id', inv.inviter_id)
+            .maybeSingle();
 
       setInvite(inv);
       setInviter(profile);
       setData({
         inviteId: inv.id,
         inviteSlug: slug,
-        inviterName: profile?.display_name || null,
-        inviterHandle: profile?.handle || null,
+        inviterName: isRoot ? null : profile?.display_name || null,
+        inviterHandle: isRoot ? null : profile?.handle || null,
         ipHash: validation.ip_hash || null,
       });
+
       setLoading(false);
     };
 
