@@ -20,6 +20,7 @@ const InstallPrompt = lazy(() => import('@/components/pwa/InstallPrompt'));
 const UpdatePrompt = lazy(() => import('@/components/pwa/UpdatePrompt'));
 const SuspendedPage = lazy(() => import('@/pages/Suspended'));
 const AgeGateInterstitial = lazy(() => import('@/components/onboarding/AgeGateInterstitial'));
+const Gate = lazy(() => import('@/pages/Gate'));
 
 // These render as overlays and banners, so there is nothing useful to show
 // while their chunk loads.
@@ -29,6 +30,13 @@ const Deferred = ({ children }: { children: React.ReactNode }) => (
 
 const FULL_SCREEN_ROUTES = ['/onboarding', '/welcome', '/login', '/new/story', '/privacy', '/terms'];
 const FULL_SCREEN_PREFIXES = ['/invite/', '/join/'];
+
+// Routes a logged-out visitor may see. Everything else shows the invite gate.
+// '/' is the public marketing landing; '/onboarding' is reachable pre-account
+// because signup itself happens there; invite/join landings must work without
+// a session. Legal pages stay public for app-store/compliance reasons.
+const PUBLIC_ROUTES = ['/', '/login', '/onboarding', '/privacy', '/terms'];
+const PUBLIC_PREFIXES = ['/invite/', '/join/'];
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
@@ -55,6 +63,23 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const isFullScreen =
     FULL_SCREEN_ROUTES.includes(location.pathname) ||
     FULL_SCREEN_PREFIXES.some(p => location.pathname.startsWith(p));
+
+  const isPublic =
+    PUBLIC_ROUTES.includes(location.pathname) ||
+    PUBLIC_PREFIXES.some(p => location.pathname.startsWith(p));
+
+  // Hard gate: once auth resolves, a visitor with no session on a protected
+  // route sees the invite gate instead of any member content. This backs up
+  // the row-level security in the database — the UI never even attempts to
+  // render protected pages for a stranger, so a shared or indexed profile
+  // link leads to "sign in or get an invite," not the page itself.
+  if (!authLoading && !user && !isPublic) {
+    return (
+      <Suspense fallback={<PineTreeLoading />}>
+        <Gate />
+      </Suspense>
+    );
+  }
 
   /**
    * There is no fallback to the nine queries this replaced, so a failed boot
