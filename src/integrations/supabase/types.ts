@@ -3904,6 +3904,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _notify_user: { Args: { _user_id: string }; Returns: undefined }
+      _record_ranger_action: {
+        Args: {
+          _action_type: string
+          _actor: string
+          _after: Json
+          _before: Json
+          _case_id: string
+          _ends_at?: string
+          _notes: string
+          _reason_code: string
+          _target_user: string
+        }
+        Returns: string
+      }
       accept_invite_create_circle: {
         Args: { _invite_id: string; _new_user_id: string }
         Returns: undefined
@@ -3926,6 +3941,24 @@ export type Database = {
       }
       email_hmac: { Args: { _email: string }; Returns: string }
       get_security_config: { Args: never; Returns: Json }
+      get_trail_lineage: {
+        Args: { _max_depth?: number; _user_id: string }
+        Returns: {
+          account_created_at: string
+          depth: number
+          display_name: string
+          handle: string
+          invited_by_user_id: string
+          invites_frozen: boolean
+          is_suspended: boolean
+          moderation_state: string
+          relation: string
+          report_count: number
+          risk_level: string
+          trust_state: string
+          user_id: string
+        }[]
+      }
       get_trail_pass_status: { Args: { _token: string }; Returns: Json }
       has_camp_role: {
         Args: { _camp_id: string; _roles: string[]; _user_id: string }
@@ -3964,7 +3997,125 @@ export type Database = {
         Returns: number
       }
       random_creature: { Args: never; Returns: string }
+      ranger_ban: {
+        Args: {
+          _case_id?: string
+          _notes?: string
+          _reason_code: string
+          _target: string
+        }
+        Returns: Json
+      }
+      ranger_close_trail: {
+        Args: {
+          _case_id?: string
+          _include_descendants: boolean
+          _notes?: string
+          _reason_code: string
+          _root: string
+        }
+        Returns: Json
+      }
+      ranger_freeze_invites: {
+        Args: {
+          _case_id?: string
+          _notes?: string
+          _pause_outstanding?: boolean
+          _reason_code: string
+          _target: string
+        }
+        Returns: Json
+      }
       ranger_level: { Args: { _user_id: string }; Returns: number }
+      ranger_mark_safe: {
+        Args: { _case_id?: string; _notes?: string; _target: string }
+        Returns: Json
+      }
+      ranger_open_case: {
+        Args: {
+          _case_type: string
+          _priority?: string
+          _subject: string
+          _summary?: string
+        }
+        Returns: Json
+      }
+      ranger_reopen_trail: {
+        Args: {
+          _case_id?: string
+          _include_descendants: boolean
+          _notes?: string
+          _root: string
+        }
+        Returns: Json
+      }
+      ranger_require_verification: {
+        Args: { _case_id?: string; _notes?: string; _target: string }
+        Returns: Json
+      }
+      ranger_restore: {
+        Args: {
+          _case_id?: string
+          _notes?: string
+          _reason_code: string
+          _target: string
+        }
+        Returns: Json
+      }
+      ranger_restrict: {
+        Args: {
+          _case_id?: string
+          _days?: number
+          _notes?: string
+          _reason_code: string
+          _target: string
+        }
+        Returns: Json
+      }
+      ranger_review_appeal: {
+        Args: { _appeal_id: string; _decision: string; _notes?: string }
+        Returns: Json
+      }
+      ranger_revoke_outstanding_invites: {
+        Args: {
+          _case_id?: string
+          _notes?: string
+          _reason_code: string
+          _target: string
+        }
+        Returns: Json
+      }
+      ranger_security_lock: {
+        Args: { _case_id?: string; _notes?: string; _target: string }
+        Returns: Json
+      }
+      ranger_suspend: {
+        Args: {
+          _case_id?: string
+          _days: number
+          _notes?: string
+          _reason_code: string
+          _target: string
+        }
+        Returns: Json
+      }
+      ranger_unfreeze_invites: {
+        Args: { _case_id?: string; _notes?: string; _target: string }
+        Returns: Json
+      }
+      ranger_unrestrict: {
+        Args: { _case_id?: string; _notes?: string; _target: string }
+        Returns: Json
+      }
+      ranger_warn: {
+        Args: {
+          _case_id?: string
+          _notes?: string
+          _reason_code: string
+          _target: string
+        }
+        Returns: Json
+      }
       redeem_trail_pass: { Args: { _token: string }; Returns: Json }
       refresh_my_invites: { Args: never; Returns: Json }
       revoke_trail_pass: {
