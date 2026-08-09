@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { CAMPFIRE_LAST_SEEN_KEY, useBootState } from '@/hooks/useBootState';
 
-const CAMPFIRE_LAST_SEEN_KEY = 'campfire_last_seen';
 
 interface NavigationContextType {
   unreadCount: number;
@@ -30,11 +30,17 @@ export const useNavigation = () => useContext(NavigationContext);
 
 export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
+  const { data: boot } = useBootState();
   const [unreadCount, setUnreadCount] = useState(0);
   const [hasUnreadCampfires, setHasUnreadCampfires] = useState(false);
   const [onlineIds, setOnlineIds] = useState<Set<string>>(() => new Set());
   const [composerOpen, setComposerOpen] = useState(false);
 
+  /**
+   * Re-count after a mutation the realtime stream cannot express — marking
+   * everything read, mostly. The boot payload seeds the first value, so this
+   * is a correction path rather than the initial load it used to be.
+   */
   const refreshNotifications = async () => {
     if (!user) { setUnreadCount(0); return; }
     const { count } = await supabase
@@ -46,8 +52,15 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     setUnreadCount(count ?? 0);
   };
 
+  // Seed both counters from the single boot request.
   useEffect(() => {
-    refreshNotifications();
+    if (!user) { setUnreadCount(0); setHasUnreadCampfires(false); return; }
+    if (!boot) return;
+    setUnreadCount(boot.unread_notifications);
+    setHasUnreadCampfires(boot.has_unread_messages);
+  }, [user, boot]);
+
+  useEffect(() => {
     if (!user) return;
 
     const channel = supabase
@@ -57,9 +70,10 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
         schema: 'public',
         table: 'notifications',
         filter: `recipient_id=eq.${user.id}`,
-      }, (payload: any) => {
+      }, payload => {
         // Never count reaction_batch in real-time
-        if (payload.new?.notification_type === 'reaction_batch') return;
+        const row = payload.new as { notification_type?: string } | null;
+        if (row?.notification_type === 'reaction_batch') return;
         setUnreadCount(prev => prev + 1);
       })
       .on('postgres_changes', {
@@ -81,32 +95,15 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Campfire unread lives here rather than in a hook because both nav bars
-  // are always mounted — only CSS hides one — so a per-component hook ran
-  // this whole chain twice and opened two realtime channels on one topic.
+  // are always mounted — only CSS hides one — so a per-component hook opened
+  // two realtime channels on one topic.
+  //
+  // The initial value comes from the boot payload; this effect now only keeps
+  // the realtime subscription. The two chained requests it used to make — the
+  // participant list, then a count filtered by it — are gone, and with them
+  // one of the boot's two extra round trips of latency.
   useEffect(() => {
     if (!user) { setHasUnreadCampfires(false); return; }
-
-    const check = async () => {
-      const raw = localStorage.getItem(CAMPFIRE_LAST_SEEN_KEY);
-      const lastSeen = raw ? new Date(raw) : new Date(0);
-
-      const { data: participations } = await supabase
-        .from('campfire_participants')
-        .select('campfire_id')
-        .eq('user_id', user.id);
-
-      if (!participations?.length) return;
-
-      const { count } = await supabase
-        .from('campfire_messages')
-        .select('id', { count: 'exact', head: true })
-        .in('campfire_id', participations.map(p => p.campfire_id))
-        .neq('sender_id', user.id)
-        .gt('created_at', lastSeen.toISOString());
-
-      setHasUnreadCampfires((count ?? 0) > 0);
-    };
-    check();
 
     const channel = supabase
       .channel('campfire-unread-indicator')

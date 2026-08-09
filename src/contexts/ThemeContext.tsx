@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useBootState } from '@/hooks/useBootState';
 
 export type AppTheme = 'light' | 'dark';
 export type MessengerSkin = 'pines' | 'icu' | 'bullseye' | 'emessen';
@@ -59,44 +60,32 @@ const readStoredSkin = (): MessengerSkin => {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const { data: boot, isLoading: bootLoading } = useBootState();
   const [theme, setThemeState] = useState<AppTheme>(readStoredTheme);
   const [skin, setSkinState] = useState<MessengerSkin>(readStoredSkin);
   const [overrides, setOverrides] = useState<ThemeOverrides | null>(null);
   const [loaded, setLoaded] = useState(false);
 
-  // Load saved preferences on login. Anything unrecognised — including the
-  // retired 'evergreen' theme — falls back rather than being written back.
+  // Theme and skin arrive with the rest of the boot payload rather than from
+  // a fourth independent read of `profiles`. Anything unrecognised — including
+  // the retired 'evergreen' theme — falls back rather than being written back.
   useEffect(() => {
     if (!user) { setLoaded(true); return; }
-    let cancelled = false;
+    if (bootLoading) return;
 
-    const apply = (data: StoredPrefs | null) => {
-      if (cancelled) return;
-      const storedTheme = data?.theme as AppTheme | undefined;
-      const storedSkin = data?.messenger_skin as MessengerSkin | undefined;
-      if (storedTheme && VALID_THEMES.includes(storedTheme)) {
-        setThemeState(storedTheme);
-        localStorage.setItem(STORAGE_KEY, storedTheme);
-      }
-      if (storedSkin && VALID_SKINS.includes(storedSkin)) {
-        setSkinState(storedSkin);
-        localStorage.setItem(SKIN_STORAGE_KEY, storedSkin);
-      }
-      setLoaded(true);
-    };
+    const storedTheme = boot?.profile?.theme as AppTheme | undefined;
+    const storedSkin = boot?.profile?.messenger_skin as MessengerSkin | undefined;
 
-    const load = async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('theme, messenger_skin')
-        .eq('id', user.id)
-        .maybeSingle();
-      apply(data);
-    };
-
-    load();
-    return () => { cancelled = true; };
-  }, [user]);
+    if (storedTheme && VALID_THEMES.includes(storedTheme)) {
+      setThemeState(storedTheme);
+      localStorage.setItem(STORAGE_KEY, storedTheme);
+    }
+    if (storedSkin && VALID_SKINS.includes(storedSkin)) {
+      setSkinState(storedSkin);
+      localStorage.setItem(SKIN_STORAGE_KEY, storedSkin);
+    }
+    setLoaded(true);
+  }, [user, boot, bootLoading]);
 
   // Apply theme class to document
   useEffect(() => {

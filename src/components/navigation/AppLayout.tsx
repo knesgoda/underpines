@@ -1,15 +1,13 @@
 import { Suspense, lazy, useState, useEffect } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSuspensionCheck } from '@/hooks/useSuspensionCheck';
-import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useBootState } from '@/hooks/useBootState';
 import TopBar from './TopBar';
 import TabBar from './TabBar';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import PineTreeLoading from '@/components/PineTreeLoading';
-import { useViewerProfile } from '@/hooks/queries';
 import '@/styles/handoff-shell.css';
 
 // Chrome that is rarely rendered on first paint. Keeping these out of the
@@ -36,33 +34,22 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { unreadCount } = useNavigation();
-  const { suspension, checking } = useSuspensionCheck(user?.id);
-  const { needsWelcome, checking: checkingWelcome } = useOnboardingGuard(user?.id);
-  const { data: profile } = useViewerProfile();
-  const [needsAgeGate, setNeedsAgeGate] = useState(false);
-  const [ageGateChecked, setAgeGateChecked] = useState(false);
+  const queryClient = useQueryClient();
+  // One request now answers all four of these. The suspension check, the
+  // onboarding guard, the age gate and the profile each used to fetch
+  // independently — three of them reading the same `profiles` row.
+  const { data: boot, isLoading: bootLoading } = useBootState();
 
-  useEffect(() => {
-    if (!user) {
-      setAgeGateChecked(true);
-      return;
-    }
-    const checkAge = async () => {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_age_verified, age_bracket')
-        .eq('id', user.id)
-        .maybeSingle();
+  const profile = boot?.profile ?? null;
+  const suspension = boot?.suspension ?? null;
+  const checking = !!user && bootLoading;
+  const checkingWelcome = checking;
+  const needsWelcome = !!profile && profile.onboarding_completed_at === null;
 
-      const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: user.id });
-
-      if (profile && !profile.is_age_verified && !isAdmin) {
-        setNeedsAgeGate(true);
-      }
-      setAgeGateChecked(true);
-    };
-    checkAge();
-  }, [user]);
+  // Admins are exempt so a founder locked out by a missing flag can still get
+  // in and fix it.
+  const needsAgeGate = !!profile && !profile.is_age_verified && !boot?.is_admin;
+  const ageGateChecked = !user || !bootLoading;
 
   const isFullScreen =
     FULL_SCREEN_ROUTES.includes(location.pathname) ||
@@ -78,7 +65,11 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   if (user && ageGateChecked && needsAgeGate) {
     return (
       <Suspense fallback={<PineTreeLoading />}>
-        <AgeGateInterstitial onComplete={() => setNeedsAgeGate(false)} />
+        {/* Refetch rather than flip a local flag: the age gate writes
+            is_age_verified, so the boot payload is the thing that changed. */}
+        <AgeGateInterstitial
+          onComplete={() => queryClient.invalidateQueries({ queryKey: ['boot-state'] })}
+        />
       </Suspense>
     );
   }
