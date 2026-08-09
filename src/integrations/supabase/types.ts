@@ -1729,6 +1729,7 @@ export type Database = {
           inviter_id: string
           is_active: boolean | null
           is_infinite: boolean | null
+          is_root: boolean
           secret_token: string | null
           slug: string
           uses_remaining: number
@@ -1740,6 +1741,7 @@ export type Database = {
           inviter_id: string
           is_active?: boolean | null
           is_infinite?: boolean | null
+          is_root?: boolean
           secret_token?: string | null
           slug: string
           uses_remaining?: number
@@ -1751,6 +1753,7 @@ export type Database = {
           inviter_id?: string
           is_active?: boolean | null
           is_infinite?: boolean | null
+          is_root?: boolean
           secret_token?: string | null
           slug?: string
           uses_remaining?: number

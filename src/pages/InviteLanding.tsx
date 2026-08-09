@@ -44,21 +44,26 @@ const InviteLanding = () => {
         return;
       }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('display_name, handle')
-        .eq('id', inv.inviter_id)
-        .maybeSingle();
+      const isRoot = !!(inv as any).is_root;
+
+      const { data: profile } = isRoot
+        ? { data: null as any }
+        : await supabase
+            .from('profiles')
+            .select('display_name, handle')
+            .eq('id', inv.inviter_id)
+            .maybeSingle();
 
       setInvite(inv);
       setInviter(profile);
       setData({
         inviteId: inv.id,
         inviteSlug: slug,
-        inviterName: profile?.display_name || null,
-        inviterHandle: profile?.handle || null,
+        inviterName: isRoot ? null : profile?.display_name || null,
+        inviterHandle: isRoot ? null : profile?.handle || null,
         ipHash: validation.ip_hash || null,
       });
+
       setLoading(false);
     };
 
@@ -119,9 +124,15 @@ const InviteLanding = () => {
             <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--primary))" opacity="0.8" />
           </svg>
 
+          {/* Container from this branch — role tokens rather than a hardcoded
+              translucent white, so it reads in light as well as dark. Copy from
+              main, which added the root invite: an open link has no inviter to
+              name. */}
           <div className="rounded-lg border border-border bg-card p-8 mb-8 shadow-sm">
              <p className="text-xl font-display text-foreground leading-relaxed">
-               {inviter?.display_name || 'Someone special'} has saved you a seat by the fire.
+               {invite?.is_root
+                 ? "There's a seat by the fire, and it's yours."
+                 : `${inviter?.display_name || 'Someone special'} has saved you a seat by the fire.`}
              </p>
 
             <Button
@@ -135,10 +146,11 @@ const InviteLanding = () => {
           <div className="flex items-center gap-4 justify-center text-muted-foreground">
             <div className="h-px w-12 bg-border" />
             <span className="text-xs font-body">
-              Invited by @{inviter?.handle || slug}
+              {invite?.is_root ? 'Under Pines' : `Invited by @${inviter?.handle || slug}`}
             </span>
             <div className="h-px w-12 bg-border" />
           </div>
+
         </motion.div>
       </div>
     </WarmGround>
