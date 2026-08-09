@@ -3939,6 +3939,10 @@ export type Database = {
         Returns: boolean
       }
       hash_invite_token: { Args: { _token: string }; Returns: string }
+      increment_reporter_count: {
+        Args: { p_reporter_id: string }
+        Returns: undefined
+      }
       is_account_blocked: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_camp_member: {
@@ -3950,6 +3954,10 @@ export type Database = {
         Returns: boolean
       }
       is_ranger: { Args: { _user_id: string }; Returns: boolean }
+      normalize_content_for_hash: {
+        Args: { _content: string }
+        Returns: string
+      }
       normalize_email: { Args: { _email: string }; Returns: string }
       process_invite_maturation_for: {
         Args: { _inviter_id: string }
