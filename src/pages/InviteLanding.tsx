@@ -20,7 +20,8 @@ const InviteLanding = () => {
     const fetchInvite = async () => {
       if (!slug) { setExpired(true); setLoading(false); return; }
 
-      // Server-side validation with rate limiting
+      // Server-side validation with rate limiting (returns ip_hash for
+      // infinite/open links).
       const { data: validation, error: valErr } = await supabase.functions.invoke('validate-invite', {
         body: { slug },
       });
@@ -31,36 +32,27 @@ const InviteLanding = () => {
         return;
       }
 
-      const { data: inv } = await supabase
-        .from('invites')
-        .select('*')
-        .eq('slug', slug)
-        .eq('is_active', true)
-        .maybeSingle();
+      // The invites/profiles tables are no longer publicly readable; the
+      // landing page (which runs before the visitor has an account) gets the
+      // validity and inviter's public name through a SECURITY DEFINER RPC.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: landing } = await (supabase as any).rpc('get_invite_landing', { _slug: slug });
 
-      if (!inv || (!inv.is_infinite && inv.uses_remaining <= 0)) {
+      if (!landing?.valid) {
         setExpired(true);
         setLoading(false);
         return;
       }
 
-      const isRoot = !!(inv as any).is_root;
+      const isRoot = !!landing.is_root;
 
-      const { data: profile } = isRoot
-        ? { data: null as any }
-        : await supabase
-            .from('profiles')
-            .select('display_name, handle')
-            .eq('id', inv.inviter_id)
-            .maybeSingle();
-
-      setInvite(inv);
-      setInviter(profile);
+      setInvite({ id: landing.invite_id, is_root: isRoot });
+      setInviter(isRoot ? null : { display_name: landing.inviter_name, handle: landing.inviter_handle });
       setData({
-        inviteId: inv.id,
+        inviteId: landing.invite_id,
         inviteSlug: slug,
-        inviterName: isRoot ? null : profile?.display_name || null,
-        inviterHandle: isRoot ? null : profile?.handle || null,
+        inviterName: isRoot ? null : landing.inviter_name || null,
+        inviterHandle: isRoot ? null : landing.inviter_handle || null,
         ipHash: validation.ip_hash || null,
       });
 
