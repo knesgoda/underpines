@@ -1,13 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import DOMPurify from 'dompurify';
+import Markdown from '@/lib/markdown';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import TiptapLink from '@tiptap/extension-link';
-import Image from '@tiptap/extension-image';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Bold, Italic, Quote, Minus, ImagePlus, Link as LinkIcon, Eye } from 'lucide-react';
 import { toast } from 'sonner';
@@ -37,23 +32,7 @@ const CampNewsletterComposer = () => {
   const [loading, setLoading] = useState(true);
   const [frequencyError, setFrequencyError] = useState<string | null>(null);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [2, 3] },
-        codeBlock: false,
-        blockquote: { HTMLAttributes: { class: 'border-l-3 border-primary/30 pl-4 italic text-muted-foreground' } },
-      }),
-      Placeholder.configure({ placeholder: 'Write your newsletter...' }),
-      TiptapLink.configure({ openOnClick: false }),
-      Image.configure({ inline: false }),
-    ],
-    editorProps: {
-      attributes: {
-        class: 'prose prose-sm max-w-none font-body text-foreground outline-none min-h-[300px] focus:outline-none',
-      },
-    },
-  });
+  const [body, setBody] = useState('');
 
   useEffect(() => {
     if (!campId || !user) return;
@@ -72,13 +51,13 @@ const CampNewsletterComposer = () => {
         if (nl) {
           setTitle(nl.title);
           setDraftId(nl.id);
-          editor?.commands.setContent(nl.content || '');
+          setBody(nl.content || '');
         }
       }
       setLoading(false);
     };
     load();
-  }, [campId, user, newsletterId, editor, navigate]);
+  }, [campId, user, newsletterId, navigate]);
 
   const checkFrequency = useCallback(async (): Promise<boolean> => {
     if (!campId) return false;
@@ -101,9 +80,9 @@ const CampNewsletterComposer = () => {
   }, [campId]);
 
   const saveDraft = useCallback(async () => {
-    if (!user || !editor || !campId) return;
+    if (!user || !campId) return;
     setSaving(true);
-    const content = editor.getHTML();
+    const content = body;
     const freq = settings?.frequency || 'weekly';
 
     if (draftId) {
@@ -125,7 +104,7 @@ const CampNewsletterComposer = () => {
 
     setLastSaved(new Date());
     setSaving(false);
-  }, [user, editor, title, draftId, campId, settings]);
+  }, [user, body, title, draftId, campId, settings]);
 
   // Auto-save every 30s
   useEffect(() => {
@@ -134,16 +113,16 @@ const CampNewsletterComposer = () => {
   }, [saveDraft]);
 
   const handleSendNow = async () => {
-    if (!user || !editor || !campId) return;
+    if (!user || !campId) return;
     const canSend = await checkFrequency();
     if (!canSend) return;
     setShowSendConfirm(true);
   };
 
   const confirmSend = async () => {
-    if (!user || !editor || !campId) return;
+    if (!user || !campId) return;
     setSending(true);
-    const content = editor.getHTML();
+    const content = body;
     const freq = settings?.frequency || 'weekly';
 
     if (draftId) {
@@ -193,7 +172,7 @@ const CampNewsletterComposer = () => {
     if (!canSend) return;
 
     const scheduledFor = new Date(`${scheduleDate}T${scheduleTime}`).toISOString();
-    const content = editor?.getHTML() || '';
+    const content = body;
     const freq = settings?.frequency || 'weekly';
 
     if (draftId) {
@@ -231,7 +210,7 @@ const CampNewsletterComposer = () => {
       const { error } = await supabase.storage.from('post-media').upload(path, file, { contentType: file.type });
       if (error) { toast.error('Upload failed'); return; }
       const { data } = supabase.storage.from('post-media').getPublicUrl(path);
-      editor?.chain().focus().setImage({ src: data.publicUrl }).run();
+      setBody(b => `${b}\n\n![](${data.publicUrl})\n`);
     };
     input.click();
   };
@@ -239,10 +218,10 @@ const CampNewsletterComposer = () => {
   const insertLink = () => {
     const url = prompt('URL:');
     if (!url) return;
-    editor?.chain().focus().setLink({ href: url }).run();
+    setBody(b => `${b}[link](${url})`);
   };
 
-  if (loading || !editor) return <PineTreeLoading />;
+  if (loading) return <PineTreeLoading />;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background">
@@ -289,16 +268,16 @@ const CampNewsletterComposer = () => {
 
         {/* Toolbar */}
         <div className="flex items-center gap-0.5 py-2 mb-4 border-y border-border overflow-x-auto">
-          <ToolbarBtn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}><Bold size={16} /></ToolbarBtn>
-          <ToolbarBtn active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()}><Italic size={16} /></ToolbarBtn>
+          <ToolbarBtn onClick={() => setBody(b => b + '**bold**')}><Bold size={16} /></ToolbarBtn>
+          <ToolbarBtn onClick={() => setBody(b => b + '*italic*')}><Italic size={16} /></ToolbarBtn>
           <div className="w-px h-5 bg-border mx-1" />
-          <ToolbarBtn active={editor.isActive('blockquote')} onClick={() => editor.chain().focus().toggleBlockquote().run()}><Quote size={16} /></ToolbarBtn>
-          <ToolbarBtn onClick={() => editor.chain().focus().setHorizontalRule().run()}><Minus size={16} /></ToolbarBtn>
+          <ToolbarBtn onClick={() => setBody(b => b + '\n> ')}><Quote size={16} /></ToolbarBtn>
+          <ToolbarBtn onClick={() => setBody(b => b + '\n\n')}><Minus size={16} /></ToolbarBtn>
           <ToolbarBtn onClick={insertImage}><ImagePlus size={16} /></ToolbarBtn>
-          <ToolbarBtn active={editor.isActive('link')} onClick={insertLink}><LinkIcon size={16} /></ToolbarBtn>
+          <ToolbarBtn onClick={insertLink}><LinkIcon size={16} /></ToolbarBtn>
         </div>
 
-        <EditorContent editor={editor} />
+        <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="Write the newsletter. Markdown works." aria-label="Newsletter body" className="min-h-[40vh] w-full resize-y rounded-md border border-border bg-background p-3 font-body text-sm text-foreground outline-none" />
       </div>
 
       {/* Preview Modal */}
@@ -313,7 +292,7 @@ const CampNewsletterComposer = () => {
               <p className="text-xs text-[#8b7355] tracking-wider mb-2">FROM YOUR CAMPS</p>
               <p className="font-bold text-[#1a1a2e] mb-1">{camp?.name}</p>
               <p className="text-[#1a1a2e] font-bold text-lg mb-2">{title || 'Untitled'}</p>
-              <div className="text-[#1a1a2e] text-sm prose prose-sm" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(editor?.getHTML() || '') }} />
+              <div className="text-[#1a1a2e] text-sm"><Markdown>{body}</Markdown></div>
             </div>
             <div className="text-center mt-6">
               <span className="inline-block px-4 py-2 bg-[#c2752a] text-[#f5f0e8] rounded-full text-xs">Read the full newsletter →</span>

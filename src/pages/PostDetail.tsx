@@ -12,7 +12,7 @@ import UserAvatar from '@/components/UserAvatar';
 import { formatTimeAgo } from '@/lib/time';
 import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
 import LinkPreviewCard from '@/components/feed/LinkPreviewCard';
-import DOMPurify from 'dompurify';
+import Markdown from '@/lib/markdown';
 
 const REACTION_ICONS: Record<string, string> = {
   warmth: '❤️', laughed: '😂', heavy: '😢', noted: '🤔',
@@ -205,9 +205,9 @@ const PostDetail = () => {
 
             {/* Full story content */}
             <div
-              className="font-body text-sm text-foreground/85 leading-relaxed prose prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content || '') }}
-            />
+              className="font-body text-sm text-foreground/85 leading-relaxed prose prose-sm max-w-none">
+              <Markdown>{post.content || ''}</Markdown>
+            </div>
 
             {/* Reaction summary */}
             <ReactionSummary reactions={reactions} isOwner={isOwner} />
