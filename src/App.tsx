@@ -22,6 +22,7 @@ const Welcome = lazy(() => import("./pages/Welcome"));
 const MyPage = lazy(() => import("./pages/MyPage"));
 const PageCustomizer = lazy(() => import("./pages/PageCustomizer"));
 const Photos = lazy(() => import("./pages/Photos"));
+const Events = lazy(() => import("./pages/Events"));
 const Invites = lazy(() => import("./pages/Invites"));
 const InviteTree = lazy(() => import("./pages/InviteTree"));
 const Campfires = lazy(() => import("./pages/Campfires"));
@@ -123,6 +124,7 @@ const App = () => (
                       <Route path="/me" element={<MyPage />} />
                       <Route path="/me/edit" element={<PageCustomizer />} />
                       <Route path="/photos" element={<Photos />} />
+                      <Route path="/events" element={<Events />} />
                       <Route path="/cabin" element={<Navigate to="/me" replace />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />

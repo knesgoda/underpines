@@ -130,7 +130,10 @@ const NotificationSettings = () => {
     setCampfires(prev => prev.map(cf => cf.id === campfireId ? { ...cf, notify_realtime: value } : cf));
     await supabase
       .from('campfire_notification_prefs')
-      .upsert({ user_id: user.id, campfire_id: campfireId, notify_realtime: value }, { onConflict: 'user_id,campfire_id' } as any);
+      .upsert(
+        { user_id: user.id, campfire_id: campfireId, notify_realtime: value },
+        { onConflict: 'user_id,campfire_id' },
+      );
   };
 
   if (loading) return <PineTreeLoading />;
@@ -150,7 +153,7 @@ const NotificationSettings = () => {
           />
         </div>
         <p className="font-body text-sm text-muted-foreground leading-relaxed">
-          When on, only your opted-in Campfire messages come through. Everything else waits for your Daily Ember.
+          When on, only conversations you have opted into come through. Everything else waits for your Daily Ember.
         </p>
         <p className="font-body text-[11px] text-muted-foreground/60 mt-3">
           Under Pines is proud of this feature.
@@ -198,7 +201,7 @@ const NotificationSettings = () => {
         <div className="space-y-3">
           {campfires.length > 0 ? (
             <div className="space-y-2">
-              <p className="font-body text-xs text-muted-foreground mb-1">Campfire real-time messages</p>
+              <p className="font-body text-xs text-muted-foreground mb-1">New messages, as they arrive</p>
               {campfires.map(cf => (
                 <div key={cf.id} className="flex items-center justify-between">
                   <span className="font-body text-sm text-foreground">{cf.name || 'Unnamed campfire'}</span>
@@ -208,13 +211,13 @@ const NotificationSettings = () => {
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <span className="font-body text-sm text-foreground">Campfire messages</span>
+              <span className="font-body text-sm text-foreground">Messages</span>
               <span className="font-body text-xs text-muted-foreground">No active campfires</span>
             </div>
           )}
           <div className="h-px bg-border" />
           <div className="flex items-center justify-between">
-            <span className="font-body text-sm text-foreground">Trail invites</span>
+            <span className="font-body text-sm text-foreground">Friend requests</span>
             <Switch checked={prefs.notify_circle_requests} onCheckedChange={(v) => save({ notify_circle_requests: v })} />
           </div>
           <div className="flex items-center justify-between">

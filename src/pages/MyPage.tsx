@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import UserAvatar from '@/components/UserAvatar';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import StatePanel from '@/components/StatePanel';
 import CircleButton from '@/components/circles/CircleButton';
 import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import { formatTimeAgo } from '@/lib/time';
@@ -13,6 +14,7 @@ import {
   usePageProfile,
   usePageModules,
   usePageTheme,
+  usePagePrivacy,
   useOwnVisitCount,
   useTopFriends,
   useWallNotes,
@@ -47,6 +49,7 @@ const MyPage = () => {
 
   const { data: modules } = usePageModules(profile?.id);
   const { data: pageTheme } = usePageTheme(profile?.id);
+  const { data: privacy } = usePagePrivacy(profile?.id);
   const { data: visits } = useOwnVisitCount(profile?.id, isOwner);
   const { data: topFriends } = useTopFriends(profile?.id);
   const { data: wallNotes } = useWallNotes(profile?.id);
@@ -60,12 +63,12 @@ const MyPage = () => {
   if (!profile) {
     return (
       <div className="page-shell">
-        <section className="panel p-10 text-center">
-          <p className="font-body text-sm text-foreground">No page here.</p>
-          <p className="mt-1 font-body text-sm text-muted-foreground">
-            That handle does not belong to anyone.
-          </p>
-        </section>
+        <StatePanel
+          title="That branch snapped."
+          action={<Link to="/explore" className="outline-button">Have a look around</Link>}
+        >
+          Nobody here goes by that name.
+        </StatePanel>
       </div>
     );
   }
@@ -122,7 +125,7 @@ const MyPage = () => {
           <section className="panel module">
             <h2>At a glance</h2>
             <p className="text-sm text-muted-foreground">
-              {profile.city && <>Somewhere near {profile.city}.<br /></>}
+              {profile.city && privacy?.show_city !== false && <>Somewhere near {profile.city}.<br /></>}
               {profile.created_at && <>Here since {memberSince(profile.created_at)}.</>}
             </p>
             {isOwner && typeof visits === 'number' && (

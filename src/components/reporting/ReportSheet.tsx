@@ -24,7 +24,7 @@ const REASONS: { value: string; label: string; campOnly?: boolean }[] = [
   { value: 'spam_fake', label: 'This is spam or fake' },
   // LEGAL-REVIEW-NEEDED: Minor safety report auto-escalates to Critical severity
   { value: 'minor_safety', label: 'This involves someone who may be a minor' },
-  { value: 'wrong_camp', label: "This doesn't belong in this Camp", campOnly: true },
+  { value: 'wrong_camp', label: "This doesn't belong in this group", campOnly: true },
   { value: 'other', label: 'Something else' },
 ];
 

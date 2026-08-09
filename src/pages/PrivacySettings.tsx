@@ -31,8 +31,8 @@ const defaults: PrivacyPrefs = {
 };
 
 const VISIBILITY_OPTIONS = [
-  { value: 'circles', label: 'My Circles only' },
-  { value: 'circles_and_camps', label: 'Circles & Camp members' },
+  { value: 'circles', label: 'Friends only' },
+  { value: 'circles_and_camps', label: 'Friends and group members' },
   { value: 'everyone', label: 'All members' },
 ];
 
@@ -100,13 +100,13 @@ const PrivacySettings = () => {
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Who can reach you</p>
         <div className="space-y-5">
           <VisibilityRow
-            label="Who can send you a Campfire"
+            label="Who can start a conversation with you"
             value={prefs.campfire_visibility}
             options={VISIBILITY_OPTIONS}
             onChange={(v) => save({ campfire_visibility: v })}
           />
           <VisibilityRow
-            label="Who can see your Cabin"
+            label="Who can see your page"
             value={prefs.cabin_visibility}
             options={VISIBILITY_OPTIONS}
             onChange={(v) => save({ cabin_visibility: v })}
@@ -120,28 +120,20 @@ const PrivacySettings = () => {
         </div>
       </div>
 
-      {/* Cabin display */}
+      {/* Page display */}
       <div className="rounded-xl border border-border bg-card p-5 mb-6">
-        <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Cabin display</p>
+        <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Your page</p>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-body text-sm text-foreground">Show weather on Cabin</p>
-              <p className="font-body text-[11px] text-muted-foreground mt-0.5">Live weather animation from your area</p>
-            </div>
-            <Switch checked={prefs.show_weather} onCheckedChange={(v) => save({ show_weather: v })} />
-          </div>
-          <div className="h-px bg-border" />
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-body text-sm text-foreground">Show city on Cabin</p>
+              <p className="font-body text-sm text-foreground">Show your city on your page</p>
               <p className="font-body text-[11px] text-muted-foreground mt-0.5">Display your city name to visitors</p>
             </div>
             <Switch checked={prefs.show_city} onCheckedChange={(v) => save({ show_city: v })} />
           </div>
           <div className="h-px bg-border" />
           <VisibilityRow
-            label="Cabin visit footprint"
+            label="Page visit count"
             value={prefs.cabin_visit_mode}
             options={VISIT_MODE_OPTIONS}
             onChange={(v) => save({ cabin_visit_mode: v })}
@@ -163,8 +155,8 @@ const PrivacySettings = () => {
           <div className="h-px bg-border" />
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-body text-sm text-foreground">Message requests from non-Circles</p>
-              <p className="font-body text-[11px] text-muted-foreground mt-0.5">Allow people outside your Circles to request a conversation</p>
+              <p className="font-body text-sm text-foreground">Message requests from people you are not friends with</p>
+              <p className="font-body text-[11px] text-muted-foreground mt-0.5">Let people who are not friends ask to message you</p>
             </div>
             <Switch checked={prefs.message_requests} onCheckedChange={(v) => save({ message_requests: v })} />
           </div>

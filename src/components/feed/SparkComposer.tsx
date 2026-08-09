@@ -4,15 +4,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageIcon, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import type { PostWithAuthor } from './PostCard';
 
 interface SparkComposerProps {
-  onPost: (post: any) => void;
+  onPost: (post: PostWithAuthor) => void;
   onCancel: () => void;
+  /**
+   * Which kind of short post this writes. Defaults to the ordinary one; a
+   * bulletin is the same form with a different post_type, and is gated on the
+   * widened CHECK constraint (see lib/features.ts).
+   */
+  postType?: 'spark' | 'bulletin';
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-const SparkComposer = ({ onPost, onCancel }: SparkComposerProps) => {
+const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerProps) => {
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [posting, setPosting] = useState(false);
@@ -100,7 +107,7 @@ const SparkComposer = ({ onPost, onCancel }: SparkComposerProps) => {
     const optimisticPost = {
       id: crypto.randomUUID(),
       author_id: user.id,
-      post_type: 'spark' as const,
+      post_type: postType,
       content: content.trim(),
       image_url: uploadedUrl || null,
       title: null,
@@ -120,7 +127,7 @@ const SparkComposer = ({ onPost, onCancel }: SparkComposerProps) => {
       .from('posts')
       .insert({
         author_id: user.id,
-        post_type: 'spark',
+        post_type: postType,
         content: content.trim(),
         image_url: uploadedUrl || null,
       })

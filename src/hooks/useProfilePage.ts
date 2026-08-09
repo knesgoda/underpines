@@ -109,6 +109,29 @@ export const usePageModules = (profileId: string | undefined) =>
     },
   });
 
+/**
+ * The page owner's display choices.
+ *
+ * `show_city` was offered in privacy settings and read by nothing, so someone
+ * who turned it off still had their city on their page. A privacy toggle that
+ * does not is worse than no toggle. Defaults to visible, matching the column
+ * default, so a missing row does not silently hide anyone's city.
+ */
+export const usePagePrivacy = (profileId: string | undefined) =>
+  useQuery({
+    queryKey: ['page-privacy', profileId],
+    enabled: !!profileId,
+    queryFn: async (): Promise<{ show_city: boolean }> => {
+      const { data, error } = await supabase
+        .from('privacy_settings')
+        .select('show_city')
+        .eq('user_id', profileId!)
+        .maybeSingle();
+      if (error) return { show_city: true };
+      return { show_city: data?.show_city ?? true };
+    },
+  });
+
 /** The page owner's theme, read so a visitor sees the page as they built it. */
 export const usePageTheme = (profileId: string | undefined) =>
   useQuery({
