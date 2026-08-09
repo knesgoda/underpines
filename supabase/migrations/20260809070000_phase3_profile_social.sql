@@ -18,10 +18,20 @@ CREATE TABLE IF NOT EXISTS public.top_friends (
   CONSTRAINT top_friends_position_range CHECK (position BETWEEN 1 AND 12)
 );
 
--- Deferrable so a reorder can renumber several rows in one transaction
--- without tripping over itself mid-update.
-CREATE UNIQUE INDEX IF NOT EXISTS top_friends_owner_position_idx
-  ON public.top_friends (owner_id, position);
+-- Deferred to the end of the transaction, so a reorder can renumber several
+-- rows without tripping over itself mid-update: moving a friend from 4 to 2
+-- necessarily passes through a state where two rows share a position.
+--
+-- This has to be a UNIQUE CONSTRAINT rather than a UNIQUE INDEX — only a
+-- constraint can be deferred, and an index declared here would make every
+-- reorder fail.
+ALTER TABLE public.top_friends
+  DROP CONSTRAINT IF EXISTS top_friends_owner_position_key;
+ALTER TABLE public.top_friends
+  ADD CONSTRAINT top_friends_owner_position_key
+  UNIQUE (owner_id, position) DEFERRABLE INITIALLY DEFERRED;
+
+-- One row per friend, always — no reason to defer this one.
 CREATE UNIQUE INDEX IF NOT EXISTS top_friends_owner_friend_idx
   ON public.top_friends (owner_id, friend_id);
 
