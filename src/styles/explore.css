@@ -1,13 +1,11 @@
 /**
  * Explore — route-scoped.
  *
- * Panels and buttons come from handoff-shell.css, the .module heading from
- * profile.css. Grids only here.
+ * Panels, buttons and .module all come from handoff-shell.css. Grids only
+ * here.
  */
 
 .explore { display: grid; gap: 15px; align-content: start; }
-
-.explore .module { padding: 14px; }
 
 .explore-empty {
   margin: 0;

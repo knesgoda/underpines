@@ -1,0 +1,84 @@
+/**
+ * Photos — route-scoped.
+ *
+ * Panels, .module and .album-link come from handoff-shell.css.
+ */
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 6px;
+}
+
+.photo-grid button {
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: zoom-in;
+  display: block;
+}
+
+.photo-grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+  background: hsl(var(--secondary));
+}
+
+.photo-grid button:hover img { outline: 2px solid hsl(var(--primary)); outline-offset: -2px; }
+
+.photos-empty { padding: 54px 20px; text-align: center; }
+
+.photos-empty .quiet {
+  margin: 0 0 5px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: hsl(var(--foreground));
+}
+
+.photos-empty p { margin: 0; color: hsl(var(--muted-foreground)); font-size: 13.5px; }
+
+/* Viewer */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  padding: 28px;
+  background: hsl(221 38% 8% / 0.92);
+  cursor: zoom-out;
+}
+
+.lightbox img {
+  max-width: min(100%, 1100px);
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: 3px;
+  cursor: default;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: 1px solid hsl(0 0% 100% / 0.28);
+  border-radius: 3px;
+  background: none;
+  color: hsl(0 0% 100% / 0.85);
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+}
+
+.lightbox-close:hover { background: hsl(0 0% 100% / 0.12); }
+
+.lightbox-link {
+  color: hsl(0 0% 100% / 0.8);
+  font-size: 12px;
+  text-decoration: underline;
+}

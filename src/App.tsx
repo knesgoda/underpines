@@ -21,6 +21,7 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 const MyPage = lazy(() => import("./pages/MyPage"));
 const PageCustomizer = lazy(() => import("./pages/PageCustomizer"));
+const Photos = lazy(() => import("./pages/Photos"));
 const Invites = lazy(() => import("./pages/Invites"));
 const InviteTree = lazy(() => import("./pages/InviteTree"));
 const Campfires = lazy(() => import("./pages/Campfires"));
@@ -121,6 +122,7 @@ const App = () => (
                       <Route path="/welcome" element={<Welcome />} />
                       <Route path="/me" element={<MyPage />} />
                       <Route path="/me/edit" element={<PageCustomizer />} />
+                      <Route path="/photos" element={<Photos />} />
                       <Route path="/cabin" element={<Navigate to="/me" replace />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />
@@ -154,6 +156,7 @@ const App = () => (
                       <Route path="/camps/:id/newsletter/new" element={<CampNewsletterComposer />} />
                       <Route path="/camps/:id/newsletter/:newsletterId" element={<CampNewsletterView />} />
                       <Route path="/camps/:id/newsletters" element={<CampNewsletterArchive />} />
+                      <Route path="/:handle/photos" element={<Photos />} />
                       <Route path="/:handle/collections" element={<CollectionsList />} />
                       <Route path="/:handle/collections/:id" element={<CollectionView />} />
                       <Route path="/wrapped/:year" element={<Wrapped />} />

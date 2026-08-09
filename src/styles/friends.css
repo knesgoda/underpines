@@ -1,8 +1,8 @@
 /**
  * Friends — route-scoped.
  *
- * .panel, .outline-button and .solid-button come from handoff-shell.css;
- * .module and its heading from profile.css. This is the list furniture only.
+ * .panel, .outline-button, .solid-button and .module all come from
+ * handoff-shell.css. This is the list furniture only.
  */
 
 .friend-tabs {

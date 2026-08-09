@@ -1,0 +1,84 @@
+/**
+ * Updates — route-scoped.
+ *
+ * Panels and .module come from handoff-shell.css; this is the row treatment
+ * and the unread mark.
+ */
+
+.updates-list { display: grid; gap: 14px; }
+
+.update-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 0;
+  border-top: 1px dashed hsl(var(--border));
+  background: none;
+  padding: 10px 8px 10px 11px;
+  margin: 0 -8px 0 -11px;
+  text-align: left;
+  color: inherit;
+  position: relative;
+}
+
+.update-row:first-of-type { border-top: 0; }
+.update-row.is-link:hover { background: hsl(var(--secondary)); border-radius: 3px; }
+
+.update-text { flex: 1; min-width: 0; }
+
+.update-text p {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: hsl(var(--foreground));
+}
+
+.update-text small {
+  display: block;
+  margin-top: 2px;
+  color: hsl(var(--muted-foreground));
+  font-size: 10.5px;
+}
+
+/* Unread: a mark in the gutter rather than a filled row, so a long list of
+   new things does not read as one solid block of colour. */
+.update-row.is-new::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+}
+
+.update-row.is-new .update-text p { font-weight: 700; }
+
+.update-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.settled {
+  color: hsl(var(--muted-foreground));
+  font-size: 11.5px;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.updates-empty { padding: 54px 20px; text-align: center; }
+
+.updates-empty .quiet {
+  margin: 0 0 5px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: hsl(var(--foreground));
+}
+
+.updates-empty p { margin: 0; color: hsl(var(--muted-foreground)); font-size: 13.5px; }
+
+@media (max-width: 700px) {
+  .update-row { flex-wrap: wrap; }
+  .update-actions { width: 100%; }
+}

@@ -2,8 +2,8 @@
  * "Edit my page" — route-scoped, so it lands in the customizer's chunk rather
  * than the entry stylesheet.
  *
- * Panels, buttons and the module heading come from handoff-shell.css and
- * profile.css; what is here is the form furniture and the live preview.
+ * Panels, buttons and .module come from handoff-shell.css; what is here is
+ * the form furniture and the live preview.
  */
 
 .customizer-layout {

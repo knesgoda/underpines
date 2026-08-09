@@ -18,6 +18,7 @@ import {
   useWallNotes,
 } from '@/hooks/useProfilePage';
 import { MODULE_TYPES } from '@/hooks/usePageEditor';
+import { useAllPhotos } from '@/hooks/usePhotos';
 import '@/styles/profile.css';
 
 const moduleLabel = (type: string) =>
@@ -49,6 +50,7 @@ const MyPage = () => {
   const { data: visits } = useOwnVisitCount(profile?.id, isOwner);
   const { data: topFriends } = useTopFriends(profile?.id);
   const { data: wallNotes } = useWallNotes(profile?.id);
+  const { data: photos } = useAllPhotos(profile?.id);
 
   const [note, setNote] = useState('');
   const [posting, setPosting] = useState(false);
@@ -154,6 +156,20 @@ const MyPage = () => {
                   </Link>
                 ))}
               </div>
+            </section>
+          )}
+
+          {photos.length > 0 && (
+            <section className="panel module">
+              <h2>Photos</h2>
+              <div className="photo-strip">
+                {photos.slice(0, 8).map(p => (
+                  <img key={p.id} src={p.url} alt="" loading="lazy" />
+                ))}
+              </div>
+              <Link to={`/${profile.handle}/photos`} className="album-link">
+                See all {photos.length}
+              </Link>
             </section>
           )}
 
