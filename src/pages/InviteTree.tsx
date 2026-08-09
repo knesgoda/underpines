@@ -38,11 +38,12 @@ const InviteTree = () => {
       if (myUse) {
         const { data: inv } = await supabase
           .from('invites')
-          .select('inviter_id')
+          .select('inviter_id, is_root')
           .eq('id', myUse.invite_id)
           .maybeSingle();
 
-        if (inv) {
+        if (inv && !(inv as any).is_root) {
+
           const { data: profile } = await supabase
             .from('profiles')
             .select('id, display_name, handle, avatar_url, default_avatar_key, updated_at')
@@ -67,7 +68,9 @@ const InviteTree = () => {
         .from('invites')
         .select('id')
         .eq('inviter_id', user.id)
+        .eq('is_root', false)
         .maybeSingle();
+
 
       if (myInvite) {
         const { data: uses } = await supabase

@@ -44,21 +44,26 @@ const InviteLanding = () => {
         return;
       }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('display_name, handle')
-        .eq('id', inv.inviter_id)
-        .maybeSingle();
+      const isRoot = !!(inv as any).is_root;
+
+      const { data: profile } = isRoot
+        ? { data: null as any }
+        : await supabase
+            .from('profiles')
+            .select('display_name, handle')
+            .eq('id', inv.inviter_id)
+            .maybeSingle();
 
       setInvite(inv);
       setInviter(profile);
       setData({
         inviteId: inv.id,
         inviteSlug: slug,
-        inviterName: profile?.display_name || null,
-        inviterHandle: profile?.handle || null,
+        inviterName: isRoot ? null : profile?.display_name || null,
+        inviterHandle: isRoot ? null : profile?.handle || null,
         ipHash: validation.ip_hash || null,
       });
+
       setLoading(false);
     };
 
@@ -130,7 +135,9 @@ const InviteLanding = () => {
             }}
           >
              <p className="text-xl font-display text-pine-light leading-relaxed">
-               {inviter?.display_name || 'Someone special'} has saved you a seat by the fire.
+               {invite?.is_root
+                 ? "There's a seat by the fire, and it's yours."
+                 : `${inviter?.display_name || 'Someone special'} has saved you a seat by the fire.`}
              </p>
 
             <Button
@@ -144,10 +151,11 @@ const InviteLanding = () => {
           <div className="flex items-center gap-4 justify-center text-pine-light/30">
             <div className="h-px w-12 bg-pine-light/20" />
             <span className="text-xs font-body">
-              Invited by @{inviter?.handle || slug}
+              {invite?.is_root ? 'Under Pines' : `Invited by @${inviter?.handle || slug}`}
             </span>
             <div className="h-px w-12 bg-pine-light/20" />
           </div>
+
         </motion.div>
       </div>
     </div>
