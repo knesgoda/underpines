@@ -68,7 +68,9 @@ const InviteTree = () => {
         .from('invites')
         .select('id')
         .eq('inviter_id', user.id)
+        .eq('is_root', false)
         .maybeSingle();
+
 
       if (myInvite) {
         const { data: uses } = await supabase
