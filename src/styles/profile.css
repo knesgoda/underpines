@@ -1,0 +1,132 @@
+/**
+ * "My Page" — the handoff's profile, in its own route chunk.
+ *
+ * Replaces the Cabin: a customizable personal page rather than an animated
+ * scene. Module slots come from cabin_widgets, which already stored exactly
+ * this.
+ */
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.profile-side { display: grid; gap: 16px; }
+.profile-main { display: grid; gap: 15px; min-width: 0; }
+
+.profile-hero { display: flex; gap: 16px; align-items: center; padding: 18px; }
+
+.profile-name h1 { margin: 4px 0; }
+
+.profile-name small {
+  display: block;
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+}
+
+.profile-mantra {
+  margin: 6px 0 0;
+  color: hsl(var(--muted-foreground));
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+}
+
+.module { padding: 14px; }
+
+.module > h2 {
+  margin: 0 0 10px;
+  border-bottom: 1px solid hsl(var(--border));
+  padding-bottom: 6px;
+  color: hsl(var(--primary));
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.module p { margin: 0; font-size: 14px; line-height: 1.55; color: hsl(var(--foreground) / 0.9); }
+
+/* Top friends — the grid is the point; order is meaningful. */
+.top-friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+.top-friend {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.top-friend span.rank {
+  color: hsl(var(--muted-foreground));
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.top-friend b { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Wall */
+.wall-form { display: grid; gap: 8px; }
+
+.wall-form textarea {
+  width: 100%;
+  min-height: 66px;
+  resize: vertical;
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  padding: 9px 11px;
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+
+.wall-note {
+  display: flex;
+  gap: 10px;
+  padding: 11px 0;
+  border-top: 1px dashed hsl(var(--border));
+}
+
+.wall-note:first-of-type { border-top: 0; }
+.wall-note p { font-size: 13px; }
+
+.wall-note small {
+  display: block;
+  color: hsl(var(--muted-foreground));
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+/* Photos strip */
+.photo-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+
+.photo-strip img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+}
+
+.visit-count {
+  color: hsl(var(--muted-foreground));
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 980px) {
+  .profile-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .profile-hero { flex-direction: column; text-align: center; }
+  .top-friends { grid-template-columns: repeat(3, 1fr); }
+}

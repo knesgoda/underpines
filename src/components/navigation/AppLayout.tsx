@@ -3,7 +3,6 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSuspensionCheck } from '@/hooks/useSuspensionCheck';
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
-import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { supabase } from '@/integrations/supabase/client';
 import TopBar from './TopBar';
@@ -22,7 +21,6 @@ const InstallPrompt = lazy(() => import('@/components/pwa/InstallPrompt'));
 const UpdatePrompt = lazy(() => import('@/components/pwa/UpdatePrompt'));
 const SuspendedPage = lazy(() => import('@/pages/Suspended'));
 const AgeGateInterstitial = lazy(() => import('@/components/onboarding/AgeGateInterstitial'));
-const SceneDebugPanel = lazy(() => import('@/components/debug/SceneDebugPanel'));
 
 // These render as overlays and banners, so there is nothing useful to show
 // while their chunk loads.
@@ -40,7 +38,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { unreadCount } = useNavigation();
   const { suspension, checking } = useSuspensionCheck(user?.id);
   const { needsWelcome, checking: checkingWelcome } = useOnboardingGuard(user?.id);
-  const { isFounder } = useAdminCheck();
   const { data: profile } = useViewerProfile();
   const [needsAgeGate, setNeedsAgeGate] = useState(false);
   const [ageGateChecked, setAgeGateChecked] = useState(false);
@@ -128,7 +125,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="app">
       <Deferred>
-        {isFounder && <SceneDebugPanel />}
         <OfflineBanner />
         <InstallPrompt />
         <UpdatePrompt />

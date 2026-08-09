@@ -9,7 +9,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { SceneDebugProvider } from "@/contexts/SceneDebugContext";
 import PineTreeLoading from "@/components/PineTreeLoading";
 
 import AppLayout from "@/components/navigation/AppLayout";
@@ -20,7 +19,7 @@ const Login = lazy(() => import("./pages/Login"));
 const InviteLanding = lazy(() => import("./pages/InviteLanding"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Welcome = lazy(() => import("./pages/Welcome"));
-const Cabin = lazy(() => import("./pages/Cabin"));
+const MyPage = lazy(() => import("./pages/MyPage"));
 const Invites = lazy(() => import("./pages/Invites"));
 const InviteTree = lazy(() => import("./pages/InviteTree"));
 const Campfires = lazy(() => import("./pages/Campfires"));
@@ -65,7 +64,6 @@ const GroveCamps = lazy(() => import("./pages/grove/GroveCamps"));
 const GroveCampDetail = lazy(() => import("./pages/grove/GroveCampDetail"));
 const GroveRevenue = lazy(() => import("./pages/grove/GroveRevenue"));
 const GroveSettings = lazy(() => import("./pages/grove/GroveSettings"));
-const GroveCompanions = lazy(() => import("./pages/grove/GroveCompanions"));
 const GroveDesigns = lazy(() => import("./pages/grove/GroveDesigns"));
 
 const queryClient = new QueryClient({
@@ -81,7 +79,6 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <SceneDebugProvider>
     <AuthProvider>
       {/* ThemeProvider reads the signed-in user to load their saved theme, so
           it has to sit below AuthProvider. */}
@@ -107,7 +104,6 @@ const App = () => (
                   <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
                   <Route path="designs" element={<GroveDesigns />} />
-                  <Route path="companions" element={<GroveCompanions />} />
                 </Route>
 
                 {/* Main app routes */}
@@ -121,7 +117,7 @@ const App = () => (
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/onboarding" element={<Onboarding />} />
                       <Route path="/welcome" element={<Welcome />} />
-                      <Route path="/me" element={<Cabin />} />
+                      <Route path="/me" element={<MyPage />} />
                       <Route path="/cabin" element={<Navigate to="/me" replace />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />
@@ -159,7 +155,7 @@ const App = () => (
                       <Route path="/:handle/collections/:id" element={<CollectionView />} />
                       <Route path="/wrapped/:year" element={<Wrapped />} />
                       <Route path="/post/:id" element={<PostDetail />} />
-                      <Route path="/:handle" element={<Cabin />} />
+                      <Route path="/:handle" element={<MyPage />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </AppLayout>
@@ -172,7 +168,6 @@ const App = () => (
       </OnboardingProvider>
       </ThemeProvider>
     </AuthProvider>
-    </SceneDebugProvider>
   </QueryClientProvider>
 );
 
