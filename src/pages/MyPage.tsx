@@ -36,9 +36,9 @@ const memberSince = (iso: string | null) =>
  * page they can make their own. Modules come from cabin_widgets, which already
  * had the right shape.
  *
- * Top Friends and Wall Notes depend on tables added by the Phase 3 migration.
- * Their hooks return empty rather than throwing when the tables are absent, so
- * those sections simply do not render until the schema lands.
+ * Top Friends and Wall Notes read their own tables; both sections hide
+ * themselves when empty, which on a page nobody has written on yet is the
+ * common case.
  */
 const MyPage = () => {
   const { handle } = useParams<{ handle?: string }>();
@@ -77,8 +77,8 @@ const MyPage = () => {
     if (!user || !note.trim()) return;
     setPosting(true);
     const { error } = await supabase
-      .from('wall_notes' as never)
-      .insert({ profile_id: profile.id, author_id: user.id, content: note.trim() } as never);
+      .from('wall_notes')
+      .insert({ profile_id: profile.id, author_id: user.id, content: note.trim() });
     setPosting(false);
 
     if (error) {

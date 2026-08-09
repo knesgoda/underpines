@@ -31,13 +31,12 @@ const useEvents = () =>
     queryKey: ['events'],
     queryFn: async (): Promise<EventRow[]> => {
       const { data, error } = await supabase
-        .from('events' as never)
+        .from('events')
         .select('id, title, description, starts_at, location')
         .gte('starts_at', new Date().toISOString())
         .order('starts_at');
-      // No table yet — empty, not an error page.
-      if (error) return [];
-      return (data ?? []) as unknown as EventRow[];
+      if (error) throw error;
+      return data ?? [];
     },
   });
 

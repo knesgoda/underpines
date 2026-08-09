@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { ErrorPanel } from '@/components/StatePanel';
 import { usePageProfile } from '@/hooks/useProfilePage';
-import { useAlbums, type Photo } from '@/hooks/usePhotos';
+import { isImage, useAlbums, type Photo } from '@/hooks/usePhotos';
 import { useAuth } from '@/contexts/AuthContext';
 import '@/styles/photos.css';
 
@@ -12,8 +12,8 @@ import '@/styles/photos.css';
  * Photos — everything someone has posted, grouped.
  *
  * Photos were only ever visible inline in the feed, so a page's pictures were
- * effectively gone the moment they scrolled past. Albums are derived from
- * posts until the albums tables land; see usePhotos.ts.
+ * effectively gone the moment they scrolled past. Albums come from the albums
+ * tables, backfilled from post_media; see usePhotos.ts.
  */
 const Photos = () => {
   const { handle } = useParams<{ handle?: string }>();
@@ -46,7 +46,7 @@ const Photos = () => {
   }
 
   const isOwner = !!user && user.id === profile.id;
-  const all = (albums ?? []).flatMap(a => a.photos).filter(p => p.media_type?.startsWith('image'));
+  const all = (albums ?? []).flatMap(a => a.photos).filter(p => isImage(p.media_type));
 
   return (
     <div className="page-shell">
@@ -78,6 +78,7 @@ const Photos = () => {
           </section>
 
           {(albums ?? [])
+            .map(album => ({ ...album, photos: album.photos.filter(p => isImage(p.media_type)) }))
             .filter(a => a.photos.length > 1)
             .map(album => (
               <section key={album.id} className="panel module">
@@ -98,7 +99,7 @@ const Photos = () => {
       )}
 
       {lightbox && (
-        /* Clicking the backdrop closes; Escape does too, via the button's focus. */
+        /* Clicking the backdrop closes; Escape is handled by the effect above. */
         <div className="lightbox" role="dialog" aria-modal="true" onClick={() => setLightbox(null)}>
           <button type="button" className="lightbox-close" aria-label="Close" onClick={() => setLightbox(null)}>
             <X size={20} />

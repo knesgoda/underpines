@@ -1,21 +1,20 @@
 /**
- * Features that are built but cannot ship until the schema catches up.
+ * Features waiting on something before they can ship.
  *
- * The Phase 3 migrations are applied through Lovable rather than on deploy,
- * and they have not landed. Two features need them and fail differently
- * without them, so neither is left to "degrade gracefully":
+ * Both of these were gated on the Phase 3 migration, which is now applied — so
+ * the constraint has moved from the schema to the code.
  *
- * - **Bulletins** need `posts_post_type_check` widened to accept 'bulletin'.
- *   Until then the insert is *rejected* by Postgres — that is an error the
- *   user sees after writing something, not a missing section. Off.
+ * - **Bulletins** are on. `posts_post_type_check` accepts 'bulletin', the
+ *   composer writes it, and PostCard and PostDetail render it as what it is:
+ *   a spark with a label.
  *
- * - **Events** need the `events` and `event_responses` tables, which do not
- *   exist. Reads return empty and creation is disabled. Off.
+ * - **Events** stay off one more commit. The tables exist and the surface
+ *   reads them, but there is no composer, and turning the flag on would put a
+ *   "Plan one" link on screen pointing at `/events/new` — a route that does
+ *   not exist. Shipping a link to a 404 is the exact bug this codebase just
+ *   spent several commits removing.
  *
- * Flip these to true in the same change that confirms the migration is
- * applied, and delete the flag once it has been true for a release.
- *
- * See supabase/migrations/20260809070200_phase3_events_bulletins_presence.sql.
+ * Delete each flag once it has been true for a release.
  */
-export const BULLETINS_ENABLED = false;
+export const BULLETINS_ENABLED = true;
 export const EVENTS_ENABLED = false;

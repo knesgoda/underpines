@@ -18,8 +18,7 @@ export type MessengerSkin = 'pines' | 'icu' | 'bullseye' | 'emessen';
  */
 export type ThemeOverrides = Record<string, string>;
 
-/** Shape read back from profiles. messenger_skin arrives with the Phase 2
- *  migration, so it is optional until types.ts is regenerated. */
+/** Shape read back from profiles. */
 type StoredPrefs = { theme?: string | null; messenger_skin?: string | null };
 
 interface ThemeContextValue {
@@ -87,26 +86,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
 
     const load = async () => {
-      const withSkin = await supabase
+      const { data } = await supabase
         .from('profiles')
         .select('theme, messenger_skin')
         .eq('id', user.id)
         .maybeSingle();
-
-      // messenger_skin arrives with the Phase 2 migration, which is applied
-      // through Lovable rather than on deploy. Until it lands the column does
-      // not exist and the select 400s, which would otherwise take the saved
-      // theme down with it. Drop back to theme alone in that window.
-      // The cast goes away when types.ts is regenerated after the migration;
-      // until then the generated client knows nothing about the column.
-      if (!withSkin.error) return apply(withSkin.data as unknown as StoredPrefs | null);
-
-      const themeOnly = await supabase
-        .from('profiles')
-        .select('theme')
-        .eq('id', user.id)
-        .maybeSingle();
-      apply(themeOnly.data);
+      apply(data);
     };
 
     load();
@@ -137,7 +122,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (user) {
       supabase
         .from('profiles')
-        .update({ theme: next } as any)
+        .update({ theme: next })
         .eq('id', user.id)
         .then(({ error }) => {
           if (error) {
@@ -157,7 +142,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (user) {
       supabase
         .from('profiles')
-        .update({ messenger_skin: next } as any)
+        .update({ messenger_skin: next })
         .eq('id', user.id)
         .then(({ error }) => {
           if (error) {

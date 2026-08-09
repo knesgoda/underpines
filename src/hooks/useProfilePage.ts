@@ -48,13 +48,13 @@ const FIELDS =
 
 /**
  * The customizer's theme settings live in a reserved `cabin_widgets` row
- * rather than new profile columns.
+ * rather than in profile columns.
  *
  * That table is already the per-user customization store, already has a jsonb
- * payload, and already carries the right RLS. Adding columns would mean another
- * migration, and the Phase 3 migrations have not landed — so the page theme
- * would have shipped dead. This ships working today. The row is filtered out of
- * the module list so it never renders as a module.
+ * payload, and already carries the right RLS. It was chosen to avoid waiting on
+ * a migration, and it has earned its place since: a theme is an open-ended bag
+ * of tokens, which is what jsonb is for. The row is filtered out of the module
+ * list so it never renders as a module.
  */
 export const PAGE_THEME_WIDGET = 'page_theme';
 
@@ -171,8 +171,12 @@ export const useOwnVisitCount = (profileId: string | undefined, isOwner: boolean
   });
 
 /**
- * Top friends. Returns an empty list until the Phase 3 migration lands rather
- * than throwing, so the section simply does not render.
+ * Top friends, in the order the page owner chose.
+ *
+ * This used to swallow errors and return empty, for the window before the table
+ * existed. It throws now — an RLS failure and "no top friends" are different
+ * facts, and the first one silently wearing the second's clothes is how a
+ * broken page looks merely quiet.
  */
 export const useTopFriends = (profileId: string | undefined) =>
   useQuery({
@@ -180,13 +184,13 @@ export const useTopFriends = (profileId: string | undefined) =>
     enabled: !!profileId,
     queryFn: async (): Promise<TopFriend[]> => {
       const { data, error } = await supabase
-        .from('top_friends' as never)
+        .from('top_friends')
         .select('friend_id, position')
         .eq('owner_id', profileId!)
         .order('position');
-      if (error) return [];
+      if (error) throw error;
 
-      const rows = (data ?? []) as unknown as { friend_id: string; position: number }[];
+      const rows = data ?? [];
       if (rows.length === 0) return [];
 
       const { data: profiles } = await supabase
@@ -201,21 +205,23 @@ export const useTopFriends = (profileId: string | undefined) =>
     },
   });
 
-/** Wall notes. Same graceful-empty behaviour until the table exists. */
+/** Wall notes, newest first. Readable unless either party has blocked the
+ *  other — that is enforced by RLS, so a blocked viewer sees zero rows here
+ *  rather than an error. */
 export const useWallNotes = (profileId: string | undefined) =>
   useQuery({
     queryKey: ['wall-notes', profileId],
     enabled: !!profileId,
     queryFn: async (): Promise<WallNote[]> => {
       const { data, error } = await supabase
-        .from('wall_notes' as never)
+        .from('wall_notes')
         .select('id, author_id, content, created_at')
         .eq('profile_id', profileId!)
         .order('created_at', { ascending: false })
         .limit(30);
-      if (error) return [];
+      if (error) throw error;
 
-      const rows = (data ?? []) as unknown as { id: string; author_id: string; content: string; created_at: string }[];
+      const rows = data ?? [];
       if (rows.length === 0) return [];
 
       const { data: profiles } = await supabase
