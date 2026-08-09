@@ -45,6 +45,7 @@ const CampNewsletterComposer = lazy(() => import("./pages/CampNewsletterComposer
 const CampNewsletterView = lazy(() => import("./pages/CampNewsletterView"));
 const CampNewsletterArchive = lazy(() => import("./pages/CampNewsletterArchive"));
 const SearchPage = lazy(() => import("./pages/Search"));
+const Explore = lazy(() => import("./pages/Explore"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const MarketplaceDetail = lazy(() => import("./pages/MarketplaceDetail"));
 const DesignCreator = lazy(() => import("./pages/DesignCreator"));
@@ -126,7 +127,7 @@ const App = () => (
                       <Route path="/messages" element={<Campfires />} />
                       <Route path="/campfires" element={<Navigate to="/messages" replace />} />
                       <Route path="/search" element={<SearchPage />} />
-                      <Route path="/explore" element={<SearchPage />} />
+                      <Route path="/explore" element={<Explore />} />
                       <Route path="/updates" element={<Lantern />} />
                       <Route path="/lantern" element={<Navigate to="/updates" replace />} />
                       <Route path="/settings" element={<SettingsPage />} />
