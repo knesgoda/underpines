@@ -8,6 +8,7 @@ import TopBar from './TopBar';
 import TabBar from './TabBar';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import StatePanel from '@/components/StatePanel';
 import '@/styles/handoff-shell.css';
 
 // Chrome that is rarely rendered on first paint. Keeping these out of the
@@ -38,7 +39,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   // One request now answers all four of these. The suspension check, the
   // onboarding guard, the age gate and the profile each used to fetch
   // independently — three of them reading the same `profiles` row.
-  const { data: boot, isLoading: bootLoading } = useBootState();
+  const { data: boot, isLoading: bootLoading, isError: bootFailed, refetch } = useBootState();
 
   const profile = boot?.profile ?? null;
   const suspension = boot?.suspension ?? null;
@@ -54,6 +55,29 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const isFullScreen =
     FULL_SCREEN_ROUTES.includes(location.pathname) ||
     FULL_SCREEN_PREFIXES.some(p => location.pathname.startsWith(p));
+
+  /**
+   * There is no fallback to the nine queries this replaced, so a failed boot
+   * has to say so. Rendering the app around a null profile instead would be
+   * worse than an error: a blank avatar and a silently missing suspension
+   * check look like the app working.
+   */
+  if (user && bootFailed) {
+    return (
+      <div className="page-shell">
+        <StatePanel
+          title="Could not load your account."
+          action={
+            <button type="button" className="outline-button" onClick={() => refetch()}>
+              Try again
+            </button>
+          }
+        >
+          The connection dropped on the way in. Nothing is wrong with your account.
+        </StatePanel>
+      </div>
+    );
+  }
 
   // Anyone who has an account but has not finished the welcome flow is still
   // carrying the placeholder handle and display name the signup trigger wrote,
