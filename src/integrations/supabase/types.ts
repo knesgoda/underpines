@@ -14,6 +14,116 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_verifications: {
+        Row: {
+          created_at: string
+          email_verified_at: string | null
+          failed_attempt_count: number
+          last_challenge_at: string | null
+          phone_encrypted: string | null
+          phone_hmac: string | null
+          phone_risk: string | null
+          phone_verified_at: string | null
+          reverification_required_at: string | null
+          updated_at: string
+          user_id: string
+          verification_provider: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_verified_at?: string | null
+          failed_attempt_count?: number
+          last_challenge_at?: string | null
+          phone_encrypted?: string | null
+          phone_hmac?: string | null
+          phone_risk?: string | null
+          phone_verified_at?: string | null
+          reverification_required_at?: string | null
+          updated_at?: string
+          user_id: string
+          verification_provider?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_verified_at?: string | null
+          failed_attempt_count?: number
+          last_challenge_at?: string | null
+          phone_encrypted?: string | null
+          phone_hmac?: string | null
+          phone_risk?: string | null
+          phone_verified_at?: string | null
+          reverification_required_at?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_provider?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_verifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_audit_log: {
+        Row: {
+          action_type: string
+          actor_admin_id: string | null
+          after_state: Json | null
+          before_state: Json | null
+          case_id: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          reason_code: string | null
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action_type: string
+          actor_admin_id?: string | null
+          after_state?: Json | null
+          before_state?: Json | null
+          case_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reason_code?: string | null
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          action_type?: string
+          actor_admin_id?: string | null
+          after_state?: Json | null
+          before_state?: Json | null
+          case_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reason_code?: string | null
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_log_actor_admin_id_fkey"
+            columns: ["actor_admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       age_gate_audit_log: {
         Row: {
           action: string
@@ -111,6 +221,77 @@ export type Database = {
             columns: ["cover_media_id"]
             isOneToOne: false
             referencedRelation: "post_media"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      appeals: {
+        Row: {
+          action_id: string | null
+          appeal_text: string
+          case_id: string | null
+          created_at: string
+          id: string
+          outcome: string | null
+          outcome_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          action_id?: string | null
+          appeal_text: string
+          case_id?: string | null
+          created_at?: string
+          id?: string
+          outcome?: string | null
+          outcome_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          action_id?: string | null
+          appeal_text?: string
+          case_id?: string | null
+          created_at?: string
+          id?: string
+          outcome?: string | null
+          outcome_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appeals_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_actions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appeals_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appeals_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appeals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1807,6 +1988,53 @@ export type Database = {
           },
         ]
       }
+      invite_allowances: {
+        Row: {
+          available_passes: number
+          created_at: string
+          frozen_reason_code: string | null
+          invite_eligible_at: string | null
+          invite_tier: string
+          invites_frozen_at: string | null
+          last_regeneration_at: string | null
+          maximum_passes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_passes?: number
+          created_at?: string
+          frozen_reason_code?: string | null
+          invite_eligible_at?: string | null
+          invite_tier?: string
+          invites_frozen_at?: string | null
+          last_regeneration_at?: string | null
+          maximum_passes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_passes?: number
+          created_at?: string
+          frozen_reason_code?: string | null
+          invite_eligible_at?: string | null
+          invite_tier?: string
+          invites_frozen_at?: string | null
+          last_regeneration_at?: string | null
+          maximum_passes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invite_allowances_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invite_uses: {
         Row: {
           id: string
@@ -1898,9 +2126,15 @@ export type Database = {
           action_detail: string | null
           action_type: string
           admin_id: string
+          case_id: string | null
           created_at: string | null
+          ends_at: string | null
           id: string
+          reason_code: string | null
           report_id: string | null
+          reversed_at: string | null
+          reversed_by: string | null
+          starts_at: string | null
           suspension_days: number | null
           target_user_id: string | null
         }
@@ -1908,9 +2142,15 @@ export type Database = {
           action_detail?: string | null
           action_type: string
           admin_id: string
+          case_id?: string | null
           created_at?: string | null
+          ends_at?: string | null
           id?: string
+          reason_code?: string | null
           report_id?: string | null
+          reversed_at?: string | null
+          reversed_by?: string | null
+          starts_at?: string | null
           suspension_days?: number | null
           target_user_id?: string | null
         }
@@ -1918,9 +2158,15 @@ export type Database = {
           action_detail?: string | null
           action_type?: string
           admin_id?: string
+          case_id?: string | null
           created_at?: string | null
+          ends_at?: string | null
           id?: string
+          reason_code?: string | null
           report_id?: string | null
+          reversed_at?: string | null
+          reversed_by?: string | null
+          starts_at?: string | null
           suspension_days?: number | null
           target_user_id?: string | null
         }
@@ -1933,6 +2179,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "moderation_actions_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "moderation_actions_report_id_fkey"
             columns: ["report_id"]
             isOneToOne: false
@@ -1940,8 +2193,107 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "moderation_actions_reversed_by_fkey"
+            columns: ["reversed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "moderation_actions_target_user_id_fkey"
             columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_cases: {
+        Row: {
+          assigned_ranger_id: string | null
+          auto_generated: boolean
+          case_number: number
+          case_type: string
+          created_at: string
+          created_by: string | null
+          id: string
+          parent_case_id: string | null
+          priority: string
+          resolution: string | null
+          resolution_notes: string | null
+          resolution_reason_code: string | null
+          resolved_at: string | null
+          risk_score_at_creation: number | null
+          status: string
+          subject_user_id: string | null
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_ranger_id?: string | null
+          auto_generated?: boolean
+          case_number?: number
+          case_type: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          parent_case_id?: string | null
+          priority?: string
+          resolution?: string | null
+          resolution_notes?: string | null
+          resolution_reason_code?: string | null
+          resolved_at?: string | null
+          risk_score_at_creation?: number | null
+          status?: string
+          subject_user_id?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_ranger_id?: string | null
+          auto_generated?: boolean
+          case_number?: number
+          case_type?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          parent_case_id?: string | null
+          priority?: string
+          resolution?: string | null
+          resolution_notes?: string | null
+          resolution_reason_code?: string | null
+          resolved_at?: string | null
+          risk_score_at_creation?: number | null
+          status?: string
+          subject_user_id?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_cases_assigned_ranger_id_fkey"
+            columns: ["assigned_ranger_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_cases_parent_case_id_fkey"
+            columns: ["parent_case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_cases_subject_user_id_fkey"
+            columns: ["subject_user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -2819,7 +3171,9 @@ export type Database = {
           ai_reasoning: string | null
           ai_recommended_action: string | null
           ai_severity: string | null
+          case_id: string | null
           content_hidden: boolean | null
+          coordination_risk: string | null
           created_at: string | null
           id: string
           report_reason: string
@@ -2830,10 +3184,12 @@ export type Database = {
           reported_user_id: string | null
           reporter_context: string | null
           reporter_id: string
+          reporter_weight_at_time: number | null
           reviewed_at: string | null
           reviewed_by: string | null
           reviewer_note: string | null
           status: string | null
+          subcategory: string | null
         }
         Insert: {
           ai_category?: string | null
@@ -2841,7 +3197,9 @@ export type Database = {
           ai_reasoning?: string | null
           ai_recommended_action?: string | null
           ai_severity?: string | null
+          case_id?: string | null
           content_hidden?: boolean | null
+          coordination_risk?: string | null
           created_at?: string | null
           id?: string
           report_reason: string
@@ -2852,10 +3210,12 @@ export type Database = {
           reported_user_id?: string | null
           reporter_context?: string | null
           reporter_id: string
+          reporter_weight_at_time?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_note?: string | null
           status?: string | null
+          subcategory?: string | null
         }
         Update: {
           ai_category?: string | null
@@ -2863,7 +3223,9 @@ export type Database = {
           ai_reasoning?: string | null
           ai_recommended_action?: string | null
           ai_severity?: string | null
+          case_id?: string | null
           content_hidden?: boolean | null
+          coordination_risk?: string | null
           created_at?: string | null
           id?: string
           report_reason?: string
@@ -2874,12 +3236,21 @@ export type Database = {
           reported_user_id?: string | null
           reporter_context?: string | null
           reporter_id?: string
+          reporter_weight_at_time?: number | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_note?: string | null
           status?: string | null
+          subcategory?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "reports_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reports_reported_camp_id_fkey"
             columns: ["reported_camp_id"]
@@ -2967,6 +3338,66 @@ export type Database = {
           },
         ]
       }
+      risk_signals: {
+        Row: {
+          case_id: string | null
+          confidence: number | null
+          created_at: string
+          expires_at: string | null
+          explanation: string
+          id: string
+          observed_value: Json | null
+          policy_version: string | null
+          severity: string
+          signal_type: string
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          case_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          expires_at?: string | null
+          explanation: string
+          id?: string
+          observed_value?: Json | null
+          policy_version?: string | null
+          severity?: string
+          signal_type: string
+          source?: string
+          user_id?: string | null
+        }
+        Update: {
+          case_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          expires_at?: string | null
+          explanation?: string
+          id?: string
+          observed_value?: Json | null
+          policy_version?: string | null
+          severity?: string
+          signal_type?: string
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_signals_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "risk_signals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seasonal_events: {
         Row: {
           created_at: string | null
@@ -3002,6 +3433,41 @@ export type Database = {
           starts_at?: string
         }
         Relationships: []
+      }
+      security_config: {
+        Row: {
+          active: boolean
+          config: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          version: string
+        }
+        Insert: {
+          active?: boolean
+          config: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          version: string
+        }
+        Update: {
+          active?: boolean
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_config_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seedling_periods: {
         Row: {
@@ -3158,6 +3624,174 @@ export type Database = {
           },
         ]
       }
+      trail_passes: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          invitee_email_hmac: string | null
+          invitee_email_normalized: string
+          invitee_name: string | null
+          inviter_user_id: string
+          matured_credited_at: string | null
+          paused_at: string | null
+          personal_message: string | null
+          redeemed_at: string | null
+          redeemed_by_user_id: string | null
+          revocation_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          risk_at_redemption: Json | null
+          status: string
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          invitee_email_hmac?: string | null
+          invitee_email_normalized: string
+          invitee_name?: string | null
+          inviter_user_id: string
+          matured_credited_at?: string | null
+          paused_at?: string | null
+          personal_message?: string | null
+          redeemed_at?: string | null
+          redeemed_by_user_id?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          risk_at_redemption?: Json | null
+          status?: string
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invitee_email_hmac?: string | null
+          invitee_email_normalized?: string
+          invitee_name?: string | null
+          inviter_user_id?: string
+          matured_credited_at?: string | null
+          paused_at?: string | null
+          personal_message?: string | null
+          redeemed_at?: string | null
+          redeemed_by_user_id?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          risk_at_redemption?: Json | null
+          status?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trail_passes_inviter_user_id_fkey"
+            columns: ["inviter_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trail_passes_redeemed_by_user_id_fkey"
+            columns: ["redeemed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trail_passes_revoked_by_fkey"
+            columns: ["revoked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_events: {
+        Row: {
+          category: string
+          created_at: string
+          event_type: string
+          id: string
+          policy_version: string | null
+          source_id: string | null
+          source_type: string | null
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          event_type: string
+          id?: string
+          policy_version?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          user_id: string
+          weight?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          policy_version?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          user_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_lineage: {
+        Row: {
+          created_at: string
+          invited_by_user_id: string | null
+          source_invite_id: string | null
+          source_kind: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          invited_by_user_id?: string | null
+          source_invite_id?: string | null
+          source_kind?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          invited_by_user_id?: string | null
+          source_invite_id?: string | null
+          source_kind?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_lineage_invited_by_user_id_fkey"
+            columns: ["invited_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_lineage_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -3175,6 +3809,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_trust: {
+        Row: {
+          created_at: string
+          invite_trust_score: number
+          moderation_state: string
+          policy_version: string | null
+          risk_level: string
+          risk_updated_at: string | null
+          trust_score: number
+          trust_state: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          invite_trust_score?: number
+          moderation_state?: string
+          policy_version?: string | null
+          risk_level?: string
+          risk_updated_at?: string | null
+          trust_score?: number
+          trust_state?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          invite_trust_score?: number
+          moderation_state?: string
+          policy_version?: string | null
+          risk_level?: string
+          risk_updated_at?: string | null
+          trust_score?: number
+          trust_state?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_trust_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wall_notes: {
         Row: {
@@ -3217,6 +3898,7 @@ export type Database = {
         Args: { _invite_id: string; _ip_hash: string }
         Returns: Json
       }
+      get_security_config: { Args: never; Returns: Json }
       has_camp_role: {
         Args: { _camp_id: string; _roles: string[]; _user_id: string }
         Returns: boolean
@@ -3237,7 +3919,9 @@ export type Database = {
         Args: { _campfire_id: string; _user_id: string }
         Returns: boolean
       }
+      is_ranger: { Args: { _user_id: string }; Returns: boolean }
       random_creature: { Args: never; Returns: string }
+      ranger_level: { Args: { _user_id: string }; Returns: number }
       rotate_invite_link: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
