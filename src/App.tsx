@@ -17,6 +17,7 @@ import AppLayout from "@/components/navigation/AppLayout";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const Login = lazy(() => import("./pages/Login"));
 const InviteLanding = lazy(() => import("./pages/InviteLanding"));
+const TrailPassLanding = lazy(() => import("./pages/TrailPassLanding"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 const MyPage = lazy(() => import("./pages/MyPage"));
@@ -69,6 +70,11 @@ const GroveCampDetail = lazy(() => import("./pages/grove/GroveCampDetail"));
 const GroveRevenue = lazy(() => import("./pages/grove/GroveRevenue"));
 const GroveSettings = lazy(() => import("./pages/grove/GroveSettings"));
 const GroveDesigns = lazy(() => import("./pages/grove/GroveDesigns"));
+const GroveCases = lazy(() => import("./pages/grove/GroveCases"));
+const GroveCaseDetail = lazy(() => import("./pages/grove/GroveCaseDetail"));
+const GroveTrails = lazy(() => import("./pages/grove/GroveTrails"));
+const GroveAppeals = lazy(() => import("./pages/grove/GroveAppeals"));
+const GroveAudit = lazy(() => import("./pages/grove/GroveAudit"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -108,6 +114,13 @@ const App = () => (
                   <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
                   <Route path="designs" element={<GroveDesigns />} />
+                  {/* Ranger Station */}
+                  <Route path="cases" element={<GroveCases />} />
+                  <Route path="cases/:id" element={<GroveCaseDetail />} />
+                  <Route path="trails" element={<GroveTrails />} />
+                  <Route path="trails/:handle" element={<GroveTrails />} />
+                  <Route path="appeals" element={<GroveAppeals />} />
+                  <Route path="audit" element={<GroveAudit />} />
                   {/* Without this, a stale admin bookmark renders the Grove
                       chrome around an empty main area rather than a 404. */}
                   <Route path="*" element={<NotFound />} />
@@ -120,6 +133,7 @@ const App = () => (
                       <Route path="/" element={<HomePage />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/invite/:slug" element={<InviteLanding />} />
+                      <Route path="/join/:token" element={<TrailPassLanding />} />
                       <Route path="/privacy" element={<Privacy />} />
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/onboarding" element={<Onboarding />} />
@@ -129,6 +143,7 @@ const App = () => (
                       <Route path="/photos" element={<Photos />} />
                       <Route path="/events" element={<Events />} />
                       <Route path="/cabin" element={<Navigate to="/me" replace />} />
+                      <Route path="/ranger" element={<Navigate to="/grove/cases" replace />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />
                       <Route path="/messages" element={<Campfires />} />
