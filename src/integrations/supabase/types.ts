@@ -38,6 +38,83 @@ export type Database = {
         }
         Relationships: []
       }
+      album_media: {
+        Row: {
+          album_id: string
+          created_at: string
+          id: string
+          position: number
+          post_media_id: string
+        }
+        Insert: {
+          album_id: string
+          created_at?: string
+          id?: string
+          position?: number
+          post_media_id: string
+        }
+        Update: {
+          album_id?: string
+          created_at?: string
+          id?: string
+          position?: number
+          post_media_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "album_media_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "album_media_post_media_id_fkey"
+            columns: ["post_media_id"]
+            isOneToOne: false
+            referencedRelation: "post_media"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      albums: {
+        Row: {
+          cover_media_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          owner_id: string
+          position: number
+          title: string
+        }
+        Insert: {
+          cover_media_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id: string
+          position?: number
+          title?: string
+        }
+        Update: {
+          cover_media_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id?: string
+          position?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "albums_cover_media_id_fkey"
+            columns: ["cover_media_id"]
+            isOneToOne: false
+            referencedRelation: "post_media"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       block_threshold_log: {
         Row: {
           block_count: number | null
