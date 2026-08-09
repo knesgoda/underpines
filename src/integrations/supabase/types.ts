@@ -1698,6 +1698,7 @@ export type Database = {
           event_id: string
           id: string
           response_text: string | null
+          status: string
           user_id: string
         }
         Insert: {
@@ -1705,6 +1706,7 @@ export type Database = {
           event_id: string
           id?: string
           response_text?: string | null
+          status?: string
           user_id: string
         }
         Update: {
@@ -1712,6 +1714,7 @@ export type Database = {
           event_id?: string
           id?: string
           response_text?: string | null
+          status?: string
           user_id?: string
         }
         Relationships: [
@@ -1719,7 +1722,51 @@ export type Database = {
             foreignKeyName: "event_responses_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
-            referencedRelation: "seasonal_events"
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          camp_id: string | null
+          created_at: string
+          description: string | null
+          ends_at: string | null
+          host_id: string
+          id: string
+          location: string | null
+          starts_at: string
+          title: string
+        }
+        Insert: {
+          camp_id?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          host_id: string
+          id?: string
+          location?: string | null
+          starts_at: string
+          title: string
+        }
+        Update: {
+          camp_id?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          host_id?: string
+          id?: string
+          location?: string | null
+          starts_at?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
             referencedColumns: ["id"]
           },
         ]
@@ -2445,6 +2492,7 @@ export type Database = {
           is_pines_plus: boolean | null
           job: string | null
           last_active_at: string | null
+          last_seen_at: string | null
           latitude: number | null
           layout: string | null
           links: Json | null
@@ -2505,6 +2553,7 @@ export type Database = {
           is_pines_plus?: boolean | null
           job?: string | null
           last_active_at?: string | null
+          last_seen_at?: string | null
           latitude?: number | null
           layout?: string | null
           links?: Json | null
@@ -2565,6 +2614,7 @@ export type Database = {
           is_pines_plus?: boolean | null
           job?: string | null
           last_active_at?: string | null
+          last_seen_at?: string | null
           latitude?: number | null
           layout?: string | null
           links?: Json | null
