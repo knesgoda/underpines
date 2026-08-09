@@ -7,6 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import CampfireView from '@/components/campfire/CampfireView';
 import MessengerSkinScope from '@/components/campfire/MessengerSkinScope';
 import NewCampfireSheet from '@/components/campfire/NewCampfireSheet';
+import BuddyWindow from '@/components/campfire/BuddyWindow';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { formatTimeAgo } from '@/lib/time';
 
@@ -22,6 +23,7 @@ interface CampfireItem {
   lastMessage?: string;
   lastMessageTime?: string;
   otherParticipantName?: string;
+  otherUserId?: string;
   daysSinceLastMessage?: number;
 }
 
@@ -34,8 +36,9 @@ const Campfires = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterTab>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [stokeMode, setStokeMode] = useState(false);
+  const [nudgeMode, setNudgeMode] = useState(false);
   const [showNewSheet, setShowNewSheet] = useState(false);
+  const [search, setSearch] = useState('');
 
   const loadCampfires = useCallback(async () => {
     if (!user) return;
@@ -83,9 +86,11 @@ const Campfires = () => {
 
     // Build participant lookup: campfireId -> other user's display name
     const participantNameMap = new Map<string, string>();
+    const participantIdMap = new Map<string, string>();
     for (const p of allParticipants || []) {
       if (!participantNameMap.has(p.campfire_id)) {
         participantNameMap.set(p.campfire_id, profileMap.get(p.user_id) || '');
+        participantIdMap.set(p.campfire_id, p.user_id);
       }
     }
 
@@ -107,6 +112,7 @@ const Campfires = () => {
     const enriched: CampfireItem[] = campfireRows.map(c => {
       const lastMsg = lastMessageMap.get(c.id);
       const otherName = c.campfire_type === 'one_on_one' ? (participantNameMap.get(c.id) || '') : '';
+      const otherId = c.campfire_type === 'one_on_one' ? participantIdMap.get(c.id) : undefined;
       const daysSince = lastMsg?.created_at
         ? Math.floor((Date.now() - new Date(lastMsg.created_at).getTime()) / 86400000)
         : undefined;
@@ -116,6 +122,7 @@ const Campfires = () => {
         lastMessage: lastMsg?.content || (lastMsg ? '📷 Photo' : undefined),
         lastMessageTime: lastMsg?.created_at || undefined,
         otherParticipantName: otherName,
+        otherUserId: otherId,
         daysSinceLastMessage: daysSince,
       } as CampfireItem;
     });
@@ -174,9 +181,9 @@ const Campfires = () => {
       return (
         <CampfireView
           campfireId={selectedId}
-          onBack={() => { setSelectedId(null); setStokeMode(false); }}
+          onBack={() => { setSelectedId(null); setNudgeMode(false); }}
           onRefreshList={loadCampfires}
-          autoFocusInput={stokeMode}
+          autoFocusInput={nudgeMode}
         />
       );
     }
@@ -189,8 +196,8 @@ const Campfires = () => {
             campfires={filtered}
             displayName={displayName}
             isFlickerExpired={isFlickerExpired}
-            onSelect={(id) => { setStokeMode(false); setSelectedId(id); }}
-            onStoke={(id) => { setStokeMode(true); setSelectedId(id); }}
+            onSelect={(id) => { setNudgeMode(false); setSelectedId(id); }}
+            onNudge={(id) => { setNudgeMode(true); setSelectedId(id); }}
           />
         </div>
 
@@ -208,50 +215,77 @@ const Campfires = () => {
     );
   }
 
-  // Desktop: split panel
+  // Desktop: the handoff's messenger stage — buddy list beside the chat.
+  const buddyItems = filtered.map(c => ({
+    id: c.id,
+    name: displayName(c),
+    campfire_type: c.campfire_type,
+    is_embers: c.is_embers,
+    expires_at: c.expires_at,
+    lastMessage: c.lastMessage,
+    lastMessageTime: c.lastMessageTime,
+    otherUserId: c.otherUserId,
+    daysSinceLastMessage: c.daysSinceLastMessage,
+  }));
+
+  const searched = search.trim()
+    ? buddyItems.filter(b => b.name.toLowerCase().includes(search.trim().toLowerCase()))
+    : buddyItems;
+
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-dvh">
-      {/* Left panel */}
-      <div className="w-[320px] border-r border-border flex flex-col shrink-0">
-        <CampfireListHeader filter={filter} setFilter={setFilter} />
-        <div className="flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
-          <CampfireList
-            campfires={filtered}
-            displayName={displayName}
-            isFlickerExpired={isFlickerExpired}
-            onSelect={(id) => { setStokeMode(false); setSelectedId(id); }}
-            onStoke={(id) => { setStokeMode(true); setSelectedId(id); }}
-            selectedId={selectedId}
-          />
-        </div>
-        <div className="p-3 border-t border-border">
-          <button onClick={() => setShowNewSheet(true)} className="w-full flex items-center justify-center gap-2 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium">
-            <Plus size={16} /> Start a new Campfire
-          </button>
+    <div className="messenger-page">
+      <div className="messenger-heading">
+        <div>
+          <h1>Messages</h1>
+          <p>Conversations, in the order they happened.</p>
         </div>
       </div>
 
-      {/* Right panel */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {selectedId ? (
-          <CampfireView
-            campfireId={selectedId}
-            onBack={() => { setSelectedId(null); setStokeMode(false); }}
-            onRefreshList={loadCampfires}
-            autoFocusInput={stokeMode}
-          />
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-4xl mb-3">🔥</p>
-              <p className="font-body text-sm text-muted-foreground">Select a Campfire or start a new one.</p>
-            </div>
+      <div className="messenger-stage">
+        <BuddyWindow
+          items={searched}
+          selectedId={selectedId}
+          onSelect={(id) => { setNudgeMode(false); setSelectedId(id); }}
+          onNudge={(id) => { setNudgeMode(true); setSelectedId(id); }}
+          onNew={() => setShowNewSheet(true)}
+          query={search}
+          setQuery={setSearch}
+        />
+
+        <div className="chat-shell">
+          <div className="window-title">
+            <b>{selectedId ? (buddyItems.find(b => b.id === selectedId)?.name ?? 'Conversation') : 'No conversation selected'}</b>
+            <span className="window-controls" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span>
           </div>
-        )}
+          {selectedId ? (
+            <div className="chat-body">
+              <CampfireView
+                campfireId={selectedId}
+                onBack={() => { setSelectedId(null); setNudgeMode(false); }}
+                onRefreshList={loadCampfires}
+                autoFocusInput={nudgeMode}
+              />
+            </div>
+          ) : (
+            <div className="chat-empty">
+              <div>
+                <p className="font-body text-sm">Pick someone from the list.</p>
+                <button
+                  type="button"
+                  onClick={() => setShowNewSheet(true)}
+                  className="mt-3 underline text-sm"
+                  style={{ color: 'var(--msg-accent)' }}
+                >
+                  Or start a new conversation
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {showNewSheet && <NewCampfireSheet onClose={() => setShowNewSheet(false)} onCreated={handleCreated} />}
-    </motion.div>
+    </div>
   );
 };
 
@@ -264,8 +298,8 @@ const CampfireListHeader = ({ filter, setFilter }: { filter: FilterTab; setFilte
       {([
         { key: 'all', label: 'All', icon: '🔥' },
         { key: 'active', label: 'Active', icon: '🔥' },
-        { key: 'embers', label: 'Embers', icon: '🌙' },
-        { key: 'flickers', label: 'Flickers', icon: '🕯️' },
+        { key: 'embers', label: 'Idle', icon: '🌙' },
+        { key: 'flickers', label: 'Expiring', icon: '🕯️' },
       ] as const).map(t => (
         <button
           key={t.key}
@@ -289,13 +323,13 @@ const flickerTimeRemaining = (expiresAt: string | null): string => {
 };
 
 const CampfireList = ({
-  campfires, displayName, isFlickerExpired, onSelect, onStoke, selectedId,
+  campfires, displayName, isFlickerExpired, onSelect, onNudge, selectedId,
 }: {
   campfires: CampfireItem[];
   displayName: (c: CampfireItem) => string;
   isFlickerExpired: (c: CampfireItem) => boolean;
   onSelect: (id: string) => void;
-  onStoke?: (id: string) => void;
+  onNudge?: (id: string) => void;
   selectedId?: string | null;
 }) => {
   if (campfires.length === 0) {
@@ -316,11 +350,11 @@ const CampfireList = ({
 
   return (
     <div>
-      {/* Flickers section */}
+      {/* Conversations on a timer */}
       {flickers.length > 0 && (
         <div>
           <p className="font-display text-[10px] uppercase tracking-widest text-muted-foreground px-4 pt-4 pb-2">
-            🕯️ Flickers
+            🕯️ Expiring soon
           </p>
           <div className="divide-y divide-border">
             {flickers.map(c => {
@@ -407,10 +441,10 @@ const CampfireList = ({
                       <p className="font-body text-xs text-muted-foreground">Quiet for {c.daysSinceLastMessage} days</p>
                       <span
                         className="font-body text-xs text-primary cursor-pointer hover:underline"
-                        onClick={(e) => { e.stopPropagation(); onStoke?.(c.id); }}
+                        onClick={(e) => { e.stopPropagation(); onNudge?.(c.id); }}
                         role="button"
                         tabIndex={0}
-                      >Stoke it?</span>
+                      >Nudge</span>
                     </div>
                   ) : c.lastMessage ? (
                     <p className="font-body text-xs text-muted-foreground truncate">

@@ -9,6 +9,7 @@ interface NavigationContextType {
   hasUnreadNotifications: boolean;
   hasUnreadCampfires: boolean;
   markCampfiresSeen: () => void;
+  onlineIds: Set<string>;
   composerOpen: boolean;
   setComposerOpen: (open: boolean) => void;
   refreshNotifications: () => void;
@@ -19,6 +20,7 @@ const NavigationContext = createContext<NavigationContextType>({
   hasUnreadNotifications: false,
   hasUnreadCampfires: false,
   markCampfiresSeen: () => {},
+  onlineIds: new Set<string>(),
   composerOpen: false,
   setComposerOpen: () => {},
   refreshNotifications: () => {},
@@ -30,6 +32,7 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const [hasUnreadCampfires, setHasUnreadCampfires] = useState(false);
+  const [onlineIds, setOnlineIds] = useState<Set<string>>(() => new Set());
   const [composerOpen, setComposerOpen] = useState(false);
 
   const refreshNotifications = async () => {
@@ -122,12 +125,41 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     return () => { supabase.removeChannel(channel); };
   }, [user]);
 
+  // One presence channel for the whole session. Deliberately not per-component:
+  // that is what made useCampfireUnread open two subscriptions on one topic, and
+  // presence would multiply the same mistake by every buddy row on screen.
+  useEffect(() => {
+    if (!user) { setOnlineIds(new Set()); return; }
+
+    const channel = supabase.channel('presence:online', {
+      config: { presence: { key: user.id } },
+    });
+
+    const sync = () => {
+      // presenceState() is keyed by user id, so its keys are the online set.
+      setOnlineIds(new Set(Object.keys(channel.presenceState())));
+    };
+
+    channel
+      .on('presence', { event: 'sync' }, sync)
+      .on('presence', { event: 'join' }, sync)
+      .on('presence', { event: 'leave' }, sync)
+      .subscribe(async status => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({ at: new Date().toISOString() });
+        }
+      });
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user]);
+
   return (
     <NavigationContext.Provider value={{
       unreadCount,
       hasUnreadNotifications: unreadCount > 0,
       hasUnreadCampfires,
       markCampfiresSeen,
+      onlineIds,
       composerOpen,
       setComposerOpen,
       refreshNotifications,

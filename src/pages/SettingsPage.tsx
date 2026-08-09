@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme, type AppTheme } from '@/contexts/ThemeContext';
+import { useTheme, type AppTheme, type MessengerSkin } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -26,10 +26,17 @@ const themes: { key: AppTheme; label: string; emoji: string; description: string
   },
 ];
 
+const MESSENGER_SKINS: { key: MessengerSkin; label: string; description: string }[] = [
+  { key: 'pines', label: 'Under Pines', description: 'Warm and current' },
+  { key: 'icu', label: 'ICU', description: 'Late-90s utility green' },
+  { key: 'bullseye', label: 'Bullseye', description: 'Buddy-list blue and grey' },
+  { key: 'emessen', label: 'Emessen', description: 'Bubbly XP-era chrome' },
+];
+
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, skin, setSkin } = useTheme();
   const isMobile = useIsMobile();
   const [isPinesPlus, setIsPinesPlus] = useState(false);
 
@@ -106,6 +113,29 @@ const SettingsPage = () => {
         </div>
       </div>
 
+      {/* MESSENGER SKIN */}
+      <div className="px-4 pb-6">
+        <p className="font-body text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+          Messenger skin
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {MESSENGER_SKINS.map(s => (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => setSkin(s.key)}
+              className={`rounded-md border p-3 text-left transition-colors ${
+                skin === s.key ? 'border-primary bg-secondary' : 'border-border bg-card hover:bg-secondary'
+              }`}
+              aria-pressed={skin === s.key}
+            >
+              <span className="block font-body text-sm text-foreground">{s.label}</span>
+              <span className="block font-body text-xs text-muted-foreground">{s.description}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* YOUR CABIN */}
       <SettingsSection label="Your Cabin">
         <SettingsItem emoji="🏠" label="Edit Cabin" onClick={() => navigate('/cabin?edit=true')} />
@@ -131,7 +161,7 @@ const SettingsPage = () => {
         <SettingsItem emoji="🌲" label="Pines+ (Coming Soon)" onClick={() => navigate('/settings/subscription')} />
         <SettingsItem emoji="💰" label="Payouts" onClick={() => navigate('/settings/payouts')} />
         <SettingsItem emoji="✉️" label="My Invites" onClick={() => navigate('/invites')} />
-        <SettingsItem emoji="⭕" label="Circles" onClick={() => navigate('/circles')} />
+        <SettingsItem emoji="✿" label="Friends" onClick={() => navigate('/friends')} />
       </SettingsSection>
 
       {/* LEGAL */}
