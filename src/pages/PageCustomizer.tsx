@@ -4,16 +4,22 @@ import { ArrowLeft, GripVertical, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import PineTreeLoading from '@/components/PineTreeLoading';
-import { usePageProfile, usePageModules, usePageTheme, type PageTheme } from '@/hooks/useProfilePage';
+import UserAvatar from '@/components/UserAvatar';
+import {
+  usePageProfile, usePageModules, usePageTheme, useTopFriends, type PageTheme,
+} from '@/hooks/useProfilePage';
+import { useFriendLists } from '@/hooks/useFriends';
 import {
   useSaveBasics,
   useSaveModules,
   useSavePageTheme,
+  useSaveTopFriends,
+  MAX_TOP_FRIENDS,
   MODULE_TYPES,
   type PageModuleDraft,
 } from '@/hooks/usePageEditor';
 import { contrastRatio, hexToHslTriplet, hslTripletToHex } from '@/lib/color';
-import { addModule, moveModule, removeModule, updateModule } from '@/lib/pageModules';
+import { addModule, moveItem, moveModule, removeModule, updateModule } from '@/lib/pageModules';
 // profile.css supplies .module and .page-2006, which the preview reuses so it
 // shows the same rules the real page will.
 import '@/styles/profile.css';
@@ -37,10 +43,13 @@ const PageCustomizer = () => {
   const { data: profile, isLoading } = usePageProfile();
   const { data: savedModules } = usePageModules(profile?.id);
   const { data: savedTheme } = usePageTheme(profile?.id);
+  const { data: savedTopFriends } = useTopFriends(profile?.id);
+  const { data: friendLists } = useFriendLists();
 
   const saveBasics = useSaveBasics(user?.id);
   const saveModules = useSaveModules(user?.id);
   const saveTheme = useSavePageTheme(user?.id);
+  const saveTopFriends = useSaveTopFriends(user?.id);
 
   const [displayName, setDisplayName] = useState('');
   const [mantra, setMantra] = useState('');
@@ -55,6 +64,7 @@ const PageCustomizer = () => {
   const [colors, setColors] = useState(DEFAULTS);
   const [full2006, setFull2006] = useState(false);
   const [modules, setModules] = useState<PageModuleDraft[]>([]);
+  const [topFriendIds, setTopFriendIds] = useState<string[]>([]);
 
   // Seed the form once the profile arrives. Keyed on profile.id rather than the
   // object so a background refetch cannot stomp on what is being typed.
@@ -82,6 +92,11 @@ const PageCustomizer = () => {
     });
     setFull2006(!!savedTheme.full2006);
   }, [savedTheme]);
+
+  useEffect(() => {
+    if (!savedTopFriends) return;
+    setTopFriendIds(savedTopFriends.map(t => t.friend_id));
+  }, [savedTopFriends]);
 
   useEffect(() => {
     if (!savedModules) return;
@@ -139,6 +154,7 @@ const PageCustomizer = () => {
         }),
         saveTheme.mutateAsync(theme),
         saveModules.mutateAsync(modules),
+        saveTopFriends.mutateAsync(topFriendIds),
       ]);
       toast.success('Your page is saved.');
       navigate('/me');
@@ -147,7 +163,16 @@ const PageCustomizer = () => {
     }
   };
 
-  const saving = saveBasics.isPending || saveTheme.isPending || saveModules.isPending;
+  const saving = saveBasics.isPending || saveTheme.isPending || saveModules.isPending
+    || saveTopFriends.isPending;
+
+  // Only accepted friends can be picked, and only once each. `chosen` follows
+  // topFriendIds so the list reorders with the ids rather than with the
+  // alphabetical order the friend list arrives in.
+  const friends = friendLists?.friends ?? [];
+  const byId = new Map(friends.map(f => [f.id, f]));
+  const chosen = topFriendIds.map(id => byId.get(id)).filter((f): f is (typeof friends)[number] => !!f);
+  const available = friends.filter(f => !topFriendIds.includes(f.id));
 
   // The preview is the same tokens the page itself uses, so what is shown here
   // is what a visitor gets rather than an approximation of it.
@@ -223,6 +248,79 @@ const PageCustomizer = () => {
             </Field>
             {songUrl && !/^https:\/\//i.test(songUrl.trim()) && (
               <p className="warn">That needs to be an https link, or it will not play.</p>
+            )}
+          </section>
+
+          <section className="panel module">
+            <h2>Top friends</h2>
+            <p className="mb-3 text-sm text-muted-foreground">
+              Up to {MAX_TOP_FRIENDS}, in the order you put them. Everyone can see it, which is
+              the entire point and the entire risk.
+            </p>
+
+            {friends.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Add some friends first and they will show up here.
+              </p>
+            ) : (
+              <>
+                {chosen.length === 0 && (
+                  <p className="mb-2 text-sm text-muted-foreground">Nobody picked yet.</p>
+                )}
+
+                {chosen.map((friend, i) => (
+                  <div key={friend.id} className="top-friend-row">
+                    <span className="rank">{i + 1}</span>
+                    <UserAvatar
+                      avatarUrl={friend.avatar_url}
+                      defaultAvatarKey={friend.default_avatar_key}
+                      displayName={friend.display_name}
+                      size={28}
+                    />
+                    <b>{friend.display_name}</b>
+                    <button
+                      type="button"
+                      onClick={() => setTopFriendIds(ids => moveItem(ids, i, -1))}
+                      disabled={i === 0}
+                      aria-label={`Move ${friend.display_name} up`}
+                    >↑</button>
+                    <button
+                      type="button"
+                      onClick={() => setTopFriendIds(ids => moveItem(ids, i, 1))}
+                      disabled={i === chosen.length - 1}
+                      aria-label={`Move ${friend.display_name} down`}
+                    >↓</button>
+                    <button
+                      type="button"
+                      onClick={() => setTopFriendIds(ids => ids.filter(id => id !== friend.id))}
+                      aria-label={`Remove ${friend.display_name}`}
+                    ><X size={13} /></button>
+                  </div>
+                ))}
+
+                {available.length > 0 && topFriendIds.length < MAX_TOP_FRIENDS && (
+                  <label className="field mt-3">
+                    <span>Add someone</span>
+                    <select
+                      value=""
+                      onChange={e => {
+                        if (e.target.value) setTopFriendIds(ids => [...ids, e.target.value]);
+                      }}
+                    >
+                      <option value="">Pick a friend…</option>
+                      {available.map(f => (
+                        <option key={f.id} value={f.id}>{f.display_name}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+
+                {topFriendIds.length >= MAX_TOP_FRIENDS && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    That is all {MAX_TOP_FRIENDS}. Remove someone to make room.
+                  </p>
+                )}
+              </>
             )}
           </section>
 

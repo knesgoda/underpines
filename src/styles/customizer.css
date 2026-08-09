@@ -166,3 +166,52 @@
 @media (max-width: 980px) {
   .customizer-layout { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Top friends — an ordered list, so the rank is shown rather than implied. */
+.top-friend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-top: 1px dashed hsl(var(--border));
+}
+
+.top-friend-row:first-of-type { border-top: 0; }
+
+.top-friend-row .rank {
+  width: 18px;
+  flex-shrink: 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 11px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.top-friend-row b {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-friend-row button {
+  flex-shrink: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: hsl(var(--card));
+  color: hsl(var(--muted-foreground));
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+}
+
+.top-friend-row button:hover:not(:disabled) {
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+}
+
+.top-friend-row button:disabled { opacity: 0.35; }

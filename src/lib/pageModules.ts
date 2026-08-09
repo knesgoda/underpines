@@ -23,19 +23,26 @@ export const updateModule = (
 export const removeModule = (modules: PageModuleDraft[], index: number): PageModuleDraft[] =>
   modules.filter((_, i) => i !== index);
 
-/** Swap with the neighbour `delta` away. Out of range is a no-op, not a throw. */
+/**
+ * Swap with the neighbour `delta` away. Out of range is a no-op, not a throw.
+ *
+ * Generic because the top-friends editor reorders the same way and there is no
+ * reason for two implementations of the operation most likely to drop an item.
+ */
+export const moveItem = <T,>(items: T[], index: number, delta: number): T[] => {
+  const target = index + delta;
+  if (index < 0 || index >= items.length || target < 0 || target >= items.length) return items;
+
+  const next = [...items];
+  [next[index], next[target]] = [next[target], next[index]];
+  return next;
+};
+
 export const moveModule = (
   modules: PageModuleDraft[],
   index: number,
   delta: number,
-): PageModuleDraft[] => {
-  const target = index + delta;
-  if (index < 0 || index >= modules.length || target < 0 || target >= modules.length) return modules;
-
-  const next = [...modules];
-  [next[index], next[target]] = [next[target], next[index]];
-  return next;
-};
+): PageModuleDraft[] => moveItem(modules, index, delta);
 
 /**
  * The rows a save writes: blank blurbs dropped, text trimmed, and `position`

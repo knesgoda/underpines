@@ -112,6 +112,48 @@ export const useSavePageTheme = (userId: string | undefined) => {
   });
 };
 
+/** The page can hold twelve, matching `top_friends_position_range`. */
+export const MAX_TOP_FRIENDS = 12;
+
+/**
+ * Replace someone's top friends with an ordered list of friend ids.
+ *
+ * Positions are 1-based and contiguous, which `top_friends_position_range`
+ * requires. The unique constraint on (owner_id, position) is
+ * DEFERRABLE INITIALLY DEFERRED specifically so this can delete and reinsert
+ * inside one statement batch without the intermediate state — where two rows
+ * momentarily share a position — tripping it.
+ *
+ * Unlike page modules, this deletes first. There is no content to lose: a top
+ * friend is a reference and an ordinal, both reconstructible from the list the
+ * editor is holding, and inserting first would mean twelve rows colliding on
+ * positions with the twelve already there.
+ */
+export const useSaveTopFriends = (userId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (friendIds: string[]) => {
+      const { error: delError } = await supabase
+        .from('top_friends')
+        .delete()
+        .eq('owner_id', userId!);
+      if (delError) throw delError;
+
+      const rows = friendIds.slice(0, MAX_TOP_FRIENDS).map((friend_id, i) => ({
+        owner_id: userId!,
+        friend_id,
+        position: i + 1,
+      }));
+      if (rows.length === 0) return;
+
+      const { error } = await supabase.from('top_friends').insert(rows);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['top-friends'] }),
+  });
+};
+
 /**
  * Replace the whole module set in one go.
  *
