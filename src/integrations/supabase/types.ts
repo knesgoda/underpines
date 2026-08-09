@@ -2139,6 +2139,39 @@ export type Database = {
           },
         ]
       }
+      listening_connections: {
+        Row: {
+          access_token: string | null
+          connected_at: string
+          id: string
+          provider: string
+          provider_account_id: string | null
+          refresh_token: string | null
+          token_expires_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          connected_at?: string
+          id?: string
+          provider: string
+          provider_account_id?: string | null
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          connected_at?: string
+          id?: string
+          provider?: string
+          provider_account_id?: string | null
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       moderation_actions: {
         Row: {
           action_detail: string | null
@@ -2485,6 +2518,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      now_playing: {
+        Row: {
+          album: string | null
+          artist: string
+          artwork_url: string | null
+          audience: string
+          duration_ms: number | null
+          is_live: boolean
+          is_sharing: boolean
+          progress_ms: number | null
+          provider: string
+          track_title: string
+          track_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          album?: string | null
+          artist: string
+          artwork_url?: string | null
+          audience?: string
+          duration_ms?: number | null
+          is_live?: boolean
+          is_sharing?: boolean
+          progress_ms?: number | null
+          provider: string
+          track_title: string
+          track_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          album?: string | null
+          artist?: string
+          artwork_url?: string | null
+          audience?: string
+          duration_ms?: number | null
+          is_live?: boolean
+          is_sharing?: boolean
+          progress_ms?: number | null
+          provider?: string
+          track_title?: string
+          track_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       parental_consent_requests: {
         Row: {
@@ -3940,6 +4021,7 @@ export type Database = {
         Returns: Json
       }
       email_hmac: { Args: { _email: string }; Returns: string }
+      get_boot_state: { Args: { _campfires_seen_at?: string }; Returns: Json }
       get_security_config: { Args: never; Returns: Json }
       get_trail_lineage: {
         Args: { _max_depth?: number; _user_id: string }
