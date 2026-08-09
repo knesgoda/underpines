@@ -89,7 +89,7 @@ const CollectionsList = () => {
       ) : (
         <div className="space-y-4">
           {collections.map(c => (
-            <div key={c.id} className="flex gap-4 p-4 rounded-xl bg-card border border-border shadow-sm">
+            <div key={c.id} className="flex gap-4 p-4 panel">
               <div className="w-[120px] h-[120px] rounded-lg bg-muted overflow-hidden shrink-0">
                 {c.cover_image_url ? (
                   <img src={c.cover_image_url} alt="" className="w-full h-full object-cover" />

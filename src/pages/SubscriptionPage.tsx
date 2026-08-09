@@ -25,10 +25,10 @@ const SubscriptionPage = () => {
           <ul className="space-y-1 font-body text-xs text-muted-foreground">
             <li>🌲 8 atmospheres (vs. 3 free)</li>
             <li>🎟️ 8 invite slots (vs. 3 free)</li>
-            <li>🔥 Campfire messages kept forever</li>
-            <li>🧩 Widget shelf on your Cabin</li>
+            <li>🔥 Messages kept forever</li>
+            <li>🧩 Extra modules for your page</li>
             <li>🌿 A quiet pine cone badge beside your name</li>
-            <li>🔍 Campfire search</li>
+            <li>🔍 Search your messages</li>
           </ul>
         </div>
       </div>

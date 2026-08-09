@@ -106,7 +106,7 @@ const GroveSettings = () => {
 
   if (loading) return <p className="text-sm text-[hsl(var(--pine-light)/0.5)]">Loading…</p>;
 
-  const inviteUrl = `https://underpines.com/invite/${inviteSlug}`;
+  const inviteUrl = `${window.location.origin}/invite/${inviteSlug}`;
 
   return (
     <div className="max-w-2xl space-y-5">

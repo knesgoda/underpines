@@ -70,7 +70,7 @@ const Wrapped = () => {
         if (topEntry) {
           topCampfireMsgCount = topEntry[1];
           const { data: cf } = await supabase.from('campfires').select('name').eq('id', topEntry[0]).maybeSingle();
-          topCampfireName = cf?.name || 'A Campfire';
+          topCampfireName = cf?.name || 'A conversation';
         }
       }
 
@@ -144,7 +144,7 @@ const Wrapped = () => {
         {/* Stats */}
         <div className="space-y-8">
           {data.top_campfire_name && (
-            <StatBlock emoji="🔥" label="Your warmest Campfire" value={data.top_campfire_name} detail={`${data.top_campfire_messages} messages between you`} />
+            <StatBlock emoji="🔥" label="Your busiest conversation" value={data.top_campfire_name} detail={`${data.top_campfire_messages} messages between you`} />
           )}
           <StatBlock emoji="📖" label={`You published ${data.total_posts} post${data.total_posts !== 1 ? 's' : ''}`}
             value={data.first_post_excerpt ? `Starting with: "${data.first_post_excerpt}..."` : undefined} />
