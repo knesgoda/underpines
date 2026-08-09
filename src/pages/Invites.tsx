@@ -1,90 +1,109 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { Check, Copy, Share2, TreePine } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Check, Copy, Mail, TreePine, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  createTrailPass,
+  listMyTrailPasses,
+  refreshMyInvites,
+  revokeTrailPass,
+  sendTrailPassEmail,
+  type InviteSummary,
+  type TrailPass,
+} from '@/lib/trailApi';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import StatePanel from '@/components/StatePanel';
 import UserAvatar from '@/components/UserAvatar';
-import { useSeedlingStatus } from '@/hooks/useSeedlingStatus';
 import '@/styles/invites.css';
 
 const THIRTY_DAYS_MS = 30 * 86400000;
 
-const EARNING_CRITERIA = [
-  { text: 'Someone accepts your invite within 72 hours', slots: '+3' },
-  { text: 'Publish your first 10 posts', slots: '+1' },
-  { text: 'Keep a conversation going for 30 days', slots: '+1' },
-  { text: '3 of the people you brought stay active', slots: '+2' },
-  { text: 'Your account turns 1 year old', slots: '+3' },
-];
-
-interface Invitee {
+interface InviteeProfile {
   id: string;
-  invitee_id: string;
-  invitee: {
-    id: string;
-    display_name: string;
-    handle: string;
-    avatar_url: string | null;
-    default_avatar_key: string | null;
-    updated_at: string | null;
-  } | null;
+  display_name: string;
+  handle: string;
+  avatar_url: string | null;
+  default_avatar_key: string | null;
+  updated_at: string | null;
 }
 
-interface InviteData {
-  invite: { id: string; slug: string; is_infinite: boolean | null; uses_remaining: number | null; uses_total: number | null } | null;
-  invitees: Invitee[];
+interface PageData {
+  summary: InviteSummary;
+  passes: TrailPass[];
+  invitees: InviteeProfile[];
   nudged: Set<string>;
 }
 
+const PASS_STATUS_LABEL: Record<TrailPass['status'], string> = {
+  PENDING: 'Waiting',
+  REDEEMED: 'Joined',
+  EXPIRED: 'Expired',
+  REVOKED: 'Cancelled',
+  PAUSED: 'On hold',
+};
+
 /**
- * Invites.
+ * Trail Passes.
  *
- * Invite-only is the whole shape of the product, so this is the one surface in
- * the speculative group that has to be right. Rebuilt rather than restyled:
- * the invitee list was written out twice with slightly different behaviour in
- * each copy, and the second one silently dropped the nudge button.
+ * Invitations are single-use and bound to one email address. Everything that
+ * matters — eligibility, the pass balance, expiry, regeneration — is enforced
+ * by the create_trail_pass / refresh_my_invites RPCs; this page just renders
+ * the result. Exact eligibility mechanics are deliberately not spelled out
+ * here (spec §15: don't teach attackers how to farm eligibility).
  */
 const Invites = () => {
   const { user } = useAuth();
-  const { isSeedling, daysLeft } = useSeedlingStatus();
+  const queryClient = useQueryClient();
+  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const [newPassLink, setNewPassLink] = useState<string | null>(null);
+  const [emailWasSent, setEmailWasSent] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [nudged, setNudged] = useState<Set<string>>(new Set());
   const [nudging, setNudging] = useState<string | null>(null);
+  const [nudged, setNudged] = useState<Set<string>>(new Set());
 
   const { data, isLoading } = useQuery({
-    queryKey: ['invites', user?.id],
+    queryKey: ['trail-passes', user?.id],
     enabled: !!user,
-    queryFn: async (): Promise<InviteData> => {
-      const { data: invite } = await supabase
-        .from('invites')
-        .select('id, slug, is_infinite, uses_remaining, uses_total')
-        .eq('inviter_id', user!.id)
-        .maybeSingle();
+    queryFn: async (): Promise<PageData> => {
+      // refresh_my_invites also lazily expires overdue passes and credits
+      // matured healthy invitees back to the balance.
+      const summary = await refreshMyInvites();
+      const passes = await listMyTrailPasses(user!.id);
 
-      if (!invite) return { invite: null, invitees: [], nudged: new Set() };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+      const { data: lineage } = await db
+        .from('user_lineage')
+        .select('user_id')
+        .eq('invited_by_user_id', user!.id);
+      const ids: string[] = (lineage ?? []).map((l: { user_id: string }) => l.user_id);
 
-      const { data: uses } = await supabase
-        .from('invite_uses')
-        .select('id, invitee_id, invitee:invitee_id(id, display_name, handle, avatar_url, default_avatar_key, updated_at)')
-        .eq('invite_id', invite.id);
+      let invitees: InviteeProfile[] = [];
+      let nudgedSet = new Set<string>();
+      if (ids.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, display_name, handle, avatar_url, default_avatar_key, updated_at')
+          .in('id', ids);
+        invitees = (profiles ?? []) as InviteeProfile[];
 
-      const invitees = (uses ?? []) as unknown as Invitee[];
-      const ids = invitees.map(u => u.invitee_id).filter(Boolean);
-      if (ids.length === 0) return { invite, invitees, nudged: new Set() };
+        const { data: sent } = await supabase
+          .from('notifications')
+          .select('recipient_id')
+          .eq('notification_type', 'smoke_signal')
+          .eq('actor_id', user!.id)
+          .in('recipient_id', ids)
+          .gte('created_at', new Date(Date.now() - THIRTY_DAYS_MS).toISOString());
+        nudgedSet = new Set((sent ?? []).map(n => n.recipient_id));
+      }
 
-      const { data: sent } = await supabase
-        .from('notifications')
-        .select('recipient_id')
-        .eq('notification_type', 'smoke_signal')
-        .eq('actor_id', user!.id)
-        .in('recipient_id', ids)
-        .gte('created_at', new Date(Date.now() - THIRTY_DAYS_MS).toISOString());
-
-      return { invite, invitees, nudged: new Set((sent ?? []).map(n => n.recipient_id)) };
+      return { summary, passes, invitees, nudged: nudgedSet };
     },
   });
 
@@ -100,26 +119,57 @@ const Invites = () => {
     );
   }
 
-  const invite = data?.invite ?? null;
+  const summary = data?.summary;
+  const passes = data?.passes ?? [];
   const invitees = data?.invitees ?? [];
+  const staleBefore = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
   const alreadyNudged = (id: string) => nudged.has(id) || !!data?.nudged.has(id);
 
-  // The origin the app is actually served from. This was hardcoded to
-  // underpines.com, so an invite copied from any other host — a preview build,
-  // a staging URL, localhost — pointed somewhere the recipient could not use.
-  const inviteUrl = invite ? `${window.location.origin}/invite/${invite.slug}` : '';
-  const displayUrl = inviteUrl.replace(/^https?:\/\//, '');
-  const staleBefore = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
-  const hasInvites = !!invite && (invite.is_infinite || (invite.uses_remaining ?? 0) > 0);
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['trail-passes', user.id] });
 
-  const copy = async () => {
+  const handleSend = async () => {
+    if (sending || !email.trim()) return;
+    setSending(true);
+    setNewPassLink(null);
     try {
-      await navigator.clipboard.writeText(inviteUrl);
+      const result = await createTrailPass(email.trim(), firstName.trim() || undefined, message.trim() || undefined);
+      if (!result.success || !result.token) {
+        const friendly: Record<string, string> = {
+          invalid_email: "That doesn't look like an email address.",
+          already_invited: 'You already have a pass out for that address.',
+          no_passes: "You don't have a Trail Pass available right now.",
+          invites_frozen: 'Your Trail Passes are temporarily unavailable.',
+          not_yet_eligible: 'Trail Passes unlock after some time in the community.',
+          not_eligible: "Trail Passes aren't available on your account right now.",
+        };
+        toast.error(friendly[result.error ?? ''] ?? 'Could not create that Trail Pass.');
+        return;
+      }
+
+      const link = `${window.location.origin}/join/${result.token}`;
+      const emailResult = await sendTrailPassEmail(result.pass_id!, result.token);
+      setNewPassLink(link);
+      setEmailWasSent(emailResult.sent);
+      if (emailResult.sent) {
+        toast.success('Trail Pass sent. Pick someone good.');
+      } else {
+        toast.success('Trail Pass created. Share the link below — it only works for that email.');
+      }
+      setEmail('');
+      setFirstName('');
+      setMessage('');
+      refresh();
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const copyLink = async (link: string) => {
+    try {
+      await navigator.clipboard.writeText(link);
     } catch {
-      // Clipboard is unavailable without a secure context or a user gesture in
-      // some browsers; the textarea trick still works there.
       const textarea = document.createElement('textarea');
-      textarea.value = inviteUrl;
+      textarea.value = link;
       textarea.style.cssText = 'position:fixed;opacity:0';
       document.body.appendChild(textarea);
       textarea.select();
@@ -127,49 +177,29 @@ const Invites = () => {
       document.body.removeChild(textarea);
     }
     setCopied(true);
-    toast.success('Link copied. Pick someone good.');
+    toast.success('Link copied.');
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const share = async () => {
-    if (!navigator.share) { copy(); return; }
-    try {
-      await navigator.share({
-        title: 'Join me on Under Pines',
-        text: 'I saved you a seat.',
-        url: inviteUrl,
-      });
-    } catch {
-      // Cancelled.
+  const handleRevoke = async (passId: string) => {
+    const result = await revokeTrailPass(passId);
+    if (result.success) {
+      toast.success('Trail Pass cancelled. It returned to your pouch.');
+      refresh();
+    } else {
+      toast.error('Could not cancel that pass.');
     }
   };
 
   const nudge = async (inviteeId: string) => {
     if (nudging) return;
     setNudging(inviteeId);
-
-    const { data: recent } = await supabase
-      .from('notifications')
-      .select('id')
-      .eq('notification_type', 'smoke_signal')
-      .eq('actor_id', user.id)
-      .eq('recipient_id', inviteeId)
-      .gte('created_at', new Date(Date.now() - THIRTY_DAYS_MS).toISOString())
-      .limit(1);
-
-    if (recent?.length) {
-      toast('You nudged them recently. Give it a month.');
-      setNudging(null);
-      return;
-    }
-
     const { error } = await supabase.from('notifications').insert({
       notification_type: 'smoke_signal',
       recipient_id: inviteeId,
       actor_id: user.id,
       is_read: false,
     });
-
     if (error) toast.error('Could not send that.');
     else {
       setNudged(prev => new Set(prev).add(inviteeId));
@@ -178,120 +208,179 @@ const Invites = () => {
     setNudging(null);
   };
 
-  const InviteeList = () => (
-    <section className="panel module">
-      <h2>Who you brought here</h2>
-      {invitees.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Nobody yet. Your first invite could be the start of something.
-        </p>
-      ) : (
-        invitees.map(row => {
-          const person = row.invitee;
-          if (!person) return null;
-          const stale = !!person.updated_at && person.updated_at < staleBefore;
-
-          return (
-            <div key={row.id} className="invitee-row">
-              <UserAvatar
-                avatarUrl={person.avatar_url}
-                defaultAvatarKey={person.default_avatar_key}
-                displayName={person.display_name}
-                size={30}
-              />
-              <Link to={`/${person.handle}`} className="invitee-name">
-                <b>{person.display_name}</b>
-                <small>@{person.handle}</small>
-              </Link>
-              {!stale ? (
-                <span className="invitee-state active">Around</span>
-              ) : alreadyNudged(row.invitee_id) ? (
-                <span className="invitee-state">Nudged</span>
-              ) : (
-                <button
-                  type="button"
-                  className="outline-button"
-                  onClick={() => nudge(row.invitee_id)}
-                  disabled={nudging === row.invitee_id}
-                >
-                  Nudge them
-                </button>
-              )}
-            </div>
-          );
-        })
-      )}
-
-      <Link to="/invites/tree" className="album-link">
-        <TreePine size={13} className="mr-1 inline" /> See the whole tree
-      </Link>
-    </section>
-  );
-
-  const EarningList = ({ lead }: { lead: string }) => (
-    <section className="panel module">
-      <h2>Earning more</h2>
-      <p className="mb-3 text-sm text-muted-foreground">{lead}</p>
-      <ul className="earn-list">
-        {EARNING_CRITERIA.map(c => (
-          <li key={c.text}>
-            <span>{c.text}</span>
-            <b>{c.slots}</b>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
+  const passesAvailable = summary?.available_passes ?? 0;
+  const frozen = !!summary?.frozen;
+  const eligible = !!summary?.eligible;
 
   return (
     <div className="page-shell invites">
-      <div className="panel-title"><span>Invites</span></div>
+      <div className="panel-title"><span>Trail Passes</span></div>
 
       <section className="panel module">
-        <h2>Why this matters</h2>
+        <h2>Invite someone Under Pines</h2>
         <p>
-          Everyone here was vouched for by someone real. That is the only thing keeping this
-          place the size and shape it is.
+          Under Pines grows through people, not algorithms. Send a Trail Pass to
+          someone you'd like to have around. Each pass is personal: it goes to
+          one email address and works exactly once.
         </p>
       </section>
 
-      {isSeedling ? (
-        <StatePanel title="Not yet.">
-          Your invite link switches on once you have settled in — {daysLeft}{' '}
-          {daysLeft === 1 ? 'day' : 'days'} to go.
+      {frozen ? (
+        <StatePanel title="Your Trail Passes are resting.">
+          Your Trail Passes are temporarily unavailable while we review unusual
+          activity connected to recent invitations. Everything else about your
+          account works normally.
         </StatePanel>
-      ) : hasInvites && invite ? (
-        <>
-          <section className="panel module">
-            <h2>Your link</h2>
-            <code className="invite-url">{displayUrl}</code>
-            <div className="invite-actions">
-              <button type="button" className="solid-button" onClick={copy}>
-                {copied ? <Check size={14} className="mr-1 inline" /> : <Copy size={14} className="mr-1 inline" />}
-                {copied ? 'Copied' : 'Copy link'}
-              </button>
-              {'share' in navigator && (
-                <button type="button" className="outline-button" onClick={share}>
-                  <Share2 size={14} className="mr-1 inline" /> Share
+      ) : !eligible ? (
+        <StatePanel title="Not quite yet.">
+          Trail Passes become available after you've spent some time as part of
+          the community.
+        </StatePanel>
+      ) : passesAvailable > 0 ? (
+        <section className="panel module">
+          <h2>
+            Send a Trail Pass
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
+              {passesAvailable} available
+            </span>
+          </h2>
+          <div className="space-y-3">
+            <label className="block">
+              <span className="text-sm text-muted-foreground">Their email</span>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="friend@example.com"
+                className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 font-body text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm text-muted-foreground">Their first name (optional)</span>
+              <input
+                type="text"
+                value={firstName}
+                onChange={e => setFirstName(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 font-body text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm text-muted-foreground">A note from you (optional)</span>
+              <textarea
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                rows={2}
+                maxLength={500}
+                className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 font-body text-sm resize-none"
+              />
+            </label>
+            <button
+              type="button"
+              className="solid-button"
+              onClick={handleSend}
+              disabled={sending || !email.trim()}
+            >
+              <Mail size={14} className="mr-1 inline" />
+              {sending ? 'Sending…' : 'Send Trail Pass'}
+            </button>
+            {newPassLink && (
+              <div className="rounded-xl border border-border bg-muted/40 p-3 space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  {emailWasSent
+                    ? 'Sent! You can also share the link directly:'
+                    : "We couldn't email it just now — share this link with them instead:"}
+                </p>
+                <code className="invite-url break-all">{newPassLink.replace(/^https?:\/\//, '')}</code>
+                <button type="button" className="outline-button" onClick={() => copyLink(newPassLink)}>
+                  {copied ? <Check size={14} className="mr-1 inline" /> : <Copy size={14} className="mr-1 inline" />}
+                  {copied ? 'Copied' : 'Copy link'}
+                </button>
+              </div>
+            )}
+          </div>
+          <p className="invite-count mt-3">
+            Trail Passes are limited and become available as your corner of the
+            community grows.
+          </p>
+        </section>
+      ) : (
+        <StatePanel title="Your trail is growing.">
+          You don't have a Trail Pass available right now. More become available
+          over time as the people you've invited become part of the community.
+        </StatePanel>
+      )}
+
+      {passes.length > 0 && (
+        <section className="panel module">
+          <h2>Passes you've sent</h2>
+          {passes.map(pass => (
+            <div key={pass.id} className="invitee-row">
+              <div className="invitee-name">
+                <b>{pass.invitee_name || pass.invitee_email_normalized}</b>
+                {pass.invitee_name && <small>{pass.invitee_email_normalized}</small>}
+              </div>
+              <span className={`invitee-state ${pass.status === 'REDEEMED' ? 'active' : ''}`}>
+                {PASS_STATUS_LABEL[pass.status]}
+              </span>
+              {pass.status === 'PENDING' && (
+                <button
+                  type="button"
+                  className="outline-button"
+                  onClick={() => handleRevoke(pass.id)}
+                  aria-label={`Cancel the pass for ${pass.invitee_email_normalized}`}
+                >
+                  <XCircle size={13} className="mr-1 inline" /> Cancel
                 </button>
               )}
             </div>
-            {!invite.is_infinite && (
-              <p className="invite-count">
-                {invite.uses_remaining} of {invite.uses_total} left.
-              </p>
-            )}
-          </section>
-          <InviteeList />
-        </>
-      ) : invite ? (
-        <>
-          <EarningList lead="Your invites are all out in the world. More come from:" />
-          <InviteeList />
-        </>
-      ) : (
-        <EarningList lead="You do not have invites yet. They come from:" />
+          ))}
+        </section>
       )}
+
+      <section className="panel module">
+        <h2>Who you brought here</h2>
+        {invitees.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Nobody yet. Your first invite could be the start of something.
+          </p>
+        ) : (
+          invitees.map(person => {
+            const stale = !!person.updated_at && person.updated_at < staleBefore;
+            return (
+              <div key={person.id} className="invitee-row">
+                <UserAvatar
+                  avatarUrl={person.avatar_url}
+                  defaultAvatarKey={person.default_avatar_key}
+                  displayName={person.display_name}
+                  size={30}
+                />
+                <Link to={`/${person.handle}`} className="invitee-name">
+                  <b>{person.display_name}</b>
+                  <small>@{person.handle}</small>
+                </Link>
+                {!stale ? (
+                  <span className="invitee-state active">Around</span>
+                ) : alreadyNudged(person.id) ? (
+                  <span className="invitee-state">Nudged</span>
+                ) : (
+                  <button
+                    type="button"
+                    className="outline-button"
+                    onClick={() => nudge(person.id)}
+                    disabled={nudging === person.id}
+                  >
+                    Nudge them
+                  </button>
+                )}
+              </div>
+            );
+          })
+        )}
+
+        <Link to="/invites/tree" className="album-link">
+          <TreePine size={13} className="mr-1 inline" /> See the whole tree
+        </Link>
+      </section>
     </div>
   );
 };

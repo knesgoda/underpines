@@ -42,7 +42,17 @@ export const useSuspensionCheck = (userId: string | undefined) => {
         return;
       }
 
-      // Suspension expired — clean up
+      // suspended_until = null + not permanent means "held pending review"
+      // (security locks, block-threshold holds). It must NOT self-clear —
+      // previously the suspended user's own client deleted the row here,
+      // which quietly lifted every pending-review hold.
+      if (!data.suspended_until) {
+        setSuspension(data as SuspensionData);
+        setChecking(false);
+        return;
+      }
+
+      // A dated suspension that has genuinely lapsed clears itself.
       await supabase.from('suspensions').delete().eq('user_id', userId);
       setSuspension(null);
       setChecking(false);

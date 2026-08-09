@@ -29,7 +29,7 @@ const Deferred = ({ children }: { children: React.ReactNode }) => (
 );
 
 const FULL_SCREEN_ROUTES = ['/onboarding', '/welcome', '/login', '/new/story', '/privacy', '/terms'];
-const FULL_SCREEN_PREFIXES = ['/invite/'];
+const FULL_SCREEN_PREFIXES = ['/invite/', '/join/'];
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
