@@ -2969,6 +2969,30 @@ export type Database = {
           },
         ]
       }
+      top_friends: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          owner_id: string
+          position: number
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          owner_id: string
+          position: number
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          owner_id?: string
+          position?: number
+        }
+        Relationships: []
+      }
       trail_map_pins: {
         Row: {
           created_at: string
@@ -3022,6 +3046,30 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      wall_notes: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          profile_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          profile_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
         }
         Relationships: []
       }
