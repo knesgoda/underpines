@@ -11,8 +11,7 @@ interface SparkComposerProps {
   onCancel: () => void;
   /**
    * Which kind of short post this writes. Defaults to the ordinary one; a
-   * bulletin is the same form with a different post_type, and is gated on the
-   * widened CHECK constraint (see lib/features.ts).
+   * bulletin is the same form with a different post_type.
    */
   postType?: 'spark' | 'bulletin';
 }

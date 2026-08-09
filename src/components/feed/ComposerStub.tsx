@@ -10,7 +10,6 @@ import EmberComposer from './EmberComposer';
 import UserAvatar from '@/components/UserAvatar';
 import type { PostWithAuthor } from './PostCard';
 import { useSeedlingStatus } from './SeedlingBanner';
-import { BULLETINS_ENABLED } from '@/lib/features';
 
 type PostType = 'spark' | 'story' | 'ember' | 'bulletin' | null;
 
@@ -23,16 +22,16 @@ type PostType = 'spark' | 'story' | 'ember' | 'bulletin' | null;
  *
  * The list was also written out three times in this file with different emoji
  * in each copy, so the desktop collapsed bar disagreed with the expanded one.
+ *
+ * Bulletins were behind a flag while the widened post_type CHECK was pending.
+ * The constraint is applied, so the flag is gone rather than left permanently
+ * true with nothing left to guard.
  */
 const POST_TYPES: { type: Exclude<PostType, null>; icon: string; label: string }[] = [
   { type: 'spark', icon: '\u{1F33F}', label: 'A thought' },
   { type: 'story', icon: '\u{1F4D6}', label: 'Something longer' },
   { type: 'ember', icon: '\u{1F4F7}', label: 'Photos' },
-  // Bulletins need the widened post_type CHECK; without it Postgres rejects
-  // the insert after the user has written the thing. See lib/features.ts.
-  ...(BULLETINS_ENABLED
-    ? [{ type: 'bulletin' as const, icon: '\u{1F4CC}', label: 'A bulletin' }]
-    : []),
+  { type: 'bulletin', icon: '\u{1F4CC}', label: 'A bulletin' },
 ];
 
 interface ComposerStubProps {
