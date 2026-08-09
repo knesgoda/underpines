@@ -1,537 +1,137 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { motion, AnimatePresence } from 'framer-motion';
-import ComposerStub from '@/components/feed/ComposerStub';
-import SeedlingBanner from '@/components/feed/SeedlingBanner';
-import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
+import { useNavigation } from '@/contexts/NavigationContext';
+import { useFeedPosts } from '@/hooks/useFeedPosts';
+import { useViewerProfile } from '@/hooks/queries';
+import { LeftRail, RightRail } from '@/components/feed/FeedRails';
+import HandoffPostCard from '@/components/feed/HandoffPostCard';
 import LightboxViewer from '@/components/feed/LightboxViewer';
-import SeasonalEventCard from '@/components/feed/SeasonalEventCard';
-import { SeasonalFeedGlyph } from '@/components/seasonal/SeasonalLayer';
-import InviteBanner from '@/components/feed/InviteBanner';
 import PineTreeLoading from '@/components/PineTreeLoading';
-import { Settings } from 'lucide-react';
+import UserAvatar from '@/components/UserAvatar';
+import '@/styles/feed.css';
 
-const PineTreeInline = () => (
-  <svg width="28" height="42" viewBox="0 0 48 72" fill="none" className="animate-tree-sway">
-    <path d="M24 4 L14 24 L34 24 Z" fill="hsl(var(--pine-dark))" opacity="0.9" />
-    <path d="M24 14 L10 38 L38 38 Z" fill="hsl(var(--pine-dark))" opacity="0.75" />
-    <path d="M24 26 L6 52 L42 52 Z" fill="hsl(var(--pine-dark))" opacity="0.6" />
-    <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--amber-deep))" opacity="0.7" />
-  </svg>
-);
+const greeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+};
 
+const today = () =>
+  new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase();
+
+/**
+ * The chronological feed, in the handoff's three-column layout.
+ *
+ * Data comes from useFeedPosts (React Query) rather than the tangle of
+ * useEffects this page used to carry; the composer opens the existing sheet
+ * rather than duplicating it.
+ */
 const Feed = () => {
   const { user, loading: authLoading } = useAuth();
-  const [posts, setPosts] = useState<PostWithAuthor[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
-  const [circleIds, setCircleIds] = useState<string[]>([]);
-  const [inviter, setInviter] = useState<{ display_name: string; handle: string } | null>(null);
-  const [showPrefs, setShowPrefs] = useState(false);
-  const [prefs, setPrefs] = useState({
-    feed_show_sparks: true,
-    feed_show_stories: true,
-    feed_show_embers: true,
-    feed_show_quotes: true,
-    feed_scroll_reminder: true,
-  });
-  const [scrollNudgeShown, setScrollNudgeShown] = useState(false);
-  const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
-  const scrollTimerRef = useRef(0);
-  const scrollIntervalRef = useRef<number | null>(null);
-  const nudgeDismissedUntilRef = useRef<number>(0);
-  const feedRef = useRef<HTMLDivElement>(null);
-  const [pullY, setPullY] = useState(0);
-  const [isPulling, setIsPulling] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const pullStartRef = useRef<number | null>(null);
-
-  // Load profile + preferences
-  useEffect(() => {
-    if (!user) return;
-    supabase.from('profiles').select('*').eq('id', user.id).maybeSingle().then(({ data }) => {
-      if (data) {
-        setProfile(data);
-        setPrefs({
-          feed_show_sparks: data.feed_show_sparks ?? true,
-          feed_show_stories: data.feed_show_stories ?? true,
-          feed_show_embers: data.feed_show_embers ?? true,
-          feed_show_quotes: data.feed_show_quotes ?? true,
-          feed_scroll_reminder: data.feed_scroll_reminder ?? true,
-        });
-      }
-    });
-
-    // Load inviter info
-    supabase
-      .from('invite_uses')
-      .select('invite_id')
-      .eq('invitee_id', user.id)
-      .maybeSingle()
-      .then(async ({ data: useRow }) => {
-        if (!useRow) return;
-        const { data: invite } = await supabase
-          .from('invites')
-          .select('inviter_id')
-          .eq('id', useRow.invite_id)
-          .maybeSingle();
-        if (!invite) return;
-        const { data: inviterProfile } = await supabase
-          .from('profiles')
-          .select('display_name, handle')
-          .eq('id', invite.inviter_id)
-          .maybeSingle();
-        if (inviterProfile) setInviter(inviterProfile);
-      });
-  }, [user]);
-
-  // Load feed posts
-  const loadPosts = useCallback(async () => {
-    if (!user) return;
-    setLoading(true);
-
-    // Step 1: Fetch circles, muted users and camp memberships in parallel.
-    // Circles are fetched here rather than in their own effect: when they
-    // lived in sibling state this callback was rebuilt the moment they
-    // arrived, and the whole pipeline below ran a second time on every load.
-    const [circleResult, muteResult, campMemberResult] = await Promise.all([
-      supabase
-        .from('circles')
-        .select('requester_id, requestee_id')
-        .eq('status', 'accepted')
-        .or(`requester_id.eq.${user.id},requestee_id.eq.${user.id}`),
-      supabase.from('mutes').select('muted_id').eq('muter_id', user.id),
-      supabase.from('camp_members').select('camp_id').eq('user_id', user.id),
-    ]);
-
-    const acceptedCircleIds = (circleResult.data || []).map(c =>
-      c.requester_id === user.id ? c.requestee_id : c.requester_id
-    );
-    setCircleIds(acceptedCircleIds);
-
-    const mutedIds = new Set(muteResult.data?.map(m => m.muted_id) || []);
-    const campIds = campMemberResult.data?.map(cm => cm.camp_id) || [];
-
-    // Build the set of author IDs we want to see: self + circle members
-    const allowedAuthorIds = [user.id, ...acceptedCircleIds];
-
-    // Step 2: Fetch personal posts and camp posts in parallel
-    const postsQuery = supabase
-      .from('posts')
-      .select('*')
-      .eq('is_published', true)
-      .in('author_id', allowedAuthorIds.length > 0 ? allowedAuthorIds : [user.id])
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    const campPostsQuery = campIds.length > 0
-      ? supabase
-          .from('camp_posts')
-          .select('*, camp:camps(name)')
-          .in('camp_id', campIds)
-          .eq('is_published', true)
-          .order('created_at', { ascending: false })
-          .limit(20)
-      : Promise.resolve({ data: [] as any[] });
-
-    const [postsResult, campPostsResult] = await Promise.all([postsQuery, campPostsQuery]);
-
-    const allPosts = postsResult.data || [];
-    const campPosts = campPostsResult.data || [];
-
-    if (allPosts.length > 0 || campPosts.length > 0) {
-      // Fetch authors for all posts
-      const authorIds = [...new Set([...allPosts.map(p => p.author_id), ...campPosts.map(p => p.author_id)])];
-
-      // Step 3: Fetch profiles, reactions, and media in parallel
-      const postIds = allPosts.map(p => p.id);
-      const mediaPostIds = allPosts.filter(p => p.post_type === 'ember').map(p => p.id);
-
-      const [profilesResult, reactionsResult, mediaResult] = await Promise.all([
-        supabase
-          .from('profiles')
-          .select('id, display_name, handle, accent_color, cabin_mood, avatar_url, default_avatar_key')
-          .in('id', authorIds.length > 0 ? authorIds : ['00000000-0000-0000-0000-000000000000']),
-        postIds.length > 0
-          ? supabase.from('reactions').select('post_id, reaction_type, user_id').in('post_id', postIds)
-          : Promise.resolve({ data: [] as any[] }),
-        mediaPostIds.length > 0
-          ? supabase.from('post_media').select('*').in('post_id', mediaPostIds).order('position')
-          : Promise.resolve({ data: [] as any[] }),
-      ]);
-
-      const profiles = profilesResult.data;
-      const allReactions = reactionsResult.data || [];
-      const allMedia = mediaResult.data || [];
-
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
-
-      // Enrich personal feed posts
-      const enrichedPersonal: PostWithAuthor[] = allPosts
-        .filter(p => !mutedIds.has(p.author_id))
-        .map(p => ({
-          ...p,
-          author: profileMap.get(p.author_id) as any,
-          reactions: allReactions?.filter(r => r.post_id === p.id) || [],
-          post_media: allMedia.filter(m => m.post_id === p.id),
-        }));
-
-      // Enrich camp posts as feed items
-      const enrichedCamp: PostWithAuthor[] = campPosts
-        .filter(p => !mutedIds.has(p.author_id))
-        .map(p => ({
-          id: p.id,
-          author_id: p.author_id,
-          content: p.content,
-          post_type: p.post_type || 'spark',
-          is_published: true,
-          created_at: p.created_at,
-          updated_at: p.updated_at,
-          is_quote_post: false,
-          author: profileMap.get(p.author_id) as any,
-          reactions: [],
-          post_media: [],
-          _campName: p.camp?.name,
-        } as any));
-
-      // Merge and sort chronologically
-      const merged = [...enrichedPersonal, ...enrichedCamp]
-        .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
-        .slice(0, 50);
-
-    setPosts(merged);
-
-      // Cache for offline use
-      import('@/lib/feedCache').then(({ cacheFeedPosts }) => cacheFeedPosts(merged)).catch(() => {});
-    } else {
-      setPosts([]);
-    }
-    setLoading(false);
-  }, [user]);
-
-  // Load cached posts first, then refresh from network
-  useEffect(() => {
-    import('@/lib/feedCache').then(({ getCachedFeedPosts }) =>
-      getCachedFeedPosts().then(cached => {
-        if (cached.length > 0 && posts.length === 0) {
-          setPosts(cached.sort((a: any, b: any) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()));
-        }
-      })
-    ).catch(() => {});
-    loadPosts();
-  }, [loadPosts]);
-
-  // Pull to refresh — use refs to avoid re-registering listeners on every frame
-  const pullYRef = useRef(0);
-  const isRefreshingRef = useRef(false);
-  const loadPostsRef = useRef(loadPosts);
-  loadPostsRef.current = loadPosts;
-
-  useEffect(() => {
-    const el = feedRef.current;
-    if (!el) return;
-
-    const onTouchStart = (e: TouchEvent) => {
-      if (window.scrollY <= 0) {
-        pullStartRef.current = e.touches[0].clientY;
-        setIsPulling(true);
-      }
-    };
-    const onTouchMove = (e: TouchEvent) => {
-      if (pullStartRef.current === null) return;
-      const dy = Math.max(0, Math.min(e.touches[0].clientY - pullStartRef.current, 120));
-      pullYRef.current = dy;
-      setPullY(dy);
-    };
-    const onTouchEnd = async () => {
-      if (pullYRef.current > 60 && !isRefreshingRef.current) {
-        isRefreshingRef.current = true;
-        setIsRefreshing(true);
-        setPullY(60);
-        await loadPostsRef.current();
-        isRefreshingRef.current = false;
-        setIsRefreshing(false);
-      }
-      pullYRef.current = 0;
-      setPullY(0);
-      setIsPulling(false);
-      pullStartRef.current = null;
-    };
-
-    el.addEventListener('touchstart', onTouchStart, { passive: true });
-    el.addEventListener('touchmove', onTouchMove, { passive: true });
-    el.addEventListener('touchend', onTouchEnd);
-    return () => {
-      el.removeEventListener('touchstart', onTouchStart);
-      el.removeEventListener('touchmove', onTouchMove);
-      el.removeEventListener('touchend', onTouchEnd);
-    };
-  }, []); // stable — no re-registration
-
-  // Scroll timer for 20-minute nudge — reset on mount
-  useEffect(() => {
-    if (!prefs.feed_scroll_reminder) return;
-
-    scrollTimerRef.current = 0;
-
-    const startTimer = () => {
-      scrollIntervalRef.current = window.setInterval(() => {
-        scrollTimerRef.current += 1;
-        if (scrollTimerRef.current >= 1200 && !scrollNudgeShown && Date.now() > nudgeDismissedUntilRef.current) {
-          setScrollNudgeShown(true);
-        }
-      }, 1000);
-    };
-
-    const stopTimer = () => {
-      if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
-    };
-
-    startTimer();
-    const handleVisibility = () => document.hidden ? stopTimer() : startTimer();
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    return () => {
-      stopTimer();
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, [prefs.feed_scroll_reminder, scrollNudgeShown]);
-
-  const handleOptimisticPost = (post: any) => {
-    if (post._failed) {
-      setPosts(prev => prev.filter(p => p.id !== post.id));
-      return;
-    }
-    setPosts(prev => [{
-      ...post,
-      author: profile ? { display_name: profile.display_name, handle: profile.handle, accent_color: profile.accent_color, cabin_mood: profile.cabin_mood, avatar_url: profile.avatar_url, default_avatar_key: profile.default_avatar_key } : undefined,
-      reactions: [],
-      post_media: [],
-    }, ...prev]);
-  };
-
-  const handleRemovePost = (id: string) => {
-    setPosts(prev => prev.filter(p => p.id !== id));
-  };
-
-  const updatePref = async (key: string, value: boolean) => {
-    setPrefs(prev => ({ ...prev, [key]: value }));
-    if (user) {
-      await supabase.from('profiles').update({ [key]: value } as any).eq('id', user.id);
-    }
-  };
-
-  const dismissNudge = (hours: number) => {
-    setScrollNudgeShown(false);
-    scrollTimerRef.current = 0;
-    nudgeDismissedUntilRef.current = Date.now() + hours * 3600000;
-  };
-
-  // Filter posts by preferences
-  const filteredPosts = posts.filter(p => {
-    if (p.post_type === 'spark' && !prefs.feed_show_sparks) return false;
-    if (p.post_type === 'story' && !prefs.feed_show_stories) return false;
-    if (p.post_type === 'ember' && !prefs.feed_show_embers) return false;
-    if (p.is_quote_post && !prefs.feed_show_quotes) return false;
-    return true;
+  const { setComposerOpen } = useNavigation();
+  const queryClient = useQueryClient();
+  const { data: profile } = useViewerProfile();
+  const { data, isLoading } = useFeedPosts();
+  const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({
+    open: false,
+    images: [],
+    index: 0,
   });
 
-  // If not logged in, show landing
   if (authLoading) return <PineTreeLoading />;
-  if (!user) return <LandingRedirect />;
+  if (!user) return <Navigate to="/" replace />;
 
-  // Empty states
-  const allFiltered = posts.length > 0 && filteredPosts.length === 0;
-  const emptyFeed = filteredPosts.length === 0 && !allFiltered && !loading;
+  const posts = data?.posts ?? [];
 
   return (
-    <div ref={feedRef} className="max-w-[680px] mx-auto px-4 md:px-0 py-4 md:py-6">
-      {/* Pull to refresh indicator */}
-      <AnimatePresence>
-        {(isPulling || isRefreshing) && pullY > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: Math.min(1, pullY / 60), height: pullY }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex items-center justify-center overflow-hidden -mt-4 mb-2"
-          >
-            <PineTreeInline />
-          </motion.div>
-        )}
-      </AnimatePresence>
-      {/* Feed preferences toggle (desktop) */}
-      <div className="hidden md:flex justify-end items-center gap-2 mb-2">
-        <SeasonalFeedGlyph />
-        <button
-          onClick={() => setShowPrefs(!showPrefs)}
-          className="p-1.5 rounded-md text-muted-foreground hover:bg-muted transition-colors"
-          title="Feed preferences"
-        >
-          <Settings size={16} />
-        </button>
+    <div className="page-shell">
+      <div className="feed-layout">
+        <LeftRail />
+
+        <div className="feed-column">
+          <section className="panel welcome">
+            <div>
+              <span className="eyebrow">{today()}</span>
+              <h1>{greeting()}{profile?.display_name ? `, ${profile.display_name.split(' ')[0]}` : ''}.</h1>
+              <p>Everything below is in the order it was written.</p>
+            </div>
+            <span className="sun-disc" aria-hidden="true" />
+          </section>
+
+          <section className="panel composer" aria-label="Write a post">
+            <div className="composer-row">
+              <UserAvatar
+                avatarUrl={profile?.avatar_url ?? null}
+                defaultAvatarKey={profile?.default_avatar_key ?? null}
+                displayName={profile?.display_name ?? ''}
+                size={38}
+              />
+              <input
+                readOnly
+                onFocus={() => setComposerOpen(true)}
+                onClick={() => setComposerOpen(true)}
+                placeholder="What's happening under your pines?"
+                aria-label="Write a post"
+              />
+            </div>
+            <div className="composer-actions">
+              <button type="button" onClick={() => setComposerOpen(true)}>
+                <span aria-hidden="true">▧</span> Photos
+              </button>
+              <button type="button" onClick={() => setComposerOpen(true)}>
+                <span aria-hidden="true">✎</span> Blog
+              </button>
+              <button
+                type="button"
+                className="post-button"
+                onClick={() => setComposerOpen(true)}
+              >
+                Post
+              </button>
+            </div>
+          </section>
+
+          {isLoading && <PineTreeLoading />}
+
+          {!isLoading && posts.length === 0 && (
+            <section className="panel p-10 text-center">
+              <p className="font-body text-sm text-foreground">It's quiet in here.</p>
+              <p className="mt-1 font-body text-sm text-muted-foreground">
+                Which is rather the point — but a few friends would help.
+              </p>
+            </section>
+          )}
+
+          {posts.map(post => (
+            <HandoffPostCard
+              key={post.id}
+              post={post}
+              onOpen={() => queryClient.invalidateQueries({ queryKey: ['feed', user.id] })}
+              onImageClick={(images, index) => setLightbox({ open: true, images, index })}
+            />
+          ))}
+
+          {!isLoading && posts.length > 0 && (
+            <p className="py-8 text-center font-body text-sm text-muted-foreground">
+              You're all caught up. Everything since your last visit is above this point.
+            </p>
+          )}
+        </div>
+
+        <RightRail inviteUrl={null} />
       </div>
 
-      {/* Feed preferences panel */}
-      <AnimatePresence>
-        {showPrefs && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="rounded-xl bg-card border border-border p-4 mb-4 space-y-2"
-          >
-            <h3 className="font-body text-sm font-medium text-foreground mb-2">Feed Preferences</h3>
-            {[
-              { key: 'feed_show_sparks', label: 'Show Sparks' },
-              { key: 'feed_show_stories', label: 'Show Stories' },
-              { key: 'feed_show_embers', label: 'Show Ember Posts' },
-              { key: 'feed_show_quotes', label: 'Show quote posts' },
-              { key: 'feed_scroll_reminder', label: 'Scroll reminder' },
-            ].map(({ key, label }) => (
-              <label key={key} className="flex items-center justify-between py-1">
-                <span className="font-body text-sm text-foreground">{label}</span>
-                <button
-                  onClick={() => updatePref(key, !(prefs as any)[key])}
-                  className={`w-10 h-5 rounded-full transition-colors relative ${(prefs as any)[key] ? 'bg-primary' : 'bg-muted'}`}
-                >
-                  <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${(prefs as any)[key] ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                </button>
-              </label>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Seedling banner */}
-      <SeedlingBanner />
-
-      {/* Invite discovery banner */}
-      <InviteBanner />
-
-      {/* Seasonal event card */}
-      <SeasonalEventCard onShareThought={(prompt) => {
-        // Pre-fill composer with prompt
-      }} />
-
-      {/* Composer stub */}
-      <ComposerStub onPost={handleOptimisticPost} profile={profile} />
-
-      {/* Loading */}
-      {loading && <div className="py-8"><PineTreeLoading /></div>}
-
-      {/* Empty: no posts */}
-      {emptyFeed && (
-        <EmptyState icon="🌲" title="Your feed is quiet right now —" subtitle="which is kind of nice, isn't it?">
-          {inviter ? (
-            <Link to={`/circles/suggestions/${inviter.handle}`} className="inline-block mt-4 font-body text-sm text-primary hover:opacity-80 transition-opacity">
-              See who {inviter.display_name} follows →
-            </Link>
-          ) : (
-            <Link to="/search" className="inline-block mt-4 font-body text-sm text-primary hover:opacity-80 transition-opacity">
-              Find people in the Pines →
-            </Link>
-          )}
-        </EmptyState>
-      )}
-
-      {/* Empty: all filtered */}
-      {!loading && allFiltered && (
-        <EmptyState icon="🕯️" title="Your feed filters are hiding everything.">
-          <button onClick={() => setShowPrefs(true)} className="text-sm font-body text-primary hover:opacity-80 mt-2">
-            Adjust your feed preferences
-          </button>
-        </EmptyState>
-      )}
-
-      {/* Posts */}
-      <AnimatePresence>
-        {filteredPosts.map((post, i) => (
-          <div key={post.id}>
-            {/* Scroll nudge card — inserted after a few posts */}
-            {scrollNudgeShown && i === 5 && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl bg-card border border-primary/20 p-6 mb-3 text-center"
-              >
-                <p className="font-body text-sm text-foreground mb-1">You've been here a while.</p>
-                <p className="font-body text-sm text-muted-foreground mb-4">Maybe a good time for a walk. 🌲</p>
-                <div className="flex items-center justify-center gap-3">
-                  <button
-                    onClick={() => dismissNudge(2)}
-                    className="px-4 py-1.5 rounded-full border border-border font-body text-sm text-foreground hover:bg-muted transition-colors"
-                  >
-                    Keep reading
-                  </button>
-                  <button
-                    onClick={() => {
-                      dismissNudge(2);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
-                  >
-                    Take a break
-                  </button>
-                </div>
-              </motion.div>
-            )}
-            <PostCard post={post} circleIds={circleIds} onRemove={handleRemovePost} onRefresh={loadPosts} onImageClick={(imgs, idx) => setLightbox({ open: true, images: imgs, index: idx })} />
-          </div>
-        ))}
-      </AnimatePresence>
-
-      {/* Feed bottom */}
-      {!loading && filteredPosts.length > 0 && (
-        <div className="py-12 text-center">
-          <div className="h-px bg-border mx-auto max-w-[200px] mb-6" />
-          <p className="font-body text-sm text-muted-foreground mb-1">
-            You're all caught up.
-          </p>
-          <p className="font-body text-sm text-muted-foreground">
-            Everything since your last visit is above this point. 🌲
-          </p>
-        </div>
-      )}
-      <LightboxViewer open={lightbox.open} images={lightbox.images} startIndex={lightbox.index} onClose={() => setLightbox(l => ({ ...l, open: false }))} />
+      <LightboxViewer
+        open={lightbox.open}
+        images={lightbox.images}
+        startIndex={lightbox.index}
+        onClose={() => setLightbox(l => ({ ...l, open: false }))}
+      />
     </div>
   );
 };
-
-const PearlGreyResting = () => (
-  <svg width="80" height="50" viewBox="0 0 80 50" className="mx-auto mb-4 opacity-40">
-    {/* Body — lying down */}
-    <ellipse cx="40" cy="35" rx="22" ry="9" fill="hsl(var(--muted-foreground))" opacity="0.3" />
-    {/* White chest */}
-    <ellipse cx="38" cy="37" rx="6" ry="5" fill="hsl(var(--muted-foreground))" opacity="0.15" />
-    {/* Head — resting on paws */}
-    <ellipse cx="55" cy="28" rx="9" ry="7" fill="hsl(var(--muted-foreground))" opacity="0.35" />
-    {/* Rose ears */}
-    <ellipse cx="50" cy="22" rx="3" ry="2" fill="hsl(var(--muted-foreground))" opacity="0.25" transform="rotate(-10 50 22)" />
-    <ellipse cx="60" cy="22" rx="3" ry="2" fill="hsl(var(--muted-foreground))" opacity="0.25" transform="rotate(10 60 22)" />
-    {/* Closed eyes */}
-    <path d="M52 27 Q53.5 26 55 27" stroke="hsl(var(--muted-foreground))" strokeWidth="0.6" fill="none" opacity="0.4" />
-    <path d="M57 27 Q58.5 26 60 27" stroke="hsl(var(--muted-foreground))" strokeWidth="0.6" fill="none" opacity="0.4" />
-    {/* Nose */}
-    <ellipse cx="62" cy="29" rx="1.5" ry="1" fill="hsl(var(--muted-foreground))" opacity="0.3" />
-    {/* Front paws */}
-    <ellipse cx="60" cy="38" rx="4" ry="2" fill="hsl(var(--muted-foreground))" opacity="0.25" />
-    {/* Gentle breathing animation */}
-    <animateTransform attributeName="transform" type="scale" values="1 1;1 1.015;1 1" dur="4s" repeatCount="indefinite" additive="sum" />
-  </svg>
-);
-
-const EmptyState = ({ icon, title, subtitle, children }: { icon: string; title: string; subtitle?: string; children?: React.ReactNode }) => (
-  <div className="text-center py-20">
-    <PearlGreyResting />
-    <p className="font-body text-sm text-muted-foreground">{title}</p>
-    {subtitle && <p className="font-body text-sm text-muted-foreground">{subtitle}</p>}
-    {children}
-  </div>
-);
-
-const LandingRedirect = () => <Navigate to="/" replace />;
 
 export default Feed;

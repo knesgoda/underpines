@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Toaster } from "@/components/ui/toaster";
@@ -121,12 +121,16 @@ const App = () => (
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/onboarding" element={<Onboarding />} />
                       <Route path="/welcome" element={<Welcome />} />
-                      <Route path="/cabin" element={<Cabin />} />
+                      <Route path="/me" element={<Cabin />} />
+                      <Route path="/cabin" element={<Navigate to="/me" replace />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />
-                      <Route path="/campfires" element={<Campfires />} />
+                      <Route path="/messages" element={<Campfires />} />
+                      <Route path="/campfires" element={<Navigate to="/messages" replace />} />
                       <Route path="/search" element={<SearchPage />} />
-                      <Route path="/lantern" element={<Lantern />} />
+                      <Route path="/explore" element={<SearchPage />} />
+                      <Route path="/updates" element={<Lantern />} />
+                      <Route path="/lantern" element={<Navigate to="/updates" replace />} />
                       <Route path="/settings" element={<SettingsPage />} />
                       <Route path="/settings/notifications" element={<NotificationSettings />} />
                       <Route path="/settings/privacy" element={<PrivacySettings />} />
@@ -137,10 +141,12 @@ const App = () => (
                       <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
                       <Route path="/designs/create" element={<DesignCreator />} />
                       <Route path="/new/story" element={<StoryComposer />} />
-                      <Route path="/circles" element={<CirclesPage />} />
+                      <Route path="/friends" element={<CirclesPage />} />
+                      <Route path="/circles" element={<Navigate to="/friends" replace />} />
                       <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
                       <Route path="/collections/new" element={<CollectionEditor />} />
                       <Route path="/collections/edit/:id" element={<CollectionEditor />} />
+                      <Route path="/groups" element={<CampsDirectory />} />
                       <Route path="/camps" element={<CampsDirectory />} />
                       <Route path="/camps/new" element={<CreateCamp />} />
                       <Route path="/camps/mine" element={<MyCamps />} />

@@ -6,11 +6,12 @@ import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { supabase } from '@/integrations/supabase/client';
-import DesktopSidebar from './DesktopSidebar';
-import MobileTabBar from './MobileTabBar';
-import LanternIcon from './LanternIcon';
+import TopBar from './TopBar';
+import TabBar from './TabBar';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { useViewerProfile } from '@/hooks/queries';
+import '@/styles/handoff-shell.css';
 
 // Chrome that is rarely rendered on first paint. Keeping these out of the
 // entry chunk matters most for MobileComposerSheet, which pulls in both post
@@ -32,18 +33,6 @@ const Deferred = ({ children }: { children: React.ReactNode }) => (
 const FULL_SCREEN_ROUTES = ['/onboarding', '/welcome', '/login', '/new/story', '/privacy', '/terms'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
 
-const titleForPath = (pathname: string) => {
-  if (pathname === '/') return 'Home';
-  if (pathname.startsWith('/camps')) return 'Camps';
-  if (pathname.startsWith('/campfires')) return 'Campfires';
-  if (pathname.startsWith('/cabin')) return 'Cabin';
-  if (pathname.startsWith('/lantern')) return 'Lantern';
-  if (pathname.startsWith('/circles')) return 'Circles';
-  if (pathname.startsWith('/search')) return 'Search';
-  if (pathname.startsWith('/settings')) return 'Settings';
-  return 'Under Pines';
-};
-
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
   const location = useLocation();
@@ -52,6 +41,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { suspension, checking } = useSuspensionCheck(user?.id);
   const { needsWelcome, checking: checkingWelcome } = useOnboardingGuard(user?.id);
   const { isFounder } = useAdminCheck();
+  const { data: profile } = useViewerProfile();
   const [needsAgeGate, setNeedsAgeGate] = useState(false);
   const [ageGateChecked, setAgeGateChecked] = useState(false);
 
@@ -113,10 +103,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   // the header and bars shove the page down a moment later.
   if (authLoading && !isFullScreen) {
     return (
-      <div className="min-h-screen bg-card">
-        <div className="fixed top-0 left-0 right-0 z-30 h-14 border-b border-border bg-card" />
-        <div className="hidden md:block fixed left-0 top-14 bottom-0 w-[260px] border-r border-border bg-card" />
-        <main className="pb-16 pt-14 md:ml-[260px] md:pb-0">{children}</main>
+      <div className="app">
+        <div className="topbar" />
+        <main>{children}</main>
       </div>
     );
   }
@@ -137,7 +126,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen bg-card">
+    <div className="app">
       <Deferred>
         {isFounder && <SceneDebugPanel />}
         <OfflineBanner />
@@ -145,33 +134,13 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <UpdatePrompt />
       </Deferred>
 
-      <header className="fixed top-0 left-0 right-0 z-30 h-14 border-b border-border bg-card">
-        <div className="mx-auto flex h-full items-center justify-between px-3 md:px-4">
-          <div className="h-11 w-11" aria-hidden="true" />
-          <h1 className="font-serif text-base tracking-[0.03em] text-foreground">{titleForPath(location.pathname)}</h1>
-          <button
-            type="button"
-            onClick={() => navigate('/lantern')}
-            className="flex items-center justify-center rounded-lg h-14 w-14"
-            aria-label={`Open notifications, ${unreadCount} unread`}
-          >
-            <LanternIcon size={56} />
-          </button>
-        </div>
-      </header>
+      <TopBar profile={profile ?? null} />
 
-      <div className="hidden md:block">
-        <DesktopSidebar />
-      </div>
-
-      <main className="pb-16 pt-14 md:ml-[260px] md:pb-0">
+      <main>
         <ErrorBoundary>{children}</ErrorBoundary>
       </main>
 
-      <MobileTabBar />
-      <Deferred>
-        <MobileComposerSheet />
-      </Deferred>
+      <TabBar />
     </div>
   );
 };
