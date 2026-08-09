@@ -21,7 +21,9 @@ export const useAdminCheck = () => {
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
-        .in('role', ['admin', 'moderator', 'founder']);
+        // Ranger roles postdate the generated Database types; cast until the
+        // app_role enum is regenerated.
+        .in('role', ['admin', 'moderator', 'founder', 'ranger', 'senior_ranger', 'head_ranger'] as unknown as ('admin' | 'moderator' | 'founder')[]);
 
       const roles = data?.map(r => (r.role as string)) || [];
       setIsAdmin(roles.length > 0);

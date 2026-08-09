@@ -3,6 +3,7 @@ import { useOnboarding } from '@/contexts/OnboardingContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { evaluateSignupRisk } from '@/lib/trailApi';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -30,6 +31,12 @@ const StepVerify = () => {
       // No display_name or handle here — handle_new_user() COALESCEs both to
       // placeholders, and the welcome flow writes the real values once the
       // account exists.
+      //
+      // Invite redemption happens SERVER-SIDE inside handle_new_user(): the
+      // trigger validates the Trail Pass token / legacy invite id from this
+      // metadata, enforces single-use + email binding, records lineage, and
+      // creates the inviter Circle — all in the signup transaction. An
+      // invalid or missing invitation aborts account creation entirely.
       const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -37,12 +44,25 @@ const StepVerify = () => {
           data: {
             age_bracket: data.ageBracket,
             birth_year: data.birthYear,
+            trail_pass_token: data.trailPassToken || undefined,
+            invite_id: data.inviteId || undefined,
+            invite_ip_hash: data.ipHash || undefined,
           },
         },
       });
 
       if (error) {
-        toast.error(error.message);
+        const message = error.message || '';
+        if (message.includes('signup_requires_invitation') || message.includes('signup_invalid_invitation')) {
+          toast.error('Under Pines is invite-only. You need a valid invitation to join.');
+        } else if (message.includes('signup_invitation_email_mismatch')) {
+          toast.error('This Trail Pass was sent to a different email address.');
+        } else if (message.toLowerCase().includes('database error')) {
+          // The auth API wraps trigger exceptions in a generic message.
+          toast.error("We couldn't complete signup with this invitation. It may have expired — ask your inviter for a fresh one.");
+        } else {
+          toast.error(message);
+        }
         setSending(false);
         return;
       }
@@ -55,40 +75,10 @@ const StepVerify = () => {
           is_age_verified: true,
           account_status: data.ageBracket === '13_to_17' ? 'pending_parental_consent' : 'active',
         } as any).eq('id', authData.user.id);
-      }
 
-      // Record invite use, decrement counter, and create Circle
-      if (data.inviteId && authData.user) {
-        // Insert invite_uses row with IP hash for rate limiting
-        await supabase.from('invite_uses').insert({
-          invite_id: data.inviteId,
-          invitee_id: authData.user.id,
-          ip_hash: data.ipHash || null,
-        });
-
-        // Fetch the invite to check if infinite
-        const { data: inv } = await supabase
-          .from('invites')
-          .select('is_infinite, uses_remaining')
-          .eq('id', data.inviteId)
-          .maybeSingle();
-
-        if (inv && !inv.is_infinite) {
-          const newRemaining = Math.max(0, inv.uses_remaining - 1);
-          await supabase
-            .from('invites')
-            .update({
-              uses_remaining: newRemaining,
-              is_active: newRemaining > 0,
-            })
-            .eq('id', data.inviteId);
-        }
-
-        // Auto-create bidirectional Circle with inviter
-        await supabase.rpc('accept_invite_create_circle', {
-          _invite_id: data.inviteId,
-          _new_user_id: authData.user.id,
-        });
+        // Server-side signup risk evaluation — fire and forget; the user is
+        // never blocked on it and never sees scores (spec §33-§34).
+        evaluateSignupRisk();
       }
 
       setSending(false);

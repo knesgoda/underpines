@@ -3,6 +3,10 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 interface OnboardingData {
   inviteId: string | null;
   inviteSlug: string | null;
+  /** Raw Trail Pass token (email-bound single-use invite). */
+  trailPassToken: string | null;
+  /** When set, signup must use exactly this email (Trail Pass binding). */
+  lockedEmail: string | null;
   inviterName: string | null;
   inviterHandle: string | null;
   ipHash: string | null;
@@ -25,6 +29,8 @@ interface OnboardingContextType {
 const defaultData: OnboardingData = {
   inviteId: null,
   inviteSlug: null,
+  trailPassToken: null,
+  lockedEmail: null,
   inviterName: null,
   inviterHandle: null,
   ipHash: null,

@@ -10,7 +10,10 @@ import { Eye, EyeOff } from 'lucide-react';
  */
 const StepCredentials = () => {
   const { data, setData, setStep } = useOnboarding();
-  const [email, setEmail] = useState(data.email);
+  // A Trail Pass is bound to the address it was sent to; the server rejects
+  // any other email, so don't let the user type one.
+  const emailLocked = !!data.lockedEmail;
+  const [email, setEmail] = useState(data.lockedEmail ?? data.email);
   const [password, setPassword] = useState(data.password);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,10 +40,18 @@ const StepCredentials = () => {
           value={email}
           onChange={e => setEmail(e.target.value)}
           autoComplete="email"
-          autoFocus
+          autoFocus={!emailLocked}
+          disabled={emailLocked}
+          readOnly={emailLocked}
           onKeyDown={e => e.key === 'Enter' && handleContinue()}
         />
       </label>
+      {emailLocked && (
+        <p className="font-body text-xs text-muted-foreground">
+          Your Trail Pass was sent to this address, so your account uses it too.
+          Want a different one? Ask your inviter to send a fresh pass.
+        </p>
+      )}
 
       <label>
         Password

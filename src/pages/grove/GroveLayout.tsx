@@ -6,6 +6,10 @@ import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { to: '/grove', label: 'Overview', end: true },
+  // Ranger Station: trust, bot defense, and invitation containment
+  { to: '/grove/cases', label: 'Ranger Station' },
+  { to: '/grove/trails', label: 'Trail Map' },
+  { to: '/grove/appeals', label: 'Appeals' },
   { to: '/grove/queue', label: 'Review Queue' },
   { to: '/grove/members', label: 'Members' },
   // Companions was removed with the scene system in 3c. The nav item outlived
@@ -13,6 +17,7 @@ const NAV_ITEMS = [
   { to: '/grove/camps', label: 'Groups' },
   { to: '/grove/designs', label: 'Designs' },
   { to: '/grove/revenue', label: 'Revenue' },
+  { to: '/grove/audit', label: 'Audit Log' },
   { to: '/grove/settings', label: 'Settings' },
 ];
 
