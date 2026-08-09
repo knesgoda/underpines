@@ -3249,7 +3249,13 @@ export type Database = {
         | "fish"
         | "hamster"
         | "turtle"
-      app_role: "admin" | "moderator" | "founder"
+      app_role:
+        | "admin"
+        | "moderator"
+        | "founder"
+        | "ranger"
+        | "senior_ranger"
+        | "head_ranger"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3386,7 +3392,14 @@ export const Constants = {
         "hamster",
         "turtle",
       ],
-      app_role: ["admin", "moderator", "founder"],
+      app_role: [
+        "admin",
+        "moderator",
+        "founder",
+        "ranger",
+        "senior_ranger",
+        "head_ranger",
+      ],
     },
   },
 } as const
