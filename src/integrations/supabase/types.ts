@@ -2373,7 +2373,9 @@ export type Database = {
           links: Json | null
           longitude: number | null
           mantra: string | null
+          messenger_skin: string
           moments: Json | null
+          onboarding_completed_at: string | null
           pinned_memory_post_id: string | null
           pinned_song_artist: string | null
           pinned_song_preview_url: string | null
@@ -2431,7 +2433,9 @@ export type Database = {
           links?: Json | null
           longitude?: number | null
           mantra?: string | null
+          messenger_skin?: string
           moments?: Json | null
+          onboarding_completed_at?: string | null
           pinned_memory_post_id?: string | null
           pinned_song_artist?: string | null
           pinned_song_preview_url?: string | null
@@ -2489,7 +2493,9 @@ export type Database = {
           links?: Json | null
           longitude?: number | null
           mantra?: string | null
+          messenger_skin?: string
           moments?: Json | null
+          onboarding_completed_at?: string | null
           pinned_memory_post_id?: string | null
           pinned_song_artist?: string | null
           pinned_song_preview_url?: string | null
