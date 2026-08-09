@@ -8,16 +8,32 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
 
+interface MemberProfile {
+  id: string;
+  handle: string;
+  display_name: string;
+  created_at: string;
+  account_status: string | null;
+}
+
+interface ModAction {
+  id: string;
+  action_type: string;
+  action_detail: string | null;
+  suspension_days: number | null;
+  created_at: string;
+}
+
 const GroveMemberDetail = () => {
   const { handle } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<MemberProfile | null>(null);
   const [postCount, setPostCount] = useState(0);
   const [reportsReceived, setReportsReceived] = useState(0);
   const [reportsFiled, setReportsFiled] = useState(0);
   const [blocksReceived, setBlocksReceived] = useState(0);
-  const [modActions, setModActions] = useState<any[]>([]);
+  const [modActions, setModActions] = useState<ModAction[]>([]);
   const [inviteSlots, setInviteSlots] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -100,8 +116,8 @@ const GroveMemberDetail = () => {
         </div>
         <div>
           <h1 className="font-display text-lg font-bold text-[hsl(var(--pine-pale))]">{profile.handle}</h1>
-          <p className="text-sm text-[hsl(var(--muted-text))]">{profile.display_name}</p>
-          <p className="text-xs text-[hsl(var(--muted-text))]">Joined {new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+          <p className="text-sm text-[hsl(var(--pine-light)/0.65)]">{profile.display_name}</p>
+          <p className="text-xs text-[hsl(var(--pine-light)/0.65)]">Joined {new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
         </div>
       </div>
 
@@ -141,7 +157,7 @@ const GroveMemberDetail = () => {
                   <span className="capitalize font-medium">{a.action_type}</span>
                   {a.suspension_days && <span> · {a.suspension_days}d</span>}
                   {a.action_detail && <span> · {a.action_detail}</span>}
-                  <span className="text-[hsl(var(--muted-text))]"> · {new Date(a.created_at).toLocaleDateString()}</span>
+                  <span className="text-[hsl(var(--pine-light)/0.65)]"> · {new Date(a.created_at).toLocaleDateString()}</span>
                 </div>
               ))}
             </div>

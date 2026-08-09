@@ -160,36 +160,36 @@ const GroveQueue = () => {
           </span>
           <span className="text-[hsl(var(--pine-light)/0.7)] capitalize">{report.ai_category || report.report_reason}</span>
           {report.ai_confidence && (
-            <span className="text-[hsl(var(--muted-text))]">· {Math.round(report.ai_confidence * 100)}% confidence</span>
+            <span className="text-[hsl(var(--pine-light)/0.65)]">· {Math.round(report.ai_confidence * 100)}% confidence</span>
           )}
         </div>
 
         {report.reporter_context && (
           <div className="bg-[hsl(var(--pine-darkest))] rounded p-3">
-            <p className="text-xs text-[hsl(var(--muted-text))] uppercase tracking-wider mb-1">Reporter context</p>
+            <p className="text-xs text-[hsl(var(--pine-light)/0.65)] uppercase tracking-wider mb-1">Reporter context</p>
             <p className="text-sm text-[hsl(var(--pine-light)/0.8)] italic">"{report.reporter_context}"</p>
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
-            <p className="text-[hsl(var(--muted-text))]">Reported user</p>
+            <p className="text-[hsl(var(--pine-light)/0.65)]">Reported user</p>
             <p className="text-[hsl(var(--pine-pale))]">{report.reported_user?.handle || '—'}</p>
           </div>
           <div>
-            <p className="text-[hsl(var(--muted-text))]">Reported by</p>
+            <p className="text-[hsl(var(--pine-light)/0.65)]">Reported by</p>
             <p className="text-[hsl(var(--pine-pale))]">{report.reporter?.handle || '—'}</p>
           </div>
         </div>
 
         {report.ai_reasoning && (
           <div className="text-xs">
-            <p className="text-[hsl(var(--muted-text))]">AI reasoning</p>
+            <p className="text-[hsl(var(--pine-light)/0.65)]">AI reasoning</p>
             <p className="text-[hsl(var(--pine-light)/0.7)]">{report.ai_reasoning}</p>
           </div>
         )}
 
-        <p className="text-xs text-[hsl(var(--muted-text))]">
+        <p className="text-xs text-[hsl(var(--pine-light)/0.65)]">
           Content is currently: {report.content_hidden ? 'Hidden' : 'Visible'}
         </p>
 

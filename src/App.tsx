@@ -108,6 +108,9 @@ const App = () => (
                   <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
                   <Route path="designs" element={<GroveDesigns />} />
+                  {/* Without this, a stale admin bookmark renders the Grove
+                      chrome around an empty main area rather than a 404. */}
+                  <Route path="*" element={<NotFound />} />
                 </Route>
 
                 {/* Main app routes */}

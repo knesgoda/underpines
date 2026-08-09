@@ -43,7 +43,7 @@ const GroveMembers = () => {
   return (
     <div className="max-w-2xl space-y-4">
       <h1 className="font-display text-xl font-bold text-[hsl(var(--pine-pale))]">
-        Members <span className="text-sm font-normal text-[hsl(var(--muted-text))]">({total})</span>
+        Members <span className="text-sm font-normal text-[hsl(var(--pine-light)/0.65)]">({total})</span>
       </h1>
 
       <div className="flex gap-2">
@@ -51,7 +51,7 @@ const GroveMembers = () => {
           placeholder="Search by name or handle…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="bg-[hsl(var(--pine-dark))] border-[hsl(var(--pine-mid)/0.3)] text-[hsl(var(--pine-light))] placeholder:text-[hsl(var(--muted-text))] text-sm"
+          className="bg-[hsl(var(--pine-dark))] border-[hsl(var(--pine-mid)/0.3)] text-[hsl(var(--pine-light))] placeholder:text-[hsl(var(--pine-light)/0.65)] text-sm"
         />
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-32 bg-[hsl(var(--pine-dark))] border-[hsl(var(--pine-mid)/0.3)] text-[hsl(var(--pine-light))] text-xs">
@@ -86,7 +86,7 @@ const GroveMembers = () => {
                     <span className="ml-1.5 text-xs" title="Minor account (13-17)">🍃</span>
                   )}
                 </p>
-                <p className="text-xs text-[hsl(var(--muted-text))]">
+                <p className="text-xs text-[hsl(var(--pine-light)/0.65)]">
                   {m.display_name} · Joined {new Date(m.created_at!).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </p>
               </div>

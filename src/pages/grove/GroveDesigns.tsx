@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ interface PendingDesign {
   price_cents: number;
   is_seasonal: boolean;
   season: string | null;
-  design_data: any;
+  design_data: Json;
   created_at: string;
   creator_id: string;
   profiles: { handle: string; display_name: string } | null;
@@ -35,7 +36,7 @@ const GroveDesigns = () => {
       .select('*, profiles!cabin_designs_creator_id_fkey(handle, display_name)')
       .eq('status', 'pending_review')
       .order('created_at', { ascending: true });
-    setDesigns((data as any) || []);
+    setDesigns((data as unknown as PendingDesign[]) || []);
     setLoading(false);
   };
 

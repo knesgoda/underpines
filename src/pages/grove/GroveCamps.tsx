@@ -39,7 +39,7 @@ const GroveCamps = () => {
   return (
     <div className="max-w-2xl space-y-4">
       <h1 className="font-display text-xl font-bold text-[hsl(var(--pine-pale))]">
-        Camps <span className="text-sm font-normal text-[hsl(var(--muted-text))]">({camps.length})</span>
+        Groups <span className="text-sm font-normal text-[hsl(var(--pine-light)/0.65)]">({camps.length})</span>
       </h1>
 
       {loading ? (
@@ -55,8 +55,8 @@ const GroveCamps = () => {
               <span>{healthIcon(c.health_status)}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-[hsl(var(--pine-pale))] truncate">{c.name}</p>
-                <p className="text-xs text-[hsl(var(--muted-text))]">
-                  {c.member_count} members · Firekeeper: {(c.firekeeper as any)?.handle || '—'}
+                <p className="text-xs text-[hsl(var(--pine-light)/0.65)]">
+                  {c.member_count} members · Owner: {c.firekeeper?.handle || '—'}
                 </p>
               </div>
               <span className="text-xs text-[hsl(var(--pine-light)/0.4)] capitalize">{c.health_status || 'healthy'}</span>
