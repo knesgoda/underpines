@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { requireUser, assertPublicHttpUrl } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,6 +33,11 @@ serve(async (req) => {
   }
 
   try {
+    // Signed-in members only: this endpoint fetches arbitrary URLs, so leaving
+    // it open turns it into an SSRF proxy for anyone with the public anon key.
+    const auth = await requireUser(req, corsHeaders);
+    if ("response" in auth) return auth.response;
+
     const { url } = await req.json();
     if (!url || typeof url !== "string") {
       return new Response(JSON.stringify({ error: "url required" }), {
@@ -40,18 +46,39 @@ serve(async (req) => {
       });
     }
 
+    // SSRF guard: http(s) only, and the host must resolve exclusively to
+    // public addresses — blocks localhost, cloud metadata (169.254.169.254),
+    // and internal ranges.
+    const urlError = await assertPublicHttpUrl(url);
+    if (urlError) {
+      return new Response(JSON.stringify({ error: urlError }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
 
+    // redirect: "manual" — a redirect could point at an internal address that
+    // bypasses the pre-flight check, so we don't follow them here.
     const res = await fetch(url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; PineBot/1.0)",
         Accept: "text/html",
       },
       signal: controller.signal,
-      redirect: "follow",
+      redirect: "manual",
     });
     clearTimeout(timeout);
+
+    if (res.status >= 300 && res.status < 400) {
+      clearTimeout(timeout);
+      return new Response(
+        JSON.stringify({ title: null, description: null, image: null, domain: new URL(url).hostname.replace(/^www\./, ""), url }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // Only read first 50KB to keep it fast
     const reader = res.body?.getReader();

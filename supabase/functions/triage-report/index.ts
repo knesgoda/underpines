@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireUser } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +13,12 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Only a signed-in member may trigger triage, and only for their own
+    // report (or a Ranger for any). Without this, anyone holding the public
+    // anon key could re-triage or auto-hide arbitrary content by id.
+    const auth = await requireUser(req, corsHeaders);
+    if ("response" in auth) return auth.response;
+
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -34,6 +41,15 @@ Deno.serve(async (req) => {
     if (reportErr || !report) {
       return new Response(JSON.stringify({ error: "Report not found" }), {
         status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // The caller must be the reporter, or a Ranger/admin.
+    const { data: isAdmin } = await supabase.rpc("is_admin", { _user_id: auth.user.id });
+    if (report.reporter_id !== auth.user.id && !isAdmin) {
+      return new Response(JSON.stringify({ error: "forbidden" }), {
+        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

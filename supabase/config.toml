@@ -1,1 +1,24 @@
 project_id = "dzwltzkakritkwrsikvb"
+
+# Scheduled / service-to-service functions authenticate with the CRON_SECRET
+# shared secret (header `x-cron-secret`) instead of a user JWT, so the platform
+# JWT check is disabled for them. Their bodies refuse to run without the secret.
+[functions.process-monthly-payouts]
+verify_jwt = false
+
+[functions.check-block-thresholds]
+verify_jwt = false
+
+[functions.send-push-notification]
+verify_jwt = false
+
+# User-invoked functions keep verify_jwt on (the default) and additionally
+# verify a real signed-in member via requireUser(); listed here for clarity.
+[functions.triage-report]
+verify_jwt = true
+
+[functions.fetch-og-metadata]
+verify_jwt = true
+
+[functions.send-parental-consent]
+verify_jwt = true
