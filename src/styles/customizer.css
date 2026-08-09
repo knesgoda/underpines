@@ -1,0 +1,168 @@
+/**
+ * "Edit my page" — route-scoped, so it lands in the customizer's chunk rather
+ * than the entry stylesheet.
+ *
+ * Panels, buttons and .module come from handoff-shell.css; what is here is
+ * the form furniture and the live preview.
+ */
+
+.customizer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 22px;
+  align-items: start;
+}
+
+.customizer-main,
+.customizer-side { display: grid; gap: 16px; min-width: 0; }
+
+/* Fields */
+.customizer .field { display: grid; gap: 5px; margin-bottom: 13px; }
+
+.customizer .field > span {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.customizer .field > small {
+  color: hsl(var(--muted-foreground));
+  font-size: 11px;
+}
+
+.customizer input[type='text'],
+.customizer input:not([type]),
+.customizer textarea,
+.customizer select {
+  width: 100%;
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+
+.customizer textarea { resize: vertical; }
+
+.customizer .currently-row {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.customizer .warn {
+  margin-top: 8px;
+  border-left: 2px solid hsl(var(--destructive));
+  padding-left: 9px;
+  color: hsl(var(--muted-foreground));
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+/* Modules */
+.module-row {
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  padding: 9px;
+  margin-bottom: 9px;
+  background: hsl(var(--background));
+}
+
+.module-row-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+}
+
+.module-row-head select { flex: 1; }
+
+.module-row-head .grip { color: hsl(var(--muted-foreground)); display: flex; }
+
+.module-row-head button {
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: hsl(var(--card));
+  color: hsl(var(--muted-foreground));
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+}
+
+.module-row-head button:hover:not(:disabled) {
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+}
+
+.module-row-head button:disabled { opacity: 0.35; }
+
+/* Colours */
+.swatch {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 9px;
+  font-size: 12px;
+}
+
+.swatch input[type='color'] {
+  width: 30px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: none;
+}
+
+.swatch code { color: hsl(var(--muted-foreground)); font-size: 10.5px; }
+
+.toggle-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: hsl(var(--foreground) / 0.9);
+}
+
+/* Preview — the real tokens, so this is the page and not a picture of it. */
+.page-preview {
+  display: grid;
+  gap: 8px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  padding: 10px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.preview-panel {
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: hsl(var(--card));
+  padding: 9px;
+}
+
+.preview-panel b { display: block; font-size: 14px; }
+.preview-panel small { display: block; color: hsl(var(--foreground) / 0.6); font-size: 10px; }
+.preview-panel i { display: block; margin-top: 4px; font-family: var(--font-display); font-size: 11.5px; }
+.preview-panel p { margin: 4px 0 0; font-size: 11.5px; line-height: 1.5; }
+
+.preview-heading {
+  display: block;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+@media (max-width: 980px) {
+  .customizer-layout { grid-template-columns: minmax(0, 1fr); }
+}

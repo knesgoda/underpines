@@ -79,7 +79,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
     }
     if (selected.length >= cap) {
       toast(isFlicker
-        ? "Flickers are for small moments — 10 people max."
+        ? "Timed conversations are for small moments — 10 people max."
         : "Campfires don't scale beyond 20. Keep it intimate.");
       return;
     }

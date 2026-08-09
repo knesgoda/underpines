@@ -167,7 +167,7 @@ const MarketplaceDetail = () => {
             {applied ? (
               <Button disabled className="rounded-full font-body text-sm">Already applied ✓</Button>
             ) : (
-              <Button onClick={handleApply} className="rounded-full font-body text-sm">Apply to my Cabin →</Button>
+              <Button onClick={handleApply} className="rounded-full font-body text-sm">Apply to my page →</Button>
             )}
             <span className="text-sm text-muted-foreground self-center">You own this design.</span>
           </>

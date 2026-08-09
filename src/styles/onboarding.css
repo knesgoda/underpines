@@ -1,0 +1,193 @@
+/**
+ * Onboarding and welcome-flow styling, from the Lovable UI handoff.
+ *
+ * Imported by the onboarding and welcome routes only, so it splits into those
+ * chunks rather than the entry bundle. Hard-coded colours in the handoff are
+ * expressed here as role tokens so these screens follow light and dark.
+ *
+ * Class names match the handoff exactly, so the design stays diffable.
+ */
+
+.eyebrow {
+  color: hsl(var(--primary));
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.welcome-screen {
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.step-dots {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 20px;
+}
+
+.step-dots::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 2px;
+  background: hsl(var(--border));
+}
+
+.step-dots i {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  margin: 0 13px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: hsl(var(--secondary));
+  color: hsl(var(--muted-foreground));
+  font-style: normal;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.step-dots i.done {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.onboarding-step {
+  width: min(510px, 100%);
+  margin: auto;
+}
+
+.onboarding-step h2 {
+  margin: 7px 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.onboarding-step > p {
+  margin: 0 0 20px;
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.onboarding-step label {
+  display: block;
+  margin: 12px 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.onboarding-step label > input,
+.address-field {
+  width: 100%;
+  height: 42px;
+  margin-top: 5px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  padding: 0 11px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+.onboarding-step label > input:focus-visible,
+.address-field:focus-within {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 1px;
+}
+
+.address-field {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  overflow: hidden;
+}
+
+.address-field span {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 9px;
+  background: hsl(var(--secondary));
+  color: hsl(var(--muted-foreground));
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.address-field input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: inherit;
+  padding: 0 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+.avatar-choices,
+.onboard-themes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 11px;
+}
+
+.avatar-choices button,
+.onboard-themes button {
+  height: 130px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  color: hsl(var(--muted-foreground));
+  border-radius: var(--radius);
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.avatar-choices button.selected,
+.onboard-themes button.selected {
+  border: 2px solid hsl(var(--primary));
+  color: hsl(var(--foreground));
+}
+
+.big-emoji,
+.upload-circle {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: hsl(var(--secondary));
+  font-size: 31px;
+}
+
+.upload-circle {
+  font-size: 22px;
+  color: hsl(var(--primary));
+}
+
+@media (max-width: 700px) {
+  .welcome-screen { padding: 0; }
+  .onboarding-step h2 { font-size: 24px; }
+  .avatar-choices,
+  .onboard-themes { grid-template-columns: repeat(2, 1fr); }
+}

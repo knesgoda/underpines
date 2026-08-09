@@ -8,12 +8,35 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SparkComposer from './SparkComposer';
 import EmberComposer from './EmberComposer';
 import UserAvatar from '@/components/UserAvatar';
+import type { PostWithAuthor } from './PostCard';
 import { useSeedlingStatus } from './SeedlingBanner';
+import { BULLETINS_ENABLED } from '@/lib/features';
 
-type PostType = 'spark' | 'story' | 'ember' | null;
+type PostType = 'spark' | 'story' | 'ember' | 'bulletin' | null;
+
+/**
+ * What you can post, in words.
+ *
+ * These were Spark, Story and "Ember Post" — and "Ember Post" sat in the same
+ * product as "Daily Ember", which is the digest and an entirely different
+ * thing. The stored post_type values are unchanged.
+ *
+ * The list was also written out three times in this file with different emoji
+ * in each copy, so the desktop collapsed bar disagreed with the expanded one.
+ */
+const POST_TYPES: { type: Exclude<PostType, null>; icon: string; label: string }[] = [
+  { type: 'spark', icon: '\u{1F33F}', label: 'A thought' },
+  { type: 'story', icon: '\u{1F4D6}', label: 'Something longer' },
+  { type: 'ember', icon: '\u{1F4F7}', label: 'Photos' },
+  // Bulletins need the widened post_type CHECK; without it Postgres rejects
+  // the insert after the user has written the thing. See lib/features.ts.
+  ...(BULLETINS_ENABLED
+    ? [{ type: 'bulletin' as const, icon: '\u{1F4CC}', label: 'A bulletin' }]
+    : []),
+];
 
 interface ComposerStubProps {
-  onPost: (post: any) => void;
+  onPost: (post: PostWithAuthor) => void;
   profile: { display_name: string; avatar_url?: string | null; default_avatar_key?: string | null } | null;
 }
 
@@ -47,7 +70,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
     setComposerOpen(false);
   };
 
-  const handlePost = (post: any) => {
+  const handlePost = (post: PostWithAuthor) => {
     onPost(post);
     setActiveType(null);
     setExpanded(false);
@@ -58,7 +81,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
     return (
       <div className="rounded-xl bg-card border border-border shadow-soft p-4 mb-4">
         <p className="font-body text-sm text-muted-foreground">
-          🌱 You're still getting settled. Explore, read, set up your Cabin — posting unlocks in {daysLeft} {daysLeft === 1 ? 'day' : 'days'}.
+          🌱 You're still settling in. Read, look around, set up your page — posting unlocks in {daysLeft} {daysLeft === 1 ? 'day' : 'days'}.
         </p>
       </div>
     );
@@ -80,7 +103,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
               size={36}
             />
             <span className="font-body text-sm text-muted-foreground/50">
-              A thought, a story, a photo...
+              A thought, something longer, a photo…
             </span>
           </button>
         ) : activeType ? (
@@ -91,6 +114,9 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
             {activeType === 'ember' && (
               <EmberComposer key="ember" onPost={handlePost} onCancel={handleCancel} />
             )}
+            {activeType === 'bulletin' && (
+              <SparkComposer key="bulletin" postType="bulletin" onPost={handlePost} onCancel={handleCancel} />
+            )}
           </AnimatePresence>
         ) : (
           <motion.div
@@ -99,11 +125,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
             className="space-y-3"
           >
             <div className="flex gap-2">
-              {[
-                { type: 'spark' as PostType, icon: '🌿', label: 'Spark' },
-                { type: 'story' as PostType, icon: '📖', label: 'Story' },
-                { type: 'ember' as PostType, icon: '📷', label: 'Ember Post' },
-              ].map(({ type, icon, label }) => (
+              {POST_TYPES.map(({ type, icon, label }) => (
                 <button
                   key={type}
                   onClick={() => handleTypeSelect(type)}
@@ -137,6 +159,9 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
             )}
             {activeType === 'ember' && (
               <EmberComposer key="ember" onPost={handlePost} onCancel={handleCancel} />
+            )}
+            {activeType === 'bulletin' && (
+              <SparkComposer key="bulletin" postType="bulletin" onPost={handlePost} onCancel={handleCancel} />
             )}
           </AnimatePresence>
         </div>
@@ -172,11 +197,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
               className="p-4 space-y-3"
             >
               <div className="flex gap-2">
-                {[
-                  { type: 'spark' as PostType, icon: '🌿', label: 'Spark' },
-                  { type: 'story' as PostType, icon: '📖', label: 'Story' },
-                  { type: 'ember' as PostType, icon: '📷', label: 'Ember Post' },
-                ].map(({ type, icon, label }) => (
+                {POST_TYPES.map(({ type, icon, label }) => (
                   <button
                     key={type}
                     onClick={() => handleTypeSelect(type)}
@@ -196,11 +217,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
             </motion.div>
           ) : (
             <div className="flex items-center gap-1 px-4 py-2.5">
-              {[
-                { type: 'spark' as PostType, icon: '🌲', label: 'Spark' },
-                { type: 'story' as PostType, icon: '📖', label: 'Story' },
-                { type: 'ember' as PostType, icon: '📷', label: 'Ember Post' },
-              ].map(({ type, icon, label }, i) => (
+              {POST_TYPES.map(({ type, icon, label }, i) => (
                 <span key={type} className="flex items-center">
                   <button
                     onClick={() => handleTypeSelect(type)}
@@ -208,7 +225,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
                   >
                     {icon} {label}
                   </button>
-                  {i < 2 && <span className="mx-1.5 text-border">·</span>}
+                  {i < POST_TYPES.length - 1 && <span className="mx-1.5 text-border">·</span>}
                 </span>
               ))}
             </div>

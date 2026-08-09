@@ -29,8 +29,8 @@ const CampBonfire = ({ campId, isScout, scoutDays }: Props) => {
       });
   }, [campId, user]);
 
-  if (loading) return <div className="text-center py-8"><p className="font-body text-sm text-muted-foreground">Loading Bonfire...</p></div>;
-  if (!bonfireId) return <div className="text-center py-8"><p className="font-body text-sm text-muted-foreground">No Bonfire found for this Camp.</p></div>;
+  if (loading) return <div className="text-center py-8"><p className="font-body text-sm text-muted-foreground">Loading the group chat…</p></div>;
+  if (!bonfireId) return <div className="text-center py-8"><p className="font-body text-sm text-muted-foreground">This group has no chat room yet.</p></div>;
 
   return <CampfireView campfireId={bonfireId} onBack={() => {}} onRefreshList={() => {}} isScout={isScout} scoutDays={scoutDays} />;
 };

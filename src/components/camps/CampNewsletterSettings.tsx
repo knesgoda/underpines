@@ -98,7 +98,7 @@ const CampNewsletterSettings = ({ campId, firekeeper_id, members }: Props) => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-body text-sm font-medium text-foreground mb-3">Camp Newsletter</h2>
+        <h2 className="font-body text-sm font-medium text-foreground mb-3">Group newsletter</h2>
         <p className="font-body text-xs text-muted-foreground mb-4">
           Send a periodic newsletter to all Camp members via their Daily Ember.
         </p>
@@ -140,12 +140,12 @@ const CampNewsletterSettings = ({ campId, firekeeper_id, members }: Props) => {
               <div>
                 <label className="font-body text-xs text-muted-foreground mb-1 block">Editor</label>
                 <select value={editorId || ''} onChange={e => setEditorId(e.target.value || null)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground">
-                  <option value="">Firekeeper only</option>
+                  <option value="">Owner only</option>
                   {trailblazers.map(tb => (
-                    <option key={tb.user_id} value={tb.user_id}>{tb.profile?.display_name || tb.profile?.handle || 'Trailblazer'}</option>
+                    <option key={tb.user_id} value={tb.user_id}>{tb.profile?.display_name || tb.profile?.handle || 'Moderator'}</option>
                   ))}
                 </select>
-                <p className="font-body text-[10px] text-muted-foreground mt-1">Who can draft and send newsletters. Firekeeper always has access.</p>
+                <p className="font-body text-[10px] text-muted-foreground mt-1">Who can draft and send newsletters. The owner always can.</p>
               </div>
             )}
           </div>

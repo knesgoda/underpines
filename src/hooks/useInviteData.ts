@@ -42,7 +42,10 @@ export const useInviteData = (): InviteData => {
     fetch();
   }, [user]);
 
-  const inviteUrl = invite ? `https://underpines.com/invite/${invite.slug}` : '';
+  // The origin actually serving the app. Hardcoding the production domain
+  // meant a link copied from a preview build or localhost pointed somewhere
+  // the recipient could not use.
+  const inviteUrl = invite ? `${window.location.origin}/invite/${invite.slug}` : '';
 
   return {
     invite,

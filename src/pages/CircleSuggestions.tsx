@@ -1,35 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { motion } from 'framer-motion';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import UserAvatar from '@/components/UserAvatar';
+import { useFriendActions } from '@/hooks/useFriends';
+import type { MiniProfile } from '@/hooks/useProfilePage';
+import '@/styles/explore.css';
 
-interface SuggestedMember {
-  id: string;
-  display_name: string;
-  handle: string;
-}
-
+/**
+ * "People {inviter} knows" — shown once, just after an invite is redeemed.
+ *
+ * An invite-only network is worth nothing to a new arrival who lands alone, so
+ * this is the first place they can pick up a few people. Was headed "People on
+ * {name}'s trail" with a "Follow the trail" button.
+ */
 const CircleSuggestions = () => {
-  const { handle } = useParams();
+  const { handle } = useParams<{ handle: string }>();
   const { user } = useAuth();
-  const [members, setMembers] = useState<SuggestedMember[]>([]);
-  const [inviterName, setInviterName] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [requestedIds, setRequestedIds] = useState<Set<string>>(new Set());
+  const actions = useFriendActions();
+  const [asked, setAsked] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    if (!user || !handle) return;
-    const load = async () => {
+  const { data, isLoading } = useQuery({
+    queryKey: ['inviter-friends', handle, user?.id],
+    enabled: !!handle && !!user,
+    queryFn: async (): Promise<{ inviter: string; people: MiniProfile[] }> => {
       const { data: inviter } = await supabase
         .from('profiles')
         .select('id, display_name')
-        .eq('handle', handle)
+        .eq('handle', handle!)
         .maybeSingle();
-
-      if (!inviter) { setLoading(false); return; }
-      setInviterName(inviter.display_name);
+      if (!inviter) return { inviter: '', people: [] };
 
       const { data: circles } = await supabase
         .from('circles')
@@ -37,75 +40,73 @@ const CircleSuggestions = () => {
         .eq('status', 'accepted')
         .or(`requester_id.eq.${inviter.id},requestee_id.eq.${inviter.id}`);
 
-      if (circles) {
-        const otherIds = circles
-          .map(c => c.requester_id === inviter.id ? c.requestee_id : c.requester_id)
-          .filter(id => id !== user.id);
+      const otherIds = (circles ?? [])
+        .map(c => (c.requester_id === inviter.id ? c.requestee_id : c.requester_id))
+        .filter(id => id !== user!.id);
 
-        if (otherIds.length > 0) {
-          const { data: profiles } = await supabase
-            .from('profiles')
-            .select('id, display_name, handle')
-            .in('id', otherIds);
-          setMembers(profiles || []);
-        }
-      }
-      setLoading(false);
-    };
-    load();
-  }, [user, handle]);
+      if (otherIds.length === 0) return { inviter: inviter.display_name, people: [] };
 
-  const sendRequest = async (profileId: string) => {
-    if (!user) return;
-    await supabase.from('circles').insert({ requester_id: user.id, requestee_id: profileId });
-    await supabase.from('notifications').insert({ recipient_id: profileId, notification_type: 'circle_request', actor_id: user.id });
-    setRequestedIds(prev => new Set([...prev, profileId]));
-  };
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, display_name, handle, avatar_url, default_avatar_key')
+        .in('id', otherIds);
 
-  if (loading) return <PineTreeLoading />;
+      return { inviter: inviter.display_name, people: (profiles ?? []) as MiniProfile[] };
+    },
+  });
+
+  if (isLoading) return <PineTreeLoading />;
+
+  const inviter = data?.inviter || 'they';
+  const people = data?.people ?? [];
+
+  const add = (id: string, name: string) =>
+    actions.request
+      .mutateAsync(id)
+      .then(() => { setAsked(prev => new Set(prev).add(id)); toast.success(`Asked ${name}.`); })
+      .catch(() => toast.error('That did not go through.'));
 
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="font-display text-2xl text-foreground mb-2">
-        People on {inviterName}'s trail
-      </h1>
-      <p className="font-body text-sm text-muted-foreground mb-6">
-        These are people your inviter walks with. Maybe you'll find a few familiar faces.
-      </p>
+    <div className="page-shell explore">
+      <div className="panel-title"><span>People {inviter} knows</span></div>
 
-      {members.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-3xl mb-2">🌿</p>
-          <p className="font-body text-sm text-muted-foreground">{inviterName}'s trail is quiet for now.</p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {members.map(m => (
-            <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground">
-                  {m.display_name[0]?.toUpperCase()}
-                </div>
-                <div>
-                  <Link to={`/${m.handle}`} className="font-body text-sm font-medium text-foreground hover:opacity-80">{m.display_name}</Link>
-                  <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
-                </div>
+      <section className="panel module">
+        <p className="mb-4 text-sm text-muted-foreground">
+          These are the people who brought you here, and who they know. A few familiar faces make
+          the place feel like somewhere.
+        </p>
+
+        {people.length === 0 ? (
+          <p className="explore-empty">
+            It is quiet on their side too. <Link to="/explore">Have a look around instead.</Link>
+          </p>
+        ) : (
+          <div className="people-grid">
+            {people.map(p => (
+              <div key={p.id} className="person-card">
+                <Link to={`/${p.handle}`}>
+                  <UserAvatar
+                    avatarUrl={p.avatar_url}
+                    defaultAvatarKey={p.default_avatar_key}
+                    displayName={p.display_name}
+                    size={46}
+                  />
+                  <b>{p.display_name}</b>
+                </Link>
+                <small>@{p.handle}</small>
+                {asked.has(p.id) ? (
+                  <span className="asked">Asked</span>
+                ) : (
+                  <button type="button" className="outline-button" onClick={() => add(p.id, p.display_name)}>
+                    Add
+                  </button>
+                )}
               </div>
-              {requestedIds.has(m.id) ? (
-                <span className="font-body text-xs text-muted-foreground">Trail invite sent</span>
-              ) : (
-                <button
-                  onClick={() => sendRequest(m.id)}
-                  className="px-3 py-1.5 rounded-full border-2 border-primary text-primary font-body text-xs font-medium hover:bg-primary hover:text-primary-foreground transition-colors"
-                >
-                  Follow the trail
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </motion.div>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   );
 };
 

@@ -173,7 +173,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
       ) : posts.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-3xl mb-2">🔥</p>
-          <p className="font-body text-sm text-muted-foreground">The Firepit is quiet. Be the first to post.</p>
+          <p className="font-body text-sm text-muted-foreground">This wall is quiet. Be the first to post.</p>
         </div>
       ) : (
         <div className="space-y-3">

@@ -8,8 +8,9 @@ const NAV_ITEMS = [
   { to: '/grove', label: 'Overview', end: true },
   { to: '/grove/queue', label: 'Review Queue' },
   { to: '/grove/members', label: 'Members' },
-  { to: '/grove/companions', label: 'Companions' },
-  { to: '/grove/camps', label: 'Camps' },
+  // Companions was removed with the scene system in 3c. The nav item outlived
+  // the route, so the link rendered a blank page under the chrome.
+  { to: '/grove/camps', label: 'Groups' },
   { to: '/grove/designs', label: 'Designs' },
   { to: '/grove/revenue', label: 'Revenue' },
   { to: '/grove/settings', label: 'Settings' },
@@ -31,9 +32,9 @@ const GroveLayout = () => {
           <span className="font-display text-sm font-bold text-[hsl(var(--pine-pale))]">The Grove</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-[hsl(var(--muted-text))]">{user?.email}</span>
+          <span className="text-xs text-[hsl(var(--pine-light)/0.65)]">{user?.email}</span>
           <button
-            onClick={() => navigate('/cabin')}
+            onClick={() => navigate('/me')}
             className="text-xs text-[hsl(var(--amber-mid))] hover:text-[hsl(var(--amber-light))] transition-colors"
           >
             Back

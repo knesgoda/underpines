@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const StepVerify = () => {
-  const { data, setStep } = useOnboarding();
+  const { data, setData } = useOnboarding();
   const navigate = useNavigate();
   const [phone, setPhone] = useState(data.phone);
   const [codeSent, setCodeSent] = useState(false);
@@ -27,13 +27,14 @@ const StepVerify = () => {
   const handleSendCode = async () => {
     setSending(true);
     try {
+      // No display_name or handle here — handle_new_user() COALESCEs both to
+      // placeholders, and the welcome flow writes the real values once the
+      // account exists.
       const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
-            display_name: data.displayName,
-            handle: data.handle,
             age_bracket: data.ageBracket,
             birth_year: data.birthYear,
           },
@@ -92,12 +93,15 @@ const StepVerify = () => {
 
       setSending(false);
 
-      // LEGAL-REVIEW-NEEDED: 13-17 accounts need parental consent before proceeding
-      if (data.ageBracket === '13_to_17') {
-        setStep(50); // Parental consent flow
-      } else {
-        setStep(7); // Walk through woods
-      }
+      // Password is no longer needed once the account exists; don't leave it
+      // sitting in context for the rest of the session.
+      setData({ password: '' });
+
+      // LEGAL-REVIEW-NEEDED: 13-17 accounts need parental consent before
+      // proceeding. StepVerify has already set account_status to
+      // 'pending_parental_consent'; the welcome flow reads that and holds them
+      // after the name step rather than letting them continue.
+      navigate('/welcome', { replace: true });
     } catch (err) {
       toast.error('Something went wrong. Please try again.');
       setSending(false);
@@ -129,7 +133,7 @@ const StepVerify = () => {
             One last thing — let's get you settled.
           </h2>
           <p className="text-muted-foreground mt-3 font-body text-sm">
-            We'll create your account and get your Cabin ready.
+            We'll create your account and get your page ready.
           </p>
         </div>
 
@@ -138,7 +142,7 @@ const StepVerify = () => {
           disabled={sending}
           className="rounded-pill px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
         >
-          {sending ? 'Preparing your arrival...' : 'Create my Cabin'}
+          {sending ? 'Creating your account…' : 'Create my account'}
         </Button>
       </div>
     );

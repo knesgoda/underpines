@@ -14,6 +14,12 @@ const TEMPLATE_KEYS = [
   { key: 'ban_template', label: 'Ban template' },
 ];
 
+/** Shape written by the invite rate-limit guard into platform_settings. */
+interface RateLimitEvent {
+  reason?: string;
+  timestamp?: string;
+}
+
 const GroveSettings = () => {
   const { user } = useAuth();
   const [templates, setTemplates] = useState<Record<string, string>>({});
@@ -23,7 +29,7 @@ const GroveSettings = () => {
   const [rotating, setRotating] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showRotateConfirm, setShowRotateConfirm] = useState(false);
-  const [lastRateLimit, setLastRateLimit] = useState<any>(null);
+  const [lastRateLimit, setLastRateLimit] = useState<RateLimitEvent | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -36,7 +42,9 @@ const GroveSettings = () => {
       if (map['last_invite_rate_limit']) {
         try {
           setLastRateLimit(JSON.parse(map['last_invite_rate_limit']));
-        } catch {}
+        } catch {
+          // Stored value is not JSON — nothing useful to show, so leave it unset.
+        }
       }
 
       // Fetch founder invite slug
@@ -106,7 +114,7 @@ const GroveSettings = () => {
 
   if (loading) return <p className="text-sm text-[hsl(var(--pine-light)/0.5)]">Loading…</p>;
 
-  const inviteUrl = `https://underpines.com/invite/${inviteSlug}`;
+  const inviteUrl = `${window.location.origin}/invite/${inviteSlug}`;
 
   return (
     <div className="max-w-2xl space-y-5">
@@ -152,7 +160,8 @@ const GroveSettings = () => {
             <p>Rate limits: 5/hour, 20/day · 1 signup per IP per 24h</p>
             {lastRateLimit && (
               <p className="text-amber-400/70">
-                ⚠ Last rate limit hit: {lastRateLimit.reason} at {new Date(lastRateLimit.timestamp).toLocaleString()}
+                ⚠ Last rate limit hit: {lastRateLimit.reason ?? 'unknown'}
+                {lastRateLimit.timestamp ? ` at ${new Date(lastRateLimit.timestamp).toLocaleString()}` : ''}
               </p>
             )}
           </div>

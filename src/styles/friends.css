@@ -1,0 +1,111 @@
+/**
+ * Friends — route-scoped.
+ *
+ * .panel, .outline-button, .solid-button and .module all come from
+ * handoff-shell.css. This is the list furniture only.
+ */
+
+.friend-groups { display: grid; gap: 15px; }
+
+.friend-list { padding: 14px; }
+
+.friend-list > h2 {
+  margin: 0 0 4px;
+  color: hsl(var(--primary));
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.friend-list .note {
+  margin: 0 0 10px;
+  color: hsl(var(--muted-foreground));
+  font-size: 11.5px;
+}
+
+.friend-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 0;
+  border-top: 1px dashed hsl(var(--border));
+}
+
+.friend-row:first-of-type { border-top: 0; }
+
+.friend-name { flex: 1; min-width: 0; }
+
+.friend-name a,
+.friend-name > span {
+  display: block;
+  color: hsl(var(--foreground));
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.friend-name a:hover { color: hsl(var(--primary)); }
+
+.friend-name small {
+  display: block;
+  color: hsl(var(--muted-foreground));
+  font-size: 11px;
+}
+
+.friend-empty {
+  margin: 0;
+  padding: 18px 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
+}
+
+/* Row menu */
+.friend-menu { position: relative; }
+
+.friend-menu > button {
+  border: 0;
+  background: none;
+  color: hsl(var(--muted-foreground));
+  padding: 5px;
+  border-radius: 3px;
+  display: flex;
+}
+
+.friend-menu > button:hover { background: hsl(var(--secondary)); color: hsl(var(--foreground)); }
+
+.friend-menu-list {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+  width: 250px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: hsl(var(--card));
+  box-shadow: 0 6px 20px hsl(var(--foreground) / 0.14);
+  overflow: hidden;
+}
+
+.friend-menu-list button {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: none;
+  color: hsl(var(--foreground));
+  padding: 9px 12px;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+}
+
+.friend-menu-list button:hover { background: hsl(var(--secondary)); }
+.friend-menu-list button.destructive { color: hsl(var(--destructive)); }
+
+@media (max-width: 700px) {
+  .friend-row { flex-wrap: wrap; }
+  .friend-name { flex-basis: 60%; }
+}

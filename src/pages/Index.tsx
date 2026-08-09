@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import WeatherScene from '@/components/cabin/WeatherScene';
+import WarmGround from '@/components/layout/WarmGround';
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -19,11 +19,7 @@ const Index = () => {
   if (!loading && user) return null;
 
   return (
-    <div className="fixed inset-0 overflow-hidden">
-      {/* Background scene */}
-      <WeatherScene hour={19} season="summer" />
-      <div className="absolute inset-0" style={{ background: 'rgba(5, 46, 22, 0.6)' }} />
-
+    <WarmGround>
       <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -38,16 +34,16 @@ const Index = () => {
             viewBox="0 0 48 72"
             className="mx-auto mb-8 animate-tree-sway"
           >
-            <path d="M24 4 L14 24 L34 24 Z" fill="#dcfce7" opacity="0.9" />
-            <path d="M24 14 L10 38 L38 38 Z" fill="#dcfce7" opacity="0.7" />
-            <path d="M24 26 L6 52 L42 52 Z" fill="#dcfce7" opacity="0.5" />
-            <rect x="20" y="52" width="8" height="16" rx="2" fill="#fef3c7" opacity="0.5" />
+            <path d="M24 4 L14 24 L34 24 Z" fill="hsl(var(--pine-mid))" opacity="0.95" />
+            <path d="M24 14 L10 38 L38 38 Z" fill="hsl(var(--pine-mid))" opacity="0.8" />
+            <path d="M24 26 L6 52 L42 52 Z" fill="hsl(var(--pine-mid))" opacity="0.65" />
+            <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--primary))" opacity="0.8" />
           </svg>
 
-          <h1 className="text-4xl font-display text-pine-light mb-4">
+          <h1 className="text-4xl font-display text-foreground mb-4">
             Under Pines
           </h1>
-          <p className="text-pine-light/60 font-body mb-12 leading-relaxed">
+          <p className="text-muted-foreground font-body mb-12 leading-relaxed">
             An invite-only community built around<br />
             warmth, trust, and intentionality.
           </p>
@@ -59,13 +55,13 @@ const Index = () => {
             >
               Sign in
             </Button>
-            <p className="text-xs text-pine-light/40 font-body">
+            <p className="text-xs text-muted-foreground font-body">
               No account? You'll need an invite from a member.
             </p>
           </div>
         </motion.div>
       </div>
-    </div>
+    </WarmGround>
   );
 };
 

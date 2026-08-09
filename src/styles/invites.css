@@ -1,0 +1,69 @@
+/**
+ * Invites — route-scoped.
+ *
+ * Panels, .module, .album-link and the buttons come from handoff-shell.css.
+ */
+
+.invites { display: grid; gap: 15px; align-content: start; max-width: 640px; }
+
+.invite-url {
+  display: block;
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: hsl(var(--background));
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: hsl(var(--foreground));
+  word-break: break-all;
+  user-select: all;
+}
+
+.invite-actions { display: flex; gap: 8px; margin-top: 10px; }
+.invite-actions .solid-button { flex: 1; }
+
+.invite-count {
+  margin-top: 9px;
+  color: hsl(var(--muted-foreground));
+  font-size: 11.5px;
+}
+
+.invitee-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px dashed hsl(var(--border));
+}
+
+.invitee-row:first-of-type { border-top: 0; }
+
+.invitee-name { flex: 1; min-width: 0; text-decoration: none; color: inherit; }
+.invitee-name b { display: block; font-size: 13px; }
+.invitee-name:hover b { color: hsl(var(--primary)); }
+.invitee-name small { display: block; color: hsl(var(--muted-foreground)); font-size: 10.5px; }
+
+.invitee-state {
+  flex-shrink: 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 10.5px;
+  font-style: italic;
+}
+
+.invitee-state.active { color: hsl(var(--primary)); font-style: normal; }
+
+.earn-list { margin: 0; padding: 0; list-style: none; }
+
+.earn-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px dashed hsl(var(--border));
+  font-size: 13px;
+  color: hsl(var(--foreground) / 0.88);
+}
+
+.earn-list li:first-child { border-top: 0; }
+.earn-list li span { flex: 1; }
+.earn-list li b { color: hsl(var(--primary)); font-size: 12px; }

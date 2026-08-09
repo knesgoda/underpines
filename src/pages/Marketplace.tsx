@@ -84,7 +84,7 @@ const Marketplace = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto px-4 py-8 pt-16">
-      <h1 className="font-display text-2xl text-foreground mb-6">Cabin Designs</h1>
+      <h1 className="font-display text-2xl text-foreground mb-6">Page designs</h1>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
         {tabs.map(t => (

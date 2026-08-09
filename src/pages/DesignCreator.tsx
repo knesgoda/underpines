@@ -45,7 +45,7 @@ const DesignCreator = () => {
       .eq('id', user.id)
       .single();
 
-    if (!profile) { toast.error('Could not load your Cabin settings'); setSubmitting(false); return; }
+    if (!profile) { toast.error('Could not load your page settings'); setSubmitting(false); return; }
 
     const designData = {
       atmosphere: profile.atmosphere,
@@ -136,7 +136,7 @@ const DesignCreator = () => {
 
         <div>
           <label className="text-sm font-body text-foreground block mb-1">Preview image</label>
-          <p className="text-xs text-muted-foreground mb-2">Upload a screenshot showing your design on a Cabin.</p>
+          <p className="text-xs text-muted-foreground mb-2">Upload a screenshot showing your design on a page.</p>
           <label className="flex items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-border cursor-pointer hover:border-primary/50 transition-colors overflow-hidden">
             <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleUpload} className="hidden" />
             {previewUrl ? (

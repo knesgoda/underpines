@@ -8,11 +8,12 @@ import ReplyThread from '@/components/feed/ReplyThread';
 import ReactionBar from '@/components/feed/ReactionBar';
 import LightboxViewer from '@/components/feed/LightboxViewer';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import StatePanel from '@/components/StatePanel';
 import UserAvatar from '@/components/UserAvatar';
 import { formatTimeAgo } from '@/lib/time';
 import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
 import LinkPreviewCard from '@/components/feed/LinkPreviewCard';
-import DOMPurify from 'dompurify';
+import Markdown from '@/lib/markdown';
 
 const REACTION_ICONS: Record<string, string> = {
   warmth: '❤️', laughed: '😂', heavy: '😢', noted: '🤔',
@@ -136,18 +137,13 @@ const PostDetail = () => {
 
   if (!post) {
     return (
-      <div className="max-w-2xl mx-auto px-6 py-16 text-center">
-        <p className="text-4xl mb-4">🌲</p>
-        <h2 className="font-display text-xl text-foreground mb-2">Post not found</h2>
-        <p className="font-body text-sm text-muted-foreground mb-6">
-          This post may have been removed or isn't visible to you.
-        </p>
-        <button
-          onClick={() => navigate(-1)}
-          className="font-body text-sm text-primary hover:underline"
+      <div className="page-shell">
+        <StatePanel
+          title="That branch snapped."
+          action={<button type="button" className="outline-button" onClick={() => navigate(-1)}>Go back</button>}
         >
-          ← Go back
-        </button>
+          This post was removed, or it belongs to someone you are not friends with.
+        </StatePanel>
       </div>
     );
   }
@@ -155,10 +151,10 @@ const PostDetail = () => {
   const isOwner = user?.id === post.author_id;
   const accent = post.author?.accent_color || 'hsl(var(--primary))';
 
-  // For story posts, redirect to the author's cabin
+  // Long-form gets the wider reading treatment: title, markdown body.
   if (post.post_type === 'story') {
     return (
-      <div className="max-w-2xl mx-auto px-6 pt-4 pb-24">
+      <div className="mx-auto w-full max-w-2xl px-6 pt-4 pb-24">
         {/* Back button */}
         <button
           onClick={() => navigate(-1)}
@@ -169,7 +165,7 @@ const PostDetail = () => {
         </button>
 
         <article
-          className="rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] overflow-hidden"
+          className="panel overflow-hidden"
           style={{ borderLeft: `3px solid ${accent}` }}
         >
           <div className="p-6">
@@ -205,9 +201,9 @@ const PostDetail = () => {
 
             {/* Full story content */}
             <div
-              className="font-body text-sm text-foreground/85 leading-relaxed prose prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content || '') }}
-            />
+              className="font-body text-sm text-foreground/85 leading-relaxed prose prose-sm max-w-none">
+              <Markdown>{post.content || ''}</Markdown>
+            </div>
 
             {/* Reaction summary */}
             <ReactionSummary reactions={reactions} isOwner={isOwner} />
@@ -220,7 +216,7 @@ const PostDetail = () => {
         </article>
 
         {/* Full reply thread */}
-        <div className="mt-4 rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06)] p-5">
+        <div className="panel mt-4 p-5">
           <ReplyThread postId={post.id} autoExpand />
         </div>
       </div>
@@ -229,7 +225,7 @@ const PostDetail = () => {
 
   // Spark / Ember detail
   return (
-    <div className="max-w-2xl mx-auto px-6 pt-4 pb-24">
+    <div className="mx-auto w-full max-w-2xl px-6 pt-4 pb-24">
       {/* Back button */}
       <button
         onClick={() => navigate(-1)}
@@ -240,7 +236,7 @@ const PostDetail = () => {
       </button>
 
       <article
-        className="rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] overflow-hidden"
+        className="panel overflow-hidden"
         style={{ borderLeft: `3px solid ${accent}` }}
       >
         <div className="p-5">
@@ -351,7 +347,7 @@ const PostDetail = () => {
               </div>
             ) : (
               <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3 opacity-50">
-                <p className="font-body text-xs text-muted-foreground italic">A post from someone outside your Circles.</p>
+                <p className="font-body text-xs text-muted-foreground italic">A post from someone you are not friends with.</p>
               </div>
             );
           })()}
@@ -367,7 +363,7 @@ const PostDetail = () => {
       </article>
 
       {/* Full reply thread — auto-expanded */}
-      <div className="mt-4 rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06)] p-5">
+      <div className="panel mt-4 p-5">
         <ReplyThread postId={post.id} autoExpand />
       </div>
 

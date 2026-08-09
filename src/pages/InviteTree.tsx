@@ -138,7 +138,7 @@ const InviteTree = () => {
               </>
             ) : (
               <>
-                <div className="rounded-2xl bg-card border border-border p-4 shadow-soft w-full text-center">
+                <div className="panel p-4 w-full text-center">
                   <p className="text-sm font-body text-muted-foreground italic">
                     You arrived at the edge of the forest on your own.
                   </p>
@@ -179,7 +179,7 @@ const InviteTree = () => {
             {invitees.length === 0 && (
               <>
                 <ConnectorLine />
-                <div className="rounded-2xl bg-card border border-dashed border-border p-4 w-full text-center">
+                <div className="panel p-4 border-dashed w-full text-center">
                   <p className="text-sm font-body text-muted-foreground italic">
                     No one has wandered through your gate yet.
                   </p>
@@ -202,7 +202,7 @@ const NodeCard = ({ node, label, index }: { node: TreeNode; label: string; index
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: index * 0.08 }}
-    className="rounded-2xl bg-card border border-border p-4 shadow-soft w-full flex items-center gap-3"
+    className="panel p-4 w-full flex items-center gap-3"
   >
     <UserAvatar
       avatarUrl={node.avatar_url}

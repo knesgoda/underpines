@@ -74,7 +74,6 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   const [showLog, setShowLog] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
-  const [isPinesPlus, setIsPinesPlus] = useState(false);
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
   const [highlightMsgId, setHighlightMsgId] = useState<string | null>(null);
   const [reactionMsgId, setReactionMsgId] = useState<string | null>(null);
@@ -89,7 +88,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus input when opened via "Stoke it?"
+  // Auto-focus input when opened via Nudge
   useEffect(() => {
     if (autoFocusInput && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 400);
@@ -158,17 +157,6 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   useEffect(() => { if (campfire) loadParticipants(); }, [campfire, loadParticipants]);
   useEffect(() => { loadMessages(); }, [loadMessages]);
 
-  // Check Pines+ status
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from('pines_plus_subscriptions')
-      .select('status')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .maybeSingle()
-      .then(({ data }) => setIsPinesPlus(!!data));
-  }, [user]);
 
   // Auto-scroll
   useEffect(() => {
@@ -212,7 +200,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
     return () => { supabase.removeChannel(channel); };
   }, [campfireId, autoScroll]);
 
-  // Flicker countdown
+  // Expiry countdown
   useEffect(() => {
     if (!campfire || campfire.campfire_type !== 'flicker' || !campfire.expires_at) return;
     const update = () => {
@@ -412,7 +400,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center max-w-xs">
           <p className="text-5xl mb-4">🕯️</p>
-          <p className="font-display text-lg text-foreground mb-1">This Flicker has burned out.</p>
+          <p className="font-display text-lg text-foreground mb-1">This conversation has expired.</p>
           <p className="font-body text-sm text-muted-foreground mb-6">The warmth lingers, even after the light fades.</p>
           <button onClick={onBack} className="font-body text-sm text-primary hover:underline">← Back to Campfires</button>
         </div>
@@ -506,10 +494,9 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                     </>
                   )}
                   <div className="h-px bg-border" />
-                  <MenuBtn onClick={() => { setMenuOpen(false); isPinesPlus ? setShowSearch(true) : toast.info('Search Campfires is available with Pines+'); }}>
+                  <MenuBtn onClick={() => { setMenuOpen(false); setShowSearch(true); }}>
                     <span className="flex items-center gap-2">
                       <Search size={14} /> Search this Campfire
-                      {!isPinesPlus && <Lock size={12} className="text-muted-foreground" />}
                     </span>
                   </MenuBtn>
                   <div className="h-px bg-border" />
@@ -521,7 +508,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
         </div>
       </div>
 
-      {/* Embers banner */}
+      {/* Idle banner */}
       {campfire.is_embers && (
         <div className="px-4 py-2 bg-muted text-center">
           <p className="font-body text-xs text-muted-foreground">This fire has been embers. The history is still here.</p>
@@ -567,7 +554,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                       {msg.is_faded ? (
                         <div className="px-3 py-2 rounded-2xl bg-muted">
                           <p className="font-body text-xs text-muted-foreground italic">
-                            A message from {msg.created_at ? new Date(msg.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : 'the past'} · Keep messages forever with Pines+
+                            A message from {msg.created_at ? new Date(msg.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : 'the past'}
                           </p>
                         </div>
                       ) : msg.message_type === 'photo' && msg.media_url ? (

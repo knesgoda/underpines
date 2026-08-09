@@ -4,10 +4,21 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 
+interface GroupDetail {
+  id: string;
+  name: string;
+  description: string | null;
+  member_count: number | null;
+  health_status: string | null;
+  visibility: string;
+  created_at: string | null;
+  firekeeper: { handle: string; display_name: string } | null;
+}
+
 const GroveCampDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [camp, setCamp] = useState<any>(null);
+  const [camp, setCamp] = useState<GroupDetail | null>(null);
   const [postsThisWeek, setPostsThisWeek] = useState(0);
   const [reportCount, setReportCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -22,7 +33,7 @@ const GroveCampDetail = () => {
         .single();
 
       if (!c) { setLoading(false); return; }
-      setCamp(c);
+      setCamp(c as unknown as GroupDetail);
 
       const oneWeek = new Date(Date.now() - 7 * 86400000).toISOString();
       const [{ count: posts }, { count: reports }] = await Promise.all([
@@ -50,7 +61,7 @@ const GroveCampDetail = () => {
 
       <div>
         <h1 className="font-display text-lg font-bold text-[hsl(var(--pine-pale))]">{camp.name}</h1>
-        <p className="text-sm text-[hsl(var(--muted-text))]">
+        <p className="text-sm text-[hsl(var(--pine-light)/0.65)]">
           {healthIcon} {camp.health_status || 'Healthy'} · {camp.member_count} members
         </p>
       </div>
@@ -59,8 +70,8 @@ const GroveCampDetail = () => {
         <CardContent className="p-4 space-y-2">
           <h2 className="font-display text-xs font-semibold uppercase tracking-wider text-[hsl(var(--amber-mid))]">Details</h2>
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <span className="text-[hsl(var(--pine-light)/0.7)]">Firekeeper</span>
-            <span className="text-[hsl(var(--pine-pale))]">{(camp.firekeeper as any)?.handle}</span>
+            <span className="text-[hsl(var(--pine-light)/0.7)]">Owner</span>
+            <span className="text-[hsl(var(--pine-pale))]">{camp.firekeeper?.handle}</span>
             <span className="text-[hsl(var(--pine-light)/0.7)]">Posts this week</span>
             <span className="text-[hsl(var(--pine-pale))]">{postsThisWeek}</span>
             <span className="text-[hsl(var(--pine-light)/0.7)]">Reports</span>

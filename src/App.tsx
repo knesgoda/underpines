@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Toaster } from "@/components/ui/toaster";
@@ -9,8 +9,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { SceneDebugProvider } from "@/contexts/SceneDebugContext";
-import { RevenueCatProvider } from "@/contexts/RevenueCatContext";
 import PineTreeLoading from "@/components/PineTreeLoading";
 
 import AppLayout from "@/components/navigation/AppLayout";
@@ -20,7 +18,11 @@ const HomePage = lazy(() => import("./pages/HomePage"));
 const Login = lazy(() => import("./pages/Login"));
 const InviteLanding = lazy(() => import("./pages/InviteLanding"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
-const Cabin = lazy(() => import("./pages/Cabin"));
+const Welcome = lazy(() => import("./pages/Welcome"));
+const MyPage = lazy(() => import("./pages/MyPage"));
+const PageCustomizer = lazy(() => import("./pages/PageCustomizer"));
+const Photos = lazy(() => import("./pages/Photos"));
+const Events = lazy(() => import("./pages/Events"));
 const Invites = lazy(() => import("./pages/Invites"));
 const InviteTree = lazy(() => import("./pages/InviteTree"));
 const Campfires = lazy(() => import("./pages/Campfires"));
@@ -45,6 +47,7 @@ const CampNewsletterComposer = lazy(() => import("./pages/CampNewsletterComposer
 const CampNewsletterView = lazy(() => import("./pages/CampNewsletterView"));
 const CampNewsletterArchive = lazy(() => import("./pages/CampNewsletterArchive"));
 const SearchPage = lazy(() => import("./pages/Search"));
+const Explore = lazy(() => import("./pages/Explore"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const MarketplaceDetail = lazy(() => import("./pages/MarketplaceDetail"));
 const DesignCreator = lazy(() => import("./pages/DesignCreator"));
@@ -65,7 +68,6 @@ const GroveCamps = lazy(() => import("./pages/grove/GroveCamps"));
 const GroveCampDetail = lazy(() => import("./pages/grove/GroveCampDetail"));
 const GroveRevenue = lazy(() => import("./pages/grove/GroveRevenue"));
 const GroveSettings = lazy(() => import("./pages/grove/GroveSettings"));
-const GroveCompanions = lazy(() => import("./pages/grove/GroveCompanions"));
 const GroveDesigns = lazy(() => import("./pages/grove/GroveDesigns"));
 
 const queryClient = new QueryClient({
@@ -81,10 +83,10 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-    <SceneDebugProvider>
     <AuthProvider>
-      <RevenueCatProvider>
+      {/* ThemeProvider reads the signed-in user to load their saved theme, so
+          it has to sit below AuthProvider. */}
+      <ThemeProvider>
       <OnboardingProvider>
         <NavigationProvider>
           <TooltipProvider>
@@ -106,7 +108,9 @@ const App = () => (
                   <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
                   <Route path="designs" element={<GroveDesigns />} />
-                  <Route path="companions" element={<GroveCompanions />} />
+                  {/* Without this, a stale admin bookmark renders the Grove
+                      chrome around an empty main area rather than a 404. */}
+                  <Route path="*" element={<NotFound />} />
                 </Route>
 
                 {/* Main app routes */}
@@ -119,12 +123,20 @@ const App = () => (
                       <Route path="/privacy" element={<Privacy />} />
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/onboarding" element={<Onboarding />} />
-                      <Route path="/cabin" element={<Cabin />} />
+                      <Route path="/welcome" element={<Welcome />} />
+                      <Route path="/me" element={<MyPage />} />
+                      <Route path="/me/edit" element={<PageCustomizer />} />
+                      <Route path="/photos" element={<Photos />} />
+                      <Route path="/events" element={<Events />} />
+                      <Route path="/cabin" element={<Navigate to="/me" replace />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />
-                      <Route path="/campfires" element={<Campfires />} />
+                      <Route path="/messages" element={<Campfires />} />
+                      <Route path="/campfires" element={<Navigate to="/messages" replace />} />
                       <Route path="/search" element={<SearchPage />} />
-                      <Route path="/lantern" element={<Lantern />} />
+                      <Route path="/explore" element={<Explore />} />
+                      <Route path="/updates" element={<Lantern />} />
+                      <Route path="/lantern" element={<Navigate to="/updates" replace />} />
                       <Route path="/settings" element={<SettingsPage />} />
                       <Route path="/settings/notifications" element={<NotificationSettings />} />
                       <Route path="/settings/privacy" element={<PrivacySettings />} />
@@ -135,10 +147,12 @@ const App = () => (
                       <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
                       <Route path="/designs/create" element={<DesignCreator />} />
                       <Route path="/new/story" element={<StoryComposer />} />
-                      <Route path="/circles" element={<CirclesPage />} />
+                      <Route path="/friends" element={<CirclesPage />} />
+                      <Route path="/circles" element={<Navigate to="/friends" replace />} />
                       <Route path="/circles/suggestions/:handle" element={<CircleSuggestions />} />
                       <Route path="/collections/new" element={<CollectionEditor />} />
                       <Route path="/collections/edit/:id" element={<CollectionEditor />} />
+                      <Route path="/groups" element={<CampsDirectory />} />
                       <Route path="/camps" element={<CampsDirectory />} />
                       <Route path="/camps/new" element={<CreateCamp />} />
                       <Route path="/camps/mine" element={<MyCamps />} />
@@ -147,11 +161,12 @@ const App = () => (
                       <Route path="/camps/:id/newsletter/new" element={<CampNewsletterComposer />} />
                       <Route path="/camps/:id/newsletter/:newsletterId" element={<CampNewsletterView />} />
                       <Route path="/camps/:id/newsletters" element={<CampNewsletterArchive />} />
+                      <Route path="/:handle/photos" element={<Photos />} />
                       <Route path="/:handle/collections" element={<CollectionsList />} />
                       <Route path="/:handle/collections/:id" element={<CollectionView />} />
                       <Route path="/wrapped/:year" element={<Wrapped />} />
                       <Route path="/post/:id" element={<PostDetail />} />
-                      <Route path="/:handle" element={<Cabin />} />
+                      <Route path="/:handle" element={<MyPage />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </AppLayout>
@@ -162,10 +177,8 @@ const App = () => (
           </TooltipProvider>
         </NavigationProvider>
       </OnboardingProvider>
-      </RevenueCatProvider>
+      </ThemeProvider>
     </AuthProvider>
-    </SceneDebugProvider>
-    </ThemeProvider>
   </QueryClientProvider>
 );
 

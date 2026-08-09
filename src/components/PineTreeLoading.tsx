@@ -18,8 +18,10 @@ const PineTreeLoading = () => {
           {/* Trunk */}
           <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--amber-deep))" opacity="0.7" />
         </svg>
+        {/* The Cabin has not existed since Phase 3c, and this is the first
+            words anyone sees on a cold load. */}
         <p className="text-sm text-muted-foreground font-body animate-fade-in">
-          Getting your Cabin ready
+          One moment
         </p>
       </div>
     </div>

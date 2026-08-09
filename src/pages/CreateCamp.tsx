@@ -95,12 +95,12 @@ const CreateCamp = () => {
       });
     }
 
-    toast.success('Camp created!');
+    toast.success('Group created.');
     navigate(`/camps/${camp.id}`);
   };
 
   const visOptions: { value: Visibility; label: string; desc: string }[] = [
-    { value: 'open', label: 'Open', desc: 'Anyone on Under Pines can request to join. Your Camp appears in search.' },
+    { value: 'open', label: 'Open', desc: 'Anyone on Under Pines can request to join. It shows up in search.' },
     { value: 'ember', label: 'Ember', desc: 'Invite only. Members bring in new members. Appears in search but join by invite only.' },
     { value: 'hidden', label: 'Hidden', desc: "Doesn't appear in search. Join by direct link only." },
   ];
@@ -110,7 +110,7 @@ const CreateCamp = () => {
       <AnimatePresence mode="wait">
         {step === 'identity' && (
           <motion.div key="identity" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-            <h1 className="font-display text-2xl text-foreground mb-6">Start a Camp</h1>
+            <h1 className="font-display text-2xl text-foreground mb-6">Start a group</h1>
 
             {/* Cover upload */}
             <button
@@ -132,7 +132,7 @@ const CreateCamp = () => {
               <input
                 value={name}
                 onChange={e => setName(e.target.value.slice(0, 60))}
-                placeholder="Camp name"
+                placeholder="Group name"
                 className="w-full px-4 py-3 rounded-xl border border-border bg-card font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               />
               <input
@@ -158,7 +158,7 @@ const CreateCamp = () => {
 
         {step === 'visibility' && (
           <motion.div key="visibility" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-            <h1 className="font-display text-2xl text-foreground mb-2">Who can join this Camp?</h1>
+            <h1 className="font-display text-2xl text-foreground mb-2">Who can join?</h1>
             <p className="font-body text-sm text-muted-foreground mb-6">You can change this later.</p>
 
             <div className="space-y-3 mb-8">
@@ -189,7 +189,7 @@ const CreateCamp = () => {
 
         {step === 'review' && (
           <motion.div key="review" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-            <h1 className="font-display text-2xl text-foreground mb-6">Your Camp is ready.</h1>
+            <h1 className="font-display text-2xl text-foreground mb-6">Your group is ready.</h1>
 
             <div className="flex flex-col items-center gap-4 mb-6">
               {coverPreview ? (
@@ -202,12 +202,12 @@ const CreateCamp = () => {
               <div className="text-center">
                 <p className="font-display text-lg text-foreground">{name}</p>
                 {description && <p className="font-body text-sm text-muted-foreground mt-1">{description}</p>}
-                <p className="font-body text-xs text-muted-foreground mt-2 capitalize">{visibility} Camp</p>
+                <p className="font-body text-xs text-muted-foreground mt-2 capitalize">{visibility} group</p>
               </div>
             </div>
 
             <p className="font-body text-sm text-muted-foreground text-center mb-8">
-              You're the Firekeeper. You can appoint Trailblazers to help moderate once your Camp grows.
+              You own it. You can make other people moderators once it grows.
             </p>
 
             <div className="flex items-center justify-between">

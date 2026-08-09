@@ -1,91 +1,40 @@
 import { useOnboarding } from '@/contexts/OnboardingContext';
-import { useNavigate } from 'react-router-dom';
 import StepIndicator from '@/components/onboarding/StepIndicator';
 import StepTransition from '@/components/onboarding/StepTransition';
 import StepAge from '@/components/onboarding/StepAge';
-import StepDisplayName from '@/components/onboarding/StepDisplayName';
-import StepHandle from '@/components/onboarding/StepHandle';
-import StepEmail from '@/components/onboarding/StepEmail';
-import StepPassword from '@/components/onboarding/StepPassword';
+import StepCredentials from '@/components/onboarding/StepCredentials';
 import StepVerify from '@/components/onboarding/StepVerify';
-import StepParentalConsent from '@/components/onboarding/StepParentalConsent';
-import WalkThroughWoods from '@/components/onboarding/WalkThroughWoods';
-import HumanMoment from '@/components/onboarding/HumanMoment';
+import WarmGround from '@/components/layout/WarmGround';
+import '@/styles/onboarding.css';
 
+/**
+ * Account creation only: age gate, credentials, verification.
+ *
+ * Everything about who someone *is* — name, handle, face, look, first
+ * connections — now happens in the five-step welcome flow after the account
+ * exists, which is what the Lovable handoff designs. Step 50 remains the
+ * parental-consent hold for 13–17 accounts.
+ */
 const Onboarding = () => {
-  const { step, setStep, data } = useOnboarding();
-  const navigate = useNavigate();
+  const { step } = useOnboarding();
 
-  // Steps 7-9 are full-screen experiences
-  if (step === 7) {
-    return <WalkThroughWoods onComplete={() => setStep(8)} />;
-  }
-
-  if (step === 8) {
-    return (
-      <HumanMoment
-        inviterName={data.inviterName}
-        inviteeCount={3}
-        onEnter={() => setStep(9)}
-      />
-    );
-  }
-
-  // Step 9 redirects to cabin with setup mode
-  if (step === 9) {
-    navigate('/cabin?setup=true');
-    return null;
-  }
-
-  // Step 50 is parental consent waiting screen (13-17)
-  if (step === 50) {
-    return (
-      <div className="fixed inset-0 overflow-auto" style={{ background: 'linear-gradient(180deg, #052e16 0%, #14532d 40%, #052e16 100%)', height: '100dvh' }}>
-        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-12">
-          <StepParentalConsent />
-        </div>
-      </div>
-    );
-  }
-
-  // Total form steps: 1=Age, 2=Name, 3=Handle, 4=Email, 5=Password, 6=Verify
-  const totalSteps = 6;
+  // 1 = Age, 2 = Email + password, 3 = Verify
+  const totalSteps = 3;
 
   return (
-    <div className="fixed inset-0 overflow-auto" style={{ background: 'linear-gradient(180deg, #052e16 0%, #14532d 40%, #052e16 100%)', height: '100dvh' }}>
-      {/* Subtle forest background */}
-      <div className="absolute inset-0 opacity-10">
-        {[15, 35, 55, 75, 90].map((x, i) => (
-          <svg
-            key={i}
-            className="absolute bottom-0"
-            style={{ left: `${x}%` }}
-            width="50"
-            height="120"
-            viewBox="0 0 50 120"
-          >
-            <path d="M25 10 L8 70 L42 70 Z" fill="#dcfce7" opacity="0.3" />
-            <path d="M25 30 L4 95 L46 95 Z" fill="#dcfce7" opacity="0.2" />
-            <rect x="22" y="95" width="6" height="25" fill="#fef3c7" opacity="0.15" />
-          </svg>
-        ))}
-      </div>
-
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-12">
+    <WarmGround>
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12">
         {step <= totalSteps && <StepIndicator current={step} total={totalSteps} />}
 
-        <div className="flex-1 flex items-center justify-center w-full">
+        <div className="flex w-full flex-1 items-center justify-center">
           <StepTransition stepKey={step}>
             {step === 1 && <StepAge />}
-            {step === 2 && <StepDisplayName />}
-            {step === 3 && <StepHandle />}
-            {step === 4 && <StepEmail />}
-            {step === 5 && <StepPassword />}
-            {step === 6 && <StepVerify />}
+            {step === 2 && <StepCredentials />}
+            {step === 3 && <StepVerify />}
           </StepTransition>
         </div>
       </div>
-    </div>
+    </WarmGround>
   );
 };
 

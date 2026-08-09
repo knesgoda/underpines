@@ -1,472 +1,298 @@
-import { useState, useEffect } from 'react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { MessageSquare, MoreHorizontal, Search } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, Flame, Search } from 'lucide-react';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { ErrorPanel } from '@/components/StatePanel';
 import UserAvatar from '@/components/UserAvatar';
-import { toast } from 'sonner';
+import { useFriendActions, useFriendLists, type Friend } from '@/hooks/useFriends';
+import '@/styles/friends.css';
 
-interface CircleMember {
-  id: string;
-  display_name: string;
-  handle: string;
-  avatar_url: string | null;
-  default_avatar_key: string | null;
-  updated_at: string | null;
-  circleId: string;
-  direction: 'sent' | 'received';
-}
+type Tab = 'friends' | 'requests' | 'restricted';
 
-interface BlockedUser {
-  id: string;
-  display_name: string;
-  handle: string;
-  blockId: string;
-}
-
-interface MutedUser {
-  id: string;
-  display_name: string;
-  handle: string;
-  muteId: string;
-}
-
+/**
+ * Friends.
+ *
+ * Was "Your Circles", with tabs called "Trail together" and "Trail invites"
+ * and a menu item labelled "Bank the fire". Every one of those needed a
+ * translation before you could use it — the nomenclature that cost the launch.
+ * The words are now the ordinary ones; only the table names stayed.
+ */
 const CirclesPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<'trail' | 'invites' | 'blocked'>('trail');
-  const [members, setMembers] = useState<CircleMember[]>([]);
-  const [pendingSent, setPendingSent] = useState<CircleMember[]>([]);
-  const [pendingReceived, setPendingReceived] = useState<CircleMember[]>([]);
-  const [blocked, setBlocked] = useState<BlockedUser[]>([]);
-  const [muted, setMuted] = useState<MutedUser[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: lists, isLoading, isError } = useFriendLists();
+  const actions = useFriendActions();
+
+  const [tab, setTab] = useState<Tab>('friends');
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [confirmRemove, setConfirmRemove] = useState<Friend | null>(null);
 
-  useEffect(() => {
-    if (!user) return;
-    loadAll();
-  }, [user]);
+  if (isLoading) return <PineTreeLoading />;
+  if (isError) return <div className="page-shell"><ErrorPanel what="your friends" /></div>;
 
-  const loadAll = async () => {
-    if (!user) return;
-    setLoading(true);
+  if (!user) {
+    return (
+      <div className="page-shell">
+        <section className="panel state-panel">
+          <p>Sign in to see who you know here.</p>
+          <Link to="/login" className="outline-button mt-4 inline-block">Sign in</Link>
+        </section>
+      </div>
+    );
+  }
 
-    const { data: circles } = await supabase
-      .from('circles')
-      .select('*')
-      .or(`requester_id.eq.${user.id},requestee_id.eq.${user.id}`);
+  const { friends = [], incoming = [], outgoing = [], blocked = [], muted = [] } = lists ?? {};
+  const requestCount = incoming.length + outgoing.length;
 
-    if (circles) {
-      const otherIds = circles.map(c => c.requester_id === user.id ? c.requestee_id : c.requester_id);
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, display_name, handle, avatar_url, default_avatar_key, updated_at')
-        .in('id', otherIds);
-
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
-
-      const accepted: CircleMember[] = [];
-      const sentPending: CircleMember[] = [];
-      const receivedPending: CircleMember[] = [];
-      const seen = new Set<string>();
-
-      circles.forEach(c => {
-        const otherId = c.requester_id === user.id ? c.requestee_id : c.requester_id;
-        const p = profileMap.get(otherId);
-        if (!p) return;
-
-        const member: CircleMember = {
-          id: p.id,
-          display_name: p.display_name,
-          handle: p.handle,
-          avatar_url: (p as any).avatar_url ?? null,
-          default_avatar_key: (p as any).default_avatar_key ?? null,
-          updated_at: p.updated_at,
-          circleId: c.id,
-          direction: c.requester_id === user.id ? 'sent' : 'received',
-        };
-
-        if (c.status === 'accepted') {
-          if (seen.has(otherId)) return;
-          seen.add(otherId);
-          accepted.push(member);
-        } else if (c.status === 'pending' && c.requester_id === user.id) {
-          sentPending.push(member);
-        } else if (c.status === 'pending' && c.requestee_id === user.id) {
-          receivedPending.push(member);
-        }
-      });
-
-      setMembers(accepted);
-      setPendingSent(sentPending);
-      setPendingReceived(receivedPending);
-    }
-
-    const { data: blockRows } = await supabase
-      .from('blocks')
-      .select('*')
-      .eq('blocker_id', user.id);
-
-    if (blockRows && blockRows.length > 0) {
-      const { data: blockProfiles } = await supabase
-        .from('profiles')
-        .select('id, display_name, handle')
-        .in('id', blockRows.map(b => b.blocked_id));
-
-      setBlocked((blockProfiles || []).map(p => ({
-        ...p,
-        blockId: blockRows.find(b => b.blocked_id === p.id)!.id,
-      })));
-    }
-
-    const { data: muteRows } = await supabase
-      .from('mutes')
-      .select('*')
-      .eq('muter_id', user.id);
-
-    if (muteRows && muteRows.length > 0) {
-      const { data: muteProfiles } = await supabase
-        .from('profiles')
-        .select('id, display_name, handle')
-        .in('id', muteRows.map(m => m.muted_id));
-
-      setMuted((muteProfiles || []).map(p => ({
-        ...p,
-        muteId: muteRows.find(m => m.muted_id === p.id)!.id,
-      })));
-    }
-
-    setLoading(false);
-  };
-
-  const acceptRequest = async (circleId: string, name: string) => {
-    await supabase.from('circles').update({ status: 'accepted', updated_at: new Date().toISOString() }).eq('id', circleId);
-    toast.success(`You and ${name} are now on the trail together. 🌲`);
-    loadAll();
-  };
-
-  const declineRequest = async (circleId: string) => {
-    await supabase.from('circles').update({ status: 'declined', updated_at: new Date().toISOString() }).eq('id', circleId);
-    loadAll();
-  };
-
-  const withdrawRequest = async (circleId: string) => {
-    await supabase.from('circles').delete().eq('id', circleId);
-    loadAll();
-  };
-
-  const [leaveCircleId, setLeaveCircleId] = useState<string | null>(null);
-  const [leaveCircleName, setLeaveCircleName] = useState('');
-
-  const removeFromCircle = (member: CircleMember) => {
-    setLeaveCircleId(member.circleId);
-    setLeaveCircleName(member.display_name);
-    setMenuOpen(null);
-  };
-
-  const confirmRemoveFromCircle = async () => {
-    if (!leaveCircleId) return;
-    await supabase.from('circles').update({ status: 'declined' }).eq('id', leaveCircleId);
-    setLeaveCircleId(null);
-    loadAll();
-  };
-
-  const blockUser = async (userId: string, name: string) => {
-    if (!user) return;
-    await supabase.from('blocks').insert({ blocker_id: user.id, blocked_id: userId });
-    await supabase.from('circles')
-      .update({ status: 'declined' })
-      .or(`and(requester_id.eq.${user.id},requestee_id.eq.${userId}),and(requester_id.eq.${userId},requestee_id.eq.${user.id})`);
-    setMenuOpen(null);
-    toast(`Stepped away from ${name}'s fire`);
-    loadAll();
-  };
-
-  const muteUser = async (userId: string, name: string) => {
-    if (!user) return;
-    await supabase.from('mutes').insert({ muter_id: user.id, muted_id: userId });
-    setMenuOpen(null);
-    toast(`Banked the fire with ${name}`);
-    loadAll();
-  };
-
-  const unblock = async (blockId: string) => {
-    await supabase.from('blocks').delete().eq('id', blockId);
-    loadAll();
-  };
-
-  const unmute = async (muteId: string) => {
-    await supabase.from('mutes').delete().eq('id', muteId);
-    loadAll();
-  };
-
-  const startCampfire = async (memberId: string, memberName: string) => {
-    if (!user) return;
-    const { data: myParts } = await supabase
+  /** Open the one-to-one thread with someone, making it if it is not there. */
+  const message = async (friend: Friend) => {
+    const { data: mine } = await supabase
       .from('campfire_participants')
       .select('campfire_id')
       .eq('user_id', user.id);
 
-    if (myParts) {
-      for (const p of myParts) {
-        const { data: other } = await supabase
-          .from('campfire_participants')
-          .select('user_id')
-          .eq('campfire_id', p.campfire_id)
-          .eq('user_id', memberId)
-          .maybeSingle();
-        if (other) {
-          const { data: cf } = await supabase
-            .from('campfires')
-            .select('id')
-            .eq('id', p.campfire_id)
-            .eq('campfire_type', 'one_on_one')
-            .eq('is_active', true)
-            .maybeSingle();
-          if (cf) { navigate(`/campfires`); return; }
-        }
-      }
+    for (const p of mine ?? []) {
+      const { data: shared } = await supabase
+        .from('campfire_participants')
+        .select('user_id')
+        .eq('campfire_id', p.campfire_id)
+        .eq('user_id', friend.id)
+        .maybeSingle();
+      if (!shared) continue;
+
+      const { data: existing } = await supabase
+        .from('campfires')
+        .select('id')
+        .eq('id', p.campfire_id)
+        .eq('campfire_type', 'one_on_one')
+        .eq('is_active', true)
+        .maybeSingle();
+      if (existing) { navigate('/messages'); return; }
     }
 
-    const { data: newCf } = await supabase
+    const { data: created, error } = await supabase
       .from('campfires')
-      .insert({ campfire_type: 'one_on_one', firekeeper_id: user.id, name: memberName })
+      .insert({ campfire_type: 'one_on_one', firekeeper_id: user.id, name: friend.display_name })
       .select()
       .single();
 
-    if (newCf) {
-      await supabase.from('campfire_participants').insert([
-        { campfire_id: newCf.id, user_id: user.id },
-        { campfire_id: newCf.id, user_id: memberId },
-      ]);
-      navigate(`/campfires`);
-    }
+    if (error || !created) { toast.error('Could not start that conversation.'); return; }
+
+    await supabase.from('campfire_participants').insert([
+      { campfire_id: created.id, user_id: user.id },
+      { campfire_id: created.id, user_id: friend.id },
+    ]);
+    navigate('/messages');
   };
 
-  if (loading) return <PineTreeLoading />;
-
-  const pendingCount = pendingSent.length + pendingReceived.length;
+  const run = (p: Promise<unknown>, ok: string) =>
+    p.then(() => toast.success(ok)).catch(() => toast.error('That did not go through.'));
 
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="font-display text-2xl text-foreground mb-6">🌲 Your Circles</h1>
+    <div className="page-shell">
+      <div className="panel-title">
+        <span>Friends</span>
+        <Link to="/explore" className="outline-button"><Search size={13} className="mr-1 inline" /> Find people</Link>
+      </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-muted rounded-xl p-1">
+      <div className="tab-strip">
         {([
-          { key: 'trail' as const, label: 'Trail together' },
-          { key: 'invites' as const, label: `Trail invites${pendingCount > 0 ? ` (${pendingCount})` : ''}` },
-          { key: 'blocked' as const, label: 'Blocked & Muted' },
-        ]).map(t => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`flex-1 py-2 rounded-lg font-body text-sm transition-colors ${tab === t.key ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            {t.label}
+          ['friends', `Friends${friends.length ? ` (${friends.length})` : ''}`],
+          ['requests', `Requests${requestCount ? ` (${requestCount})` : ''}`],
+          ['restricted', 'Blocked & muted'],
+        ] as [Tab, string][]).map(([key, label]) => (
+          <button key={key} onClick={() => setTab(key)} className={tab === key ? 'is-active' : ''}>
+            {label}
           </button>
         ))}
       </div>
 
-      {/* Tab: Trail together */}
-      {tab === 'trail' && (
-        <div className="space-y-2">
-          {members.length === 0 ? (
-            <EmptyState icon="🌲" text="Your trail is quiet. Find people to walk with." />
-          ) : (
-            members.map(m => (
-              <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
-                <div className="flex items-center gap-3 min-w-0">
-                  <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
-                  <div className="min-w-0">
-                    <Link to={`/${m.handle}`} className="font-body text-sm font-medium text-foreground truncate block hover:opacity-80">{m.display_name}</Link>
-                    <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => startCampfire(m.id, m.display_name)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
-                  >
-                    <Flame size={12} /> Campfire
-                  </button>
-                  <div className="relative">
-                    <button onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)} className="p-1.5 rounded-md text-muted-foreground hover:bg-muted">
-                      <MoreHorizontal size={16} />
-                    </button>
-                    <AnimatePresence>
-                      {menuOpen === m.id && (
-                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-                          className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20">
-                          <MBtn onClick={() => { navigate(`/${m.handle}`); }}>View Cabin</MBtn>
-                          <MBtn onClick={() => removeFromCircle(m)}>Leave their trail</MBtn>
-                          <MBtn onClick={() => muteUser(m.id, m.display_name)}>Bank the fire (mute)</MBtn>
-                          <div className="h-px bg-border" />
-                          <MBtn onClick={() => blockUser(m.id, m.display_name)} destructive>Step away from the fire</MBtn>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
+      {tab === 'friends' && (
+        <section className="panel friend-list">
+          {friends.length === 0 ? (
+            <Empty>You have not added anyone yet. Explore is a good place to start.</Empty>
+          ) : friends.map(f => (
+            <div key={f.id} className="friend-row">
+              <UserAvatar avatarUrl={f.avatar_url} defaultAvatarKey={f.default_avatar_key} displayName={f.display_name} size={40} />
+              <div className="friend-name">
+                <Link to={`/${f.handle}`}>{f.display_name}</Link>
+                <small>@{f.handle}</small>
               </div>
-            ))
-          )}
-        </div>
-      )}
-
-      {/* Tab: Trail invites */}
-      {tab === 'invites' && (
-        <div className="space-y-6">
-          {pendingReceived.length > 0 && (
-            <div>
-              <h3 className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">Wants to walk the trail with you</h3>
-              <div className="space-y-2">
-                {pendingReceived.map(m => (
-                  <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
-                    <div className="flex items-center gap-3">
-                      <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
-                      <div>
-                        <p className="font-body text-sm font-medium text-foreground">{m.display_name}</p>
-                        <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => acceptRequest(m.circleId, m.display_name)} className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-xs font-medium">Join their trail</button>
-                      <button onClick={() => declineRequest(m.circleId)} className="px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground">Not now</button>
-                    </div>
+              <button type="button" className="outline-button" onClick={() => message(f)}>
+                <MessageSquare size={12} className="mr-1 inline" /> Message
+              </button>
+              <div className="friend-menu">
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(menuOpen === f.id ? null : f.id)}
+                  aria-label={`More for ${f.display_name}`}
+                  aria-expanded={menuOpen === f.id}
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+                {menuOpen === f.id && (
+                  <div className="friend-menu-list">
+                    <button type="button" onClick={() => { setMenuOpen(null); navigate(`/${f.handle}`); }}>
+                      View their page
+                    </button>
+                    <button type="button" onClick={() => { setMenuOpen(null); setConfirmRemove(f); }}>
+                      Remove friend
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setMenuOpen(null); run(actions.mute.mutateAsync(f.id), `Muted ${f.display_name}.`); }}
+                    >
+                      Mute — stay friends, stop seeing posts
+                    </button>
+                    <button
+                      type="button"
+                      className="destructive"
+                      onClick={() => { setMenuOpen(null); run(actions.block.mutateAsync(f.id), `Blocked ${f.display_name}.`); }}
+                    >
+                      Block
+                    </button>
                   </div>
-                ))}
+                )}
               </div>
             </div>
-          )}
+          ))}
+        </section>
+      )}
 
-          {pendingSent.length > 0 && (
-            <div>
-              <h3 className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">Your sent trail invites</h3>
-              <div className="space-y-2">
-                {pendingSent.map(m => (
-                  <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
-                    <div className="flex items-center gap-3">
-                      <UserAvatar avatarUrl={m.avatar_url} defaultAvatarKey={m.default_avatar_key} displayName={m.display_name} size={40} />
-                      <div>
-                        <p className="font-body text-sm font-medium text-foreground">{m.display_name}</p>
-                        <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-body text-xs text-muted-foreground">Waiting by the fire...</span>
-                      <button onClick={() => withdrawRequest(m.circleId)} className="px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground">Withdraw</button>
-                    </div>
-                  </div>
-                ))}
+      {tab === 'requests' && (
+        <div className="friend-groups">
+          <section className="panel friend-list">
+            <h2>Waiting on you</h2>
+            {incoming.length === 0 ? <Empty>Nobody is waiting.</Empty> : incoming.map(f => (
+              <div key={f.circleId} className="friend-row">
+                <UserAvatar avatarUrl={f.avatar_url} defaultAvatarKey={f.default_avatar_key} displayName={f.display_name} size={40} />
+                <div className="friend-name">
+                  <Link to={`/${f.handle}`}>{f.display_name}</Link>
+                  <small>@{f.handle}</small>
+                </div>
+                <button
+                  type="button"
+                  className="solid-button"
+                  onClick={() => run(actions.accept.mutateAsync(f.circleId), `You and ${f.display_name} are friends.`)}
+                >
+                  Accept
+                </button>
+                <button
+                  type="button"
+                  className="outline-button"
+                  onClick={() => run(actions.decline.mutateAsync(f.circleId), 'Declined.')}
+                >
+                  Not now
+                </button>
               </div>
-            </div>
-          )}
+            ))}
+          </section>
 
-          {pendingReceived.length === 0 && pendingSent.length === 0 && (
-            <EmptyState icon="🌿" text="No trail invites right now." />
-          )}
+          <section className="panel friend-list">
+            <h2>Sent by you</h2>
+            {outgoing.length === 0 ? <Empty>No requests out.</Empty> : outgoing.map(f => (
+              <div key={f.circleId} className="friend-row">
+                <UserAvatar avatarUrl={f.avatar_url} defaultAvatarKey={f.default_avatar_key} displayName={f.display_name} size={40} />
+                <div className="friend-name">
+                  <Link to={`/${f.handle}`}>{f.display_name}</Link>
+                  <small>Waiting for them</small>
+                </div>
+                <button
+                  type="button"
+                  className="outline-button"
+                  onClick={() => run(actions.withdraw.mutateAsync(f.circleId), 'Withdrawn.')}
+                >
+                  Withdraw
+                </button>
+              </div>
+            ))}
+          </section>
         </div>
       )}
 
-      {/* Tab: Blocked & Muted */}
-      {tab === 'blocked' && (
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">Stepped away from</h3>
-            {blocked.length === 0 ? (
-              <p className="font-body text-sm text-muted-foreground">No one blocked.</p>
-            ) : (
-              <div className="space-y-2">
-                {blocked.map(b => (
-                  <div key={b.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground">
-                        {b.display_name[0]?.toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-body text-sm text-foreground">{b.display_name}</p>
-                        <p className="font-body text-xs text-muted-foreground">@{b.handle}</p>
-                      </div>
-                    </div>
-                    <button onClick={() => unblock(b.blockId)} className="px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground">
-                      Remove block
-                    </button>
-                  </div>
-                ))}
+      {tab === 'restricted' && (
+        <div className="friend-groups">
+          <section className="panel friend-list">
+            <h2>Blocked</h2>
+            <p className="note">They cannot see you and you cannot see them.</p>
+            {blocked.length === 0 ? <Empty>Nobody blocked.</Empty> : blocked.map(b => (
+              <div key={b.rowId} className="friend-row">
+                <UserAvatar avatarUrl={null} defaultAvatarKey={null} displayName={b.display_name} size={40} />
+                <div className="friend-name">
+                  <span>{b.display_name}</span>
+                  <small>@{b.handle}</small>
+                </div>
+                <button
+                  type="button"
+                  className="outline-button"
+                  onClick={() => run(actions.unblock.mutateAsync(b.rowId), 'Unblocked.')}
+                >
+                  Unblock
+                </button>
               </div>
-            )}
-          </div>
+            ))}
+          </section>
 
-          <div>
-            <h3 className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">Banked fires</h3>
-            {muted.length === 0 ? (
-              <p className="font-body text-sm text-muted-foreground">No one muted.</p>
-            ) : (
-              <div className="space-y-2">
-                {muted.map(m => (
-                  <div key={m.id} className="flex items-center justify-between py-3 px-4 rounded-xl bg-card border border-border">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-secondary-foreground">
-                        {m.display_name[0]?.toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-body text-sm text-foreground">{m.display_name}</p>
-                        <p className="font-body text-xs text-muted-foreground">@{m.handle}</p>
-                      </div>
-                    </div>
-                    <button onClick={() => unmute(m.muteId)} className="px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:text-foreground">
-                      Unmute
-                    </button>
-                  </div>
-                ))}
+          <section className="panel friend-list">
+            <h2>Muted</h2>
+            <p className="note">Still friends. Their posts stay out of your feed.</p>
+            {muted.length === 0 ? <Empty>Nobody muted.</Empty> : muted.map(m => (
+              <div key={m.rowId} className="friend-row">
+                <UserAvatar avatarUrl={null} defaultAvatarKey={null} displayName={m.display_name} size={40} />
+                <div className="friend-name">
+                  <span>{m.display_name}</span>
+                  <small>@{m.handle}</small>
+                </div>
+                <button
+                  type="button"
+                  className="outline-button"
+                  onClick={() => run(actions.unmute.mutateAsync(m.rowId), 'Unmuted.')}
+                >
+                  Unmute
+                </button>
               </div>
-            )}
-          </div>
+            ))}
+          </section>
         </div>
       )}
 
-      {/* Find people */}
-      <div className="text-center pt-8 pb-4">
-        <Link to="/search" className="inline-flex items-center gap-1.5 font-body text-sm text-primary hover:opacity-80 transition-opacity">
-          <Search size={14} /> Find people in the Pines
-        </Link>
-      </div>
-      <AlertDialog open={!!leaveCircleId} onOpenChange={(open) => !open && setLeaveCircleId(null)}>
-        <AlertDialogContent className="rounded-2xl max-w-sm">
+      <AlertDialog open={!!confirmRemove} onOpenChange={open => !open && setConfirmRemove(null)}>
+        <AlertDialogContent className="max-w-sm">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-display text-lg">Leave {leaveCircleName}'s trail?</AlertDialogTitle>
+            <AlertDialogTitle className="font-display text-lg">
+              Remove {confirmRemove?.display_name}?
+            </AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">
-              They won't be notified, and you can always reconnect.
+              They are not told, and either of you can ask again later.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body text-sm rounded-full">Never mind</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmRemoveFromCircle} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Leave trail
+            <AlertDialogCancel className="font-body text-sm">Never mind</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (confirmRemove) run(actions.decline.mutateAsync(confirmRemove.circleId), 'Removed.');
+                setConfirmRemove(null);
+              }}
+              className="font-body text-sm bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remove
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </motion.div>
+    </div>
   );
 };
 
-const EmptyState = ({ icon, text }: { icon: string; text: string }) => (
-  <div className="text-center py-12">
-    <p className="text-3xl mb-2">{icon}</p>
-    <p className="font-body text-sm text-muted-foreground">{text}</p>
-  </div>
-);
-
-const MBtn = ({ children, onClick, destructive }: { children: React.ReactNode; onClick: () => void; destructive?: boolean }) => (
-  <button onClick={onClick} className={`w-full text-left px-3 py-2 text-sm font-body flex items-center gap-2 transition-colors ${destructive ? 'text-destructive hover:bg-destructive/10' : 'text-foreground hover:bg-muted'}`}>
-    {children}
-  </button>
+const Empty = ({ children }: { children: React.ReactNode }) => (
+  <p className="friend-empty">{children}</p>
 );
 
 export default CirclesPage;

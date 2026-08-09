@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
-import WeatherScene from '@/components/cabin/WeatherScene';
+import WarmGround from '@/components/layout/WarmGround';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,9 +31,7 @@ const Login = () => {
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden">
-      <WeatherScene hour={20} season="winter" />
-      <div className="absolute inset-0" style={{ background: 'rgba(5, 46, 22, 0.65)' }} />
+    <WarmGround>
 
       <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
         <motion.div
@@ -42,15 +40,8 @@ const Login = () => {
           transition={{ duration: 0.8 }}
           className="w-full max-w-sm"
         >
-          <div
-            className="rounded-2xl p-8"
-            style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }}
-          >
-            <h2 className="text-2xl font-display text-pine-light text-center mb-8">
+          <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
+            <h2 className="text-2xl font-display text-foreground text-center mb-8">
               Welcome back
             </h2>
 
@@ -60,7 +51,7 @@ const Login = () => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="Email"
-                className="h-12 rounded-xl bg-background/10 border-white/10 text-pine-light placeholder:text-pine-light/30 font-body"
+                className="h-12 rounded-md bg-background border-border text-foreground placeholder:text-muted-foreground font-body"
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
               />
               <div className="relative">
@@ -69,13 +60,13 @@ const Login = () => {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="h-12 rounded-xl bg-background/10 border-white/10 text-pine-light placeholder:text-pine-light/30 font-body pr-12"
+                  className="h-12 rounded-md bg-background border-border text-foreground placeholder:text-muted-foreground font-body pr-12"
                   onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-pine-light/40 hover:text-pine-light/70 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -87,12 +78,12 @@ const Login = () => {
               disabled={loading || !email || !password}
               className="w-full mt-6 rounded-pill h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             >
-              {loading ? 'Finding your Cabin...' : 'Sign in'}
+              {loading ? 'Signing you in...' : 'Sign in'}
             </Button>
           </div>
         </motion.div>
       </div>
-    </div>
+    </WarmGround>
   );
 };
 

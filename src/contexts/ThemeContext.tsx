@@ -1,69 +1,143 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
-export type AppTheme = 'light' | 'dark' | 'evergreen';
+export type AppTheme = 'light' | 'dark';
+export type MessengerSkin = 'pines' | 'icu' | 'bullseye' | 'emessen';
+
+/**
+ * A user-authored theme is a partial override of the role tokens defined in
+ * index.css — `{ background: '41 100% 96%', primary: '12 77% 57%' }`. It is
+ * applied as inline custom properties on <html>, layered over whichever
+ * built-in theme class is active, so an override only has to name the tokens
+ * it actually changes.
+ *
+ * Nothing writes these yet; the authoring UI arrives with the profile
+ * customizer. The application path lives here so that work does not have to
+ * reopen the theming layer.
+ */
+export type ThemeOverrides = Record<string, string>;
+
+/** Shape read back from profiles. messenger_skin arrives with the Phase 2
+ *  migration, so it is optional until types.ts is regenerated. */
+type StoredPrefs = { theme?: string | null; messenger_skin?: string | null };
 
 interface ThemeContextValue {
   theme: AppTheme;
   setTheme: (t: AppTheme) => void;
+  skin: MessengerSkin;
+  setSkin: (s: MessengerSkin) => void;
+  overrides: ThemeOverrides | null;
+  setOverrides: (o: ThemeOverrides | null) => void;
   loaded: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
   theme: 'light',
   setTheme: () => {},
+  skin: 'pines',
+  setSkin: () => {},
+  overrides: null,
+  setOverrides: () => {},
   loaded: false,
 });
 
 const STORAGE_KEY = 'underpines-theme';
-const VALID_THEMES: AppTheme[] = ['light', 'dark', 'evergreen'];
+const SKIN_STORAGE_KEY = 'underpines-messenger-skin';
+
+export const VALID_THEMES: AppTheme[] = ['light', 'dark'];
+export const VALID_SKINS: MessengerSkin[] = ['pines', 'icu', 'bullseye', 'emessen'];
+
+const readStoredTheme = (): AppTheme => {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  return VALID_THEMES.includes(stored as AppTheme) ? (stored as AppTheme) : 'light';
+};
+
+const readStoredSkin = (): MessengerSkin => {
+  const stored = localStorage.getItem(SKIN_STORAGE_KEY);
+  return VALID_SKINS.includes(stored as MessengerSkin) ? (stored as MessengerSkin) : 'pines';
+};
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [theme, setThemeState] = useState<AppTheme>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored && VALID_THEMES.includes(stored as AppTheme)) return stored as AppTheme;
-    return 'light';
-  });
+  const [theme, setThemeState] = useState<AppTheme>(readStoredTheme);
+  const [skin, setSkinState] = useState<MessengerSkin>(readStoredSkin);
+  const [overrides, setOverrides] = useState<ThemeOverrides | null>(null);
   const [loaded, setLoaded] = useState(false);
 
-  // Load theme from Supabase profile on login
+  // Load saved preferences on login. Anything unrecognised — including the
+  // retired 'evergreen' theme — falls back rather than being written back.
   useEffect(() => {
     if (!user) { setLoaded(true); return; }
+    let cancelled = false;
 
-    supabase
-      .from('profiles')
-      .select('theme')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(({ data }: any) => {
-        if (data?.theme && VALID_THEMES.includes(data.theme as AppTheme)) {
-          setThemeState(data.theme as AppTheme);
-          localStorage.setItem(STORAGE_KEY, data.theme);
-        }
-        setLoaded(true);
-      });
+    const apply = (data: StoredPrefs | null) => {
+      if (cancelled) return;
+      const storedTheme = data?.theme as AppTheme | undefined;
+      const storedSkin = data?.messenger_skin as MessengerSkin | undefined;
+      if (storedTheme && VALID_THEMES.includes(storedTheme)) {
+        setThemeState(storedTheme);
+        localStorage.setItem(STORAGE_KEY, storedTheme);
+      }
+      if (storedSkin && VALID_SKINS.includes(storedSkin)) {
+        setSkinState(storedSkin);
+        localStorage.setItem(SKIN_STORAGE_KEY, storedSkin);
+      }
+      setLoaded(true);
+    };
+
+    const load = async () => {
+      const withSkin = await supabase
+        .from('profiles')
+        .select('theme, messenger_skin')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      // messenger_skin arrives with the Phase 2 migration, which is applied
+      // through Lovable rather than on deploy. Until it lands the column does
+      // not exist and the select 400s, which would otherwise take the saved
+      // theme down with it. Drop back to theme alone in that window.
+      // The cast goes away when types.ts is regenerated after the migration;
+      // until then the generated client knows nothing about the column.
+      if (!withSkin.error) return apply(withSkin.data as unknown as StoredPrefs | null);
+
+      const themeOnly = await supabase
+        .from('profiles')
+        .select('theme')
+        .eq('id', user.id)
+        .maybeSingle();
+      apply(themeOnly.data);
+    };
+
+    load();
+    return () => { cancelled = true; };
   }, [user]);
 
   // Apply theme class to document
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove('theme-light', 'theme-dark', 'theme-evergreen');
+    root.classList.remove('theme-light', 'theme-dark');
     root.classList.add(`theme-${theme}`);
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 
-  const setTheme = (t: AppTheme) => {
-    const prev = theme;
-    setThemeState(t);
-    localStorage.setItem(STORAGE_KEY, t);
+  // Apply user overrides on top of the active theme class.
+  useEffect(() => {
+    const root = document.documentElement;
+    const applied = Object.keys(overrides ?? {});
+    applied.forEach(token => root.style.setProperty(`--${token}`, overrides![token]));
+    return () => applied.forEach(token => root.style.removeProperty(`--${token}`));
+  }, [overrides]);
 
-    // Persist to Supabase
+  const setTheme = useCallback((next: AppTheme) => {
+    const prev = theme;
+    setThemeState(next);
+    localStorage.setItem(STORAGE_KEY, next);
+
     if (user) {
       supabase
         .from('profiles')
-        .update({ theme: t } as any)
+        .update({ theme: next } as any)
         .eq('id', user.id)
         .then(({ error }) => {
           if (error) {
@@ -73,10 +147,30 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           }
         });
     }
-  };
+  }, [theme, user]);
+
+  const setSkin = useCallback((next: MessengerSkin) => {
+    const prev = skin;
+    setSkinState(next);
+    localStorage.setItem(SKIN_STORAGE_KEY, next);
+
+    if (user) {
+      supabase
+        .from('profiles')
+        .update({ messenger_skin: next } as any)
+        .eq('id', user.id)
+        .then(({ error }) => {
+          if (error) {
+            console.error('Skin save failed:', error);
+            setSkinState(prev);
+            localStorage.setItem(SKIN_STORAGE_KEY, prev);
+          }
+        });
+    }
+  }, [skin, user]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, loaded }}>
+    <ThemeContext.Provider value={{ theme, setTheme, skin, setSkin, overrides, setOverrides, loaded }}>
       {children}
     </ThemeContext.Provider>
   );

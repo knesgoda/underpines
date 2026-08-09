@@ -17,6 +17,15 @@ interface MemberRow {
   profile?: { display_name: string; handle: string };
 }
 
+interface GroupRow {
+  id: string;
+  name: string;
+  description: string | null;
+  visibility: string;
+  firekeeper_id: string;
+  member_count: number | null;
+}
+
 interface JoinRequest {
   id: string;
   user_id: string;
@@ -28,7 +37,7 @@ const CampSettings = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [camp, setCamp] = useState<any>(null);
+  const [camp, setCamp] = useState<GroupRow | null>(null);
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [requests, setRequests] = useState<JoinRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,22 +60,21 @@ const CampSettings = () => {
       return;
     }
 
-    setCamp(campData);
+    setCamp(campData as GroupRow);
     setName(campData.name);
     setDescription(campData.description || '');
     setVisibility(campData.visibility);
 
     // Fetch profiles for members and requests
     const allUserIds = [
-      ...(memRes.data || []).map((m: any) => m.user_id),
-      ...(reqRes.data || []).map((r: any) => r.user_id),
+      ...(memRes.data || []).map(m => m.user_id),
+      ...(reqRes.data || []).map(r => r.user_id),
     ];
     const { data: profiles } = await supabase.from('profiles').select('id, display_name, handle').in('id', allUserIds);
-    const pMap: Record<string, any> = {};
-    (profiles || []).forEach(p => { pMap[p.id] = p; });
+    const pMap = new Map((profiles || []).map(p => [p.id, p]));
 
-    setMembers((memRes.data || []).map((m: any) => ({ ...m, profile: pMap[m.user_id] })));
-    setRequests((reqRes.data || []).map((r: any) => ({ ...r, profile: pMap[r.user_id] })));
+    setMembers((memRes.data || []).map(m => ({ ...m, profile: pMap.get(m.user_id) })));
+    setRequests((reqRes.data || []).map(r => ({ ...r, profile: pMap.get(r.user_id) })));
     setLoading(false);
   }, [id, user, navigate]);
 
@@ -121,7 +129,7 @@ const CampSettings = () => {
     if (!id || !camp) return;
     await supabase.from('camps').update({ is_active: false }).eq('id', id);
     setArchiveOpen(false);
-    toast('Camp archived.');
+    toast('Group closed.');
     navigate('/camps');
   };
 
@@ -137,10 +145,10 @@ const CampSettings = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="max-w-lg mx-auto px-4 py-8">
       <button onClick={() => navigate(`/camps/${id}`)} className="flex items-center gap-1 font-body text-sm text-muted-foreground hover:text-foreground mb-4">
-        <ArrowLeft size={16} /> Back to Camp
+        <ArrowLeft size={16} /> Back to the group
       </button>
 
-      <h1 className="font-display text-2xl text-foreground mb-6">Camp Settings</h1>
+      <h1 className="font-display text-2xl text-foreground mb-6">Group settings</h1>
 
       {/* Basic settings */}
       <div className="space-y-4 mb-8">
@@ -197,7 +205,7 @@ const CampSettings = () => {
                   {m.role === 'trailblazer' ? (
                     <button onClick={() => changeRole(m.id, m.user_id, 'member')} className="font-body text-[10px] text-muted-foreground hover:text-foreground">Remove role</button>
                   ) : (
-                    <button onClick={() => changeRole(m.id, m.user_id, 'trailblazer')} className="font-body text-[10px] text-primary hover:underline">Make Trailblazer</button>
+                    <button onClick={() => changeRole(m.id, m.user_id, 'trailblazer')} className="font-body text-[10px] text-primary hover:underline">Make moderator</button>
                   )}
                   <span className="text-muted-foreground/30">|</span>
                   <button onClick={() => passFirekeeping(m.id, m.user_id)} className="font-body text-[10px] text-muted-foreground hover:text-foreground">Pass 🔑</button>
@@ -217,7 +225,7 @@ const CampSettings = () => {
       <div>
         <h2 className="font-body text-sm font-medium text-destructive mb-3">Danger Zone</h2>
         <button onClick={() => setArchiveOpen(true)} className="px-4 py-2 rounded-full border border-destructive text-destructive font-body text-sm hover:bg-destructive/10 transition-colors">
-          Archive this Camp
+          Close this group
         </button>
       </div>
 
@@ -227,7 +235,7 @@ const CampSettings = () => {
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-lg">Pass the torch?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">
-              You'll become a regular member. {passTarget?.name} will have full control of this Camp.
+              You'll become a regular member. {passTarget?.name} will have full control of this group.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -239,11 +247,11 @@ const CampSettings = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Archive Camp confirmation */}
+      {/* Close-group confirmation */}
       <AlertDialog open={archiveOpen} onOpenChange={setArchiveOpen}>
         <AlertDialogContent className="rounded-2xl max-w-sm">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-display text-lg">Let this Camp rest?</AlertDialogTitle>
+            <AlertDialogTitle className="font-display text-lg">Close this group?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">
               Members will lose access but nothing is deleted. This can be undone.
             </AlertDialogDescription>
@@ -251,7 +259,7 @@ const CampSettings = () => {
           <AlertDialogFooter>
             <AlertDialogCancel className="font-body text-sm rounded-full">Keep it going</AlertDialogCancel>
             <AlertDialogAction onClick={archiveCamp} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Archive Camp
+              Close it
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

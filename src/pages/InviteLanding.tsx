@@ -5,7 +5,7 @@ import { useOnboarding } from '@/contexts/OnboardingContext';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import PineTreeLoading from '@/components/PineTreeLoading';
-import WeatherScene from '@/components/cabin/WeatherScene';
+import WarmGround from '@/components/layout/WarmGround';
 
 const InviteLanding = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -74,7 +74,8 @@ const InviteLanding = () => {
 
   if (expired) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #052e16, #14532d, #052e16)' }}>
+      <WarmGround>
+        <div className="flex items-center justify-center min-h-screen">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -82,30 +83,27 @@ const InviteLanding = () => {
           className="text-center max-w-sm px-6"
         >
           <svg width="40" height="56" viewBox="0 0 48 72" className="mx-auto mb-8 opacity-40">
-            <path d="M24 4 L14 24 L34 24 Z" fill="#dcfce7" />
-            <path d="M24 14 L10 38 L38 38 Z" fill="#dcfce7" opacity="0.7" />
-            <path d="M24 26 L6 52 L42 52 Z" fill="#dcfce7" opacity="0.5" />
-            <rect x="20" y="52" width="8" height="16" rx="2" fill="#fef3c7" opacity="0.4" />
+            <path d="M24 4 L14 24 L34 24 Z" fill="hsl(var(--pine-mid))" />
+            <path d="M24 14 L10 38 L38 38 Z" fill="hsl(var(--pine-mid))" opacity="0.7" />
+            <path d="M24 26 L6 52 L42 52 Z" fill="hsl(var(--pine-mid))" opacity="0.5" />
+            <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--primary))" opacity="0.6" />
           </svg>
 
-          <h2 className="text-2xl font-display text-pine-light mb-4">
-            This fire's burned out.
+          <h2 className="text-2xl font-display text-foreground mb-4">
+            This invite has expired.
           </h2>
-          <p className="text-pine-light/60 font-body text-sm">
+          <p className="text-muted-foreground font-body text-sm">
             Know someone on Under Pines?<br />
             Ask them for a fresh invite.
           </p>
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+      </WarmGround>
     );
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden">
-      <div className="absolute inset-0 opacity-30">
-        <WeatherScene hour={21} season="summer" />
-      </div>
-      <div className="absolute inset-0" style={{ background: 'rgba(5, 46, 22, 0.7)' }} />
+    <WarmGround>
 
       <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
         <motion.div
@@ -120,21 +118,18 @@ const InviteLanding = () => {
             viewBox="0 0 48 72"
             className="mx-auto mb-8 animate-tree-sway"
           >
-            <path d="M24 4 L14 24 L34 24 Z" fill="#dcfce7" opacity="0.9" />
-            <path d="M24 14 L10 38 L38 38 Z" fill="#dcfce7" opacity="0.7" />
-            <path d="M24 26 L6 52 L42 52 Z" fill="#dcfce7" opacity="0.5" />
-            <rect x="20" y="52" width="8" height="16" rx="2" fill="#fef3c7" opacity="0.5" />
+            <path d="M24 4 L14 24 L34 24 Z" fill="hsl(var(--pine-mid))" opacity="0.95" />
+            <path d="M24 14 L10 38 L38 38 Z" fill="hsl(var(--pine-mid))" opacity="0.8" />
+            <path d="M24 26 L6 52 L42 52 Z" fill="hsl(var(--pine-mid))" opacity="0.65" />
+            <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--primary))" opacity="0.8" />
           </svg>
 
-          <div
-            className="rounded-2xl p-8 mb-8"
-            style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }}
-          >
-             <p className="text-xl font-display text-pine-light leading-relaxed">
+          {/* Container from this branch — role tokens rather than a hardcoded
+              translucent white, so it reads in light as well as dark. Copy from
+              main, which added the root invite: an open link has no inviter to
+              name. */}
+          <div className="rounded-lg border border-border bg-card p-8 mb-8 shadow-sm">
+             <p className="text-xl font-display text-foreground leading-relaxed">
                {invite?.is_root
                  ? "There's a seat by the fire, and it's yours."
                  : `${inviter?.display_name || 'Someone special'} has saved you a seat by the fire.`}
@@ -148,17 +143,17 @@ const InviteLanding = () => {
             </Button>
           </div>
 
-          <div className="flex items-center gap-4 justify-center text-pine-light/30">
-            <div className="h-px w-12 bg-pine-light/20" />
+          <div className="flex items-center gap-4 justify-center text-muted-foreground">
+            <div className="h-px w-12 bg-border" />
             <span className="text-xs font-body">
               {invite?.is_root ? 'Under Pines' : `Invited by @${inviter?.handle || slug}`}
             </span>
-            <div className="h-px w-12 bg-pine-light/20" />
+            <div className="h-px w-12 bg-border" />
           </div>
 
         </motion.div>
       </div>
-    </div>
+    </WarmGround>
   );
 };
 

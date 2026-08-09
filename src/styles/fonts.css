@@ -1,0 +1,46 @@
+/**
+ * Self-hosted variable faces, latin subset.
+ *
+ * These were previously pulled from fonts.googleapis.com as a render-blocking
+ * stylesheet, which cost a DNS lookup and TLS handshake to a third-party
+ * origin before first paint, then a second hop to fonts.gstatic.com for the
+ * files themselves. Serving them from our own origin removes both.
+ *
+ * One variable file covers each family's whole weight range, so this replaces
+ * the thirteen static cuts the old link requested.
+ *
+ * Both families are licensed under the SIL Open Font License; see
+ * public/fonts/OFL-PlayfairDisplay.txt and OFL-PlusJakartaSans.txt.
+ */
+
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/playfair-display-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('/fonts/playfair-display-latin-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-latin-italic.woff2') format('woff2');
+}

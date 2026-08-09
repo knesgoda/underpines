@@ -1,56 +1,42 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme, type AppTheme } from '@/contexts/ThemeContext';
+import { useTheme, type AppTheme, type MessengerSkin } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import PinePetsSection from '@/components/cabin/PinePetsSection';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const themes: { key: AppTheme; label: string; emoji: string; description: string; preview: { bg: string; card: string; accent: string } }[] = [
   {
     key: 'light',
-    label: 'Golden Morning',
+    label: 'Late Summer',
     emoji: '☀️',
-    description: 'Soft, golden, morning warmth',
-    preview: { bg: '#fdf6ee', card: '#f7ede0', accent: '#c67a1a' },
+    description: 'Warm cream, ink and ember',
+    preview: { bg: '#fff8e9', card: '#fffdf7', accent: '#e65f3c' },
   },
   {
     key: 'dark',
-    label: 'After Sunset',
+    label: 'After Dark',
     emoji: '🌙',
-    description: 'Deep, warm, campfire ambiance',
-    preview: { bg: '#1a1008', card: '#261a0e', accent: '#e8922a' },
+    description: 'Night blues with the same ember',
+    preview: { bg: '#171226', card: '#202942', accent: '#e65f3c' },
   },
-  {
-    key: 'evergreen',
-    label: 'Through the Pines',
-    emoji: '🌲',
-    description: 'Dark silhouettes, blazing sky beyond',
-    preview: { bg: '#0c0f0a', card: '#141a12', accent: '#d94a8c' },
-  },
+];
+
+const MESSENGER_SKINS: { key: MessengerSkin; label: string; description: string }[] = [
+  { key: 'pines', label: 'Under Pines', description: 'Warm and current' },
+  { key: 'icu', label: 'ICU', description: 'Late-90s utility green' },
+  { key: 'bullseye', label: 'Bullseye', description: 'Buddy-list blue and grey' },
+  { key: 'emessen', label: 'Emessen', description: 'Bubbly XP-era chrome' },
 ];
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, skin, setSkin } = useTheme();
   const isMobile = useIsMobile();
-  const [isPinesPlus, setIsPinesPlus] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from('profiles')
-      .select('is_pines_plus')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data?.is_pines_plus) setIsPinesPlus(true);
-      });
-  }, [user]);
 
   return (
     <motion.div
@@ -113,15 +99,36 @@ const SettingsPage = () => {
         </div>
       </div>
 
-      {/* YOUR CABIN */}
-      <SettingsSection label="Your Cabin">
-        <SettingsItem emoji="🏠" label="Edit Cabin" onClick={() => navigate('/cabin?edit=true')} />
-        <SettingsItem emoji="🎨" label="My Designs" onClick={() => navigate('/settings/designs')} />
-        <SettingsItem emoji="🏕️" label="Cabin Marketplace" onClick={() => navigate('/marketplace')} />
-      </SettingsSection>
+      {/* MESSENGER SKIN */}
+      <div className="px-4 pb-6">
+        <p className="font-body text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+          Messenger skin
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {MESSENGER_SKINS.map(s => (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => setSkin(s.key)}
+              className={`rounded-md border p-3 text-left transition-colors ${
+                skin === s.key ? 'border-primary bg-secondary' : 'border-border bg-card hover:bg-secondary'
+              }`}
+              aria-pressed={skin === s.key}
+            >
+              <span className="block font-body text-sm text-foreground">{s.label}</span>
+              <span className="block font-body text-xs text-muted-foreground">{s.description}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
-      {/* PINE PETS — Pines+ only */}
-      {isPinesPlus && <PinePetsSection />}
+      {/* YOUR PAGE */}
+      <SettingsSection label="Your page">
+        <SettingsItem emoji="☺" label="My Page" onClick={() => navigate('/me')} />
+        <SettingsItem emoji="✎" label="Edit my page" onClick={() => navigate('/me/edit')} />
+        <SettingsItem emoji="🎨" label="My Designs" onClick={() => navigate('/settings/designs')} />
+        <SettingsItem emoji="🛍" label="Marketplace" onClick={() => navigate('/marketplace')} />
+      </SettingsSection>
 
       {/* YOUR PRIVACY */}
       <SettingsSection label="Your Privacy">
@@ -135,10 +142,9 @@ const SettingsPage = () => {
 
       {/* YOUR ACCOUNT */}
       <SettingsSection label="Your Account">
-        <SettingsItem emoji="🌲" label="Pines+ (Coming Soon)" onClick={() => navigate('/settings/subscription')} />
         <SettingsItem emoji="💰" label="Payouts" onClick={() => navigate('/settings/payouts')} />
         <SettingsItem emoji="✉️" label="My Invites" onClick={() => navigate('/invites')} />
-        <SettingsItem emoji="⭕" label="Circles" onClick={() => navigate('/circles')} />
+        <SettingsItem emoji="✿" label="Friends" onClick={() => navigate('/friends')} />
       </SettingsSection>
 
       {/* LEGAL */}
