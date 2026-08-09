@@ -1,7 +1,8 @@
 import { Suspense, lazy, useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSuspensionCheck } from '@/hooks/useSuspensionCheck';
+import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,7 +29,7 @@ const Deferred = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={null}>{children}</Suspense>
 );
 
-const FULL_SCREEN_ROUTES = ['/onboarding', '/login', '/new/story', '/privacy', '/terms'];
+const FULL_SCREEN_ROUTES = ['/onboarding', '/welcome', '/login', '/new/story', '/privacy', '/terms'];
 const FULL_SCREEN_PREFIXES = ['/invite/'];
 
 const titleForPath = (pathname: string) => {
@@ -49,6 +50,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const { unreadCount } = useNavigation();
   const { suspension, checking } = useSuspensionCheck(user?.id);
+  const { needsWelcome, checking: checkingWelcome } = useOnboardingGuard(user?.id);
   const { isFounder } = useAdminCheck();
   const [needsAgeGate, setNeedsAgeGate] = useState(false);
   const [ageGateChecked, setAgeGateChecked] = useState(false);
@@ -78,6 +80,13 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const isFullScreen =
     FULL_SCREEN_ROUTES.includes(location.pathname) ||
     FULL_SCREEN_PREFIXES.some(p => location.pathname.startsWith(p));
+
+  // Anyone who has an account but has not finished the welcome flow is still
+  // carrying the placeholder handle and display name the signup trigger wrote,
+  // so they never reach the app proper.
+  if (user && !checkingWelcome && needsWelcome && !isFullScreen) {
+    return <Navigate to="/welcome" replace />;
+  }
 
   if (user && ageGateChecked && needsAgeGate) {
     return (

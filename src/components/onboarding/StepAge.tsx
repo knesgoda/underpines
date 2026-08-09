@@ -77,7 +77,7 @@ const StepAge = () => {
     // Store age data in onboarding context (not full DOB)
     setData({ ageBracket: bracket, birthYear });
     setChecking(false);
-    setStep(2); // Proceed to display name
+    setStep(2); // Proceed to email + password
   };
 
   if (blocked) {

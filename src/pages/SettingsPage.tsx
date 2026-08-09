@@ -12,24 +12,17 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const themes: { key: AppTheme; label: string; emoji: string; description: string; preview: { bg: string; card: string; accent: string } }[] = [
   {
     key: 'light',
-    label: 'Golden Morning',
+    label: 'Late Summer',
     emoji: '☀️',
-    description: 'Soft, golden, morning warmth',
-    preview: { bg: '#fdf6ee', card: '#f7ede0', accent: '#c67a1a' },
+    description: 'Warm cream, ink and ember',
+    preview: { bg: '#fff8e9', card: '#fffdf7', accent: '#e65f3c' },
   },
   {
     key: 'dark',
-    label: 'After Sunset',
+    label: 'After Dark',
     emoji: '🌙',
-    description: 'Deep, warm, campfire ambiance',
-    preview: { bg: '#1a1008', card: '#261a0e', accent: '#e8922a' },
-  },
-  {
-    key: 'evergreen',
-    label: 'Through the Pines',
-    emoji: '🌲',
-    description: 'Dark silhouettes, blazing sky beyond',
-    preview: { bg: '#0c0f0a', card: '#141a12', accent: '#d94a8c' },
+    description: 'Night blues with the same ember',
+    preview: { bg: '#171226', card: '#202942', accent: '#e65f3c' },
   },
 ];
 

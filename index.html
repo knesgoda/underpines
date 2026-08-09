@@ -41,7 +41,7 @@
         try {
           var t = localStorage.getItem('underpines-theme');
           document.documentElement.classList.add(
-            ['light', 'dark', 'evergreen'].indexOf(t) > -1 ? 'theme-' + t : 'theme-light'
+            ['light', 'dark'].indexOf(t) > -1 ? 'theme-' + t : 'theme-light'
           );
         } catch (e) {
           document.documentElement.classList.add('theme-light');

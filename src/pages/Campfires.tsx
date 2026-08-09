@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Plus, Flame, Moon, CandlestickChart, ArrowLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import CampfireView from '@/components/campfire/CampfireView';
+import MessengerSkinScope from '@/components/campfire/MessengerSkinScope';
 import NewCampfireSheet from '@/components/campfire/NewCampfireSheet';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { formatTimeAgo } from '@/lib/time';
@@ -428,4 +429,10 @@ const CampfireList = ({
   );
 };
 
-export default Campfires;
+const CampfiresWithSkin = () => (
+  <MessengerSkinScope>
+    <Campfires />
+  </MessengerSkinScope>
+);
+
+export default CampfiresWithSkin;

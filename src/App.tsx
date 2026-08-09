@@ -19,6 +19,7 @@ const HomePage = lazy(() => import("./pages/HomePage"));
 const Login = lazy(() => import("./pages/Login"));
 const InviteLanding = lazy(() => import("./pages/InviteLanding"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
+const Welcome = lazy(() => import("./pages/Welcome"));
 const Cabin = lazy(() => import("./pages/Cabin"));
 const Invites = lazy(() => import("./pages/Invites"));
 const InviteTree = lazy(() => import("./pages/InviteTree"));
@@ -119,6 +120,7 @@ const App = () => (
                       <Route path="/privacy" element={<Privacy />} />
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/onboarding" element={<Onboarding />} />
+                      <Route path="/welcome" element={<Welcome />} />
                       <Route path="/cabin" element={<Cabin />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />

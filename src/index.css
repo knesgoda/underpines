@@ -3,222 +3,140 @@
 @tailwind utilities;
 
 @layer base {
+  /**
+   * Palette from the Lovable UI handoff, expressed as role tokens so the
+   * existing Radix/shadcn layer picks it up without being touched.
+   *
+   *   cream #fff8e9   paper #fffdf7   sand  #f3e5ce   line  #d8cbb8
+   *   ink   #172033   navy  #202942   night #29233d   muted #776f69
+   *   ember #e65f3c   sun   #f4a23f   rose  #bc5d69   pine  #355e58
+   *
+   * Ember stays the accent in both themes — holding one hue constant is what
+   * makes the pair read as one system rather than two designs.
+   */
   :root,
   .theme-light {
-    /* Light Mode — Golden Morning */
-    --background: 32 79% 96%;
-    --foreground: 30 62% 10%;
+    /* Light — late summer afternoon */
+    --background: 41 100% 96%;
+    --foreground: 221 38% 15%;
 
-    --card: 34 59% 92%;
-    --card-foreground: 30 62% 10%;
+    --card: 45 100% 98%;
+    --card-foreground: 221 38% 15%;
 
-    --popover: 34 59% 92%;
-    --popover-foreground: 30 62% 10%;
+    --popover: 45 100% 98%;
+    --popover-foreground: 221 38% 15%;
 
-    --primary: 33 77% 44%;
-    --primary-foreground: 32 79% 96%;
+    --primary: 12 77% 57%;
+    --primary-foreground: 45 100% 98%;
 
-    --secondary: 34 52% 88%;
-    --secondary-foreground: 30 36% 26%;
+    --secondary: 37 61% 88%;
+    --secondary-foreground: 221 38% 15%;
 
-    --muted: 34 52% 88%;
-    --muted-foreground: 26 18% 46%;
+    --muted: 37 61% 88%;
+    --muted-foreground: 26 6% 44%;
 
-    --accent: 38 81% 52%;
-    --accent-foreground: 30 62% 10%;
+    --accent: 33 89% 60%;
+    --accent-foreground: 221 38% 15%;
 
-    --destructive: 12 60% 41%;
-    --destructive-foreground: 32 79% 96%;
+    --destructive: 352 44% 48%;
+    --destructive-foreground: 45 100% 98%;
 
-    --border: 33 34% 75%;
-    --input: 33 47% 83%;
-    --ring: 33 77% 44%;
+    --border: 36 29% 78%;
+    --input: 36 29% 78%;
+    --ring: 12 77% 57%;
 
-    --radius: 0.75rem;
+    /* The handoff sits around 3–5px, not the 12px this used to carry. */
+    --radius: 0.25rem;
 
-    /* Nature tokens */
-    --pine-darkest: 30 62% 10%;
-    --pine-dark: 30 36% 26%;
-    --pine-mid: 122 29% 32%;
-    --pine-light: 34 59% 92%;
-    --pine-pale: 32 79% 96%;
+    /* Nature tokens — kept because components reference them directly,
+       remapped onto the new palette. */
+    --pine-darkest: 221 38% 15%;
+    --pine-dark: 224 35% 19%;
+    --pine-mid: 171 28% 29%;
+    --pine-light: 37 61% 88%;
+    --pine-pale: 41 100% 96%;
 
-    --amber-deep: 33 77% 44%;
-    --amber-mid: 38 81% 52%;
-    --amber-light: 33 57% 60%;
-    --amber-glow: 21 63% 44%;
+    --amber-deep: 12 77% 57%;
+    --amber-mid: 33 89% 60%;
+    --amber-light: 37 61% 88%;
+    --amber-glow: 33 89% 60%;
 
-    --dusk-deep: 270 15% 42%;
-    --dusk-mid: 195 30% 42%;
-    --dusk-warm: 12 60% 41%;
+    --dusk-deep: 254 27% 19%;
+    --dusk-mid: 224 35% 19%;
+    --dusk-warm: 352 41% 55%;
 
-    /* Sidebar */
-    --sidebar-background: 32 79% 96%;
-    --sidebar-foreground: 30 62% 10%;
-    --sidebar-primary: 33 77% 44%;
-    --sidebar-primary-foreground: 32 79% 96%;
-    --sidebar-accent: 34 52% 88%;
-    --sidebar-accent-foreground: 30 36% 26%;
-    --sidebar-border: 33 34% 75%;
-    --sidebar-ring: 33 77% 44%;
+    /* Sidebar carries the handoff topbar: navy ground, ember accent. */
+    --sidebar-background: 224 35% 19%;
+    --sidebar-foreground: 41 100% 96%;
+    --sidebar-primary: 12 77% 57%;
+    --sidebar-primary-foreground: 45 100% 98%;
+    --sidebar-accent: 221 38% 15%;
+    --sidebar-accent-foreground: 41 100% 96%;
+    --sidebar-border: 221 38% 15%;
+    --sidebar-ring: 12 77% 57%;
 
     /* Typography */
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   }
 
-  .theme-dark {
-    /* Dark Mode — After Sunset */
-    --background: 27 53% 7%;
-    --foreground: 31 51% 92%;
-
-    --card: 30 46% 10%;
-    --card-foreground: 31 51% 92%;
-
-    --popover: 30 46% 10%;
-    --popover-foreground: 31 51% 92%;
-
-    --primary: 33 81% 54%;
-    --primary-foreground: 27 53% 7%;
-
-    --secondary: 31 44% 14%;
-    --secondary-foreground: 31 51% 92%;
-
-    --muted: 31 44% 14%;
-    --muted-foreground: 26 18% 46%;
-
-    --accent: 40 90% 61%;
-    --accent-foreground: 27 53% 7%;
-
-    --destructive: 14 62% 47%;
-    --destructive-foreground: 31 51% 92%;
-
-    --border: 31 40% 17%;
-    --input: 28 44% 13%;
-    --ring: 33 81% 54%;
-
-    /* Nature tokens */
-    --pine-darkest: 27 53% 7%;
-    --pine-dark: 30 46% 10%;
-    --pine-mid: 122 24% 23%;
-    --pine-light: 35 36% 64%;
-    --pine-pale: 31 51% 92%;
-
-    --amber-deep: 33 81% 54%;
-    --amber-mid: 40 90% 61%;
-    --amber-light: 29 73% 66%;
-    --amber-glow: 21 64% 53%;
-
-    --dusk-deep: 267 24% 30%;
-    --dusk-mid: 203 31% 33%;
-    --dusk-warm: 14 62% 47%;
-
-    /* Sidebar */
-    --sidebar-background: 27 53% 7%;
-    --sidebar-foreground: 31 51% 92%;
-    --sidebar-primary: 33 81% 54%;
-    --sidebar-primary-foreground: 27 53% 7%;
-    --sidebar-accent: 31 44% 14%;
-    --sidebar-accent-foreground: 31 51% 92%;
-    --sidebar-border: 31 40% 17%;
-    --sidebar-ring: 33 81% 54%;
-  }
-
-  .theme-evergreen {
-    /* Evergreen — Through the Pines */
-    --background: 96 20% 5%;
-    --foreground: 28 27% 90%;
-
-    --card: 105 18% 9%;
-    --card-foreground: 28 27% 90%;
-
-    --popover: 105 18% 9%;
-    --popover-foreground: 28 27% 90%;
-
-    --primary: 332 65% 57%;
-    --primary-foreground: 96 20% 5%;
-
-    --secondary: 100 20% 12%;
-    --secondary-foreground: 28 27% 90%;
-
-    --muted: 100 20% 12%;
-    --muted-foreground: 27 9% 38%;
-
-    --accent: 31 85% 62%;
-    --accent-foreground: 96 20% 5%;
-
-    --destructive: 344 54% 50%;
-    --destructive-foreground: 28 27% 90%;
-
-    --border: 98 18% 17%;
-    --input: 103 21% 13%;
-    --ring: 332 65% 57%;
-
-    /* Nature tokens */
-    --pine-darkest: 96 20% 5%;
-    --pine-dark: 105 18% 9%;
-    --pine-mid: 128 36% 26%;
-    --pine-light: 28 14% 60%;
-    --pine-pale: 28 27% 90%;
-
-    --amber-deep: 332 65% 57%;
-    --amber-mid: 31 85% 62%;
-    --amber-light: 335 35% 57%;
-    --amber-glow: 12 77% 60%;
-
-    --dusk-deep: 285 36% 35%;
-    --dusk-mid: 210 36% 35%;
-    --dusk-warm: 344 54% 50%;
-
-    /* Sidebar */
-    --sidebar-background: 96 20% 5%;
-    --sidebar-foreground: 28 27% 90%;
-    --sidebar-primary: 332 65% 57%;
-    --sidebar-primary-foreground: 96 20% 5%;
-    --sidebar-accent: 100 20% 12%;
-    --sidebar-accent-foreground: 28 27% 90%;
-    --sidebar-border: 98 18% 17%;
-    --sidebar-ring: 332 65% 57%;
-  }
-
-  /* Legacy .dark class maps to theme-dark */
+  /* `.dark` is the legacy alias Tailwind's darkMode:["class"] looks for. */
+  .theme-dark,
   .dark {
-    --background: 27 53% 7%;
-    --foreground: 31 51% 92%;
+    /* Dark — built from the handoff's own night and navy inks */
+    --background: 254 27% 12%;
+    --foreground: 41 100% 96%;
 
-    --card: 30 46% 10%;
-    --card-foreground: 31 51% 92%;
+    --card: 224 35% 19%;
+    --card-foreground: 41 100% 96%;
 
-    --popover: 30 46% 10%;
-    --popover-foreground: 31 51% 92%;
+    --popover: 224 35% 19%;
+    --popover-foreground: 41 100% 96%;
 
-    --primary: 33 81% 54%;
-    --primary-foreground: 27 53% 7%;
+    --primary: 12 77% 57%;
+    --primary-foreground: 45 100% 98%;
 
-    --secondary: 31 44% 14%;
-    --secondary-foreground: 31 51% 92%;
+    --secondary: 221 38% 15%;
+    --secondary-foreground: 41 100% 96%;
 
-    --muted: 31 44% 14%;
-    --muted-foreground: 26 18% 46%;
+    --muted: 221 38% 15%;
+    --muted-foreground: 36 20% 68%;
 
-    --accent: 40 90% 61%;
-    --accent-foreground: 27 53% 7%;
+    --accent: 33 89% 60%;
+    --accent-foreground: 221 38% 15%;
 
-    --destructive: 14 62% 47%;
-    --destructive-foreground: 31 51% 92%;
+    --destructive: 352 50% 56%;
+    --destructive-foreground: 41 100% 96%;
 
-    --border: 31 40% 17%;
-    --input: 28 44% 13%;
-    --ring: 33 81% 54%;
+    --border: 224 25% 26%;
+    --input: 224 30% 22%;
+    --ring: 12 77% 57%;
 
-    --sidebar-background: 27 53% 7%;
-    --sidebar-foreground: 31 51% 92%;
-    --sidebar-primary: 33 81% 54%;
-    --sidebar-primary-foreground: 27 53% 7%;
-    --sidebar-accent: 31 44% 14%;
-    --sidebar-accent-foreground: 31 51% 92%;
-    --sidebar-border: 31 40% 17%;
-    --sidebar-ring: 33 81% 54%;
+    /* Nature tokens */
+    --pine-darkest: 254 27% 10%;
+    --pine-dark: 254 27% 19%;
+    --pine-mid: 171 28% 38%;
+    --pine-light: 36 29% 78%;
+    --pine-pale: 41 100% 96%;
+
+    --amber-deep: 12 77% 57%;
+    --amber-mid: 33 89% 60%;
+    --amber-light: 36 29% 78%;
+    --amber-glow: 33 89% 65%;
+
+    --dusk-deep: 254 27% 19%;
+    --dusk-mid: 224 35% 26%;
+    --dusk-warm: 352 50% 56%;
+
+    /* Sidebar sits below the page ground in dark, as the topbar does. */
+    --sidebar-background: 221 38% 15%;
+    --sidebar-foreground: 41 100% 96%;
+    --sidebar-primary: 12 77% 57%;
+    --sidebar-primary-foreground: 45 100% 98%;
+    --sidebar-accent: 254 27% 19%;
+    --sidebar-accent-foreground: 41 100% 96%;
+    --sidebar-border: 224 25% 26%;
+    --sidebar-ring: 12 77% 57%;
   }
 }
 

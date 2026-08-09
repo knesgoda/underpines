@@ -1,14 +1,24 @@
 // LEGAL-REVIEW-NEEDED: Parental consent flow for COPPA compliance (ages 13-17)
 
 import { useState } from 'react';
-import { useOnboarding } from '@/contexts/OnboardingContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const StepParentalConsent = () => {
-  const { data } = useOnboarding();
+/**
+ * The hold screen for 13-17 accounts. Name and email are passed in rather than
+ * read from onboarding context: the account already exists by this point, and
+ * the child's display name is set in welcome step 1 so the note to the parent
+ * can actually say who is asking.
+ */
+const StepParentalConsent = ({
+  childDisplayName,
+  childEmail,
+}: {
+  childDisplayName: string;
+  childEmail: string;
+}) => {
   const [parentEmail, setParentEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -23,8 +33,8 @@ const StepParentalConsent = () => {
       const { error } = await supabase.functions.invoke('send-parental-consent', {
         body: {
           parentEmail: parentEmail.trim(),
-          childDisplayName: data.displayName,
-          childEmail: data.email,
+          childDisplayName,
+          childEmail,
         },
       });
       if (error) throw error;
