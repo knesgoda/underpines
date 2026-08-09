@@ -38,10 +38,37 @@ export interface PageProfile {
   created_at: string | null;
   currently_type: string | null;
   currently_value: string | null;
+  pinned_song_title: string | null;
+  pinned_song_artist: string | null;
+  pinned_song_preview_url: string | null;
 }
 
 const FIELDS =
-  'id, display_name, handle, bio, mantra, avatar_url, default_avatar_key, accent_color, cabin_mood, city, created_at, currently_type, currently_value';
+  'id, display_name, handle, bio, mantra, avatar_url, default_avatar_key, accent_color, cabin_mood, city, created_at, currently_type, currently_value, pinned_song_title, pinned_song_artist, pinned_song_preview_url';
+
+/**
+ * The customizer's theme settings live in a reserved `cabin_widgets` row
+ * rather than new profile columns.
+ *
+ * That table is already the per-user customization store, already has a jsonb
+ * payload, and already carries the right RLS. Adding columns would mean another
+ * migration, and the Phase 3 migrations have not landed — so the page theme
+ * would have shipped dead. This ships working today. The row is filtered out of
+ * the module list so it never renders as a module.
+ */
+export const PAGE_THEME_WIDGET = 'page_theme';
+
+export interface PageTheme {
+  /** HSL triplets, matching the token format in index.css. */
+  background?: string;
+  card?: string;
+  foreground?: string;
+  /** A full CSS colour — accent also lives on profiles.accent_color, which
+   *  post cards already read, so it is stored in both places. */
+  accent?: string;
+  /** The loud preset: patterned ground, hard borders, display type. */
+  full2006?: boolean;
+}
 
 /** The profile being viewed — by handle, or the signed-in user when omitted. */
 export const usePageProfile = (handle?: string) => {
@@ -75,9 +102,27 @@ export const usePageModules = (profileId: string | undefined) =>
         .from('cabin_widgets')
         .select('id, widget_type, widget_data, position')
         .eq('user_id', profileId!)
+        .neq('widget_type', PAGE_THEME_WIDGET)
         .order('position');
       if (error) throw error;
       return data ?? [];
+    },
+  });
+
+/** The page owner's theme, read so a visitor sees the page as they built it. */
+export const usePageTheme = (profileId: string | undefined) =>
+  useQuery({
+    queryKey: ['page-theme', profileId],
+    enabled: !!profileId,
+    queryFn: async (): Promise<PageTheme | null> => {
+      const { data, error } = await supabase
+        .from('cabin_widgets')
+        .select('widget_data')
+        .eq('user_id', profileId!)
+        .eq('widget_type', PAGE_THEME_WIDGET)
+        .maybeSingle();
+      if (error) return null;
+      return (data?.widget_data as PageTheme | null) ?? null;
     },
   });
 

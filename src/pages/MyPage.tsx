@@ -12,11 +12,16 @@ import { formatTimeAgo } from '@/lib/time';
 import {
   usePageProfile,
   usePageModules,
+  usePageTheme,
   useOwnVisitCount,
   useTopFriends,
   useWallNotes,
 } from '@/hooks/useProfilePage';
+import { MODULE_TYPES } from '@/hooks/usePageEditor';
 import '@/styles/profile.css';
+
+const moduleLabel = (type: string) =>
+  MODULE_TYPES.find(t => t.key === type)?.label ?? type.replace(/[_-]/g, ' ');
 
 const memberSince = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : '';
@@ -40,6 +45,7 @@ const MyPage = () => {
   const isOwner = !!user && !!profile && user.id === profile.id;
 
   const { data: modules } = usePageModules(profile?.id);
+  const { data: pageTheme } = usePageTheme(profile?.id);
   const { data: visits } = useOwnVisitCount(profile?.id, isOwner);
   const { data: topFriends } = useTopFriends(profile?.id);
   const { data: wallNotes } = useWallNotes(profile?.id);
@@ -80,8 +86,21 @@ const MyPage = () => {
 
   const about = profile.bio || profile.mantra;
 
+  /**
+   * The page owner's colours, applied to this wrapper rather than to <html>.
+   *
+   * Scoping matters: a visited page must not restyle the topbar, and walking
+   * away from it has to undo the theme with no cleanup step to forget. Tokens
+   * cascade into the panels below and stop at the wrapper's edge.
+   */
+  const themeStyle = {
+    ...(pageTheme?.background ? { '--background': pageTheme.background } : {}),
+    ...(pageTheme?.card ? { '--card': pageTheme.card } : {}),
+    ...(pageTheme?.foreground ? { '--foreground': pageTheme.foreground } : {}),
+  } as React.CSSProperties;
+
   return (
-    <div className="page-shell">
+    <div className={`page-shell ${pageTheme?.full2006 ? 'page-2006' : ''}`} style={themeStyle}>
       <div className="profile-layout">
         <aside className="profile-side">
           <section className="panel profile-hero">
@@ -111,7 +130,7 @@ const MyPage = () => {
             )}
             <div className="mt-4 flex gap-2">
               {isOwner ? (
-                <Link to="/settings" className="outline-button flex-1 text-center">Edit my page</Link>
+                <Link to="/me/edit" className="outline-button flex-1 text-center">Edit my page</Link>
               ) : (
                 <CircleButton profileId={profile.id} profileName={profile.display_name} />
               )}
@@ -138,17 +157,35 @@ const MyPage = () => {
             </section>
           )}
 
-          {modules && modules.length > 0 && (
+          {profile.pinned_song_title && (
             <section className="panel module">
-              <h2>Modules</h2>
-              {modules.map(m => (
-                <p key={m.id} className="mb-2 text-sm">
-                  <b className="mr-1 capitalize">{String(m.widget_type).replace(/[_-]/g, ' ')}</b>
-                  {typeof (m.widget_data as any)?.text === 'string' && (m.widget_data as any).text}
-                </p>
-              ))}
+              <h2>Now playing on this page</h2>
+              <div className="page-song">
+                <div>
+                  <b>{profile.pinned_song_title}</b>
+                  {profile.pinned_song_artist && <small>{profile.pinned_song_artist}</small>}
+                </div>
+                {/* No autoplay. The song is the owner's choice; pressing play is the
+                    visitor's. */}
+                {profile.pinned_song_preview_url?.startsWith('https://') && (
+                  <audio controls preload="none" src={profile.pinned_song_preview_url}>
+                    Your browser cannot play this.
+                  </audio>
+                )}
+              </div>
             </section>
           )}
+
+          {modules?.map(m => {
+            const text = (m.widget_data as { text?: unknown } | null)?.text;
+            if (typeof text !== 'string' || !text.trim()) return null;
+            return (
+              <section key={m.id} className="panel module">
+                <h2>{moduleLabel(String(m.widget_type))}</h2>
+                <p>{text}</p>
+              </section>
+            );
+          })}
         </aside>
 
         <div className="profile-main">
