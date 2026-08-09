@@ -3940,6 +3940,7 @@ export type Database = {
         Returns: Json
       }
       email_hmac: { Args: { _email: string }; Returns: string }
+      get_boot_state: { Args: { _campfires_seen_at?: string }; Returns: Json }
       get_security_config: { Args: never; Returns: Json }
       get_trail_lineage: {
         Args: { _max_depth?: number; _user_id: string }
