@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useBootState } from '@/hooks/useBootState';
 
 export type AppTheme = 'light' | 'dark';
 export type MessengerSkin = 'pines' | 'icu' | 'bullseye' | 'emessen';
@@ -18,8 +19,7 @@ export type MessengerSkin = 'pines' | 'icu' | 'bullseye' | 'emessen';
  */
 export type ThemeOverrides = Record<string, string>;
 
-/** Shape read back from profiles. messenger_skin arrives with the Phase 2
- *  migration, so it is optional until types.ts is regenerated. */
+/** Shape read back from profiles. */
 type StoredPrefs = { theme?: string | null; messenger_skin?: string | null };
 
 interface ThemeContextValue {
@@ -60,58 +60,32 @@ const readStoredSkin = (): MessengerSkin => {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const { data: boot, isLoading: bootLoading } = useBootState();
   const [theme, setThemeState] = useState<AppTheme>(readStoredTheme);
   const [skin, setSkinState] = useState<MessengerSkin>(readStoredSkin);
   const [overrides, setOverrides] = useState<ThemeOverrides | null>(null);
   const [loaded, setLoaded] = useState(false);
 
-  // Load saved preferences on login. Anything unrecognised — including the
-  // retired 'evergreen' theme — falls back rather than being written back.
+  // Theme and skin arrive with the rest of the boot payload rather than from
+  // a fourth independent read of `profiles`. Anything unrecognised — including
+  // the retired 'evergreen' theme — falls back rather than being written back.
   useEffect(() => {
     if (!user) { setLoaded(true); return; }
-    let cancelled = false;
+    if (bootLoading) return;
 
-    const apply = (data: StoredPrefs | null) => {
-      if (cancelled) return;
-      const storedTheme = data?.theme as AppTheme | undefined;
-      const storedSkin = data?.messenger_skin as MessengerSkin | undefined;
-      if (storedTheme && VALID_THEMES.includes(storedTheme)) {
-        setThemeState(storedTheme);
-        localStorage.setItem(STORAGE_KEY, storedTheme);
-      }
-      if (storedSkin && VALID_SKINS.includes(storedSkin)) {
-        setSkinState(storedSkin);
-        localStorage.setItem(SKIN_STORAGE_KEY, storedSkin);
-      }
-      setLoaded(true);
-    };
+    const storedTheme = boot?.profile?.theme as AppTheme | undefined;
+    const storedSkin = boot?.profile?.messenger_skin as MessengerSkin | undefined;
 
-    const load = async () => {
-      const withSkin = await supabase
-        .from('profiles')
-        .select('theme, messenger_skin')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      // messenger_skin arrives with the Phase 2 migration, which is applied
-      // through Lovable rather than on deploy. Until it lands the column does
-      // not exist and the select 400s, which would otherwise take the saved
-      // theme down with it. Drop back to theme alone in that window.
-      // The cast goes away when types.ts is regenerated after the migration;
-      // until then the generated client knows nothing about the column.
-      if (!withSkin.error) return apply(withSkin.data as unknown as StoredPrefs | null);
-
-      const themeOnly = await supabase
-        .from('profiles')
-        .select('theme')
-        .eq('id', user.id)
-        .maybeSingle();
-      apply(themeOnly.data);
-    };
-
-    load();
-    return () => { cancelled = true; };
-  }, [user]);
+    if (storedTheme && VALID_THEMES.includes(storedTheme)) {
+      setThemeState(storedTheme);
+      localStorage.setItem(STORAGE_KEY, storedTheme);
+    }
+    if (storedSkin && VALID_SKINS.includes(storedSkin)) {
+      setSkinState(storedSkin);
+      localStorage.setItem(SKIN_STORAGE_KEY, storedSkin);
+    }
+    setLoaded(true);
+  }, [user, boot, bootLoading]);
 
   // Apply theme class to document
   useEffect(() => {
@@ -137,7 +111,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (user) {
       supabase
         .from('profiles')
-        .update({ theme: next } as any)
+        .update({ theme: next })
         .eq('id', user.id)
         .then(({ error }) => {
           if (error) {
@@ -157,7 +131,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (user) {
       supabase
         .from('profiles')
-        .update({ messenger_skin: next } as any)
+        .update({ messenger_skin: next })
         .eq('id', user.id)
         .then(({ error }) => {
           if (error) {

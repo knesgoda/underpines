@@ -126,6 +126,7 @@ const SettingsPage = () => {
       <SettingsSection label="Your page">
         <SettingsItem emoji="☺" label="My Page" onClick={() => navigate('/me')} />
         <SettingsItem emoji="✎" label="Edit my page" onClick={() => navigate('/me/edit')} />
+        <SettingsItem emoji="♫" label="Listening" onClick={() => navigate('/listening')} />
         <SettingsItem emoji="🎨" label="My Designs" onClick={() => navigate('/settings/designs')} />
         <SettingsItem emoji="🛍" label="Marketplace" onClick={() => navigate('/marketplace')} />
       </SettingsSection>

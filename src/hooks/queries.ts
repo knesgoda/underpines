@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBootState } from '@/hooks/useBootState';
 
 /**
  * Shared read hooks for the ported screens.
@@ -25,26 +26,16 @@ export interface ViewerProfile {
   created_at: string | null;
 }
 
-const VIEWER_FIELDS =
-  'id, display_name, handle, avatar_url, default_avatar_key, accent_color, cabin_mood, bio, is_pines_plus, created_at';
-
-/** The signed-in user's own profile. */
+/**
+ * The signed-in user's own profile.
+ *
+ * Reads the boot payload rather than fetching, so the five callers of this
+ * hook cost nothing beyond the one request the shell already makes. The
+ * signature is unchanged, so nothing that consumes it had to move.
+ */
 export const useViewerProfile = () => {
-  const { user } = useAuth();
-
-  return useQuery({
-    queryKey: ['profile', user?.id],
-    enabled: !!user,
-    queryFn: async (): Promise<ViewerProfile | null> => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(VIEWER_FIELDS)
-        .eq('id', user!.id)
-        .maybeSingle();
-      if (error) throw error;
-      return data as ViewerProfile | null;
-    },
-  });
+  const boot = useBootState();
+  return { ...boot, data: (boot.data?.profile ?? null) as ViewerProfile | null };
 };
 
 /** Accepted circle member ids for the signed-in user. */

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { addModule, moveModule, removeModule, toModuleRows, updateModule } from '@/lib/pageModules';
+import { addModule, moveItem, moveModule, removeModule, toModuleRows, updateModule } from '@/lib/pageModules';
 import type { PageModuleDraft } from '@/hooks/usePageEditor';
 
 const draft = (widget_type: string, text: string): PageModuleDraft => ({ widget_type, text });
@@ -84,5 +84,37 @@ describe('toModuleRows', () => {
 
   it('returns nothing when every module is blank', () => {
     expect(toModuleRows('u1', [draft('blurb', ''), draft('music', '  ')])).toEqual([]);
+  });
+});
+
+describe('moveItem', () => {
+  /**
+   * The generic behind both reorderable lists — page modules and top friends.
+   * Top friends persist their index as a database column with a range
+   * constraint, so an off-by-one here is not a visual glitch, it is a rejected
+   * write.
+   */
+  const ids = () => ['a', 'b', 'c', 'd'];
+
+  it('swaps with the neighbour in either direction', () => {
+    expect(moveItem(ids(), 1, -1)).toEqual(['b', 'a', 'c', 'd']);
+    expect(moveItem(ids(), 1, 1)).toEqual(['a', 'c', 'b', 'd']);
+  });
+
+  it('is a no-op past either end', () => {
+    expect(moveItem(ids(), 0, -1)).toEqual(ids());
+    expect(moveItem(ids(), 3, 1)).toEqual(ids());
+  });
+
+  it('preserves length and membership', () => {
+    const moved = moveItem(ids(), 2, -1);
+    expect(moved).toHaveLength(4);
+    expect([...moved].sort()).toEqual(ids().sort());
+  });
+
+  it('does not mutate the input', () => {
+    const before = ids();
+    moveItem(before, 0, 1);
+    expect(before).toEqual(['a', 'b', 'c', 'd']);
   });
 });

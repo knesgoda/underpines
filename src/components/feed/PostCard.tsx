@@ -211,8 +211,16 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
           </div>
         </div>
 
+        {/* A bulletin is a spark with a label and a wider audience — same
+            shape, so it shares the rendering rather than duplicating it. */}
+        {post.post_type === 'bulletin' && (
+          <p className="mb-1.5 font-body text-[10px] font-black uppercase tracking-widest text-primary">
+            Bulletin
+          </p>
+        )}
+
         {/* Content by type */}
-        {post.post_type === 'spark' && (() => {
+        {(post.post_type === 'spark' || post.post_type === 'bulletin') && (() => {
           const url = extractFirstUrl(post.content || '');
           const text = url ? stripFirstUrl(post.content || '') : (post.content || '');
           return (

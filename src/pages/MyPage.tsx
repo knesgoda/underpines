@@ -21,6 +21,7 @@ import {
 } from '@/hooks/useProfilePage';
 import { MODULE_TYPES } from '@/hooks/usePageEditor';
 import { useAllPhotos } from '@/hooks/usePhotos';
+import { PROVIDER_LABELS, useNowPlaying } from '@/hooks/useListening';
 import '@/styles/profile.css';
 
 const moduleLabel = (type: string) =>
@@ -36,9 +37,9 @@ const memberSince = (iso: string | null) =>
  * page they can make their own. Modules come from cabin_widgets, which already
  * had the right shape.
  *
- * Top Friends and Wall Notes depend on tables added by the Phase 3 migration.
- * Their hooks return empty rather than throwing when the tables are absent, so
- * those sections simply do not render until the schema lands.
+ * Top Friends and Wall Notes read their own tables; both sections hide
+ * themselves when empty, which on a page nobody has written on yet is the
+ * common case.
  */
 const MyPage = () => {
   const { handle } = useParams<{ handle?: string }>();
@@ -54,6 +55,7 @@ const MyPage = () => {
   const { data: topFriends } = useTopFriends(profile?.id);
   const { data: wallNotes } = useWallNotes(profile?.id);
   const { data: photos } = useAllPhotos(profile?.id);
+  const { data: listening } = useNowPlaying(profile?.id);
 
   const [note, setNote] = useState('');
   const [posting, setPosting] = useState(false);
@@ -77,8 +79,8 @@ const MyPage = () => {
     if (!user || !note.trim()) return;
     setPosting(true);
     const { error } = await supabase
-      .from('wall_notes' as never)
-      .insert({ profile_id: profile.id, author_id: user.id, content: note.trim() } as never);
+      .from('wall_notes')
+      .insert({ profile_id: profile.id, author_id: user.id, content: note.trim() });
     setPosting(false);
 
     if (error) {
@@ -173,6 +175,34 @@ const MyPage = () => {
               <Link to={`/${profile.handle}/photos`} className="album-link">
                 See all {photos.length}
               </Link>
+            </section>
+          )}
+
+          {/* What they have on now, when they are sharing it and RLS lets us
+              see it. The pinned song below is the static, always-there one;
+              this is the live moment, so it sits above. */}
+          {listening?.is_sharing && (
+            <section className="panel module">
+              <h2>Listening to</h2>
+              <div className="page-song">
+                <div>
+                  <b>{listening.track_title}</b>
+                  <small>
+                    {listening.artist} · {PROVIDER_LABELS[listening.provider]}
+                    {listening.is_live ? ' · live' : ''}
+                  </small>
+                </div>
+                {listening.track_url?.startsWith('https://') && (
+                  <a
+                    href={listening.track_url}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                    className="album-link"
+                  >
+                    Open it
+                  </a>
+                )}
+              </div>
             </section>
           )}
 

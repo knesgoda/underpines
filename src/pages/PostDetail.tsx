@@ -278,7 +278,8 @@ const PostDetail = () => {
           })()}
 
           {/* Spark image */}
-          {post.post_type === 'spark' && post.image_url && (
+          {/* Bulletins are sparks with a label, image included. */}
+          {(post.post_type === 'spark' || post.post_type === 'bulletin') && post.image_url && (
             <button
               onClick={() => { setLightboxImages([post.image_url!]); setLightboxIndex(0); }}
               className="mt-3 rounded-lg overflow-hidden block w-full text-left cursor-zoom-in"
