@@ -87,40 +87,35 @@ const Feed = () => {
       });
   }, [user]);
 
-  // Load circles
-  useEffect(() => {
-    if (!user) return;
-    const loadCircles = async () => {
-      const { data } = await supabase
-        .from('circles')
-        .select('requester_id, requestee_id')
-        .eq('status', 'accepted')
-        .or(`requester_id.eq.${user.id},requestee_id.eq.${user.id}`);
-
-      if (data) {
-        const ids = data.map(c => c.requester_id === user.id ? c.requestee_id : c.requester_id);
-        setCircleIds(ids);
-      }
-    };
-    loadCircles();
-  }, [user]);
-
   // Load feed posts
   const loadPosts = useCallback(async () => {
     if (!user) return;
     setLoading(true);
 
-    // Step 1: Fetch muted users and camp memberships in parallel
-    const [muteResult, campMemberResult] = await Promise.all([
+    // Step 1: Fetch circles, muted users and camp memberships in parallel.
+    // Circles are fetched here rather than in their own effect: when they
+    // lived in sibling state this callback was rebuilt the moment they
+    // arrived, and the whole pipeline below ran a second time on every load.
+    const [circleResult, muteResult, campMemberResult] = await Promise.all([
+      supabase
+        .from('circles')
+        .select('requester_id, requestee_id')
+        .eq('status', 'accepted')
+        .or(`requester_id.eq.${user.id},requestee_id.eq.${user.id}`),
       supabase.from('mutes').select('muted_id').eq('muter_id', user.id),
       supabase.from('camp_members').select('camp_id').eq('user_id', user.id),
     ]);
+
+    const acceptedCircleIds = (circleResult.data || []).map(c =>
+      c.requester_id === user.id ? c.requestee_id : c.requester_id
+    );
+    setCircleIds(acceptedCircleIds);
 
     const mutedIds = new Set(muteResult.data?.map(m => m.muted_id) || []);
     const campIds = campMemberResult.data?.map(cm => cm.camp_id) || [];
 
     // Build the set of author IDs we want to see: self + circle members
-    const allowedAuthorIds = [user.id, ...circleIds];
+    const allowedAuthorIds = [user.id, ...acceptedCircleIds];
 
     // Step 2: Fetch personal posts and camp posts in parallel
     const postsQuery = supabase
@@ -214,7 +209,7 @@ const Feed = () => {
       setPosts([]);
     }
     setLoading(false);
-  }, [user, circleIds]);
+  }, [user]);
 
   // Load cached posts first, then refresh from network
   useEffect(() => {

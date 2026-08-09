@@ -97,7 +97,18 @@ const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
     })),
   []);
 
+  // Anyone who has asked for reduced motion should not be held behind a
+  // 42-second animation; give them the way in immediately.
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
   useEffect(() => {
+    if (prefersReducedMotion) {
+      setShowButton(true);
+      return;
+    }
+
     const animate = (timestamp: number) => {
       if (!startRef.current) startRef.current = timestamp;
       const secs = (timestamp - startRef.current) / 1000;
@@ -113,10 +124,13 @@ const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
       }
       setActiveWaypoint(wp);
 
-      if (secs >= 42) {
+      // Offer the way in as soon as the last caption lands, rather than
+      // holding it back until the walk finishes.
+      if (secs >= waypoints[waypoints.length - 1].pauseAt) {
         setShowButton(true);
-        return;
       }
+
+      if (secs >= 42) return;
 
       animRef.current = requestAnimationFrame(animate);
     };
@@ -125,7 +139,7 @@ const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   // Figure position — pauses at waypoints
   const getFigureX = (t: number) => {
@@ -151,6 +165,17 @@ const WalkThroughWoods = ({ onComplete }: { onComplete: () => void }) => {
 
   return (
     <div className="fixed inset-0 overflow-hidden select-none" style={{ background: 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 25%, #312e81 50%, #4c1d95 75%, #1e1b4b 100%)' }}>
+
+      {/* Always available — nobody should be trapped in the intro. */}
+      {!showButton && (
+        <button
+          type="button"
+          onClick={onComplete}
+          className="absolute top-5 right-5 z-40 rounded-pill px-4 py-2 font-body text-sm text-white/70 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60 transition-colors"
+        >
+          Skip
+        </button>
+      )}
 
       {/* Stars — twinkling night sky */}
       {stars.map((star, i) => (

@@ -80,9 +80,11 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
     <SceneDebugProvider>
     <AuthProvider>
+      {/* ThemeProvider reads the signed-in user to load their saved theme, so
+          it has to sit below AuthProvider. */}
+      <ThemeProvider>
       <OnboardingProvider>
         <NavigationProvider>
           <TooltipProvider>
@@ -160,9 +162,9 @@ const App = () => (
           </TooltipProvider>
         </NavigationProvider>
       </OnboardingProvider>
+      </ThemeProvider>
     </AuthProvider>
     </SceneDebugProvider>
-    </ThemeProvider>
   </QueryClientProvider>
 );
 

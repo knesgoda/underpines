@@ -44,7 +44,7 @@ const titleForPath = (pathname: string) => {
 };
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const { unreadCount } = useNavigation();
@@ -96,6 +96,19 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           isPermanent={suspension.is_permanent}
         />
       </Suspense>
+    );
+  }
+
+  // Until auth resolves we do not know whether this user gets navigation.
+  // Reserve the chrome's boxes rather than rendering bare content and letting
+  // the header and bars shove the page down a moment later.
+  if (authLoading && !isFullScreen) {
+    return (
+      <div className="min-h-screen bg-card">
+        <div className="fixed top-0 left-0 right-0 z-30 h-14 border-b border-border bg-card" />
+        <div className="hidden md:block fixed left-0 top-14 bottom-0 w-[260px] border-r border-border bg-card" />
+        <main className="pb-16 pt-14 md:ml-[260px] md:pb-0">{children}</main>
+      </div>
     );
   }
 
