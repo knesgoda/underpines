@@ -1350,7 +1350,7 @@ INSERT INTO public.cabin_item_definitions
   -- Starter kit
   ('wool_rug','Wool Rug','Scratchy in the right way.','furniture','🟫','{floor_left,floor_center,floor_right}','everyday',true,false,'starter',10),
   ('worn_armchair','Worn Armchair','It has already accepted your shape.','furniture','🪑','{floor_left,floor_center,floor_right}','everyday',true,false,'starter',11),
-  ('table_lamp','Table Lamp','Warm amber circle.','lighting','🛋️','{desk,bookshelf_top,bookshelf_middle,window_left_sill,window_right_sill}','everyday',true,false,'starter',12),
+  ('table_lamp','Table Lamp','Warm amber circle.','lighting','💡','{desk,bookshelf_top,bookshelf_middle,window_left_sill,window_right_sill}','everyday',true,false,'starter',12),
   ('potted_fern','Potted Fern','Forgiving of neglect.','plants','🪴','{window_left_sill,window_center_sill,window_right_sill,desk,bookshelf_top,floor_left,floor_right,porch_left,porch_right}','everyday',true,false,'starter',13),
   ('stack_of_books','Stack of Books','Half of them half-read.','books','📚','{bookshelf_top,bookshelf_middle,bookshelf_lower,desk,floor_left}','everyday',true,false,'starter',14),
   ('firewood_basket','Firewood Basket','Split and stacked.','campfire_gear','🧺','{floor_left,floor_right,porch_left,porch_right}','everyday',true,false,'starter',15),
