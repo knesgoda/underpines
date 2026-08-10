@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireUser } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -47,6 +47,10 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Members only: this proxies our Spotify credentials.
+    const auth = await requireUser(req, corsHeaders);
+    if ("response" in auth) return auth.response;
+
     const { query, trackId } = await req.json();
     const token = await getSpotifyToken();
 

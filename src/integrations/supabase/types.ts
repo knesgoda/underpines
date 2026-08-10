@@ -480,6 +480,582 @@ export type Database = {
           },
         ]
       }
+      cabin_event_rolls: {
+        Row: {
+          last_rolled_at: string
+          user_id: string
+        }
+        Insert: {
+          last_rolled_at?: string
+          user_id: string
+        }
+        Update: {
+          last_rolled_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_event_rolls_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_event_sightings: {
+        Row: {
+          created_at: string
+          event_key: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_key: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_key?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_event_sightings_event_key_fkey"
+            columns: ["event_key"]
+            isOneToOne: false
+            referencedRelation: "cabin_events"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "cabin_event_sightings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_events: {
+        Row: {
+          cooldown_hours: number
+          description: string | null
+          eligible_biomes: string[] | null
+          eligible_seasons: string[] | null
+          eligible_times: string[] | null
+          eligible_weather: string[] | null
+          emoji: string
+          enabled: boolean
+          key: string
+          kind: string
+          name: string
+          rarity_weight: number
+          reward_ingredient_key: string | null
+          reward_item_key: string | null
+          reward_qty: number
+          secret: boolean
+        }
+        Insert: {
+          cooldown_hours?: number
+          description?: string | null
+          eligible_biomes?: string[] | null
+          eligible_seasons?: string[] | null
+          eligible_times?: string[] | null
+          eligible_weather?: string[] | null
+          emoji: string
+          enabled?: boolean
+          key: string
+          kind: string
+          name: string
+          rarity_weight: number
+          reward_ingredient_key?: string | null
+          reward_item_key?: string | null
+          reward_qty?: number
+          secret?: boolean
+        }
+        Update: {
+          cooldown_hours?: number
+          description?: string | null
+          eligible_biomes?: string[] | null
+          eligible_seasons?: string[] | null
+          eligible_times?: string[] | null
+          eligible_weather?: string[] | null
+          emoji?: string
+          enabled?: boolean
+          key?: string
+          kind?: string
+          name?: string
+          rarity_weight?: number
+          reward_ingredient_key?: string | null
+          reward_item_key?: string | null
+          reward_qty?: number
+          secret?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_events_reward_ingredient_key_fkey"
+            columns: ["reward_ingredient_key"]
+            isOneToOne: false
+            referencedRelation: "cabin_ingredient_definitions"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "cabin_events_reward_item_key_fkey"
+            columns: ["reward_item_key"]
+            isOneToOne: false
+            referencedRelation: "cabin_item_definitions"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      cabin_guestbook_entries: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          hidden: boolean
+          id: string
+          owner_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          hidden?: boolean
+          id?: string
+          owner_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          hidden?: boolean
+          id?: string
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_guestbook_entries_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_guestbook_entries_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_history: {
+        Row: {
+          created_at: string
+          detail: Json
+          id: string
+          kind: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          kind: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          kind?: string
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_history_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_ingredient_definitions: {
+        Row: {
+          category: string
+          emoji: string
+          enabled: boolean
+          giftable: boolean
+          key: string
+          name: string
+          rarity: string
+        }
+        Insert: {
+          category: string
+          emoji: string
+          enabled?: boolean
+          giftable?: boolean
+          key: string
+          name: string
+          rarity?: string
+        }
+        Update: {
+          category?: string
+          emoji?: string
+          enabled?: boolean
+          giftable?: boolean
+          key?: string
+          name?: string
+          rarity?: string
+        }
+        Relationships: []
+      }
+      cabin_item_definitions: {
+        Row: {
+          availability: string
+          category: string
+          description: string | null
+          emoji: string
+          enabled: boolean
+          giftable: boolean
+          key: string
+          name: string
+          rarity: string
+          sort: number
+          tradable: boolean
+          valid_zones: string[]
+        }
+        Insert: {
+          availability?: string
+          category: string
+          description?: string | null
+          emoji: string
+          enabled?: boolean
+          giftable?: boolean
+          key: string
+          name: string
+          rarity?: string
+          sort?: number
+          tradable?: boolean
+          valid_zones: string[]
+        }
+        Update: {
+          availability?: string
+          category?: string
+          description?: string | null
+          emoji?: string
+          enabled?: boolean
+          giftable?: boolean
+          key?: string
+          name?: string
+          rarity?: string
+          sort?: number
+          tradable?: boolean
+          valid_zones?: string[]
+        }
+        Relationships: []
+      }
+      cabin_knocks: {
+        Row: {
+          created_at: string
+          id: string
+          knocker_id: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          knocker_id: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          knocker_id?: string
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_knocks_knocker_id_fkey"
+            columns: ["knocker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_knocks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_notes: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean
+          owner_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          owner_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_notes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_pantry: {
+        Row: {
+          ingredient_key: string
+          owner_id: string
+          quantity: number
+        }
+        Insert: {
+          ingredient_key: string
+          owner_id: string
+          quantity?: number
+        }
+        Update: {
+          ingredient_key?: string
+          owner_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_pantry_ingredient_key_fkey"
+            columns: ["ingredient_key"]
+            isOneToOne: false
+            referencedRelation: "cabin_ingredient_definitions"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "cabin_pantry_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_placements: {
+        Row: {
+          cabin_user_id: string
+          id: string
+          slot: number
+          user_item_id: string
+          visibility: string
+          zone: string
+        }
+        Insert: {
+          cabin_user_id: string
+          id?: string
+          slot?: number
+          user_item_id: string
+          visibility?: string
+          zone: string
+        }
+        Update: {
+          cabin_user_id?: string
+          id?: string
+          slot?: number
+          user_item_id?: string
+          visibility?: string
+          zone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_placements_cabin_user_id_fkey"
+            columns: ["cabin_user_id"]
+            isOneToOne: false
+            referencedRelation: "cabins"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cabin_placements_user_item_id_fkey"
+            columns: ["user_item_id"]
+            isOneToOne: true
+            referencedRelation: "user_cabin_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_porch_gifts: {
+        Row: {
+          created_at: string
+          id: string
+          ingredient_key: string | null
+          item_key: string | null
+          message: string | null
+          owner_id: string
+          quantity: number
+          resolved_at: string | null
+          sender_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ingredient_key?: string | null
+          item_key?: string | null
+          message?: string | null
+          owner_id: string
+          quantity?: number
+          resolved_at?: string | null
+          sender_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ingredient_key?: string | null
+          item_key?: string | null
+          message?: string | null
+          owner_id?: string
+          quantity?: number
+          resolved_at?: string | null
+          sender_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_porch_gifts_ingredient_key_fkey"
+            columns: ["ingredient_key"]
+            isOneToOne: false
+            referencedRelation: "cabin_ingredient_definitions"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "cabin_porch_gifts_item_key_fkey"
+            columns: ["item_key"]
+            isOneToOne: false
+            referencedRelation: "cabin_item_definitions"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "cabin_porch_gifts_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_porch_gifts_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_recipe_book: {
+        Row: {
+          discovered_at: string
+          first_note: string | null
+          owner_id: string
+          recipe_key: string
+          times_cooked: number
+        }
+        Insert: {
+          discovered_at?: string
+          first_note?: string | null
+          owner_id: string
+          recipe_key: string
+          times_cooked?: number
+        }
+        Update: {
+          discovered_at?: string
+          first_note?: string | null
+          owner_id?: string
+          recipe_key?: string
+          times_cooked?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_recipe_book_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_recipe_book_recipe_key_fkey"
+            columns: ["recipe_key"]
+            isOneToOne: false
+            referencedRelation: "cabin_recipes"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      cabin_recipes: {
+        Row: {
+          description: string | null
+          emoji: string
+          enabled: boolean
+          key: string
+          name: string
+          optional: string[]
+          rarity: string
+          required: string[]
+          secret: boolean
+        }
+        Insert: {
+          description?: string | null
+          emoji: string
+          enabled?: boolean
+          key: string
+          name: string
+          optional?: string[]
+          rarity?: string
+          required: string[]
+          secret?: boolean
+        }
+        Update: {
+          description?: string | null
+          emoji?: string
+          enabled?: boolean
+          key?: string
+          name?: string
+          optional?: string[]
+          rarity?: string
+          required?: string[]
+          secret?: boolean
+        }
+        Relationships: []
+      }
       cabin_suggestions: {
         Row: {
           author_id: string | null
@@ -516,6 +1092,100 @@ export type Database = {
           {
             foreignKeyName: "cabin_suggestions_cabin_owner_id_fkey"
             columns: ["cabin_owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_trade_items: {
+        Row: {
+          id: string
+          ingredient_key: string | null
+          quantity: number
+          side: string
+          trade_id: string
+          user_item_id: string | null
+        }
+        Insert: {
+          id?: string
+          ingredient_key?: string | null
+          quantity?: number
+          side: string
+          trade_id: string
+          user_item_id?: string | null
+        }
+        Update: {
+          id?: string
+          ingredient_key?: string | null
+          quantity?: number
+          side?: string
+          trade_id?: string
+          user_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_trade_items_ingredient_key_fkey"
+            columns: ["ingredient_key"]
+            isOneToOne: false
+            referencedRelation: "cabin_ingredient_definitions"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "cabin_trade_items_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "cabin_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_trade_items_user_item_id_fkey"
+            columns: ["user_item_id"]
+            isOneToOne: false
+            referencedRelation: "user_cabin_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabin_trades: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          proposer_id: string
+          recipient_id: string
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          proposer_id: string
+          recipient_id: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          proposer_id?: string
+          recipient_id?: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabin_trades_proposer_id_fkey"
+            columns: ["proposer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cabin_trades_recipient_id_fkey"
+            columns: ["recipient_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -581,6 +1251,80 @@ export type Database = {
             foreignKeyName: "cabin_widgets_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cabins: {
+        Row: {
+          ambient_audio: boolean
+          auto_lighting: boolean
+          biome_key: string | null
+          cabin_location_key: string | null
+          created_at: string
+          curtain_state: string
+          gifts_mode: string
+          guestbook_mode: string
+          knock_mode: string
+          location_visibility: string
+          notes_mode: string
+          pets_visibility: string
+          presence_visible: boolean
+          theme: string
+          updated_at: string
+          user_id: string
+          visibility: string
+          weather_source: string
+          window_style: string
+        }
+        Insert: {
+          ambient_audio?: boolean
+          auto_lighting?: boolean
+          biome_key?: string | null
+          cabin_location_key?: string | null
+          created_at?: string
+          curtain_state?: string
+          gifts_mode?: string
+          guestbook_mode?: string
+          knock_mode?: string
+          location_visibility?: string
+          notes_mode?: string
+          pets_visibility?: string
+          presence_visible?: boolean
+          theme?: string
+          updated_at?: string
+          user_id: string
+          visibility?: string
+          weather_source?: string
+          window_style?: string
+        }
+        Update: {
+          ambient_audio?: boolean
+          auto_lighting?: boolean
+          biome_key?: string | null
+          cabin_location_key?: string | null
+          created_at?: string
+          curtain_state?: string
+          gifts_mode?: string
+          guestbook_mode?: string
+          knock_mode?: string
+          location_visibility?: string
+          notes_mode?: string
+          pets_visibility?: string
+          presence_visible?: boolean
+          theme?: string
+          updated_at?: string
+          user_id?: string
+          visibility?: string
+          weather_source?: string
+          window_style?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cabins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -2649,45 +3393,60 @@ export type Database = {
           created_at: string
           display_order: number
           id: string
+          interaction_mode: string
           is_ambassador: boolean
           is_memorial: boolean
           is_pinned: boolean
           is_resting: boolean
+          memorial_years: string | null
           name: string
           original_photo_path: string
           owner_id: string
+          personality_traits: string[]
           sprite_cache: Json
+          story: string | null
           updated_at: string
+          visibility: string
         }
         Insert: {
           animal_type: Database["public"]["Enums"]["animal_type"]
           created_at?: string
           display_order?: number
           id?: string
+          interaction_mode?: string
           is_ambassador?: boolean
           is_memorial?: boolean
           is_pinned?: boolean
           is_resting?: boolean
+          memorial_years?: string | null
           name: string
           original_photo_path: string
           owner_id: string
+          personality_traits?: string[]
           sprite_cache?: Json
+          story?: string | null
           updated_at?: string
+          visibility?: string
         }
         Update: {
           animal_type?: Database["public"]["Enums"]["animal_type"]
           created_at?: string
           display_order?: number
           id?: string
+          interaction_mode?: string
           is_ambassador?: boolean
           is_memorial?: boolean
           is_pinned?: boolean
           is_resting?: boolean
+          memorial_years?: string | null
           name?: string
           original_photo_path?: string
           owner_id?: string
+          personality_traits?: string[]
           sprite_cache?: Json
+          story?: string | null
           updated_at?: string
+          visibility?: string
         }
         Relationships: []
       }
@@ -3852,6 +4611,64 @@ export type Database = {
           },
         ]
       }
+      user_cabin_items: {
+        Row: {
+          acquired_at: string
+          acquisition_source: string
+          custom_name: string | null
+          event_key: string | null
+          gifted_by: string | null
+          id: string
+          item_key: string
+          owner_id: string
+          provenance_note: string | null
+        }
+        Insert: {
+          acquired_at?: string
+          acquisition_source?: string
+          custom_name?: string | null
+          event_key?: string | null
+          gifted_by?: string | null
+          id?: string
+          item_key: string
+          owner_id: string
+          provenance_note?: string | null
+        }
+        Update: {
+          acquired_at?: string
+          acquisition_source?: string
+          custom_name?: string | null
+          event_key?: string | null
+          gifted_by?: string | null
+          id?: string
+          item_key?: string
+          owner_id?: string
+          provenance_note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_cabin_items_gifted_by_fkey"
+            columns: ["gifted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_cabin_items_item_key_fkey"
+            columns: ["item_key"]
+            isOneToOne: false
+            referencedRelation: "cabin_item_definitions"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "user_cabin_items_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_lineage: {
         Row: {
           created_at: string
@@ -4004,6 +4821,76 @@ export type Database = {
         Args: { _invite_id: string; _new_user_id: string }
         Returns: undefined
       }
+      cabin_append_history: {
+        Args: { _detail: Json; _kind: string; _owner: string }
+        Returns: undefined
+      }
+      cabin_blocked: { Args: { _a: string; _b: string }; Returns: boolean }
+      cabin_cancel_trade: { Args: { _trade_id: string }; Returns: Json }
+      cabin_cook: { Args: { _ingredients: string[] }; Returns: Json }
+      cabin_ensure: { Args: { _user_id: string }; Returns: undefined }
+      cabin_friends: { Args: { _a: string; _b: string }; Returns: boolean }
+      cabin_guestbook_visible: {
+        Args: { _owner: string; _viewer: string }
+        Returns: boolean
+      }
+      cabin_knock: { Args: { _owner: string }; Returns: Json }
+      cabin_leave_gift: {
+        Args: {
+          _ingredient_key?: string
+          _item_key?: string
+          _message?: string
+          _owner: string
+          _qty?: number
+        }
+        Returns: Json
+      }
+      cabin_leave_note: {
+        Args: { _content: string; _owner: string }
+        Returns: Json
+      }
+      cabin_mode_allows: {
+        Args: { _mode: string; _owner: string; _viewer: string }
+        Returns: boolean
+      }
+      cabin_notify: {
+        Args: { _actor: string; _recipient: string; _type: string }
+        Returns: undefined
+      }
+      cabin_propose_trade: {
+        Args: { _ask: Json; _message: string; _offer: Json; _recipient: string }
+        Returns: Json
+      }
+      cabin_respond_gift: {
+        Args: { _gift_id: string; _keep: boolean }
+        Returns: Json
+      }
+      cabin_respond_trade: {
+        Args: { _accept: boolean; _trade_id: string }
+        Returns: Json
+      }
+      cabin_roll_event: {
+        Args: {
+          _biome: string
+          _season: string
+          _time_of_day: string
+          _weather: string
+        }
+        Returns: Json
+      }
+      cabin_sign_guestbook: {
+        Args: { _content: string; _owner: string }
+        Returns: Json
+      }
+      cabin_transfer_trade_item: {
+        Args: {
+          _from: string
+          _other_name: string
+          _ti: Database["public"]["Tables"]["cabin_trade_items"]["Row"]
+          _to: string
+        }
+        Returns: undefined
+      }
       can_see_post: {
         Args: { _post_id: string; _user_id: string }
         Returns: boolean
@@ -4022,6 +4909,7 @@ export type Database = {
       }
       email_hmac: { Args: { _email: string }; Returns: string }
       get_boot_state: { Args: { _campfires_seen_at?: string }; Returns: Json }
+      get_cabin_view: { Args: { _handle: string }; Returns: Json }
       get_invite_landing: { Args: { _slug: string }; Returns: Json }
       get_security_config: { Args: never; Returns: Json }
       get_trail_lineage: {
