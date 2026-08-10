@@ -4922,10 +4922,12 @@ export type Database = {
         }
         Returns: undefined
       }
+      cabin_visible_to_viewer: { Args: { _owner: string }; Returns: boolean }
       can_see_post: {
         Args: { _post_id: string; _user_id: string }
         Returns: boolean
       }
+      can_view_member_content: { Args: { _owner: string }; Returns: boolean }
       check_invite_rate_limit: {
         Args: { _invite_id: string; _ip_hash: string }
         Returns: Json
