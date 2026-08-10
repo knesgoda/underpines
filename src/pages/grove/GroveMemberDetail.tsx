@@ -41,9 +41,20 @@ const GroveMemberDetail = () => {
     const load = async () => {
       if (!handle) return;
 
-      const { data: p } = await supabase.from('profiles').select('id, handle, display_name, bio, mantra, city, country_code, created_at, updated_at, avatar_url, default_avatar_key, header_image_url, account_status, age_bracket, is_age_verified, is_pines_plus, seedling_ends_at, last_seen_at').eq('handle', handle).single();
+      const { data: p } = await supabase.from('profiles').select('id, handle, display_name, bio, mantra, city, country_code, created_at, updated_at, avatar_url, default_avatar_key, header_image_url, account_status, is_age_verified, is_pines_plus, seedling_ends_at, last_seen_at').eq('handle', handle).single();
       if (!p) { setLoading(false); return; }
-      setProfile(p);
+
+      // age_bracket flags minors and is not readable from the table; admins
+      // read it through an admin-only function.
+      const { data: flagRows } = await (supabase.rpc as unknown as (
+        fn: string,
+        args: Record<string, unknown>,
+      ) => Promise<{ data: { id: string; age_bracket: string | null }[] | null }>)(
+        'admin_profile_age_flags',
+        { _ids: [p.id] },
+      );
+      setProfile({ ...p, age_bracket: flagRows?.[0]?.age_bracket ?? null });
+
 
       const [
         { count: posts },
