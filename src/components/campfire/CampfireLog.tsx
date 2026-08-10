@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Pin, Trash2, Plus, X } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/time';
 import { toast } from 'sonner';
+import { MediaImage } from '@/components/MediaImage';
 
 interface LogItem {
   id: string;
@@ -108,7 +109,7 @@ const CampfireLog = ({ campfireId, isFirekeeper, onClose }: Props) => {
                 {item.content}
               </a>
             ) : item.content_type === 'photo' && item.photo_url ? (
-              <img src={item.photo_url} alt="" className="rounded-lg max-h-[160px] object-cover mb-1" />
+              <MediaImage src={item.photo_url} alt="" className="rounded-lg h-[160px] max-h-[160px] object-cover mb-1" />
             ) : (
               <p className="font-body text-sm text-foreground">{item.content}</p>
             )}

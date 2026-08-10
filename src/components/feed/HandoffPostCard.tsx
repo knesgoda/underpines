@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import UserAvatar from '@/components/UserAvatar';
 import { formatTimeAgo } from '@/lib/time';
+import { MediaImage } from '@/components/MediaImage';
 import type { PostWithAuthor } from './PostCard';
 
 /**
@@ -69,7 +70,7 @@ export const HandoffPostCard = ({
             className="block w-full"
             aria-label="View photo"
           >
-            <img src={images[0]} alt="" loading="lazy" />
+            <MediaImage src={images[0]} alt="" loading="lazy" style={{ width: '100%', minHeight: 160, objectFit: 'cover' }} />
           </button>
           {images.length > 1 && <span>{images.length} PHOTOS</span>}
         </div>

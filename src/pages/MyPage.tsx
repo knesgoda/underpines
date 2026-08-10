@@ -10,6 +10,7 @@ import StatePanel from '@/components/StatePanel';
 import CircleButton from '@/components/circles/CircleButton';
 import CabinPostHistory from '@/components/cabin/CabinPostHistory';
 import { formatTimeAgo } from '@/lib/time';
+import { MediaImage } from '@/components/MediaImage';
 import {
   usePageProfile,
   usePageModules,
@@ -169,7 +170,7 @@ const MyPage = () => {
               <h2>Photos</h2>
               <div className="photo-strip">
                 {photos.slice(0, 8).map(p => (
-                  <img key={p.id} src={p.url} alt="" loading="lazy" />
+                  <MediaImage key={p.id} src={p.url} alt="" loading="lazy" style={{ width: 96, height: 96, objectFit: 'cover' }} />
                 ))}
               </div>
               <Link to={`/${profile.handle}/photos`} className="album-link">

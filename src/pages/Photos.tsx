@@ -6,6 +6,7 @@ import { ErrorPanel } from '@/components/StatePanel';
 import { usePageProfile } from '@/hooks/useProfilePage';
 import { isImage, useAlbums, type Photo } from '@/hooks/usePhotos';
 import { useAuth } from '@/contexts/AuthContext';
+import { MediaImage } from '@/components/MediaImage';
 import '@/styles/photos.css';
 
 /**
@@ -71,7 +72,7 @@ const Photos = () => {
             <div className="photo-grid">
               {all.map(p => (
                 <button key={p.id} type="button" onClick={() => setLightbox(p)} aria-label="Open photo">
-                  <img src={p.url} alt="" loading="lazy" />
+                  <MediaImage src={p.url} alt="" loading="lazy" style={{ width: '100%', aspectRatio: '1 / 1', objectFit: 'cover' }} />
                 </button>
               ))}
             </div>
@@ -86,7 +87,7 @@ const Photos = () => {
                 <div className="photo-grid">
                   {album.photos.map(p => (
                     <button key={p.id} type="button" onClick={() => setLightbox(p)} aria-label="Open photo">
-                      <img src={p.url} alt="" loading="lazy" />
+                      <MediaImage src={p.url} alt="" loading="lazy" style={{ width: '100%', aspectRatio: '1 / 1', objectFit: 'cover' }} />
                     </button>
                   ))}
                 </div>
@@ -104,7 +105,7 @@ const Photos = () => {
           <button type="button" className="lightbox-close" aria-label="Close" onClick={() => setLightbox(null)}>
             <X size={20} />
           </button>
-          <img src={lightbox.url} alt="" onClick={e => e.stopPropagation()} />
+          <MediaImage src={lightbox.url} alt="" onClick={e => e.stopPropagation()} style={{ minWidth: '40vw', minHeight: '40dvh' }} />
           {lightbox.postId && (
             <Link to={`/post/${lightbox.postId}`} className="lightbox-link" onClick={e => e.stopPropagation()}>
               See the post
