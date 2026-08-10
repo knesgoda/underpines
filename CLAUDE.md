@@ -106,6 +106,10 @@ in a route chunk.
   Friendster, SocialHuman, SpaceHey, Retro, PI.FYI, Lyvio, Myspace), the seven
   must-not-lose bets, and the never-copy list. Consult before positioning copy,
   landing pages, or feature bets that touch engagement mechanics.
+- `docs/cabin-system.md` — the Cabin (the profile-as-place at `/u/:handle`):
+  pre-build inventory, data model, authority split, zone contract, privacy
+  rules. Read before touching anything under `src/components/cabin/`,
+  `src/lib/cabin/`, the cabin tables, or the environment/creature engine.
 
 ---
 
@@ -114,7 +118,57 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-10 — two parallel workstreams merged to `main`.**
+**As of 2026-08-10 (later) — the Cabin system shipped (PR #11).**
+
+### Stream C — the Cabin: profile-as-place (PR #11, branch `claude/under-pines-cabin-system-5i9ez5`)
+
+Full Cabin/Profile spec (v1.0) implemented, all ten phases. Design +
+inventory in `docs/cabin-system.md`. The short version:
+
+- **`/u/:handle` is a place, not a page.** Exterior scene (the PR #1-deleted
+  CabinScene/creatures/weather/seasons engine, resurrected wholesale and
+  lazy-loaded in the route chunk — entry stays 191.6 kB gzip), interior room
+  with 23 placement zones, fixtures with per-role actions, accessible
+  "Things in this Cabin" drawer. `/:handle` (My Page) is untouched; the two
+  cross-link. `/cabin` goes home.
+- **Migration `20260810210000_cabin_system.sql` is APPLIED and verified** —
+  applied directly via `mcp__Lovable__query_database` (it accepts DDL; no
+  send_message round-trip needed), so it is NOT in Lovable's own migration
+  ledger — the repo file is the source of truth. Verified: seed counts
+  (53 items / 27 ingredients / 19 recipes / 16 events), RLS on all 17 new
+  tables, 19 definer functions, plus a full functional pass (cook/discover,
+  knock + rate limit, gift → provenance, atomic trade, event roll, zone
+  trigger rejection) executed as real users inside a rolled-back
+  transaction. Zero production rows persisted; `cabins` fills lazily as
+  people visit their own cabin (starter kit auto-seeds).
+- **Authority split:** all ownable state (inventory, pantry, trades, gifts,
+  recipe discovery, event rewards, history) moves only through
+  `cabin_*` SECURITY DEFINER RPCs that re-check blocks, privacy modes, and
+  rate limits. Clients render; they cannot mint.
+- **Contract to not break:** `src/lib/cabin/zones.ts` and the migration's
+  zone CHECK are the same vocabulary — a vitest reads the .sql and fails on
+  drift. `get_cabin_view` is the cabin's `get_boot_state`: one RPC paints
+  the whole page.
+
+**Open items from this stream:**
+1. **Pine-pet edge functions may need redeploy.** `generate-pine-pet`,
+   `finalize-pine-pet`, `regenerate-pine-pet-atmosphere` were restored to
+   the repo (PR #1 deleted them; repo deletion ≠ undeploy) but the sandbox
+   can't check deployment. If pet creation 404s, have Lovable deploy the
+   three from `supabase/functions/`. They also need `LOVABLE_API_KEY` (or
+   the AI key they read) present in function secrets.
+2. **Signed-in eyeball pass** (sandbox can't do it): visit `/u/<handle>`
+   as a member — starter cabin renders, Fix Up Cabin places/removes items,
+   cook a s'more, visit someone else's cabin and knock/sign/gift/trade.
+   The RPC layer is verified against production; this is about the pixels.
+3. **Identity links still default to `/:handle`.** Spec §109 wants "Visit
+   Cabin" as the default identity navigation; it's a per-link-site change
+   left deliberate until Kevin decides the order (page vs. cabin).
+4. **Supabase types are stale** — new tables/RPCs ride on the rangerApi-style
+   `as any` cast in `src/lib/cabinApi.ts`. Regenerate types when convenient
+   and the casts come out.
+
+### Previously (same day): two parallel workstreams merged to `main`.
 
 _Docs update (2026-08-10, branch `claude/under-pines-competitive-brief-5svnmi`):
 added `docs/competitive-brief.md` — Kevin's v1.0 competitive intelligence +
@@ -208,7 +262,8 @@ Full design in `docs/human-trust-system.md`. What shipped:
 4. **Spotify review clock is not started** (Stream A) — see
    `docs/spotify-integration.md`.
 
-**Verification at last handoff:** `tsc` clean, 64 vitest tests pass, `vite
-build` clean on `main` (commit `5851190`). No GitHub Actions CI exists; Lovable's
-scan + preview is the pipeline. Original 6 findings cleared; production live at
-www.underpines.com with the gate and trust system.
+**Verification at last handoff:** `tsc` clean, 85 vitest tests pass, `vite
+build` clean, entry 191.6 kB gzip, Chromium sweep green in both themes on
+`main` (PR #11 merged). No GitHub Actions CI exists; Lovable's scan + preview
+is the pipeline. Original 6 findings cleared; production live at
+www.underpines.com with the gate, trust system, and the cabin schema applied.
