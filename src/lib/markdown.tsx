@@ -20,6 +20,21 @@ const renderInline = (text: string, keyPrefix: string): ReactNode[] =>
   text.split(INLINE).filter(Boolean).map((part, i) => {
     const key = `${keyPrefix}-${i}`;
 
+    // Images (newsletters embed post-media uploads this way) go through
+    // MediaImage so the private bucket gets a signed URL.
+    const image = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(part);
+    if (image) {
+      return (
+        <MediaImage
+          key={key}
+          src={image[2]}
+          alt={image[1]}
+          className="block w-full h-auto rounded-xl my-3"
+          style={{ minHeight: '120px' }}
+        />
+      );
+    }
+
     if (part.startsWith('**') && part.endsWith('**')) return <strong key={key}>{part.slice(2, -2)}</strong>;
     if (part.startsWith('`') && part.endsWith('`')) return <code key={key}>{part.slice(1, -1)}</code>;
     if ((part.startsWith('*') && part.endsWith('*')) || (part.startsWith('_') && part.endsWith('_'))) {
