@@ -16,19 +16,24 @@ const TYPE_LABEL: Record<string, string> = {
   spark: 'Status',
   story: 'Blog',
   ember: 'Photos',
+  bulletin: 'Bulletin',
 };
 
 export const HandoffPostCard = ({
   post,
+  draft = false,
   onOpen,
   onImageClick,
 }: {
   post: PostWithAuthor;
+  draft?: boolean;
   onOpen?: () => void;
   onImageClick?: (images: string[], index: number) => void;
 }) => {
   const media = (post.post_media || []).slice().sort((a, b) => a.position - b.position);
   const images = media.filter(m => m.media_type !== 'video').map(m => m.url);
+  // Sparks and bulletins carry their picture on the row itself, not post_media.
+  if (images.length === 0 && post.image_url) images.push(post.image_url);
   const reactionCount = post.reactions?.length ?? 0;
   const label = TYPE_LABEL[post.post_type];
 
@@ -47,13 +52,16 @@ export const HandoffPostCard = ({
           </Link>
           <p>
             @{post.author?.handle ?? '—'} · {formatTimeAgo(post.created_at)}
-            {label && post.post_type !== 'spark' ? ` · ${label}` : ''}
+            {label && post.post_type !== 'spark' && post.post_type !== 'bulletin' ? ` · ${label}` : ''}
+            {draft ? ' · Draft — only you see this' : ''}
           </p>
         </div>
         <button type="button" className="more" onClick={onOpen} aria-label="Open post">
           •••
         </button>
       </header>
+
+      {post.post_type === 'bulletin' && <span className="bulletin-label">Bulletin</span>}
 
       {(post.title || post.content) && (
         <div className="post-copy">

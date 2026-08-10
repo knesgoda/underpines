@@ -302,13 +302,12 @@ const MyPage = () => {
             ))}
           </section>
 
-          <section className="panel module">
+          <section className="profile-posts" aria-label="Posts">
             <h2>Posts</h2>
             <CabinPostHistory
               profileId={profile.id}
               isOwner={isOwner}
               isInCircle={true}
-              atmosphere={null}
             />
           </section>
         </div>

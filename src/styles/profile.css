@@ -6,11 +6,14 @@
  * this.
  */
 
+/* Capped and centered: an uncapped 1fr column let the page sprawl across the
+   full 1180px shell, far past the feed's reading measure. */
 .profile-layout {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: 300px minmax(0, 600px);
   gap: 22px;
   align-items: start;
+  justify-content: center;
 }
 
 .profile-side { display: grid; gap: 16px; }
@@ -147,8 +150,23 @@
   font-style: italic;
 }
 
+/* Posts — bare handoff post cards under a module-style heading, not panels
+   nested inside a panel. */
+.profile-posts { display: grid; gap: 15px; }
+
+.profile-posts > h2 {
+  margin: 0;
+  border-bottom: 1px solid hsl(var(--border));
+  padding-bottom: 6px;
+  color: hsl(var(--primary));
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 980px) {
-  .profile-layout { grid-template-columns: minmax(0, 1fr); }
+  .profile-layout { grid-template-columns: minmax(0, 640px); }
 }
 
 @media (max-width: 700px) {

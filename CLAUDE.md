@@ -118,7 +118,31 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-10 (latest) — coming-soon homepage + waitlist (PR #13, merged & published).**
+**As of 2026-08-10 (latest) — My Page / Cabin layout fix (branch
+`claude/cabin-persons-profile-layout-4ayajv`).**
+
+Kevin flagged the profile as "too wide and the bulletin board is a mess."
+What changed:
+- `.profile-layout` main column capped at 600px and centered (was an
+  uncapped 1fr sprawling across the 1180px shell); `.cabin-page` capped at
+  880px for the same reason.
+- The Posts section of My Page now renders `HandoffPostCard` (the feed's
+  card language) instead of the old pre-port Tailwind `PostCard`; the post
+  card CSS moved from `feed.css` to `handoff-shell.css` since two routes now
+  share it (the known route-stylesheet trap). Bulletins get their
+  `.bulletin-label` chip + their `image_url` now renders (HandoffPostCard
+  ignored row-level images before — feed benefits too). Drafts show as a
+  "Draft — only you see this" meta note.
+- Fixed a real crash: `CabinPostHistory`'s empty state dereferenced
+  `atmosphere.cardBg` while MyPage passed `atmosphere={null}` — any profile
+  with zero posts threw. The prop is gone.
+- Verified: tsc/eslint/vitest/build clean, entry 191.8 kB gzip, signed-out
+  Chromium sweep green both themes, plus a mock-data harness screenshot of
+  the new profile layout in both themes (real signed-in eyeball still
+  Kevin's — sandbox can't reach Supabase). Old `PostCard` still used by
+  PostDetail / Search / CollectionView, untouched.
+
+**Previously (2026-08-10) — coming-soon homepage + waitlist (PR #13, merged & published).**
 
 The logged-out landing at `/` is now a coming-soon page: hero + email waitlist,
 then a "what we're all about" section (five principles rendered from

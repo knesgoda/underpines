@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
+import type { PostWithAuthor } from '@/components/feed/PostCard';
+import HandoffPostCard from '@/components/feed/HandoffPostCard';
 import LightboxViewer from '@/components/feed/LightboxViewer';
 import { MediaImage } from '@/components/MediaImage';
 
@@ -9,10 +10,15 @@ interface Props {
   profileId: string;
   isOwner: boolean;
   isInCircle: boolean;
-  atmosphere: any;
 }
 
-const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props) => {
+/**
+ * The Posts section of My Page: the owner's history in the same card
+ * language as the feed. Drafts show only to the owner; visitors outside the
+ * circle get sparks and bulletins in full, stories as a title, embers behind
+ * a blur.
+ */
+const CabinPostHistory = ({ profileId, isOwner, isInCircle }: Props) => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,21 +40,18 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
       const { data } = await query;
       if (!data) { setLoading(false); return; }
 
-      // Get author profile
       const { data: prof } = await supabase
         .from('profiles')
-        .select('display_name, handle, accent_color, cabin_mood')
+        .select('display_name, handle, accent_color, cabin_mood, avatar_url, default_avatar_key')
         .eq('id', profileId)
         .maybeSingle();
 
-      // Get media
       const postIds = data.map(p => p.id);
       const { data: media } = await supabase
         .from('post_media')
         .select('*')
         .in('post_id', postIds);
 
-      // Get reactions
       const { data: reactions } = await supabase
         .from('reactions')
         .select('post_id, reaction_type, user_id')
@@ -57,7 +60,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
       const enriched: PostWithAuthor[] = data.map(p => ({
         ...p,
         created_at: p.created_at || '',
-        author: prof ? { display_name: prof.display_name, handle: prof.handle, accent_color: prof.accent_color, cabin_mood: prof.cabin_mood } : undefined,
+        author: prof ?? undefined,
         post_media: media?.filter(m => m.post_id === p.id) || [],
         reactions: reactions?.filter(r => r.post_id === p.id) || [],
       }));
@@ -68,33 +71,40 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
     load();
   }, [profileId, isOwner]);
 
-  const handleRemove = (id: string) => {
-    setPosts(prev => prev.filter(p => p.id !== id));
-  };
-
-  // Visibility gating for non-circle visitors
+  // Visibility gating for visitors outside the circle. Sparks and bulletins
+  // are written for a wide audience; stories and embers only tease.
   const renderGatedPost = (post: PostWithAuthor) => {
-    if (isOwner || isInCircle) return <PostCard key={post.id} post={post} onRemove={handleRemove} onImageClick={(imgs, idx) => setLightbox({ open: true, images: imgs, index: idx })} />;
+    const card = (
+      <HandoffPostCard
+        key={post.id}
+        post={post}
+        draft={isOwner && !post.is_published}
+        onOpen={() => navigate(`/post/${post.id}`)}
+        onImageClick={(images, index) => setLightbox({ open: true, images, index })}
+      />
+    );
 
-    // Non-circle: sparks visible, stories title-only, embers blurred
-    if (post.post_type === 'spark') {
-      return <PostCard key={post.id} post={post} />;
-    }
+    if (isOwner || isInCircle) return card;
+    if (post.post_type === 'spark' || post.post_type === 'bulletin') return card;
 
     return (
-      <div key={post.id} className="rounded-xl bg-card shadow-sm border border-border p-5 mb-3">
+      <article key={post.id} className="panel post">
         {post.post_type === 'story' && post.title && (
-          <h3 className="font-display text-lg text-foreground mb-2">{post.title}</h3>
+          <div className="post-copy"><h2>{post.title}</h2></div>
         )}
         {post.post_type === 'ember' && post.post_media?.[0] && (
-          <div className="rounded-lg overflow-hidden mb-2 relative">
-            <MediaImage src={post.post_media[0].url} alt="" className="w-full h-[200px] max-h-[200px] object-cover blur-lg" />
+          <div className="post-image">
+            <MediaImage
+              src={post.post_media[0].url}
+              alt=""
+              style={{ width: '100%', height: 180, objectFit: 'cover', filter: 'blur(16px)' }}
+            />
           </div>
         )}
-        <p className="font-body text-xs text-muted-foreground">
-          Add to your Circle to {post.post_type === 'story' ? 'read in their Cabin' : 'see this post'}.
-        </p>
-      </div>
+        <div className="post-stats">
+          <span>Add them to your Circle to {post.post_type === 'story' ? 'read this' : 'see this post'}.</span>
+        </div>
+      </article>
     );
   };
 
@@ -102,48 +112,23 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
 
   if (posts.length === 0) {
     return (
-      <div
-        className="rounded-2xl p-8 text-center shadow-soft transition-colors duration-700"
-        style={{ backgroundColor: atmosphere.cardBg, borderColor: atmosphere.border, borderWidth: 1 }}
-      >
-        <p className="text-2xl mb-2">🌿</p>
+      <section className="panel module">
         {isOwner ? (
-          <>
-            <p className="font-body text-sm" style={{ color: atmosphere.text, opacity: 0.6 }}>Your Cabin is quiet.</p>
-            <p className="font-body text-xs mt-1" style={{ color: atmosphere.text, opacity: 0.4 }}>
-              Share your first thought, story, or photo.
-            </p>
-            <button
-              onClick={() => navigate('/')}
-              className="mt-3 font-body text-xs text-primary hover:underline"
-            >
-              Write something →
-            </button>
-          </>
+          <p className="text-sm text-muted-foreground">
+            Nothing posted yet. <Link to="/" className="album-link">Write something →</Link>
+          </p>
         ) : (
-          <p className="font-body text-sm" style={{ color: atmosphere.text, opacity: 0.4 }}>Nothing posted yet.</p>
+          <p className="text-sm text-muted-foreground">Nothing posted yet.</p>
         )}
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="space-y-3">
-      {posts.map(post => {
-        const isDraft = !post.is_published;
-        return (
-          <div key={post.id} className="relative">
-            {isDraft && isOwner && (
-              <div className="absolute top-3 left-6 z-10 px-2 py-0.5 rounded-md bg-muted font-body text-[10px] text-muted-foreground">
-                Draft
-              </div>
-            )}
-            {renderGatedPost(post)}
-          </div>
-        );
-      })}
+    <>
+      {posts.map(renderGatedPost)}
       <LightboxViewer open={lightbox.open} images={lightbox.images} startIndex={lightbox.index} onClose={() => setLightbox(l => ({ ...l, open: false }))} />
-    </div>
+    </>
   );
 };
 
