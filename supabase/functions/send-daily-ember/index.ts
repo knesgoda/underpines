@@ -1,15 +1,21 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { requireCronSecret } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // Scheduled background task: gated on the shared CRON_SECRET so it is not
+  // callable from the public internet with the anon key.
+  const cronError = requireCronSecret(req, undefined, corsHeaders);
+  if (cronError) return cronError;
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
