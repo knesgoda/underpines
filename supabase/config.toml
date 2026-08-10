@@ -22,3 +22,23 @@ verify_jwt = true
 
 [functions.send-parental-consent]
 verify_jwt = true
+
+# Additional scheduled tasks gated on CRON_SECRET (shared secret, no user JWT).
+[functions.send-daily-ember]
+verify_jwt = false
+
+[functions.send-camp-newsletters]
+verify_jwt = false
+
+[functions.campfire-lifecycle]
+verify_jwt = false
+
+[functions.send-grove-weekly-report]
+verify_jwt = false
+
+[functions.check-reporter-patterns]
+verify_jwt = false
+
+# Member-only proxy for our Spotify credentials.
+[functions.spotify-search]
+verify_jwt = true
