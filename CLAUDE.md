@@ -118,6 +118,29 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
+**As of 2026-08-10 (latest) — coming-soon homepage + waitlist (PR #13, merged & published).**
+
+The logged-out landing at `/` is now a coming-soon page: hero + email waitlist,
+then a "what we're all about" section (five principles rendered from
+`docs/competitive-brief.md`'s human-scale positioning). Signed-in users still
+get their feed; `HomePage.tsx` untouched — only `src/pages/Index.tsx` changed.
+
+- **Migration `20260810230000_waitlist_signups.sql` is APPLIED and verified**
+  (via `query_database` directly, so like the cabin migration it is NOT in
+  Lovable's ledger). `waitlist_signups` has RLS with admin-only SELECT/UPDATE
+  and no INSERT path; the only write is the `join_waitlist(_email)` definer
+  RPC — normalizes/dedupes, always answers success on duplicates (no
+  membership probing), 500/hour insert cap. Functionally verified against
+  production (insert, dedupe, invalid reject; probe row deleted).
+- **Published via `mcp__Lovable__deploy_project`** after the squash-merge
+  (Lovable synced commit `aeb23cb` before deploy). The sandbox cannot reach
+  underpines.com (egress blocked, same as Supabase), so the live-page eyeball
+  is Kevin's; local Chromium sweep was green in both themes and entry stayed
+  191.6 kB gzip.
+- **No waitlist admin UI yet.** Signups are readable by rangers via SQL only;
+  a Grove page (and a "send a Trail Pass to a waitlist email" action) is a
+  natural follow-up once `RESEND_API_KEY` exists.
+
 **As of 2026-08-10 (later) — the Cabin system shipped (PR #11).**
 
 ### Stream C — the Cabin: profile-as-place (PR #11, branch `claude/under-pines-cabin-system-5i9ez5`)
