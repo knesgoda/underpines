@@ -4773,6 +4773,30 @@ export type Database = {
           },
         ]
       }
+      waitlist_signups: {
+        Row: {
+          created_at: string
+          email: string
+          email_normalized: string
+          id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          email_normalized: string
+          id?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          email_normalized?: string
+          id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       wall_notes: {
         Row: {
           author_id: string
@@ -4958,6 +4982,8 @@ export type Database = {
         Returns: boolean
       }
       is_ranger: { Args: { _user_id: string }; Returns: boolean }
+      is_waitlist_admin: { Args: never; Returns: boolean }
+      join_waitlist: { Args: { _email: string }; Returns: Json }
       normalize_content_for_hash: {
         Args: { _content: string }
         Returns: string
