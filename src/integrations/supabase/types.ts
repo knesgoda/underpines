@@ -4845,6 +4845,13 @@ export type Database = {
         Args: { _invite_id: string; _new_user_id: string }
         Returns: undefined
       }
+      admin_profile_age_flags: {
+        Args: { _ids: string[] }
+        Returns: {
+          age_bracket: string
+          id: string
+        }[]
+      }
       cabin_append_history: {
         Args: { _detail: Json; _kind: string; _owner: string }
         Returns: undefined
@@ -5113,6 +5120,7 @@ export type Database = {
         }
         Returns: Json
       }
+      record_cabin_visit: { Args: { _profile_id: string }; Returns: undefined }
       redeem_trail_pass: { Args: { _token: string }; Returns: Json }
       refresh_my_invites: { Args: never; Returns: Json }
       revoke_trail_pass: {

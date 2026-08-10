@@ -41,9 +41,11 @@ const GroveMemberDetail = () => {
     const load = async () => {
       if (!handle) return;
 
-      const { data: p } = await supabase.from('profiles').select('id, handle, display_name, bio, mantra, city, country_code, created_at, updated_at, avatar_url, default_avatar_key, header_image_url, account_status, age_bracket, is_age_verified, is_pines_plus, seedling_ends_at, last_seen_at').eq('handle', handle).single();
+      const { data: p } = await supabase.from('profiles').select('id, handle, display_name, bio, mantra, city, country_code, created_at, updated_at, avatar_url, default_avatar_key, header_image_url, account_status, is_age_verified, is_pines_plus, seedling_ends_at, last_seen_at').eq('handle', handle).single();
       if (!p) { setLoading(false); return; }
       setProfile(p);
+
+
 
       const [
         { count: posts },
