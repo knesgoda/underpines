@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { formatTimeAgo } from '@/lib/time';
+import { MediaImage } from '@/components/MediaImage';
 
 /* ───── highlight helper ───── */
 const Highlight = ({ text, query }: { text: string; query: string }) => {
@@ -305,7 +306,7 @@ const Search = () => {
               {camps.map((c: any) => (
                 <div key={c.id} className="flex items-start gap-3 p-3 rounded-xl bg-card border border-border">
                   {c.cover_image_url ? (
-                    <img src={c.cover_image_url} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                    <MediaImage src={c.cover_image_url} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center shrink-0">
                       <Tent size={20} className="text-muted-foreground" />

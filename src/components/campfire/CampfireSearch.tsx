@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { formatTimeAgo } from '@/lib/time';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { MediaImage } from '@/components/MediaImage';
 
 interface Props {
   campfireId: string;
@@ -138,7 +139,7 @@ const CampfireSearch = ({ campfireId, campfireName, onBack, onJumpToMessage }: P
                   onClick={() => onJumpToMessage(m.id)}
                   className="aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
                 >
-                  <img src={m.media_url} alt="" className="w-full h-full object-cover" />
+                  <MediaImage src={m.media_url} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

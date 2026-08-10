@@ -15,6 +15,7 @@ import ShareToCampfire from './ShareToCampfire';
 import RepostModal from './RepostModal';
 import ReportSheet from '@/components/reporting/ReportSheet';
 import UserAvatar from '@/components/UserAvatar';
+import { MediaImage, MediaVideo } from '@/components/MediaImage';
 import { useBlockMute } from '@/hooks/useBlockMute';
 import { toast } from 'sonner';
 
@@ -239,11 +240,11 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                   style={{ minHeight: '1px' }}
                   aria-label="View full image"
                 >
-                  <img
+                  <MediaImage
                     src={post.image_url}
                     alt=""
                     className="block w-full h-auto rounded-lg bg-muted"
-                    style={{ maxHeight: '600px', objectFit: 'contain' }}
+                    style={{ maxHeight: '600px', objectFit: 'contain', minHeight: '120px' }}
                     loading="lazy"
                   />
                 </button>
@@ -295,10 +296,10 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                         className={`relative ${i === 0 && sorted.length >= 3 ? 'col-span-2 row-span-2' : ''}`}
                       >
                         {media.media_type === 'video' ? (
-                          <video
+                          <MediaVideo
                             src={media.url}
                             className="w-full h-auto rounded-lg"
-                            style={{ maxHeight: '600px' }}
+                            style={{ maxHeight: '600px', minHeight: '120px' }}
                             controls
                             muted
                           />
@@ -310,11 +311,11 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                             style={{ minHeight: '1px' }}
                             aria-label="View full image"
                           >
-                            <img
+                            <MediaImage
                               src={media.url}
                               alt=""
                               className="block w-full h-auto rounded-lg bg-muted"
-                              style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
+                              style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', minHeight: '120px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
                               loading="lazy"
                             />
                           </button>

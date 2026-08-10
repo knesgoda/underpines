@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
 import { Plus, Lock } from 'lucide-react';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { MediaImage } from '@/components/MediaImage';
 
 interface Collection {
   id: string;
@@ -92,7 +93,7 @@ const CollectionsList = () => {
             <div key={c.id} className="flex gap-4 p-4 panel">
               <div className="w-[120px] h-[120px] rounded-lg bg-muted overflow-hidden shrink-0">
                 {c.cover_image_url ? (
-                  <img src={c.cover_image_url} alt="" className="w-full h-full object-cover" />
+                  <MediaImage src={c.cover_image_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-3xl">📚</div>
                 )}

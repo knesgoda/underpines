@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { MediaImage } from '@/components/MediaImage';
 import { toast } from 'sonner';
 
 const CollectionView = () => {
@@ -199,7 +200,7 @@ const CollectionView = () => {
       {/* Cover */}
       {collection.cover_image_url && (
         <div className="w-full h-[200px] rounded-xl overflow-hidden mb-6">
-          <img src={collection.cover_image_url} alt="" className="w-full h-full object-cover" />
+          <MediaImage src={collection.cover_image_url} alt="" className="w-full h-full object-cover" />
         </div>
       )}
 

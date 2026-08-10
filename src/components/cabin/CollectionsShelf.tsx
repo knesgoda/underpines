@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Lock, Plus } from 'lucide-react';
+import { MediaImage } from '@/components/MediaImage';
 
 interface CollectionItem {
   id: string;
@@ -80,7 +81,7 @@ const CollectionsShelf = ({ profileId, handle, isOwner, atmosphere }: Props) => 
             <Link key={c.id} to={`/${handle}/collections/${c.id}`} className="flex items-center gap-3 group">
               <div className="w-14 h-14 rounded-lg bg-muted overflow-hidden shrink-0">
                 {c.cover_image_url ? (
-                  <img src={c.cover_image_url} alt="" className="w-full h-full object-cover" />
+                  <MediaImage src={c.cover_image_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-lg">📚</div>
                 )}

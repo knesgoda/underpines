@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
 import LightboxViewer from '@/components/feed/LightboxViewer';
+import { MediaImage } from '@/components/MediaImage';
 
 interface Props {
   profileId: string;
@@ -87,7 +88,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, atmosphere }: Props)
         )}
         {post.post_type === 'ember' && post.post_media?.[0] && (
           <div className="rounded-lg overflow-hidden mb-2 relative">
-            <img src={post.post_media[0].url} alt="" className="w-full max-h-[200px] object-cover blur-lg" />
+            <MediaImage src={post.post_media[0].url} alt="" className="w-full h-[200px] max-h-[200px] object-cover blur-lg" />
           </div>
         )}
         <p className="font-body text-xs text-muted-foreground">

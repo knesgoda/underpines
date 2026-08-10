@@ -14,6 +14,7 @@ import CampfireSearch from './CampfireSearch';
 import CrossPostCard from './CrossPostCard';
 import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
 import LinkPreviewCard from '@/components/feed/LinkPreviewCard';
+import { MediaImage, MediaVideo } from '@/components/MediaImage';
 
 interface Message {
   id: string;
@@ -564,9 +565,9 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                           onDoubleClick={() => setReactionMsgId(msg.id)}
                         >
                           {/\.(mp4|mov|webm)(?:\?.*)?$/i.test(msg.media_url) ? (
-                            <video src={msg.media_url} className="max-w-full max-h-[240px] object-cover" controls playsInline preload="metadata" />
+                            <MediaVideo src={msg.media_url} className="w-full max-w-full h-[240px] max-h-[240px] object-cover" controls playsInline preload="metadata" />
                           ) : (
-                            <img src={msg.media_url} alt="" className="max-w-full max-h-[240px] object-cover" />
+                            <MediaImage src={msg.media_url} alt="" className="w-full max-w-full h-[240px] max-h-[240px] object-cover" />
                           )}
                           {msg.content && (() => {
                             const url = extractFirstUrl(msg.content);
