@@ -2,9 +2,13 @@
    .tab-strip, .state-panel) come from handoff-shell.css; everything here is
    cabin-only. Colors lean on theme tokens so light/dark both hold. */
 
+/* The room is drawn at 5:3 with a 460px height cap, so past ~880px the scene
+   only stretches. Keep the whole place at a comfortable width, centered. */
 .cabin-page {
   display: grid;
   gap: 12px;
+  width: min(880px, 100%);
+  margin-inline: auto;
 }
 
 /* ── Scene banner + exterior overlay ── */
