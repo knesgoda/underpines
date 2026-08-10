@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MediaImage } from '@/components/MediaImage';
 
 interface LightboxProps {
   open: boolean;
@@ -76,13 +77,15 @@ const LightboxViewer = ({ open, images, startIndex, onClose }: LightboxProps) =>
           </button>
 
           {/* Image */}
-          <img
+          <MediaImage
             src={images[index]}
             alt=""
             className="block select-none max-w-[95vw] max-h-[92dvh]"
             style={{
               width: 'auto',
               height: 'auto',
+              minWidth: '40vw',
+              minHeight: '40dvh',
               objectFit: 'contain',
             }}
             onClick={(e) => e.stopPropagation()}

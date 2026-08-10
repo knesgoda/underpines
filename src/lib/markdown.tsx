@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { MediaImage } from '@/components/MediaImage';
 
 /**
  * A deliberately small markdown renderer that returns React nodes.
@@ -13,7 +14,7 @@ import type { ReactNode } from 'react';
  * Anything else renders as plain text, which is the right failure mode.
  */
 
-const INLINE = /(\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|`[^`]+`|\[[^\]]+\]\([^)\s]+\))/g;
+const INLINE = /(!\[[^\]]*\]\([^)\s]+\)|\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|`[^`]+`|\[[^\]]+\]\([^)\s]+\))/g;
 
 const renderInline = (text: string, keyPrefix: string): ReactNode[] =>
   text.split(INLINE).filter(Boolean).map((part, i) => {

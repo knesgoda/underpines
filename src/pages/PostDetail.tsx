@@ -14,6 +14,7 @@ import { formatTimeAgo } from '@/lib/time';
 import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
 import LinkPreviewCard from '@/components/feed/LinkPreviewCard';
 import Markdown from '@/lib/markdown';
+import { MediaImage, MediaVideo } from '@/components/MediaImage';
 
 const REACTION_ICONS: Record<string, string> = {
   warmth: '❤️', laughed: '😂', heavy: '😢', noted: '🤔',
@@ -284,11 +285,11 @@ const PostDetail = () => {
               onClick={() => { setLightboxImages([post.image_url!]); setLightboxIndex(0); }}
               className="mt-3 rounded-lg overflow-hidden block w-full text-left cursor-zoom-in"
             >
-              <img
+              <MediaImage
                 src={post.image_url}
                 alt=""
                 className="block w-full h-auto rounded-lg bg-muted"
-                style={{ maxHeight: '600px', objectFit: 'contain' }}
+                style={{ maxHeight: '600px', objectFit: 'contain', minHeight: '160px' }}
               />
             </button>
           )}
@@ -309,17 +310,17 @@ const PostDetail = () => {
                     className={`relative ${i === 0 && sorted.length >= 3 ? 'col-span-2 row-span-2' : ''}`}
                   >
                     {media.media_type === 'video' ? (
-                      <video src={media.url} className="w-full h-auto rounded-lg" style={{ maxHeight: '600px' }} controls muted />
+                      <MediaVideo src={media.url} className="w-full h-auto rounded-lg" style={{ maxHeight: '600px', minHeight: '160px' }} controls muted />
                     ) : (
                       <button
                         onClick={() => { setLightboxImages(imageUrls); setLightboxIndex(imageUrls.indexOf(media.url)); }}
                         className="block w-full cursor-zoom-in"
                       >
-                        <img
+                        <MediaImage
                           src={media.url}
                           alt=""
                           className="block w-full h-auto rounded-lg bg-muted"
-                          style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
+                          style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', minHeight: '160px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
                         />
                       </button>
                     )}
