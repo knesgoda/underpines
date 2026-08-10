@@ -78,6 +78,7 @@ const GroveCaseDetail = lazy(() => import("./pages/grove/GroveCaseDetail"));
 const GroveTrails = lazy(() => import("./pages/grove/GroveTrails"));
 const GroveAppeals = lazy(() => import("./pages/grove/GroveAppeals"));
 const GroveAudit = lazy(() => import("./pages/grove/GroveAudit"));
+const GroveWaitlist = lazy(() => import("./pages/grove/GroveWaitlist"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -124,6 +125,7 @@ const App = () => (
                   <Route path="trails/:handle" element={<GroveTrails />} />
                   <Route path="appeals" element={<GroveAppeals />} />
                   <Route path="audit" element={<GroveAudit />} />
+                  <Route path="waitlist" element={<GroveWaitlist />} />
                   {/* Without this, a stale admin bookmark renders the Grove
                       chrome around an empty main area rather than a 404. */}
                   <Route path="*" element={<NotFound />} />

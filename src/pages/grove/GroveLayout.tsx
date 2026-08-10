@@ -1,6 +1,7 @@
 import { Navigate, Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useAuth } from '@/contexts/AuthContext';
+import { isWaitlistAdminEmail } from '@/lib/waitlistAdmin';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +30,12 @@ const GroveLayout = () => {
   if (loading) return <PineTreeLoading />;
   if (!isAdmin) return <Navigate to="/" replace />;
 
+  // The waitlist is founder-only (RLS enforces it); other admins don't get
+  // a nav item pointing at a page that would always be empty for them.
+  const navItems = isWaitlistAdminEmail(user?.email)
+    ? [...NAV_ITEMS.slice(0, 6), { to: '/grove/waitlist', label: 'Waitlist' }, ...NAV_ITEMS.slice(6)]
+    : NAV_ITEMS;
+
   return (
     <div className="min-h-screen bg-[hsl(var(--pine-darkest))]">
       <header className="h-14 border-b border-[hsl(var(--pine-mid)/0.3)] flex items-center justify-between px-6 bg-[hsl(var(--pine-dark))]">
@@ -49,7 +56,7 @@ const GroveLayout = () => {
 
       <div className="flex">
         <nav className="w-56 min-h-[calc(100vh-3.5rem)] border-r border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] p-3 space-y-0.5 hidden md:block">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

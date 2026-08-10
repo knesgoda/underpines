@@ -137,9 +137,17 @@ get their feed; `HomePage.tsx` untouched — only `src/pages/Index.tsx` changed.
   underpines.com (egress blocked, same as Supabase), so the live-page eyeball
   is Kevin's; local Chromium sweep was green in both themes and entry stayed
   191.6 kB gzip.
-- **No waitlist admin UI yet.** Signups are readable by rangers via SQL only;
-  a Grove page (and a "send a Trail Pass to a waitlist email" action) is a
-  natural follow-up once `RESEND_API_KEY` exists.
+- **Waitlist admin UI shipped (same day):** `/grove/waitlist` lists signups
+  with status management (waiting/invited/declined, remove, copy email).
+  **Founder-only by Kevin's request** — migration
+  `20260811000000_waitlist_admin.sql` (applied via `query_database`, NOT in
+  Lovable's ledger) replaced the is_admin policies with
+  `is_waitlist_admin()`, which only answers to kevin.nesgoda@gmail.com's
+  auth account. Verified in production by role impersonation: Kevin's uid
+  sees rows and can update; any other authenticated uid sees zero. The
+  client email constant in `src/lib/waitlistAdmin.ts` is cosmetic (nav
+  visibility); RLS is the gate. "Mark invited" is bookkeeping only — no
+  email goes out (still blocked on `RESEND_API_KEY`).
 
 **As of 2026-08-10 (later) — the Cabin system shipped (PR #11).**
 
