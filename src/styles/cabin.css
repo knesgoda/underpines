@@ -1,0 +1,646 @@
+/* The Cabin — route-scoped styles. Shared primitives (.panel, buttons,
+   .tab-strip, .state-panel) come from handoff-shell.css; everything here is
+   cabin-only. Colors lean on theme tokens so light/dark both hold. */
+
+.cabin-page {
+  display: grid;
+  gap: 12px;
+}
+
+/* ── Scene banner + exterior overlay ── */
+.cabin-scene-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cabin-exterior {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cabin-house {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(38%, 240px);
+  height: auto;
+}
+
+.cabin-porch-light {
+  animation: cabin-porch-flicker 4s ease-in-out infinite;
+}
+
+@keyframes cabin-porch-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  95% { opacity: 0.75; }
+}
+
+.cabin-smoke {
+  position: absolute;
+  bottom: 78%;
+  left: calc(50% + 7%);
+  pointer-events: none;
+}
+
+.cabin-smoke span {
+  position: absolute;
+  color: #e8e8e8;
+  font-size: 18px;
+  opacity: 0;
+  animation: cabin-smoke-rise 6s linear infinite;
+}
+
+.cabin-smoke span:nth-child(2) { animation-delay: 2s; }
+.cabin-smoke span:nth-child(3) { animation-delay: 4s; }
+
+@keyframes cabin-smoke-rise {
+  0% { transform: translate(0, 0) scale(0.8); opacity: 0; }
+  15% { opacity: 0.7; }
+  100% { transform: translate(-14px, -46px) scale(1.6); opacity: 0; }
+}
+
+.cabin-item-exterior {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.cabin-event-marker {
+  position: absolute;
+  right: 12%;
+  bottom: 24%;
+  font-size: 26px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: cabin-event-breathe 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(255, 240, 180, 0.8));
+}
+
+.event-sighting { right: 24%; bottom: 40%; }
+
+@keyframes cabin-event-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* ── Identity strip ── */
+.cabin-identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cabin-identity-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  padding: 0;
+  min-width: 0;
+}
+
+.cabin-identity-main b { display: block; font-size: 1rem; }
+.cabin-identity-main small { color: hsl(var(--muted-foreground)); }
+
+.cabin-identity-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ── The room ── */
+.cabin-room {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 5 / 3;
+  max-height: 460px;
+  background: linear-gradient(to bottom, #7a5c3d 0%, #6b4e33 70%, #5a4029 70%, #4a3524 100%);
+  border: 1px solid hsl(var(--border));
+}
+
+@media (max-width: 640px) {
+  .cabin-room { aspect-ratio: 4 / 3.4; max-height: none; }
+}
+
+.cabin-room-walls {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 44px, rgba(0, 0, 0, 0.12) 44px 46px);
+  opacity: 0.65;
+}
+
+.cabin-room-floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26%;
+  background:
+    repeating-linear-gradient(to right, transparent 0 74px, rgba(0, 0, 0, 0.14) 74px 76px),
+    linear-gradient(to bottom, #8a6a45, #6f5436);
+}
+
+/* Theme tints — a feel, not a lock (spec §6) */
+.cabin-room.theme-seventy_nine { filter: sepia(0.22) saturate(1.1); }
+.cabin-room.theme-ninety_four { filter: saturate(1.15) hue-rotate(-6deg); }
+.cabin-room.theme-fire_lookout { background: linear-gradient(to bottom, #8a7a5c 0%, #7a6a4c 70%, #5a4a30 70%, #4a3d28 100%); }
+.cabin-room.theme-a_frame { background: linear-gradient(160deg, #7a5c3d 0%, #6b4e33 65%, #5a4029 65%, #4a3524 100%); }
+.cabin-room.theme-lake_house { filter: saturate(0.95) hue-rotate(8deg); }
+.cabin-room.theme-snow_lodge { background: linear-gradient(to bottom, #6e6258 0%, #5f544a 70%, #4c433a 70%, #3e3630 100%); }
+.cabin-room.theme-witch { filter: saturate(0.85) brightness(0.92) hue-rotate(18deg); }
+.cabin-room.theme-haunted { filter: saturate(0.7) brightness(0.88); }
+.cabin-room.theme-cozy { filter: saturate(1.12) brightness(1.03); }
+
+/* Window */
+.cabin-window {
+  position: absolute;
+  left: 34%;
+  top: 10%;
+  width: 32%;
+  height: 32%;
+  border: 6px solid #3d2c1c;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+}
+
+.window-picture { left: 26%; width: 48%; height: 38%; }
+.window-bay { border-radius: 6px 6px 40% 40%; }
+.window-round { border-radius: 50%; left: 38%; width: 24%; }
+.window-a_frame_glass { clip-path: polygon(50% 0, 100% 100%, 0 100%); border-width: 0; }
+.window-cottage_panes { border-width: 8px; }
+.window-victorian { border-radius: 40% 40% 6px 6px; }
+.window-seventies { border-radius: 14px; border-color: #5c4425; }
+.window-modern { border-width: 3px; border-color: #2b2b2b; }
+
+.cabin-window-sky {
+  position: absolute;
+  inset: 0;
+  transition: background 3s ease;
+}
+
+.cabin-window-weather { position: absolute; top: 6px; right: 8px; font-size: 15px; }
+.cabin-window-stars { position: absolute; top: 8px; left: 10px; color: #f5f0c1; font-size: 9px; letter-spacing: 4px; }
+
+.cabin-window-trees {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 17px;
+  filter: brightness(0.5);
+  letter-spacing: -4px;
+}
+
+/* Cottage panes get mullions */
+.window-cottage_panes::before,
+.window-classic_timber::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, transparent calc(50% - 2px), #3d2c1c calc(50% - 2px), #3d2c1c calc(50% + 2px), transparent calc(50% + 2px)),
+    linear-gradient(to bottom, transparent calc(50% - 2px), #3d2c1c calc(50% - 2px), #3d2c1c calc(50% + 2px), transparent calc(50% + 2px));
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cabin-curtains {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(to right, #8a4030 0%, #a0523c 12%, transparent 12%, transparent 88%, #a0523c 88%, #8a4030 100%);
+  transition: opacity 0.6s ease;
+}
+
+.curtains-half {
+  background: linear-gradient(to right, #8a4030 0%, #a0523c 30%, transparent 30%, transparent 70%, #a0523c 70%, #8a4030 100%);
+}
+
+.curtains-closed {
+  background: repeating-linear-gradient(to right, #8a4030 0 14%, #a0523c 14% 28%);
+}
+
+.cabin-curtain-toggle {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  z-index: 4;
+  background: rgba(0, 0, 0, 0.35);
+  border: 0;
+  border-radius: 6px;
+  padding: 2px 5px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* Fireplace */
+.cabin-fireplace {
+  position: absolute;
+  right: 16%;
+  bottom: 22%;
+  width: 14%;
+  min-width: 64px;
+  aspect-ratio: 1 / 1.15;
+  background: linear-gradient(#7d7468, #635a50);
+  border-radius: 8px 8px 2px 2px;
+  box-shadow: inset 0 0 0 3px #4c443c;
+}
+
+.cabin-fireplace::before {
+  content: '';
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: 8%;
+  height: 52%;
+  background: #1c1410;
+  border-radius: 50% 50% 4px 4px;
+}
+
+.cabin-fire {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12%;
+  text-align: center;
+  font-size: clamp(14px, 2.4vw, 24px);
+  opacity: 0.25;
+  transition: opacity 2s ease;
+}
+
+.cabin-fire[data-lit='true'] { opacity: 1; }
+
+.cabin-fire .flame {
+  display: inline-block;
+  animation: cabin-flame 0.9s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 8px rgba(255, 150, 40, 0.75));
+}
+
+@keyframes cabin-flame {
+  from { transform: scale(1) rotate(-2deg); }
+  to { transform: scale(1.12) rotate(2deg); }
+}
+
+/* Automatic lighting wash: --room-light 0 (day) → 1 (night) */
+.cabin-light-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 72% 62%, rgba(255, 170, 70, calc(var(--room-light, 0) * 0.22)), transparent 70%),
+    rgba(10, 8, 30, calc(var(--room-light, 0) * 0.34));
+  transition: background 3s ease;
+}
+
+/* Items, fixtures, pets */
+.cabin-item,
+.cabin-fixture,
+.cabin-pet {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: none;
+  border: 0;
+  padding: 4px;
+  cursor: pointer;
+  font-size: clamp(18px, 3.2vw, 30px);
+  line-height: 1;
+  transition: transform 0.15s ease, left 1.2s ease, top 1.2s ease;
+}
+
+.cabin-item:hover,
+.cabin-item:focus-visible,
+.cabin-fixture:hover,
+.cabin-fixture:focus-visible,
+.cabin-pet:hover,
+.cabin-pet:focus-visible {
+  transform: translate(-50%, -50%) scale(1.18);
+  filter: drop-shadow(0 0 6px rgba(255, 235, 180, 0.9));
+  outline: none;
+  z-index: 5;
+}
+
+.cabin-fixture { font-size: clamp(17px, 2.8vw, 26px); }
+
+.cabin-pet { font-size: clamp(22px, 3.6vw, 34px); z-index: 4; }
+.cabin-pet .pet-zzz { position: absolute; top: -10px; right: -8px; font-size: 12px; }
+.cabin-pet .pet-memorial { position: absolute; top: -8px; left: -6px; font-size: 11px; }
+.cabin-pet.pet-walk span:first-child { animation: cabin-pet-walk 1.4s ease-in-out infinite; display: inline-block; }
+.cabin-pet.pet-play span:first-child { animation: cabin-pet-play 0.8s ease-in-out infinite; display: inline-block; }
+
+@keyframes cabin-pet-walk {
+  0%, 100% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+}
+
+@keyframes cabin-pet-play {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-6px) rotate(-8deg); }
+}
+
+/* ── Action row ── */
+.cabin-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Sheets ── */
+.cabin-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(10, 10, 20, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+@media (min-width: 641px) {
+  .cabin-sheet-backdrop { align-items: center; }
+}
+
+.cabin-sheet {
+  width: 100%;
+  max-width: 560px;
+  max-height: 86vh;
+  overflow-y: auto;
+  border-radius: 14px 14px 0 0;
+}
+
+@media (min-width: 641px) {
+  .cabin-sheet { border-radius: 14px; }
+  .cabin-sheet-wide { max-width: 720px; }
+}
+
+.cabin-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cabin-sheet-head h2 { font-size: 1.05rem; }
+
+.cabin-sheet-close {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 15px;
+  color: hsl(var(--muted-foreground));
+  padding: 4px 8px;
+}
+
+.cabin-sheet-body { display: grid; gap: 10px; }
+
+.cabin-sheet-body textarea,
+.cabin-sheet-body input[type='text'],
+.cabin-sheet-body select {
+  width: 100%;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+  min-height: 38px;
+}
+
+.cabin-sheet-body textarea { min-height: 74px; resize: vertical; }
+
+.cabin-form { display: grid; gap: 8px; justify-items: end; }
+.cabin-form textarea { justify-self: stretch; }
+
+.cabin-label { font-size: 0.85rem; color: hsl(var(--muted-foreground)); }
+.cabin-subhead { font-size: 0.95rem; margin-top: 6px; }
+.quiet { color: hsl(var(--muted-foreground)); }
+
+.cabin-check { display: flex; gap: 8px; align-items: center; font-size: 0.92rem; }
+
+/* Drawer */
+.cabin-drawer-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+
+.cabin-drawer-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  color: inherit;
+  font-size: 1rem;
+}
+
+.cabin-drawer-row:hover, .cabin-drawer-row:focus-visible { background: hsl(var(--muted)); }
+.cabin-drawer-row > span:first-child { font-size: 20px; }
+.cabin-drawer-row b { display: block; }
+.cabin-drawer-row small { color: hsl(var(--muted-foreground)); display: block; }
+
+/* Inspect */
+.cabin-inspect { text-align: left; display: grid; gap: 8px; }
+.cabin-inspect-art { font-size: 44px; text-align: center; }
+
+.cabin-inspect-facts { display: grid; gap: 6px; margin: 0; }
+.cabin-inspect-facts > div { display: grid; grid-template-columns: 72px 1fr; gap: 8px; }
+.cabin-inspect-facts dt { color: hsl(var(--muted-foreground)); font-size: 0.85rem; }
+.cabin-inspect-facts dd { margin: 0; }
+
+/* Guestbook / notes / gifts */
+.cabin-guest-entry,
+.cabin-note-row,
+.cabin-gift-row,
+.cabin-pet-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.cabin-guest-entry.is-hidden { opacity: 0.5; }
+
+.cabin-entry-tools { margin-left: auto; display: flex; gap: 6px; flex-shrink: 0; }
+.cabin-entry-tools button {
+  background: none;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  padding: 3px 8px;
+  cursor: pointer;
+  color: inherit;
+  font-size: 0.82rem;
+}
+.cabin-entry-tools .solid-button { border: 0; }
+
+.cabin-gift-art { font-size: 24px; }
+.cabin-gift-message { font-style: italic; color: hsl(var(--muted-foreground)); }
+.cabin-gift-note { min-height: 56px; }
+
+.cabin-gift-grid,
+.cabin-pantry-grid,
+.cabin-cookbook-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 8px;
+}
+
+.cabin-gift-option,
+.cabin-pantry-item,
+.cabin-recipe-card {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  text-align: center;
+  padding: 10px 6px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 10px;
+  background: hsl(var(--card));
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.cabin-recipe-card { cursor: default; }
+.cabin-gift-option > span, .cabin-pantry-item > span, .cabin-recipe-card > span { font-size: 24px; }
+.cabin-gift-option.active { border-color: hsl(var(--primary)); box-shadow: 0 0 0 1px hsl(var(--primary)); }
+.cabin-gift-option:disabled, .cabin-pantry-item:disabled { opacity: 0.45; cursor: default; }
+.cabin-recipe-unknown { opacity: 0.6; }
+
+/* Fire pit */
+.cabin-firepit {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  padding: 14px;
+  border: 1px dashed hsl(var(--border));
+  border-radius: 12px;
+}
+
+.cabin-firepit-items { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+
+.cabin-picked {
+  font-size: 26px;
+  background: hsl(var(--muted));
+  border: 0;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+/* Trades */
+.cabin-trade-build { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 641px) { .cabin-trade-build { grid-template-columns: 1fr 1fr; } }
+
+.cabin-trade-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.cabin-trade-lines button { background: none; border: 0; cursor: pointer; color: hsl(var(--muted-foreground)); }
+
+.cabin-trade-row { border-top: 1px solid hsl(var(--border)); padding: 10px 0; display: grid; gap: 6px; }
+.cabin-trade-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cabin-trade-sides small { color: hsl(var(--muted-foreground)); }
+
+/* Pets */
+.cabin-pet-face { font-size: 30px; }
+.cabin-pet-heart { color: #c0564a; }
+.cabin-pet-editor { display: grid; gap: 8px; margin-top: 6px; }
+
+.cabin-trait-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.cabin-trait {
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  color: inherit;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.cabin-trait.active { border-color: hsl(var(--primary)); box-shadow: 0 0 0 1px hsl(var(--primary)); }
+
+/* History */
+.cabin-history-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cabin-history-list li { display: flex; gap: 10px; align-items: flex-start; }
+.cabin-history-list small { display: block; color: hsl(var(--muted-foreground)); }
+
+/* Radio */
+.cabin-radio-now { display: flex; gap: 10px; align-items: center; }
+.cabin-radio-now > span { font-size: 26px; }
+
+/* Bio */
+.cabin-bio-card { display: flex; gap: 12px; align-items: center; }
+.cabin-bio-mantra { font-style: italic; color: hsl(var(--muted-foreground)); }
+
+/* Restricted view */
+.cabin-restricted { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+/* Fix up */
+.cabin-zone-list { display: grid; gap: 6px; }
+.cabin-zone-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  border-top: 1px solid hsl(var(--border));
+  padding: 8px 0;
+}
+.cabin-zone-items { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.cabin-zone-chip {
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--muted));
+  color: inherit;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.cabin-zone-picker { grid-column: 1 / -1; }
+
+.cabin-settings { display: grid; gap: 12px; }
+
+.cabin-mode-row { display: grid; gap: 6px; }
+.cabin-mode-row > div { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.cabin-mode-pill {
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  color: inherit;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.cabin-mode-pill.active { border-color: hsl(var(--primary)); box-shadow: 0 0 0 1px hsl(var(--primary)); }
+
+/* ── Reduced motion: the cabin holds still (spec §77) ── */
+@media (prefers-reduced-motion: reduce) {
+  .cabin-smoke span,
+  .cabin-porch-light,
+  .cabin-event-marker,
+  .cabin-fire .flame,
+  .cabin-pet.pet-walk span:first-child,
+  .cabin-pet.pet-play span:first-child {
+    animation: none !important;
+  }
+  .cabin-item, .cabin-fixture, .cabin-pet { transition: none; }
+}

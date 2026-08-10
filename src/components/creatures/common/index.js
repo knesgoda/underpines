@@ -1,0 +1,14 @@
+export { default as Rabbit } from './Rabbit';
+export { default as Raccoon } from './Raccoon';
+export { default as Badger } from './Badger';
+export { default as Hedgehog } from './Hedgehog';
+export { default as Squirrel } from './Squirrel';
+export { default as RedFox } from './RedFox';
+export { default as GreyFox } from './GreyFox';
+export { default as Finch } from './Finch';
+export { default as Hummingbird } from './Hummingbird';
+export { default as Robin } from './Robin';
+export { default as Frog } from './Frog';
+export { default as Otter } from './Otter';
+export { default as Beaver } from './Beaver';
+export { default as Fireflies } from './Fireflies';

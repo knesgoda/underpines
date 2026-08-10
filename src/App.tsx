@@ -21,6 +21,7 @@ const TrailPassLanding = lazy(() => import("./pages/TrailPassLanding"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 const MyPage = lazy(() => import("./pages/MyPage"));
+const CabinPage = lazy(() => import("./pages/CabinPage"));
 const PageCustomizer = lazy(() => import("./pages/PageCustomizer"));
 const Photos = lazy(() => import("./pages/Photos"));
 const Listening = lazy(() => import("./pages/Listening"));
@@ -146,7 +147,9 @@ const App = () => (
                       <Route path="/listening" element={<Listening />} />
                       <Route path="/events" element={<Events />} />
                       <Route path="/events/new" element={<EventComposer />} />
-                      <Route path="/cabin" element={<Navigate to="/me" replace />} />
+                      {/* The Cabin — the place. /:handle stays the page. */}
+                      <Route path="/u/:handle" element={<CabinPage />} />
+                      <Route path="/cabin" element={<CabinPage />} />
                       <Route path="/ranger" element={<Navigate to="/grove/cases" replace />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />

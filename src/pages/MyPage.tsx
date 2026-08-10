@@ -143,6 +143,11 @@ const MyPage = () => {
                 <CircleButton profileId={profile.id} profileName={profile.display_name} />
               )}
             </div>
+            <div className="mt-2">
+              <Link to={`/u/${profile.handle}`} className="outline-button w-full block text-center">
+                🏡 {isOwner ? 'Step into your cabin' : 'Visit the cabin'}
+              </Link>
+            </div>
           </section>
 
           {topFriends && topFriends.length > 0 && (
