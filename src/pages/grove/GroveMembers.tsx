@@ -27,15 +27,32 @@ const GroveMembers = () => {
       const { count } = await supabase.from('profiles').select('id', { count: 'exact', head: true });
       setTotal(count ?? 0);
 
-      let query = supabase.from('profiles').select('id, handle, display_name, created_at, header_image_url, age_bracket').order('created_at', { ascending: false }).limit(100);
+      let query = supabase.from('profiles').select('id, handle, display_name, created_at, header_image_url').order('created_at', { ascending: false }).limit(100);
 
       if (search) {
         query = query.or(`handle.ilike.%${search}%,display_name.ilike.%${search}%`);
       }
 
       const { data } = await query;
-      setMembers((data as Member[]) || []);
+      const rows = (data ?? []) as Omit<Member, 'age_bracket'>[];
+
+      // age_bracket is not readable from the profiles table by design (it flags
+      // minors); admins read it through an admin-only function instead.
+      let flags: Record<string, string | null> = {};
+      if (rows.length > 0) {
+        const { data: flagRows } = await (supabase.rpc as unknown as (
+          fn: string,
+          args: Record<string, unknown>,
+        ) => Promise<{ data: { id: string; age_bracket: string | null }[] | null }>)(
+          'admin_profile_age_flags',
+          { _ids: rows.map((r) => r.id) },
+        );
+        flags = Object.fromEntries((flagRows ?? []).map((f) => [f.id, f.age_bracket]));
+      }
+
+      setMembers(rows.map((r) => ({ ...r, age_bracket: flags[r.id] ?? null })));
       setLoading(false);
+
     };
     load();
   }, [search]);
