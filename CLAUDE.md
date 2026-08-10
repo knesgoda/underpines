@@ -101,6 +101,11 @@ in a route chunk.
   This doc is the exact seam where the live path plugs in.
 - `docs/human-trust-system.md` — Trail Passes, invite gating, Ranger Station.
 - `docs/lovable-migrations.md` — the migration handover process.
+- `docs/competitive-brief.md` — competitive intelligence + positioning (v1.0,
+  Aug 2026): the "human-scale social" category, competitor map (Yope,
+  Friendster, SocialHuman, SpaceHey, Retro, PI.FYI, Lyvio, Myspace), the seven
+  must-not-lose bets, and the never-copy list. Consult before positioning copy,
+  landing pages, or feature bets that touch engagement mechanics.
 
 ---
 
@@ -110,6 +115,10 @@ _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
 **As of 2026-08-10 — two parallel workstreams merged to `main`.**
+
+_Docs update (2026-08-10, branch `claude/under-pines-competitive-brief-5svnmi`):
+added `docs/competitive-brief.md` — Kevin's v1.0 competitive intelligence +
+positioning brief ("human-scale social"). Docs-only; no code changes._
 
 > Two Claude sessions worked this repo concurrently. This handoff covers both.
 > Branch note: the app-load/nomenclature stream used
