@@ -110,6 +110,13 @@ const PageCustomizer = () => {
   }, [savedTopFriends]);
 
   useEffect(() => {
+    if (!savedFeatured) return;
+    setFeaturedPicks(savedFeatured.map(r => ({ album_id: r.album_id, cover_media_id: r.cover_media_id })));
+  }, [savedFeatured]);
+
+
+
+  useEffect(() => {
     if (!savedModules) return;
     setModules(
       savedModules.map(m => ({
