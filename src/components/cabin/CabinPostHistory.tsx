@@ -121,17 +121,19 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
   if (loading) return null;
 
   if (posts.length === 0) {
+    const empty = emptyMessage ?? 'Nothing posted yet.';
     return (
-      <section className="panel module">
+      <section className="paper module">
         {isOwner ? (
-          <p className="text-sm text-muted-foreground">
-            Nothing posted yet. <Link to="/" className="album-link">Write something →</Link>
+          <p className="quiet">
+            {empty} <Link to="/" className="album-link">Write something →</Link>
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">Nothing posted yet.</p>
+          <p className="quiet">{empty}</p>
         )}
       </section>
     );
+
   }
 
   return (
