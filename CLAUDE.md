@@ -118,7 +118,60 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-10 (latest) — My Page / Cabin layout fix (branch
+**As of 2026-08-13 (latest) — retro messenger skins made period-faithful
+(branch `claude/retro-messenger-skins-mgrjir`, pushed, not yet merged).**
+
+Kevin's ask: ICU should look exactly like ICQ 2001b, Bullseye exactly like
+AIM, Emessen exactly like MSN/WLM — real look-and-feel, not a palette
+overlay, no extra buttons, on desktop AND mobile. What shipped:
+
+- **`src/styles/messenger-skins.css` rewritten** (~800 lines): dead handoff
+  CSS deleted (`.chat-window` grid + friends never matched any markup), then
+  one consolidated section per skin covering both vocabularies (desktop
+  stage classes + `.msg-skin-*`). Win9x chrome is drawn with explicit
+  98.css-style box-shadow bevels (documented at the top of the file) because
+  `outset`/`inset` border keywords render washed out. On mobile the
+  `.msg-skin-surface` becomes the period window itself; no media queries
+  needed since those hooks only render on mobile layouts.
+- **Component hook pass (skin-agnostic, Pines pixel-identical):** the sender
+  name now renders on *every* message with `is-mine`/`is-group`/`is-repeat`
+  state classes — base CSS reproduces the old group-incoming-only
+  visibility via `:where()` at 0,1,0 specificity, and each skin overrides it
+  to build its transcript grammar (`Nick:` red/blue for ICU, bold
+  blue/red `ScreenName:` with black text for Bullseye, grey "Name says:"
+  lines for Emessen). The send button carries an icon + hidden "Send" label
+  so skins can become labelled period buttons (tall AIM button, silver XP
+  button) with CSS alone. ~20 previously unhooked surfaces got classes
+  (dividers, banners, pills, faded, kebab menu, chip, sheets, voice bubble,
+  cross-post card, mobile tabs/FAB, buddy `is-online`/`is-offline`), plus a
+  decorative `.msg-skin-dp` display-picture slot in the thread header that
+  only Emessen shows.
+- **Trap discovered and fixed:** `.messenger-page` re-declares the full
+  `--msg-*` token set on itself, which **masks any skin token block inside
+  the desktop stage** — skin palettes must target
+  `.skin-X, .skin-X .messenger-page`. Also the old forced-white header rule
+  (`color:#fff !important` on all children) is gone, replaced by an
+  inheritable `--msg-header-fg` (+ `--msg-chip-*`) so light header strips
+  (ICU/Bullseye grey info band, Emessen "To:" banner) can go dark.
+- **SkinThumb.tsx redrawn** per skin (flower+nick lines, AIM tree,
+  says-pair) with palettes synced to the real chrome.
+- **Verified:** tsc clean, 85 vitest pass, build clean, entry 192.1 KiB gzip
+  (baseline 191.8 — CSS growth rides in the messenger route chunk),
+  signed-out Chromium sweep green on 10 routes × both themes, and a
+  static-DOM mock harness (scratchpad, replicates the real component markup
+  against the built CSS) screenshotted all 4 skins × desktop/mobile-list/
+  mobile-thread × light, plus pines+icu dark. Dark-mode bug found and fixed
+  that way: cross-post text was `text-foreground/80` on the skins' white
+  cards. Two pre-existing eslint errors in CampfireView (any + unused
+  expression at baseline) left untouched.
+- **Still Kevin's eyeball:** signed-in pass on real data (sandbox can't
+  reach Supabase) — flip through all four skins on `/messages` desktop +
+  phone, check a group campfire (sender names show per-line in retro skins,
+  ICQ colors incoming nicks red), voice message, cross-post, and the
+  Settings page picker. No backend/data changes whatsoever; skin previews in
+  Settings update automatically.
+
+**Previously (2026-08-10) — My Page / Cabin layout fix (branch
 `claude/cabin-persons-profile-layout-4ayajv`).**
 
 Kevin flagged the profile as "too wide and the bulletin board is a mess."
