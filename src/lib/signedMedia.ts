@@ -218,11 +218,18 @@ export interface SignedMedia {
   url: string | null;
   loading: boolean;
   failed: boolean;
-  /** Drop the cached signature and mint a fresh one (used after a 403 on the media itself). */
+  /** Manual retry: clears the re-sign budget and mints a fresh signature now. */
   retry: () => void;
+  /**
+   * Automatic retry after a 403 on the media itself. Waits an exponentially
+   * growing delay and re-signs; returns false when the budget is spent, which
+   * is the caller's cue to show the unavailable state instead of looping.
+   */
+  resign: () => boolean;
 }
 
-type SignedMediaState = Omit<SignedMedia, 'retry'>;
+type SignedMediaState = Omit<SignedMedia, 'retry' | 'resign'>;
+
 
 /**
  * Resolve a stored post-media reference to a usable src.
