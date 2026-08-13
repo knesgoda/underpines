@@ -116,8 +116,9 @@ type MediaVideoProps = Omit<VideoHTMLAttributes<HTMLVideoElement>, 'src'> & {
 export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVideoProps) => {
   const { url, loading, failed, retry, resign } = useSignedMediaUrl(src);
   const [givenUp, setGivenUp] = useState(false);
+  const attemptsRef = useRef(0);
 
-  useEffect(() => { setGivenUp(false); }, [src]);
+  useEffect(() => { setGivenUp(false); attemptsRef.current = 0; }, [src]);
 
   if (givenUp || !url || (failed && !loading)) {
     if (loading && !givenUp) return <Placeholder className={className} style={style} />;
@@ -127,7 +128,7 @@ export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVid
         className={className}
         style={style}
         label="Video unavailable"
-        onRetry={() => { setGivenUp(false); retry(); }}
+        onRetry={() => { setGivenUp(false); attemptsRef.current = 0; retry(); }}
       />
     );
   }
@@ -139,8 +140,13 @@ export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVid
       style={style}
       onError={(event) => {
         onError?.(event);
-        if (!resign()) setGivenUp(true);
+        const attempt = attemptsRef.current + 1;
+        attemptsRef.current = attempt;
+        const willRetry = resign();
+        logMediaFailure(src, willRetry ? 'fetch_forbidden' : 'gave_up', { attempt, kind: 'video' });
+        if (!willRetry) setGivenUp(true);
       }}
+
       {...rest}
     />
   );
