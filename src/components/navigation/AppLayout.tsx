@@ -28,6 +28,26 @@ const Deferred = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={null}>{children}</Suspense>
 );
 
+// Warm the route chunks a signed-in member is near-certain to visit, once the
+// first screen has settled. Vite dedupes these against App.tsx's lazy() calls,
+// so tapping Feed, Messages or My Page becomes a cache hit instead of a
+// network round trip. Idle-scheduled so it never competes with the boot RPC or
+// the current route's own chunk; a module flag keeps remounts from re-running it.
+let prefetchedRouteChunks = false;
+const prefetchLikelyRoutes = () => {
+  if (prefetchedRouteChunks) return;
+  prefetchedRouteChunks = true;
+  const idle =
+    typeof window.requestIdleCallback === 'function'
+      ? window.requestIdleCallback
+      : (cb: () => void) => window.setTimeout(cb, 2000);
+  idle(() => {
+    import('@/pages/HomePage');
+    import('@/pages/Campfires');
+    import('@/pages/MyPage');
+  });
+};
+
 const FULL_SCREEN_ROUTES = ['/onboarding', '/welcome', '/login', '/new/story', '/privacy', '/terms'];
 const FULL_SCREEN_PREFIXES = ['/invite/', '/join/'];
 
@@ -48,6 +68,10 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   // onboarding guard, the age gate and the profile each used to fetch
   // independently — three of them reading the same `profiles` row.
   const { data: boot, isLoading: bootLoading, isError: bootFailed, refetch } = useBootState();
+
+  useEffect(() => {
+    if (user) prefetchLikelyRoutes();
+  }, [user]);
 
   const profile = boot?.profile ?? null;
   const suspension = boot?.suspension ?? null;

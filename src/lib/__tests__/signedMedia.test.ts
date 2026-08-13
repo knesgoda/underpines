@@ -13,9 +13,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
  */
 
 const createSignedUrl = vi.fn();
+const createSignedUrls = vi.fn();
 
 vi.mock('@/integrations/supabase/client', () => ({
-  supabase: { storage: { from: () => ({ createSignedUrl }) } },
+  supabase: { storage: { from: () => ({ createSignedUrl, createSignedUrls }) } },
 }));
 
 const PUBLIC_URL =
@@ -35,6 +36,10 @@ const load = async () => {
 
 beforeEach(() => {
   createSignedUrl.mockReset();
+  createSignedUrls.mockReset();
+  // Signatures persist across module reloads via sessionStorage; each test
+  // starts from a cold cache.
+  sessionStorage.clear();
 });
 
 describe('extractPostMediaPath', () => {
@@ -115,6 +120,98 @@ describe('getSignedMediaUrl — denied viewer', () => {
     expect(url).toBeNull();
     expect(String(url)).not.toContain('/object/public/');
 
+  });
+});
+
+describe('primeSignedMediaUrls', () => {
+  const PATH_A = 'user-1/posts/a.jpg';
+  const PATH_B = 'user-1/posts/b.jpg';
+  const batchAllow = (paths: string[]) => ({
+    data: paths.map(path => ({
+      path,
+      error: null,
+      signedUrl: `https://example.supabase.co/storage/v1/object/sign/post-media/${path}?token=t`,
+    })),
+    error: null,
+  });
+
+  it('signs a whole screenful in one request and later reads hit the cache', async () => {
+    createSignedUrls.mockResolvedValue(batchAllow([PATH_A, PATH_B]));
+    const { primeSignedMediaUrls, getSignedMediaUrl } = await load();
+
+    primeSignedMediaUrls([PATH_A, PATH_B, PATH_A, null, 'https://images.example.com/x.jpg']);
+    const [a, b] = await Promise.all([getSignedMediaUrl(PATH_A), getSignedMediaUrl(PATH_B)]);
+
+    expect(a).toContain(`/object/sign/post-media/${PATH_A}`);
+    expect(b).toContain(`/object/sign/post-media/${PATH_B}`);
+    expect(createSignedUrls).toHaveBeenCalledTimes(1);
+    expect(createSignedUrls).toHaveBeenCalledWith([PATH_A, PATH_B], 3600);
+    expect(createSignedUrl).not.toHaveBeenCalled();
+  });
+
+  it('skips paths that are already cached and is a no-op when everything is', async () => {
+    createSignedUrl.mockResolvedValue(allow(PATH_A));
+    createSignedUrls.mockResolvedValue(batchAllow([PATH_B]));
+    const { primeSignedMediaUrls, getSignedMediaUrl } = await load();
+
+    await getSignedMediaUrl(PATH_A);
+    primeSignedMediaUrls([PATH_A, PATH_B]);
+    await getSignedMediaUrl(PATH_B);
+    expect(createSignedUrls).toHaveBeenCalledWith([PATH_B], 3600);
+
+    primeSignedMediaUrls([PATH_A, PATH_B]);
+    expect(createSignedUrls).toHaveBeenCalledTimes(1);
+  });
+
+  it('a denied row in the batch resolves null without poisoning the others', async () => {
+    createSignedUrls.mockResolvedValue({
+      data: [
+        { path: PATH_A, error: 'Object not found', signedUrl: '' },
+        { path: PATH_B, error: null, signedUrl: `https://example.supabase.co/storage/v1/object/sign/post-media/${PATH_B}?token=t` },
+      ],
+      error: null,
+    });
+    // The denied path falls back to the per-image request the next time around.
+    createSignedUrl.mockResolvedValue(deny());
+    const { primeSignedMediaUrls, getSignedMediaUrl } = await load();
+
+    primeSignedMediaUrls([PATH_A, PATH_B]);
+    expect(await getSignedMediaUrl(PATH_A)).toBeNull();
+    expect(await getSignedMediaUrl(PATH_B)).toContain('/object/sign/');
+  });
+
+  it('degrades silently when the batch request itself fails', async () => {
+    createSignedUrls.mockRejectedValue(new Error('network down'));
+    const { primeSignedMediaUrls, getSignedMediaUrl } = await load();
+
+    primeSignedMediaUrls([PATH_A]);
+    expect(await getSignedMediaUrl(PATH_A)).toBeNull();
+  });
+});
+
+describe('sessionStorage persistence', () => {
+  it('a fresh signature survives a reload without re-signing', async () => {
+    createSignedUrl.mockResolvedValue(allow(OBJECT_PATH));
+    const first = await load();
+    await first.getSignedMediaUrl(OBJECT_PATH);
+    expect(createSignedUrl).toHaveBeenCalledTimes(1);
+
+    // Simulate a page reload: new module instance, same sessionStorage.
+    const second = await load();
+    const url = await second.getSignedMediaUrl(OBJECT_PATH);
+    expect(url).toContain('/object/sign/');
+    expect(createSignedUrl).toHaveBeenCalledTimes(1);
+  });
+
+  it('invalidation clears the persisted copy too', async () => {
+    createSignedUrl.mockResolvedValue(allow(OBJECT_PATH));
+    const first = await load();
+    await first.getSignedMediaUrl(OBJECT_PATH);
+    first.invalidateSignedMediaUrl(OBJECT_PATH);
+
+    const second = await load();
+    await second.getSignedMediaUrl(OBJECT_PATH);
+    expect(createSignedUrl).toHaveBeenCalledTimes(2);
   });
 });
 
