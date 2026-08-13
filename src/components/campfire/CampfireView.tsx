@@ -668,8 +668,8 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
 
           {/* Input area */}
           {isScout ? (
-            <div className="border-t border-border px-4 py-3 text-center shrink-0">
-              <p className="font-body text-xs text-muted-foreground">
+            <div className="msg-skin-composer px-4 py-3 text-center shrink-0">
+              <p className="msg-skin-note font-body text-xs">
                 🌱 You're a Scout in this Camp for {scoutDays ?? 0} more days. Explore and react — messaging unlocks soon.
               </p>
             </div>
@@ -677,12 +677,12 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
             <div className="msg-skin-composer shrink-0" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
               {/* Media preview strip */}
               {stagedPreviews.length > 0 && (
-                <div className="px-3 pt-2 pb-1">
+                <div className="msg-skin-composer-strip px-3 pt-2 pb-2">
                   <div className="flex gap-1.5 overflow-x-auto">
                     {stagedPreviews.map((src, i) => (
-                      <div key={i} className="relative shrink-0 w-16 h-16 rounded-[4px] overflow-hidden border border-border">
+                      <div key={i} className="msg-skin-thumb relative shrink-0 w-16 h-16 rounded-[4px] overflow-hidden">
                         {stagedFiles[i]?.type.startsWith('video') ? (
-                          <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <div className="w-full h-full flex items-center justify-center">
                             <span className="text-lg">▶</span>
                           </div>
                         ) : (
@@ -712,7 +712,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                 />
                 <button
                   onClick={() => mediaInputRef.current?.click()}
-                  className="p-2 text-muted-foreground hover:text-foreground shrink-0 active:scale-95 transition-transform"
+                  className="msg-skin-icon-btn p-2 shrink-0 active:scale-95 transition-transform"
                   type="button"
                   aria-label="Attach photo or video"
                 >
@@ -738,7 +738,8 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   type="button"
                   onClick={() => { stagedFiles.length > 0 ? sendStagedMedia() : sendMessage(); }}
                   disabled={uploadingMedia || (stagedFiles.length === 0 && !input.trim() && !sending)}
-                  className="msg-skin-send p-2 hover:opacity-80 disabled:opacity-30 shrink-0"
+                  className="msg-skin-send-btn h-9 w-9 shrink-0 hover:opacity-90 disabled:opacity-30"
+                  aria-label="Send message"
                 >
                   {uploadingMedia ? (
                     <span className="text-xs">...</span>
