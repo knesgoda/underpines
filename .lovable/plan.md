@@ -1,147 +1,61 @@
+# My Page redesign — the scrapbook front porch
 
+A non-destructive visual and structural redesign of `/:handle` and `/me`. No routes, tables, columns, or features are removed. Everything currently on the page keeps its data and behavior; some of it moves.
 
-# Comprehensive Code Review — Under Pines
+## What the page becomes
 
-## Summary
+Mobile, top to bottom:
 
-The codebase is well-structured overall, with good separation of concerns, proper theming, and thoughtful UX patterns. However, there are several issues ranging from **critical security vulnerabilities** to **scalability concerns** and **minor bugs** that should be addressed before a large user influx.
+1. **Profile header** — one wide paper sheet: avatar, name, `@handle`, the mantra as a pull quote, faint pencil pine at the edges.
+2. **At a glance** — city (respecting the existing show-city setting), member-since, owner-only view count, plus the real `Edit my page` and `Step into your cabin` buttons. Faint cabin illustration behind. Visitors see the Add-to-circle button instead of owner controls.
+3. **Friends** — featured friends with a `Top 4 / 8 / 12` selector, avatars linking to each person's page, `See all friends →` to `/friends`.
+4. **Albums corkboard** — four featured albums as polaroids/taped prints on cork, using each album's real cover photo and real photo count, with varied pins/clips/tape. `See all albums →` to the existing Photos page. Tapping an album opens it there.
+5. **Wall** — a share composer ("Share something with your Under Pines…") that creates a real post, then their posts chronologically as paper entries.
 
----
+Desktop: left navigation stays. Two columns — main column (~58%) holds the header, a subtle editorial tab strip, composer and posts; right column (~42%) holds At a glance, Friends, and a larger corkboard. Tablet widens the friends grid and corkboard before the sidebar splits off.
 
-## Critical Issues
+## Tabs
 
-### 1. XSS Vulnerability in PostDetail.tsx
-**File:** `src/pages/PostDetail.tsx` line 208
-Story content is rendered with `dangerouslySetInnerHTML` **without DOMPurify sanitization**:
-```tsx
-dangerouslySetInnerHTML={{ __html: post.content || '' }}
-```
-The newsletter pages correctly use `DOMPurify.sanitize()`, but PostDetail does not. Any user who writes a "story" post can inject arbitrary JavaScript.
+The tab strip on the main column: **Wall · Photos · Journal · Likes**.
 
-**Fix:** Wrap with `DOMPurify.sanitize(post.content || '')`.
+- Wall — posts (default).
+- Photos — links to the existing Photos page.
+- Journal — their long-form story posts, filtered from the existing posts they already write.
+- Likes — posts they've reacted to, read through the existing reactions.
 
-### 2. Race Condition in AuthContext
-**File:** `src/contexts/AuthContext.tsx`
-`onAuthStateChange` and `getSession()` both call `setLoading(false)`. If `getSession()` resolves before the auth listener fires, the app may briefly render with stale state. The listener should be set up first, and `getSession()` should only serve as a fallback.
+Journal and Likes are new views over existing data; no new content types.
 
-**Fix:** Set `getSession()` inside the subscription callback pattern, or gate it so it only fires if the listener hasn't already fired.
+## Things that move rather than disappear
 
-### 3. RevenueCat Test API Key Hardcoded
-**File:** `src/contexts/RevenueCatContext.tsx` line 6
-```tsx
-const RC_API_KEY = 'test_yDcyukMSOIftLUVEMPyBENdGhaN';
-```
-This is a test key committed to source. For production it should be an environment variable, and you need a production key before launch.
+- **Wall notes** (the guestbook visitors write in) becomes its own smaller section below the posts, keeping its composer and RLS behavior.
+- **About me / Currently / custom page modules / pinned song / Listening now** move into the desktop right column (below the corkboard) and into the mobile flow after the wall. All still read the same rows.
+- The **Full 2006 theme** and the owner's custom page colors still apply, scoped to the page wrapper as today.
 
----
+## Editing the page
 
-## High-Priority Issues
+`Edit my page` gains two sections in the existing customizer:
 
-### 4. Feed Query Scalability — `.in()` with large arrays
-**File:** `src/pages/Feed.tsx` lines 128-136
-The feed loads all circle IDs into an array then uses `.in('author_id', allowedAuthorIds)`. Supabase/PostgREST has a practical URL-length limit. A user with 500+ circles will hit this limit and the query will fail silently or error.
+- **Featured friends** — pick 4, 8, or 12; choose people from the real friends list; reorder.
+- **Featured albums** — choose which albums appear on the corkboard, reorder them, and pick one photo from an album as its cover.
 
-**Fix:** Move feed assembly to a database function or an RPC call that joins circles server-side.
+Existing customizer sections (basics, colors, modules, song) are untouched.
 
-### 5. No QueryClient Configuration
-**File:** `src/App.tsx` line 67
-```tsx
-const queryClient = new QueryClient();
-```
-Default config means no stale time, no retry limit tuning, no garbage collection control. Under heavy use, every navigation re-fetches everything.
+## Technical notes
 
-**Fix:** Configure `defaultOptions` with sensible stale times (e.g. 5 min), retry limits, and GC time.
+Migration (additive only, no drops):
 
-### 6. Index.tsx Calls `navigate()` During Render
-**File:** `src/pages/Index.tsx` lines 12-15
-```tsx
-if (!loading && user) {
-  navigate('/cabin');
-  return null;
-}
-```
-Calling `navigate()` during render is a React anti-pattern that causes warnings and potential infinite loops.
+- `profiles.featured_friends_count smallint default 4` with a check for 4/8/12.
+- New `public.featured_albums (id, owner_id, album_id, position, cover_media_id)`, unique on `(owner_id, album_id)`, with GRANTs to `authenticated`/`service_role`, RLS enabled: owner full control; readers gated through the existing blocks-aware `can_view_member_content(owner)` helper, matching the `albums` policies.
 
-**Fix:** Move to a `useEffect`.
+Client:
 
-### 7. ReportSheet — Race Condition in Triage
-**File:** `src/components/reporting/ReportSheet.tsx` lines 72-74
-After inserting a report, the code immediately queries for the latest report by `created_at` to get its ID for triage. Under concurrent load, this could return the wrong report.
+- `src/pages/MyPage.tsx` recomposed into small components under `src/components/profile/` (`ProfileHeader`, `AtAGlance`, `FriendsModule`, `AlbumCorkboard`, `WallComposer`, `ProfileTabs`, `WallNotes`).
+- New styles in `src/styles/profile.css` (route-scoped, already imported by this page). Paper/tape/pin/cork treatments as CSS only — no new image assets beyond lightweight inline SVG pine and cabin line art. Pins, tape and cork are `aria-hidden` decoration.
+- Reads: existing `usePageProfile`, `usePagePrivacy`, `useOwnVisitCount`, `useTopFriends`, `useWallNotes`, `useAlbums`, `useNowPlaying`, `useFriendLists`. New small hooks for featured albums, journal posts and liked posts.
+- Writes: composer posts through the same path `/new/story` already uses; featured-friend count and album order through additions to `usePageEditor`.
+- Existing `PostCard` and `HandoffPostCard` stay in use elsewhere; the paper post treatment is CSS on the post card already rendered by `CabinPostHistory`.
+- Colors and type come from existing tokens only — no hardcoded hex.
 
-**Fix:** Use the returned `id` from the insert's `.select('id').single()` chain directly.
+Accessibility: single `h1` (the name), tabs as semantic buttons with a coral underline on the active one, 44px minimum tap targets, real alt text on album covers and avatars, visible focus rings, decorative flourishes hidden from screen readers.
 
----
-
-## Medium-Priority Issues
-
-### 8. Missing Error Boundaries
-No React error boundaries exist anywhere. A single component crash (e.g., in a creature animation or seasonal layer) takes down the entire app.
-
-**Fix:** Add an `<ErrorBoundary>` wrapper around `AppLayout` children at minimum.
-
-### 9. Optimistic Post ID Mismatch (SparkComposer)
-**File:** `src/components/feed/SparkComposer.tsx` lines 100-133
-The optimistic post uses a client-generated `crypto.randomUUID()` as its `id`, but the actual inserted post gets a different server-generated ID. The optimistic post is never replaced with the real one — it stays in the feed with the wrong ID until a refresh. This means reactions, replies, and links to the post will fail.
-
-**Fix:** After successful insert, replace the optimistic post in the feed state with the real `data` from Supabase.
-
-### 10. Feed Doesn't Use IndexedDB Cache
-`feedCache.ts` exists with `cacheFeedPosts` / `getCachedFeedPosts`, but `Feed.tsx` never calls either function. The offline-first promise is unfulfilled.
-
-**Fix:** Call `getCachedFeedPosts()` on mount for instant display, then refresh from network. Call `cacheFeedPosts()` after loading.
-
-### 11. No Pagination / Infinite Scroll
-**File:** `src/pages/Feed.tsx` line 137
-Feed is hard-capped at 50 posts with no way to load more. As users post more, older content becomes unreachable.
-
-**Fix:** Implement cursor-based pagination or infinite scroll.
-
-### 12. Reply Content Not Sanitized
-**File:** `src/components/feed/ReplyThread.tsx`
-Reply content is rendered as plain text via `{reply.content}`, which is safe from XSS. However, there's no length limit on reply input — users can submit arbitrarily long replies.
-
-**Fix:** Add a character limit (e.g., 500 chars) to the reply textarea.
-
----
-
-## Low-Priority / Polish Issues
-
-### 13. Unused `phone` State in StepVerify
-The verify step has phone input state and a code verification UI that's never actually used — the flow skips straight to account creation. Dead code should be removed to avoid confusion.
-
-### 14. LandingRedirect Component Returns `null`
-**File:** `src/pages/Feed.tsx` line 533-536
-When `!user`, Feed renders `<LandingRedirect />` which just returns `null`. But `HomePage.tsx` already handles this by showing `<Index />`. This is dead code.
-
-### 15. `as any` Type Assertions
-Multiple files use `as any` to bypass TypeScript (`profiles.update`, `replies.insert`, etc.). This masks type errors that could cause runtime failures.
-
-### 16. Reaction Change is Non-Optimistic
-`ReactionBar.tsx` awaits the database operation before calling `onReactionChange()`, making reactions feel sluggish. Should update UI immediately and revert on error.
-
-### 17. `scrollTimerRef` in Feed Never Resets on Route Change
-If a user navigates away and back, the scroll timer keeps counting from where it left off, potentially showing the nudge immediately.
-
----
-
-## Recommended Implementation Order
-
-1. **Fix XSS in PostDetail** — security, 1 line change
-2. **Fix navigate-during-render in Index.tsx** — stability
-3. **Fix ReportSheet race condition** — data integrity
-4. **Add RevenueCat production key as env var** — launch blocker
-5. **Configure QueryClient defaults** — performance
-6. **Add Error Boundary** — resilience
-7. **Fix optimistic post ID mismatch** — UX correctness
-8. **Wire up feed cache** — offline experience
-9. **Fix AuthContext race condition** — edge case stability
-10. **Plan feed query scalability** — future-proofing for large user base
-11. **Add pagination** — content accessibility
-12. **Clean up dead code** — maintenance
-
----
-
-## Technical Details
-
-All fixes are in the React frontend layer. No database migrations are needed. The most impactful single fix is the DOMPurify sanitization in PostDetail.tsx — it's a one-line change that closes a real XSS vector. The feed scalability issue (#4) is the most architecturally significant but only becomes urgent at ~500+ circle connections per user.
-
+Verification: typecheck, lint, tests, build, and a signed-out Chromium pass in both themes. A signed-in eyeball pass stays yours — the sandbox can't reach the backend.
