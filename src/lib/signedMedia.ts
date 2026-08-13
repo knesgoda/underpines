@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
@@ -100,6 +100,52 @@ export const invalidateSignedMediaUrl = (input: string | null | undefined) => {
   }
 };
 
+/**
+ * Re-sign budget.
+ *
+ * A 403 on the media itself is usually a lapsed signature (re-signing fixes it)
+ * but it can equally be a permanent "you may not see this" — and those two look
+ * identical from the browser. So automatic re-signs are capped and spaced out:
+ * at most MAX_RESIGN_ATTEMPTS per object path, with exponential backoff, after
+ * which the object is considered unavailable until the viewer asks explicitly.
+ * The ledger is per path and module-scoped, so remounting a component (scrolling
+ * an image out of the feed and back) cannot buy a fresh budget.
+ */
+export const MAX_RESIGN_ATTEMPTS = 3;
+const BASE_RESIGN_DELAY_MS = 500;
+const MAX_RESIGN_DELAY_MS = 8000;
+/** Forget the ledger for a path once it has been quiet this long. */
+const RESIGN_LEDGER_TTL_MS = 5 * 60 * 1000;
+
+const resignAttempts = new Map<string, { count: number; lastAt: number }>();
+
+export const resignBackoffDelay = (attempt: number) =>
+  Math.min(BASE_RESIGN_DELAY_MS * 2 ** Math.max(0, attempt - 1), MAX_RESIGN_DELAY_MS);
+
+/**
+ * Claim one automatic re-sign for this reference.
+ * Returns the delay to wait before re-signing, or null when the budget is spent.
+ */
+export const claimSignedMediaResign = (input: string | null | undefined): number | null => {
+  const path = extractPostMediaPath(input);
+  if (!path) return null;
+
+  const now = Date.now();
+  const prior = resignAttempts.get(path);
+  const count = prior && now - prior.lastAt < RESIGN_LEDGER_TTL_MS ? prior.count : 0;
+  if (count >= MAX_RESIGN_ATTEMPTS) return null;
+
+  resignAttempts.set(path, { count: count + 1, lastAt: now });
+  return resignBackoffDelay(count + 1);
+};
+
+/** Give a reference a clean re-sign budget (a person pressed "Try again"). */
+export const resetSignedMediaResigns = (input: string | null | undefined) => {
+  const path = extractPostMediaPath(input);
+  if (path) resignAttempts.delete(path);
+};
+
+
 
 export const getSignedMediaUrl = async (path: string): Promise<string | null> => {
   const hit = freshHit(path);
@@ -172,11 +218,18 @@ export interface SignedMedia {
   url: string | null;
   loading: boolean;
   failed: boolean;
-  /** Drop the cached signature and mint a fresh one (used after a 403 on the media itself). */
+  /** Manual retry: clears the re-sign budget and mints a fresh signature now. */
   retry: () => void;
+  /**
+   * Automatic retry after a 403 on the media itself. Waits an exponentially
+   * growing delay and re-signs; returns false when the budget is spent, which
+   * is the caller's cue to show the unavailable state instead of looping.
+   */
+  resign: () => boolean;
 }
 
-type SignedMediaState = Omit<SignedMedia, 'retry'>;
+type SignedMediaState = Omit<SignedMedia, 'retry' | 'resign'>;
+
 
 /**
  * Resolve a stored post-media reference to a usable src.
@@ -225,10 +278,38 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     return () => { alive = false; window.clearTimeout(timer); };
   }, [input, attempt]);
 
+  const backoffTimer = useRef<number | null>(null);
+
+  // Any pending backoff belongs to the previous reference; drop it.
+  useEffect(() => () => {
+    if (backoffTimer.current !== null) window.clearTimeout(backoffTimer.current);
+  }, [input]);
+
   const retry = useCallback(() => {
+    if (backoffTimer.current !== null) {
+      window.clearTimeout(backoffTimer.current);
+      backoffTimer.current = null;
+    }
+    resetSignedMediaResigns(input);
     invalidateSignedMediaUrl(input);
     setAttempt((n) => n + 1);
   }, [input]);
 
-  return { ...state, retry };
+  const resign = useCallback(() => {
+    // A backoff is already in flight — don't stack another.
+    if (backoffTimer.current !== null) return true;
+
+    const delay = claimSignedMediaResign(input);
+    if (delay === null) return false;
+
+    backoffTimer.current = window.setTimeout(() => {
+      backoffTimer.current = null;
+      invalidateSignedMediaUrl(input);
+      setAttempt((n) => n + 1);
+    }, delay);
+    return true;
+  }, [input]);
+
+  return { ...state, retry, resign };
 };
+
