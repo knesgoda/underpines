@@ -112,6 +112,7 @@ export const invalidateSignedMediaUrl = (input: string | null | undefined) => {
  * an image out of the feed and back) cannot buy a fresh budget.
  */
 export const MAX_RESIGN_ATTEMPTS = 3;
+
 const BASE_RESIGN_DELAY_MS = 500;
 const MAX_RESIGN_DELAY_MS = 8000;
 /** Forget the ledger for a path once it has been quiet this long. */
