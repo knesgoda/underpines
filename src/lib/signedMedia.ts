@@ -81,14 +81,19 @@ export interface SignedMedia {
   url: string | null;
   loading: boolean;
   failed: boolean;
+  /** Drop the cached signature and mint a fresh one (used after a 403 on the media itself). */
+  retry: () => void;
 }
+
+type SignedMediaState = Omit<SignedMedia, 'retry'>;
 
 /**
  * Resolve a stored post-media reference to a usable src.
  * Non-post-media values (external URLs, blob previews) pass straight through.
  */
 export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia => {
-  const [state, setState] = useState<SignedMedia>(() => {
+  const [attempt, setAttempt] = useState(0);
+  const [state, setState] = useState<SignedMediaState>(() => {
     if (!input) return { url: null, loading: false, failed: false };
     if (isAlreadySigned(input)) return { url: input, loading: false, failed: false };
     const path = extractPostMediaPath(input);
@@ -129,7 +134,13 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     }, TTL_SECONDS * 1000 - REFRESH_MARGIN_MS);
 
     return () => { alive = false; window.clearTimeout(timer); };
+  }, [input, attempt]);
+
+  const retry = useCallback(() => {
+    invalidateSignedMediaUrl(input);
+    setAttempt((n) => n + 1);
   }, [input]);
 
-  return state;
+  return { ...state, retry };
 };
+
