@@ -23,7 +23,7 @@
 -- ============================================================================
 
 with sensitive(col) as (
-  values ('latitude'), ('longitude'), ('zip_code'), ('age_bracket'), ('birth_year')
+  values ('latitude'), ('longitude'), ('zip_code'), ('age_bracket'), ('birth_year'), ('hometown')
 ), acl as (
   select a.attname as col,
          coalesce(a.attacl::text, '') as attacl
