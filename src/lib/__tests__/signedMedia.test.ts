@@ -16,8 +16,12 @@ const createSignedUrl = vi.fn();
 const createSignedUrls = vi.fn();
 
 vi.mock('@/integrations/supabase/client', () => ({
-  supabase: { storage: { from: () => ({ createSignedUrl, createSignedUrls }) } },
+  supabase: {
+    storage: { from: () => ({ createSignedUrl, createSignedUrls }) },
+    functions: { invoke: vi.fn().mockResolvedValue({ data: null, error: null }) },
+  },
 }));
+
 
 const PUBLIC_URL =
   'https://example.supabase.co/storage/v1/object/public/post-media/user-1/posts/abc.jpg';
