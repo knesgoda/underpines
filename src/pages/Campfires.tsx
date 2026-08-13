@@ -395,10 +395,10 @@ const CampfireList = ({
       {/* Conversations on a timer */}
       {flickers.length > 0 && (
         <div>
-          <p className="font-display text-[10px] uppercase tracking-widest text-muted-foreground px-4 pt-4 pb-2">
+          <p className="msg-skin-label font-display text-[10px] uppercase tracking-widest px-4 pt-4 pb-2">
             🕯️ Expiring soon
           </p>
-          <div className="divide-y divide-border">
+          <div>
             {flickers.map(c => {
               const expired = isFlickerExpired(c);
               const timeLeft = flickerTimeRemaining(c.expires_at);
@@ -406,14 +406,14 @@ const CampfireList = ({
                 <button
                   key={c.id}
                   onClick={() => onSelect(c.id)}
-                  className={`w-full text-left px-4 py-3 transition-colors ${
-                    selectedId === c.id ? 'bg-primary/8' : 'hover:bg-muted/50'
+                  className={`msg-skin-row w-full text-left px-4 py-3 transition-colors ${
+                    selectedId === c.id ? 'is-active' : ''
                   } ${expired ? 'opacity-50' : ''}`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-lg shrink-0">🕯️</span>
                     <div className="min-w-0 flex-1">
-                      <p className="font-body text-sm font-medium text-foreground truncate">{displayName(c)}</p>
+                      <p className="msg-skin-title font-body text-sm font-medium truncate">{displayName(c)}</p>
                       {expired ? (
                         <div className="flex items-center gap-1.5">
                           <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0 opacity-60">
