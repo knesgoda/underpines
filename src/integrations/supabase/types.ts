@@ -2696,6 +2696,58 @@ export type Database = {
           },
         ]
       }
+      featured_albums: {
+        Row: {
+          album_id: string
+          cover_media_id: string | null
+          created_at: string
+          id: string
+          owner_id: string
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          album_id: string
+          cover_media_id?: string | null
+          created_at?: string
+          id?: string
+          owner_id: string
+          position?: number
+          updated_at?: string
+        }
+        Update: {
+          album_id?: string
+          cover_media_id?: string | null
+          created_at?: string
+          id?: string
+          owner_id?: string
+          position?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "featured_albums_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "featured_albums_cover_media_id_fkey"
+            columns: ["cover_media_id"]
+            isOneToOne: false
+            referencedRelation: "post_media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "featured_albums_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inactive_nudges: {
         Row: {
           created_at: string | null
@@ -3685,6 +3737,7 @@ export type Database = {
           default_avatar_key: string | null
           display_name: string
           ember_unsubscribed: boolean | null
+          featured_friends_count: number
           featured_photos: Json | null
           feed_scroll_reminder: boolean | null
           feed_show_camp_posts: boolean | null
@@ -3746,6 +3799,7 @@ export type Database = {
           default_avatar_key?: string | null
           display_name: string
           ember_unsubscribed?: boolean | null
+          featured_friends_count?: number
           featured_photos?: Json | null
           feed_scroll_reminder?: boolean | null
           feed_show_camp_posts?: boolean | null
@@ -3807,6 +3861,7 @@ export type Database = {
           default_avatar_key?: string | null
           display_name?: string
           ember_unsubscribed?: boolean | null
+          featured_friends_count?: number
           featured_photos?: Json | null
           feed_scroll_reminder?: boolean | null
           feed_show_camp_posts?: boolean | null
