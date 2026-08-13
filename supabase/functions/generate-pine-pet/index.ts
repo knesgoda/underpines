@@ -51,6 +51,11 @@ serve(async (req) => {
     if (!photo_storage_path || !pet_name || !animal_type || !atmosphere) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400, headers: corsHeaders });
     }
+    // This function reads storage with the service-role key, so the path must
+    // be pinned to the caller's own folder or any member can read any upload.
+    if (typeof photo_storage_path !== "string" || !photo_storage_path.startsWith(`${userId}/`) || photo_storage_path.includes("..")) {
+      return new Response(JSON.stringify({ error: "Invalid photo path" }), { status: 403, headers: corsHeaders });
+    }
     if (!VALID_ANIMAL_TYPES.includes(animal_type)) {
       return new Response(JSON.stringify({ error: "Invalid animal_type" }), { status: 400, headers: corsHeaders });
     }
