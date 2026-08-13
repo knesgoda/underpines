@@ -574,7 +574,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                             const text = url ? stripFirstUrl(msg.content) : msg.content;
                             return (
                               <>
-                                {text && <p className={`font-body text-sm whitespace-pre-wrap px-3 py-1.5 ${isMine ? 'bg-primary/15' : 'bg-card border-t border-border'}`}>{text}</p>}
+                                {text && <p className={`msg-skin-bubble font-body text-sm whitespace-pre-wrap px-3 py-1.5 ${isMine ? 'is-mine' : ''}`}>{text}</p>}
                                 {url && <div className="px-3 pb-2"><LinkPreviewCard url={url} /></div>}
                               </>
                             );
@@ -599,10 +599,8 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                         />
                       ) : (
                         <div
-                          className={`px-3 py-2 rounded-[5px] ${
-                            isMine
-                              ? 'bg-primary/15 text-foreground rounded-br-md'
-                              : 'bg-card border border-border text-foreground rounded-bl-md'
+                          className={`msg-skin-bubble px-3 py-2 rounded-[5px] ${
+                            isMine ? 'is-mine rounded-br-md' : 'rounded-bl-md'
                           }`}
                           onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
                           onDoubleClick={() => setReactionMsgId(msg.id)}
