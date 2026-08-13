@@ -44,7 +44,7 @@ export const useBlockMute = ({ targetUserId, targetDisplayName, onComplete }: Us
 
   const BlockConfirmDialog = () => (
     <AlertDialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
-      <AlertDialogContent className="rounded-2xl max-w-sm">
+      <AlertDialogContent className="rounded-[5px] max-w-sm">
         <AlertDialogHeader>
           <AlertDialogTitle className="font-display text-lg">
             Step away from {targetDisplayName || 'this person'}'s fire?
@@ -54,12 +54,12 @@ export const useBlockMute = ({ targetUserId, targetDisplayName, onComplete }: Us
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="font-body text-sm rounded-full">
+          <AlertDialogCancel className="font-body text-sm rounded-[3px]">
             Never mind
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleBlock}
-            className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="font-body text-sm rounded-[3px] bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             Step away
           </AlertDialogAction>

@@ -80,7 +80,7 @@ const StepParentalConsent = ({
         value={parentEmail}
         onChange={(e) => setParentEmail(e.target.value)}
         placeholder="parent@example.com"
-        className="text-center text-lg h-14 rounded-xl border-border bg-card shadow-soft font-body max-w-sm"
+        className="text-center text-lg h-14 rounded-[5px] border-border bg-card shadow-soft font-body max-w-sm"
         autoFocus
         onKeyDown={(e) => e.key === 'Enter' && handleSendConsent()}
       />
@@ -88,7 +88,7 @@ const StepParentalConsent = ({
       <Button
         onClick={handleSendConsent}
         disabled={!parentEmail.trim() || sending}
-        className="rounded-pill px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+        className="rounded-[3px] px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
       >
         {sending ? 'Sending…' : 'Send consent request'}
       </Button>

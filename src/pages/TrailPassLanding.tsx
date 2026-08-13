@@ -94,7 +94,7 @@ const TrailPassLanding = () => {
             <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--primary))" opacity="0.8" />
           </svg>
 
-          <div className="rounded-lg border border-border bg-card p-8 mb-8 shadow-sm">
+          <div className="rounded-[5px] border border-border bg-card p-8 mb-8 shadow-panel">
             <p className="text-xl font-display text-foreground leading-relaxed">
               {status.inviter_name
                 ? `${status.inviter_name} saved you a place Under Pines.`
@@ -104,14 +104,14 @@ const TrailPassLanding = () => {
               Create your account to join them.
             </p>
             {status.personal_message && (
-              <blockquote className="mt-4 rounded-xl bg-muted/50 px-4 py-3 text-sm font-body text-muted-foreground italic">
+              <blockquote className="mt-4 rounded-[5px] bg-muted/50 px-4 py-3 text-sm font-body text-muted-foreground italic">
                 “{status.personal_message}”
               </blockquote>
             )}
 
             <Button
               onClick={() => navigate('/onboarding')}
-              className="mt-8 rounded-pill px-10 h-14 text-base font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+              className="mt-8 rounded-[3px] px-10 h-14 text-base font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             >
               Come in
             </Button>

@@ -90,7 +90,7 @@ const GroveMembers = () => {
             <div
               key={m.id}
               onClick={() => navigate(`/grove/members/${m.handle}`)}
-              className="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-[hsl(var(--pine-mid)/0.15)] transition-colors"
+              className="flex items-center gap-3 p-3 rounded-[4px] cursor-pointer hover:bg-[hsl(var(--pine-mid)/0.15)] transition-colors"
             >
               <div className="w-9 h-9 rounded-full bg-[hsl(var(--pine-mid)/0.3)] flex items-center justify-center text-xs text-[hsl(var(--pine-light)/0.5)]">
                 {m.display_name.charAt(0).toUpperCase()}

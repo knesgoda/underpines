@@ -123,14 +123,14 @@ const MarketplaceDetail = () => {
             className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
             onClick={() => setShowPurchased(false)}
           >
-            <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-sm mx-4" onClick={e => e.stopPropagation()}>
+            <div className="bg-card border border-border rounded-[5px] p-8 text-center max-w-sm mx-4" onClick={e => e.stopPropagation()}>
               <p className="text-3xl mb-4">🌲</p>
               <h2 className="font-display text-xl text-foreground mb-2">{design.name} is yours.</h2>
               <div className="flex gap-2 justify-center mt-6">
-                <Button onClick={() => { setShowPurchased(false); handleApply(); }} className="rounded-full font-body text-sm">
+                <Button onClick={() => { setShowPurchased(false); handleApply(); }} className="rounded-[3px] font-body text-sm">
                   Apply to my Cabin now →
                 </Button>
-                <Button variant="ghost" onClick={() => setShowPurchased(false)} className="rounded-full font-body text-sm">
+                <Button variant="ghost" onClick={() => setShowPurchased(false)} className="rounded-[3px] font-body text-sm">
                   Keep browsing
                 </Button>
               </div>
@@ -141,9 +141,9 @@ const MarketplaceDetail = () => {
 
       {/* Preview image */}
       {design.preview_image_url ? (
-        <img src={design.preview_image_url} alt={design.name} className="w-full h-64 object-cover rounded-2xl mb-6" />
+        <img src={design.preview_image_url} alt={design.name} className="w-full h-64 object-cover rounded-[5px] mb-6" />
       ) : (
-        <div className="w-full h-64 bg-muted rounded-2xl mb-6 flex items-center justify-center text-5xl">🏕️</div>
+        <div className="w-full h-64 bg-muted rounded-[5px] mb-6 flex items-center justify-center text-5xl">🏕️</div>
       )}
 
       <h1 className="font-display text-2xl text-foreground">{design.name}</h1>
@@ -165,25 +165,25 @@ const MarketplaceDetail = () => {
         {owned ? (
           <>
             {applied ? (
-              <Button disabled className="rounded-full font-body text-sm">Already applied ✓</Button>
+              <Button disabled className="rounded-[3px] font-body text-sm">Already applied ✓</Button>
             ) : (
-              <Button onClick={handleApply} className="rounded-full font-body text-sm">Apply to my page →</Button>
+              <Button onClick={handleApply} className="rounded-[3px] font-body text-sm">Apply to my page →</Button>
             )}
             <span className="text-sm text-muted-foreground self-center">You own this design.</span>
           </>
         ) : (
           <>
             {user && (
-              <Button variant="outline" onClick={handlePreview} className="rounded-full font-body text-sm">
+              <Button variant="outline" onClick={handlePreview} className="rounded-[3px] font-body text-sm">
                 Preview on my Cabin →
               </Button>
             )}
             {design.is_free ? (
-              <Button onClick={handleBuyFree} disabled={buying || !user} className="rounded-full font-body text-sm">
+              <Button onClick={handleBuyFree} disabled={buying || !user} className="rounded-[3px] font-body text-sm">
                 {buying ? 'Applying…' : 'Apply for free'}
               </Button>
             ) : (
-              <Button onClick={handleBuyPaid} disabled={buying || !user} className="rounded-full font-body text-sm">
+              <Button onClick={handleBuyPaid} disabled={buying || !user} className="rounded-[3px] font-body text-sm">
                 {buying ? 'Starting checkout…' : `Buy for $${(design.price_cents / 100).toFixed(0)}`}
               </Button>
             )}

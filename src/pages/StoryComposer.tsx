@@ -127,7 +127,7 @@ const StoryComposer = () => {
         <button
           onClick={handlePublish}
           disabled={publishing || !title.trim()}
-          className="rounded-pill bg-primary px-5 py-2 font-body text-sm text-primary-foreground disabled:opacity-50"
+          className="rounded-[3px] bg-primary px-5 py-2 font-body text-sm text-primary-foreground disabled:opacity-50"
         >
           {publishing ? 'Publishing…' : 'Publish'}
         </button>

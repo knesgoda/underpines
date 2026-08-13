@@ -142,7 +142,7 @@ const MusicPlayer = ({
   return (
     <>
       <div
-        className="rounded-2xl p-5 shadow-soft transition-colors duration-700"
+        className="rounded-[5px] p-5 shadow-soft transition-colors duration-700"
         style={{ backgroundColor: atmosphere.cardBg, borderColor: atmosphere.border, borderWidth: 1 }}
       >
         <div
@@ -200,7 +200,7 @@ const MusicPlayer = ({
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search for a song..." className="pl-9 rounded-xl text-sm h-10" autoFocus />
+                placeholder="Search for a song..." className="pl-9 rounded-[5px] text-sm h-10" autoFocus />
             </div>
             <div className="overflow-y-auto max-h-[40vh] space-y-1">
               {searching && <p className="text-xs text-muted-foreground text-center py-4 font-body">Searching...</p>}
@@ -209,11 +209,11 @@ const MusicPlayer = ({
               )}
               {results.map(track => (
                 <button key={track.id} onClick={() => selectTrack(track)}
-                  className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-muted transition-colors text-left">
+                  className="w-full flex items-center gap-3 p-2.5 rounded-[5px] hover:bg-muted transition-colors text-left">
                   {track.album_art ? (
-                    <img src={track.album_art} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                    <img src={track.album_art} alt="" className="w-10 h-10 rounded-[4px] object-cover" />
                   ) : (
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-xs">🎵</div>
+                    <div className="w-10 h-10 rounded-[4px] bg-muted flex items-center justify-center text-xs">🎵</div>
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-body text-foreground truncate">{track.name}</p>
@@ -266,7 +266,7 @@ export const PlayerSelector = ({
             <button
               key={d.type}
               onClick={() => !locked && onChange(d.type)}
-              className={`relative rounded-xl border p-2 flex flex-col items-center gap-1.5 transition-all ${
+              className={`relative rounded-[5px] border p-2 flex flex-col items-center gap-1.5 transition-all ${
                 selected ? 'border-primary bg-primary/5 ring-1 ring-primary/20' :
                 locked ? 'border-border opacity-40 cursor-not-allowed' :
                 'border-border hover:border-primary/40'

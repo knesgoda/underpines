@@ -143,7 +143,7 @@ const NotificationSettings = () => {
       <h1 className="font-display text-2xl text-foreground mb-6">Notifications</h1>
 
       {/* Quiet Mode — prominently first */}
-      <div className="rounded-xl border-2 border-primary/20 bg-card p-6 mb-6">
+      <div className="rounded-[5px] border-2 border-primary/20 bg-card p-6 mb-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-body text-base font-semibold text-foreground">Quiet Mode 🌲</h2>
           <Switch
@@ -161,7 +161,7 @@ const NotificationSettings = () => {
       </div>
 
       {/* Daily Ember */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Daily Ember</p>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -194,7 +194,7 @@ const NotificationSettings = () => {
       </div>
 
       {/* Real-time notifications */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
           Real-time notifications {prefs.quiet_mode && <span className="text-amber-glow">(paused by Quiet Mode)</span>}
         </p>
@@ -235,7 +235,7 @@ const NotificationSettings = () => {
       <PushNotificationsSection />
 
       {/* Always Daily Ember */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Always in Daily Ember only</p>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -260,7 +260,7 @@ const PushNotificationsSection = () => {
   const { state, subscribe } = usePushNotifications();
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 mb-6">
+    <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
       <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Push Notifications</p>
       {state === 'unsupported' ? (
         <p className="font-body text-xs text-muted-foreground">Push notifications are not supported in this browser.</p>
@@ -277,7 +277,7 @@ const PushNotificationsSection = () => {
           </p>
           <button
             onClick={subscribe}
-            className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
+            className="px-4 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
           >
             Enable push notifications
           </button>

@@ -65,11 +65,11 @@ const MyDesigns = () => {
 
       <div className="space-y-4">
         {designs.map(d => (
-          <div key={d.id} className="flex gap-4 rounded-2xl border border-border bg-card p-4">
+          <div key={d.id} className="flex gap-4 rounded-[5px] border border-border bg-card p-4">
             {d.preview_image_url ? (
-              <img src={d.preview_image_url} alt={d.name} className="w-20 h-20 rounded-xl object-cover flex-shrink-0" />
+              <img src={d.preview_image_url} alt={d.name} className="w-20 h-20 rounded-[5px] object-cover flex-shrink-0" />
             ) : (
-              <div className="w-20 h-20 rounded-xl bg-muted flex items-center justify-center text-2xl flex-shrink-0">🏕️</div>
+              <div className="w-20 h-20 rounded-[5px] bg-muted flex items-center justify-center text-2xl flex-shrink-0">🏕️</div>
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ const MyDesigns = () => {
       </div>
 
       <div className="mt-6 border-t border-border pt-6 space-y-4">
-        <Button onClick={() => navigate('/designs/create')} className="rounded-full font-body text-sm w-full">
+        <Button onClick={() => navigate('/designs/create')} className="rounded-[3px] font-body text-sm w-full">
           Create a new design
         </Button>
       </div>

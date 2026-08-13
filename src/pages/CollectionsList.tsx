@@ -75,7 +75,7 @@ const CollectionsList = () => {
         {isOwner && (
           <button
             onClick={() => navigate('/collections/new')}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm"
           >
             <Plus size={14} /> New Collection
           </button>
@@ -91,7 +91,7 @@ const CollectionsList = () => {
         <div className="space-y-4">
           {collections.map(c => (
             <div key={c.id} className="flex gap-4 p-4 panel">
-              <div className="w-[120px] h-[120px] rounded-lg bg-muted overflow-hidden shrink-0">
+              <div className="w-[120px] h-[120px] rounded-[4px] bg-muted overflow-hidden shrink-0">
                 {c.cover_image_url ? (
                   <MediaImage src={c.cover_image_url} alt="" className="w-full h-full object-cover" />
                 ) : (

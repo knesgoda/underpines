@@ -107,7 +107,7 @@ const CreatorPayouts = () => {
 
       {/* Connected success */}
       {connected && isActive && (
-        <div className="mb-6 rounded-xl bg-primary/10 p-5 text-center">
+        <div className="mb-6 rounded-[5px] bg-primary/10 p-5 text-center">
           <p className="text-2xl mb-2">🌲</p>
           <p className="font-body text-sm text-foreground font-medium">You're all set.</p>
           <p className="font-body text-xs text-muted-foreground mt-1">
@@ -121,7 +121,7 @@ const CreatorPayouts = () => {
 
       {/* No account — onboarding */}
       {noAccount && (
-        <div className="rounded-xl border border-border bg-card p-8 text-center">
+        <div className="rounded-[5px] border border-border bg-card p-8 text-center">
           <p className="font-body text-sm text-foreground mb-2">Set up payouts to publish paid Collections.</p>
           <p className="font-body text-xs text-muted-foreground mb-1">
             Under Pines uses Stripe to send your earnings directly to your bank account.
@@ -132,7 +132,7 @@ const CreatorPayouts = () => {
           <button
             onClick={startConnect}
             disabled={actionLoading}
-            className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             {actionLoading ? 'Loading...' : 'Connect with Stripe →'}
           </button>
@@ -141,13 +141,13 @@ const CreatorPayouts = () => {
 
       {/* Pending account */}
       {isPending && (
-        <div className="rounded-xl border border-border bg-card p-6 mb-6">
+        <div className="rounded-[5px] border border-border bg-card p-6 mb-6">
           <p className="font-body text-sm text-foreground mb-2">Your Stripe account is {account.account_status}.</p>
           <p className="font-body text-xs text-muted-foreground mb-3">Complete your onboarding to start receiving payouts.</p>
           <button
             onClick={startConnect}
             disabled={actionLoading}
-            className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             {actionLoading ? 'Loading...' : 'Continue onboarding →'}
           </button>
@@ -158,7 +158,7 @@ const CreatorPayouts = () => {
       {isActive && (
         <>
           {/* Account info */}
-          <div className="rounded-xl border border-border bg-card p-4 mb-4 flex items-center justify-between">
+          <div className="rounded-[5px] border border-border bg-card p-4 mb-4 flex items-center justify-between">
             <div>
               <p className="font-body text-xs text-muted-foreground">Connected account</p>
               <p className="font-body text-sm text-foreground">••••{account.stripe_account_id.slice(-4)}</p>
@@ -166,7 +166,7 @@ const CreatorPayouts = () => {
             <button
               onClick={openStripeDashboard}
               disabled={actionLoading}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-border font-body text-xs text-foreground hover:bg-muted disabled:opacity-50"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-[3px] border border-border font-body text-xs text-foreground hover:bg-muted disabled:opacity-50"
             >
               Manage <ExternalLink size={12} />
             </button>
@@ -174,7 +174,7 @@ const CreatorPayouts = () => {
 
           {/* Collections summary */}
           {collectionEarnings.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-4 mb-4">
+            <div className="rounded-[5px] border border-border bg-card p-4 mb-4">
               <h2 className="font-display text-sm text-foreground mb-3">Collections</h2>
               <div className="space-y-3">
                 {collectionEarnings.map(c => (
@@ -195,7 +195,7 @@ const CreatorPayouts = () => {
 
           {/* Upcoming payout */}
           {totalPending > 0 && (
-            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 mb-4">
+            <div className="rounded-[5px] border border-primary/30 bg-primary/5 p-4 mb-4">
               <p className="font-body text-xs text-muted-foreground">Upcoming payout</p>
               <p className="font-display text-xl text-foreground">${(totalPending / 100).toFixed(2)}</p>
               <p className="font-body text-xs text-muted-foreground">
@@ -207,7 +207,7 @@ const CreatorPayouts = () => {
 
           {/* Earnings history */}
           {payouts.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-4 mb-4">
+            <div className="rounded-[5px] border border-border bg-card p-4 mb-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="font-display text-sm text-foreground">Earnings History</h2>
                 <button onClick={downloadCSV} className="flex items-center gap-1 font-body text-xs text-primary hover:underline">

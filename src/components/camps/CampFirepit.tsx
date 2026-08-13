@@ -111,7 +111,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
     <div>
       {/* Composer */}
       {isScout ? (
-        <div className="rounded-xl border border-border bg-card p-4 mb-4 text-center">
+        <div className="rounded-[5px] border border-border bg-card p-4 mb-4 text-center">
           <p className="font-body text-sm text-muted-foreground">
             🌱 You're a Scout in this Camp for {scoutDays ?? 0} more days. Explore and react — posting unlocks soon.
           </p>
@@ -124,14 +124,14 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
                 <button
                   key={type}
                   onClick={() => openComposer(type)}
-                  className="flex-1 py-2.5 rounded-xl border border-border bg-card font-body text-xs text-muted-foreground hover:bg-muted transition-colors capitalize"
+                  className="flex-1 py-2.5 rounded-[5px] border border-border bg-card font-body text-xs text-muted-foreground hover:bg-muted transition-colors capitalize"
                 >
                   {type === 'spark' ? '✨ ' : type === 'story' ? '📖 ' : '🔥 '}{type}
                 </button>
               ))}
             </div>
           ) : (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="rounded-xl border border-border bg-card p-4 space-y-3">
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="rounded-[5px] border border-border bg-card p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-body text-xs text-muted-foreground capitalize">{composerType}</span>
                 <button onClick={() => setComposerType(null)} className="font-body text-xs text-muted-foreground hover:text-foreground">Cancel</button>
@@ -155,7 +155,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
                 <button
                   onClick={handlePost}
                   disabled={!content.trim() || posting}
-                  className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40"
+                  className="px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40"
                 >
                   Post to Camp ↑
                 </button>
@@ -182,7 +182,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
               key={post.id}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`rounded-xl border bg-card p-4 ${post.is_pinned ? 'border-primary/30' : 'border-border'}`}
+              className={`rounded-[5px] border bg-card p-4 ${post.is_pinned ? 'border-primary/30' : 'border-border'}`}
             >
               {post.is_pinned && (
                 <div className="flex items-center gap-1 mb-2">
@@ -210,7 +210,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
                       <MoreHorizontal size={14} className="text-muted-foreground" />
                     </button>
                     {menuOpenId === post.id && (
-                      <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-10 py-1 min-w-[140px]">
+                      <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-[4px] shadow-lg z-10 py-1 min-w-[140px]">
                         <button
                           onClick={() => { setDeleteConfirmId(post.id); setMenuOpenId(null); }}
                           className="w-full text-left px-3 py-1.5 font-body text-xs text-destructive hover:bg-muted flex items-center gap-2"
@@ -239,7 +239,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
         </div>
       )}
       <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
-        <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogContent className="rounded-[5px] max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-lg">Let this one go?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">
@@ -247,8 +247,8 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)} className="font-body text-sm rounded-[3px] bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Remove
             </AlertDialogAction>
           </AlertDialogFooter>

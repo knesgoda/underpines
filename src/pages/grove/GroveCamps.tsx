@@ -50,7 +50,7 @@ const GroveCamps = () => {
             <div
               key={c.id}
               onClick={() => navigate(`/grove/camps/${c.id}`)}
-              className="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-[hsl(var(--pine-mid)/0.15)] transition-colors"
+              className="flex items-center gap-3 p-3 rounded-[4px] cursor-pointer hover:bg-[hsl(var(--pine-mid)/0.15)] transition-colors"
             >
               <span>{healthIcon(c.health_status)}</span>
               <div className="flex-1 min-w-0">

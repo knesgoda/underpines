@@ -73,7 +73,7 @@ const AvatarCropModal = ({ imageSrc, onCancel, onSave }: AvatarCropModalProps) =
 
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm mx-4">
         {/* Crop area */}
-        <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-2xl overflow-hidden" style={{ touchAction: 'none' }}>
+        <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-[5px] overflow-hidden" style={{ touchAction: 'none' }}>
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -109,14 +109,14 @@ const AvatarCropModal = ({ imageSrc, onCancel, onSave }: AvatarCropModalProps) =
           <Button
             variant="ghost"
             onClick={onCancel}
-            className="rounded-full text-white/70 hover:text-white hover:bg-white/10 font-body"
+            className="rounded-[3px] text-white/70 hover:text-white hover:bg-white/10 font-body"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="rounded-full bg-primary text-primary-foreground font-body px-6"
+            className="rounded-[3px] bg-primary text-primary-foreground font-body px-6"
           >
             {saving ? 'Saving…' : 'Save photo'}
           </Button>

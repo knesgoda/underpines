@@ -173,16 +173,16 @@ const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerPr
             <img
               src={imagePreview}
               alt="Attachment preview"
-              className="w-16 h-16 rounded-lg object-cover border border-border"
+              className="w-16 h-16 rounded-[4px] object-cover border border-border"
             />
             {uploading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-lg">
+              <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-[4px]">
                 <Loader2 size={16} className="animate-spin text-primary" />
               </div>
             )}
             <button
               onClick={clearImage}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-foreground text-background flex items-center justify-center shadow-sm"
+              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-foreground text-background flex items-center justify-center shadow-panel"
             >
               <X size={10} />
             </button>
@@ -209,7 +209,7 @@ const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerPr
           {!imageFile && (
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="p-1.5 rounded-[3px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Add an image"
             >
               <ImageIcon size={16} />
@@ -226,7 +226,7 @@ const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerPr
           <button
             onClick={handlePost}
             disabled={!!isSubmitBlocked}
-            className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90"
+            className="px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90"
           >
             Post to Pines ↑
           </button>

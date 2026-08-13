@@ -9,7 +9,7 @@ const SeedlingBanner = () => {
   if (loading || !isSeedling) return null;
 
   return (
-    <div className="rounded-xl bg-muted/50 border border-border px-4 py-3 mb-4">
+    <div className="rounded-[5px] bg-muted/50 border border-border px-4 py-3 mb-4">
       <p className="font-body text-sm text-muted-foreground">
         🌱 Getting your Cabin ready · Day {dayNumber} of {totalDays}.{' '}
         Public posting unlocks in {daysLeft} {daysLeft === 1 ? 'day' : 'days'}.

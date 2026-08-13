@@ -133,7 +133,7 @@ const Marketplace = () => {
 const DesignCard = ({ design, onClick }: { design: Design; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="text-left rounded-2xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow"
+    className="text-left rounded-[5px] border border-border bg-card overflow-hidden hover:shadow-md transition-shadow"
   >
     {design.preview_image_url ? (
       <img src={design.preview_image_url} alt={design.name} className="w-full h-40 object-cover" />

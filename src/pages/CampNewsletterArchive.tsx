@@ -46,7 +46,7 @@ const CampNewsletterArchive = () => {
             <button
               key={nl.id}
               onClick={() => navigate(`/camps/${campId}/newsletter/${nl.id}`)}
-              className="w-full text-left p-4 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors"
+              className="w-full text-left p-4 rounded-[5px] border border-border bg-card hover:bg-muted/50 transition-colors"
             >
               <p className="font-body text-sm font-medium text-foreground">{nl.title}</p>
               <p className="font-body text-xs text-muted-foreground mt-1">

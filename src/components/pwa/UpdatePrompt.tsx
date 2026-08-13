@@ -20,20 +20,20 @@ const UpdatePrompt = () => {
         exit={{ opacity: 0, y: 40 }}
         className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-auto z-50"
       >
-        <div className="bg-card border border-border rounded-xl p-4 shadow-lg flex items-center gap-3">
+        <div className="bg-card border border-border rounded-[5px] p-4 shadow-lg flex items-center gap-3">
           <span className="font-body text-sm text-foreground">
             🌲 A new version of Under Pines is ready.
           </span>
           <div className="flex gap-2 shrink-0">
             <button
               onClick={() => updateServiceWorker(true)}
-              className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-xs hover:opacity-90 transition-opacity"
+              className="px-3 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-xs hover:opacity-90 transition-opacity"
             >
               Update now
             </button>
             <button
               onClick={() => setDismissed(true)}
-              className="px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:bg-muted transition-colors"
+              className="px-3 py-1.5 rounded-[3px] border border-border font-body text-xs text-muted-foreground hover:bg-muted transition-colors"
             >
               Later
             </button>

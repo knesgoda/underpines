@@ -43,7 +43,7 @@ export const WelcomeDone = ({ onFinish }: { onFinish: () => void }) => {
       <Button
         onClick={finish}
         disabled={saving}
-        className="mt-2 w-full rounded-pill h-14 text-lg font-display"
+        className="mt-2 w-full rounded-[3px] h-14 text-lg font-display"
       >
         {saving ? 'One moment…' : 'Go to my page'}
       </Button>

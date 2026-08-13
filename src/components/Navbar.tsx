@@ -65,7 +65,7 @@ const Navbar = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.96 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 top-12 w-48 rounded-xl bg-card shadow-card border border-border overflow-hidden"
+              className="absolute right-0 top-12 w-48 rounded-[5px] bg-card shadow-card border border-border overflow-hidden"
             >
               <div className="py-1">
                 <DropdownItem onClick={() => { navigate('/cabin'); setOpen(false); }}>

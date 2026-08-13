@@ -45,7 +45,7 @@ const GroveAudit = () => {
       <select
         value={actionFilter}
         onChange={(e) => setActionFilter(e.target.value)}
-        className="rounded-md border border-[hsl(var(--pine-mid)/0.4)] bg-[hsl(var(--pine-dark))] px-3 py-1.5 text-sm text-[hsl(var(--pine-pale))]"
+        className="rounded-[3px] border border-[hsl(var(--pine-mid)/0.4)] bg-[hsl(var(--pine-dark))] px-3 py-1.5 text-sm text-[hsl(var(--pine-pale))]"
         aria-label="Filter by action"
       >
         <option value="all">All actions</option>
@@ -61,7 +61,7 @@ const GroveAudit = () => {
           filtered.map((row) => (
             <li
               key={row.id}
-              className="rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-2.5 text-sm"
+              className="rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-2.5 text-sm"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs text-[hsl(var(--pine-light)/0.55)]">

@@ -154,21 +154,21 @@ const CampSettings = () => {
       <div className="space-y-4 mb-8">
         <div>
           <label className="font-body text-xs text-muted-foreground mb-1 block">Name</label>
-          <input value={name} onChange={e => setName(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground focus:outline-none" />
+          <input value={name} onChange={e => setName(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground focus:outline-none" />
         </div>
         <div>
           <label className="font-body text-xs text-muted-foreground mb-1 block">Description</label>
-          <input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground focus:outline-none" />
+          <input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground focus:outline-none" />
         </div>
         <div>
           <label className="font-body text-xs text-muted-foreground mb-1 block">Visibility</label>
-          <select value={visibility} onChange={e => setVisibility(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground focus:outline-none">
+          <select value={visibility} onChange={e => setVisibility(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground focus:outline-none">
             <option value="open">Open</option>
             <option value="ember">Ember</option>
             <option value="hidden">Hidden</option>
           </select>
         </div>
-        <button onClick={saveBasic} className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium">Save changes</button>
+        <button onClick={saveBasic} className="px-4 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium">Save changes</button>
       </div>
 
       {/* Pending requests */}
@@ -177,11 +177,11 @@ const CampSettings = () => {
           <h2 className="font-body text-sm font-medium text-foreground mb-3">Pending Requests ({requests.length})</h2>
           <div className="space-y-2">
             {requests.map(req => (
-              <div key={req.id} className="flex items-center justify-between px-3 py-2 rounded-lg border border-border bg-card">
+              <div key={req.id} className="flex items-center justify-between px-3 py-2 rounded-[5px] border border-border bg-card">
                 <span className="font-body text-sm text-foreground">{req.profile?.display_name || 'Unknown'}</span>
                 <div className="flex gap-2">
-                  <button onClick={() => acceptRequest(req.id, req.user_id)} className="px-3 py-1 rounded-full bg-primary text-primary-foreground font-body text-xs">Accept</button>
-                  <button onClick={() => declineRequest(req.id)} className="px-3 py-1 rounded-full border border-border font-body text-xs text-muted-foreground">Decline</button>
+                  <button onClick={() => acceptRequest(req.id, req.user_id)} className="px-3 py-1 rounded-[3px] bg-primary text-primary-foreground font-body text-xs">Accept</button>
+                  <button onClick={() => declineRequest(req.id)} className="px-3 py-1 rounded-[3px] border border-border font-body text-xs text-muted-foreground">Decline</button>
                 </div>
               </div>
             ))}
@@ -194,7 +194,7 @@ const CampSettings = () => {
         <h2 className="font-body text-sm font-medium text-foreground mb-3">Members ({members.length})</h2>
         <div className="space-y-1">
           {members.map(m => (
-            <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-muted transition-colors">
+            <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-[4px] hover:bg-muted transition-colors">
               <div className="flex items-center gap-2">
                 <span className="text-sm">{roleLabel(m.role)}</span>
                 <span className="font-body text-sm text-foreground">{m.profile?.display_name || 'Unknown'}</span>
@@ -224,14 +224,14 @@ const CampSettings = () => {
       {/* Danger zone */}
       <div>
         <h2 className="font-body text-sm font-medium text-destructive mb-3">Danger Zone</h2>
-        <button onClick={() => setArchiveOpen(true)} className="px-4 py-2 rounded-full border border-destructive text-destructive font-body text-sm hover:bg-destructive/10 transition-colors">
+        <button onClick={() => setArchiveOpen(true)} className="px-4 py-2 rounded-[3px] border border-destructive text-destructive font-body text-sm hover:bg-destructive/10 transition-colors">
           Close this group
         </button>
       </div>
 
       {/* Pass Firekeeping confirmation */}
       <AlertDialog open={!!passTarget} onOpenChange={(open) => !open && setPassTarget(null)}>
-        <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogContent className="rounded-[5px] max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-lg">Pass the torch?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">
@@ -239,8 +239,8 @@ const CampSettings = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmPassFirekeeping} className="font-body text-sm rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
+            <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmPassFirekeeping} className="font-body text-sm rounded-[3px] bg-primary text-primary-foreground hover:bg-primary/90">
               Pass Firekeeping
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -249,7 +249,7 @@ const CampSettings = () => {
 
       {/* Close-group confirmation */}
       <AlertDialog open={archiveOpen} onOpenChange={setArchiveOpen}>
-        <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogContent className="rounded-[5px] max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-lg">Close this group?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">
@@ -257,8 +257,8 @@ const CampSettings = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it going</AlertDialogCancel>
-            <AlertDialogAction onClick={archiveCamp} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it going</AlertDialogCancel>
+            <AlertDialogAction onClick={archiveCamp} className="font-body text-sm rounded-[3px] bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Close it
             </AlertDialogAction>
           </AlertDialogFooter>

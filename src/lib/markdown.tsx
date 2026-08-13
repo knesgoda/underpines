@@ -29,7 +29,7 @@ const renderInline = (text: string, keyPrefix: string): ReactNode[] =>
           key={key}
           src={image[2]}
           alt={image[1]}
-          className="block w-full h-auto rounded-xl my-3"
+          className="block w-full h-auto rounded-[5px] my-3"
           style={{ minHeight: '120px' }}
         />
       );

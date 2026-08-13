@@ -88,7 +88,7 @@ const ShareToCampfire = ({ postId, open, onClose }: ShareToCampfireProps) => {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
-        className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-md max-h-[70dvh] overflow-hidden border border-border shadow-card"
+        className="relative bg-card rounded-t-2xl md:rounded-[5px] w-full max-w-md max-h-[70dvh] overflow-hidden border border-border shadow-card"
       >
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h3 className="font-body text-sm font-medium text-foreground">Send to a Campfire</h3>
@@ -102,7 +102,7 @@ const ShareToCampfire = ({ postId, open, onClose }: ShareToCampfireProps) => {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search Campfires..."
-              className="w-full pl-8 pr-3 py-2 rounded-lg border border-border bg-background font-body text-sm outline-none"
+              className="w-full pl-8 pr-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm outline-none"
             />
           </div>
 
@@ -117,7 +117,7 @@ const ShareToCampfire = ({ postId, open, onClose }: ShareToCampfireProps) => {
                   key={c.id}
                   onClick={() => handleSend(c.id)}
                   disabled={sending}
-                  className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
+                  className="w-full text-left px-3 py-2.5 rounded-[4px] hover:bg-muted transition-colors flex items-center gap-2"
                 >
                   <span>🔥</span>
                   <span className="font-body text-sm text-foreground">{c.name || 'Campfire'}</span>
@@ -130,7 +130,7 @@ const ShareToCampfire = ({ postId, open, onClose }: ShareToCampfireProps) => {
             value={note}
             onChange={e => setNote(e.target.value)}
             placeholder="Add a note... (optional)"
-            className="w-full px-3 py-2 rounded-lg border border-border bg-background font-body text-sm outline-none"
+            className="w-full px-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm outline-none"
           />
         </div>
       </motion.div>

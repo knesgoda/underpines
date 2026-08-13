@@ -180,7 +180,7 @@ const CollectionView = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4"
           >
-            <div className="rounded-2xl border border-border bg-card p-8 text-center max-w-sm w-full shadow-lg">
+            <div className="rounded-[5px] border border-border bg-card p-8 text-center max-w-sm w-full shadow-lg">
               <p className="text-3xl mb-3">💚</p>
               <p className="font-display text-lg text-foreground mb-2">You're subscribed.</p>
               <p className="font-body text-sm text-muted-foreground mb-4">
@@ -188,7 +188,7 @@ const CollectionView = () => {
               </p>
               <button
                 onClick={() => setShowSuccess(false)}
-                className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm"
+                className="px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm"
               >
                 Start reading →
               </button>
@@ -199,7 +199,7 @@ const CollectionView = () => {
 
       {/* Cover */}
       {collection.cover_image_url && (
-        <div className="w-full h-[200px] rounded-xl overflow-hidden mb-6">
+        <div className="w-full h-[200px] rounded-[5px] overflow-hidden mb-6">
           <MediaImage src={collection.cover_image_url} alt="" className="w-full h-full object-cover" />
         </div>
       )}
@@ -243,7 +243,7 @@ const CollectionView = () => {
       <AnimatePresence>
         {showManage && subscriptionInfo && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-            <div className="mt-4 rounded-xl border border-border bg-card p-5">
+            <div className="mt-4 rounded-[5px] border border-border bg-card p-5">
               <p className="font-body text-sm text-foreground mb-1">Your subscription to</p>
               <p className="font-display text-lg text-foreground mb-2">{collection.title}</p>
               <p className="font-body text-xs text-muted-foreground mb-1">
@@ -255,7 +255,7 @@ const CollectionView = () => {
                 </p>
               )}
               <div className="flex gap-2">
-                <button onClick={() => setShowManage(false)} className="px-4 py-2 rounded-full border border-border font-body text-xs text-foreground hover:bg-muted">
+                <button onClick={() => setShowManage(false)} className="px-4 py-2 rounded-[3px] border border-border font-body text-xs text-foreground hover:bg-muted">
                   Close
                 </button>
                 <button
@@ -265,7 +265,7 @@ const CollectionView = () => {
                     if (data?.url) window.location.href = data.url;
                     else toast.error('Could not open subscription management');
                   }}
-                  className="px-4 py-2 rounded-full border border-destructive/30 font-body text-xs text-destructive hover:bg-destructive/5"
+                  className="px-4 py-2 rounded-[3px] border border-destructive/30 font-body text-xs text-destructive hover:bg-destructive/5"
                 >
                   Cancel subscription
                 </button>
@@ -286,13 +286,13 @@ const CollectionView = () => {
 
       {/* Paid gate */}
       {isPaid && !canViewAll && (
-        <div className="mt-6 rounded-xl border border-border bg-card p-8 text-center">
+        <div className="mt-6 rounded-[5px] border border-border bg-card p-8 text-center">
           <p className="text-3xl mb-3">📚</p>
           <p className="font-body text-sm text-foreground mb-1">This Collection continues for subscribers.</p>
           <button
             onClick={handleSubscribe}
             disabled={checkoutLoading}
-            className="mt-3 px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="mt-3 px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             {checkoutLoading ? 'Loading...' : `$${((collection.price_cents || 0) / 100).toFixed(0)} / ${collection.price_type || 'month'} — Subscribe to continue reading`}
           </button>

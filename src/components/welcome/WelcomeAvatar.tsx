@@ -70,7 +70,7 @@ export const WelcomeAvatar = ({ onNext, onBack }: { onNext: () => void; onBack: 
         >
           Back
         </button>
-        <Button onClick={save} disabled={saving} className="ml-auto rounded-pill h-12 px-8 font-body">
+        <Button onClick={save} disabled={saving} className="ml-auto rounded-[3px] h-11 px-8 font-body">
           {saving ? 'Saving…' : selected ? 'Continue' : 'Keep this one'}
         </Button>
       </div>

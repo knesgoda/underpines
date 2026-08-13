@@ -85,21 +85,21 @@ const DesignCreator = () => {
       <div className="space-y-5">
         <div>
           <label className="text-sm font-body text-foreground block mb-1">Design name</label>
-          <Input value={name} onChange={e => setName(e.target.value)} placeholder="Autumn Hollow" className="rounded-xl" />
+          <Input value={name} onChange={e => setName(e.target.value)} placeholder="Autumn Hollow" className="rounded-[5px]" />
         </div>
 
         <div>
           <label className="text-sm font-body text-foreground block mb-1">Description</label>
-          <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="A warm autumn afternoon in the deep woods." className="rounded-xl resize-none" rows={3} />
+          <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="A warm autumn afternoon in the deep woods." className="rounded-[5px] resize-none" rows={3} />
         </div>
 
         <div>
           <label className="text-sm font-body text-foreground block mb-2">Price</label>
           <div className="flex gap-3">
-            <button onClick={() => setIsFreeSelected(true)} className={`px-4 py-2 rounded-full text-sm font-body border transition-colors ${isFreeSelected ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}>
+            <button onClick={() => setIsFreeSelected(true)} className={`px-4 py-2 rounded-[3px] text-sm font-body border transition-colors ${isFreeSelected ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}>
               Free
             </button>
-            <button onClick={() => setIsFreeSelected(false)} className={`px-4 py-2 rounded-full text-sm font-body border transition-colors ${!isFreeSelected ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}>
+            <button onClick={() => setIsFreeSelected(false)} className={`px-4 py-2 rounded-[3px] text-sm font-body border transition-colors ${!isFreeSelected ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}>
               Paid
             </button>
           </div>
@@ -112,7 +112,7 @@ const DesignCreator = () => {
                 max={50}
                 value={priceCents / 100 || ''}
                 onChange={e => setPriceCents(Math.round(Number(e.target.value) * 100))}
-                className="rounded-xl w-24"
+                className="rounded-[5px] w-24"
                 placeholder="3"
               />
             </div>
@@ -125,7 +125,7 @@ const DesignCreator = () => {
             <span className="text-sm font-body text-foreground">This is a seasonal design</span>
           </label>
           {isSeasonal && (
-            <select value={season} onChange={e => setSeason(e.target.value)} className="mt-2 rounded-xl bg-background border border-input px-3 py-2 text-sm font-body">
+            <select value={season} onChange={e => setSeason(e.target.value)} className="mt-2 rounded-[5px] bg-background border border-input px-3 py-2 text-sm font-body">
               <option value="spring">Spring</option>
               <option value="summer">Summer</option>
               <option value="autumn">Autumn</option>
@@ -137,7 +137,7 @@ const DesignCreator = () => {
         <div>
           <label className="text-sm font-body text-foreground block mb-1">Preview image</label>
           <p className="text-xs text-muted-foreground mb-2">Upload a screenshot showing your design on a page.</p>
-          <label className="flex items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-border cursor-pointer hover:border-primary/50 transition-colors overflow-hidden">
+          <label className="flex items-center justify-center w-full h-32 rounded-[5px] border-2 border-dashed border-border cursor-pointer hover:border-primary/50 transition-colors overflow-hidden">
             <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleUpload} className="hidden" />
             {previewUrl ? (
               <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -148,8 +148,8 @@ const DesignCreator = () => {
         </div>
 
         <div className="flex gap-3 pt-4">
-          <Button variant="ghost" onClick={() => navigate(-1)} className="rounded-full font-body text-sm">Cancel</Button>
-          <Button onClick={handleSubmit} disabled={submitting || !name.trim()} className="rounded-full font-body text-sm">
+          <Button variant="ghost" onClick={() => navigate(-1)} className="rounded-[3px] font-body text-sm">Cancel</Button>
+          <Button onClick={handleSubmit} disabled={submitting || !name.trim()} className="rounded-[3px] font-body text-sm">
             {submitting ? 'Submitting…' : 'Submit for review →'}
           </Button>
         </div>

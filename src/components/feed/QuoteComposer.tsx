@@ -84,7 +84,7 @@ const QuoteComposer = ({ post, open, onClose, onQuoted }: QuoteComposerProps) =>
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
-        className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-lg overflow-hidden border border-border shadow-card"
+        className="relative bg-card rounded-t-2xl md:rounded-[5px] w-full max-w-lg overflow-hidden border border-border shadow-card"
       >
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h3 className="font-body text-sm font-medium text-foreground">Quote post</h3>
@@ -102,7 +102,7 @@ const QuoteComposer = ({ post, open, onClose, onQuoted }: QuoteComposerProps) =>
           />
 
           {/* Inset original post preview */}
-          <div className="rounded-lg border border-border bg-muted/30 p-3">
+          <div className="rounded-[4px] border border-border bg-muted/30 p-3">
             <div className="flex items-center gap-2 mb-1">
               <span className="font-body text-xs font-medium text-foreground">
                 {post.author?.display_name}
@@ -123,7 +123,7 @@ const QuoteComposer = ({ post, open, onClose, onQuoted }: QuoteComposerProps) =>
             <button
               onClick={handleQuote}
               disabled={!content.trim() || posting}
-              className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 hover:opacity-90"
+              className="px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 hover:opacity-90"
             >
               Quote post ↑
             </button>

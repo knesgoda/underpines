@@ -148,7 +148,7 @@ const InviteTree = () => {
             )}
 
             {/* Current user (self) */}
-            <div className="rounded-2xl bg-primary/10 border-2 border-primary/30 p-4 shadow-soft w-full flex items-center gap-3">
+            <div className="rounded-[5px] bg-primary/10 border-2 border-primary/30 p-4 shadow-soft w-full flex items-center gap-3">
               <UserAvatar
                 avatarUrl={null}
                 defaultAvatarKey={null}

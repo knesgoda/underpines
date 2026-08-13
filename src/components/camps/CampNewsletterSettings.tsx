@@ -112,7 +112,7 @@ const CampNewsletterSettings = ({ campId, firekeeper_id, members }: Props) => {
           <div className="space-y-3 pl-1">
             <div>
               <label className="font-body text-xs text-muted-foreground mb-1 block">Frequency</label>
-              <select value={frequency} onChange={e => setFrequency(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground">
+              <select value={frequency} onChange={e => setFrequency(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground">
                 <option value="weekly">Weekly</option>
                 <option value="biweekly">Biweekly</option>
                 <option value="monthly">Monthly</option>
@@ -120,26 +120,26 @@ const CampNewsletterSettings = ({ campId, firekeeper_id, members }: Props) => {
             </div>
             <div>
               <label className="font-body text-xs text-muted-foreground mb-1 block">Send on</label>
-              <select value={sendDay} onChange={e => setSendDay(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground capitalize">
+              <select value={sendDay} onChange={e => setSendDay(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground capitalize">
                 {DAYS.map(d => <option key={d} value={d} className="capitalize">{d.charAt(0).toUpperCase() + d.slice(1)}</option>)}
               </select>
             </div>
             <div>
               <label className="font-body text-xs text-muted-foreground mb-1 block">Send at</label>
-              <select value={sendTime} onChange={e => setSendTime(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground">
+              <select value={sendTime} onChange={e => setSendTime(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground">
                 {TIMES.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
               <label className="font-body text-xs text-muted-foreground mb-1 block">Timezone</label>
-              <select value={timezone} onChange={e => setTimezone(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground">
+              <select value={timezone} onChange={e => setTimezone(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground">
                 {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz.replace(/_/g, ' ')}</option>)}
               </select>
             </div>
             {trailblazers.length > 0 && (
               <div>
                 <label className="font-body text-xs text-muted-foreground mb-1 block">Editor</label>
-                <select value={editorId || ''} onChange={e => setEditorId(e.target.value || null)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground">
+                <select value={editorId || ''} onChange={e => setEditorId(e.target.value || null)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground">
                   <option value="">Owner only</option>
                   {trailblazers.map(tb => (
                     <option key={tb.user_id} value={tb.user_id}>{tb.profile?.display_name || tb.profile?.handle || 'Moderator'}</option>
@@ -165,7 +165,7 @@ const CampNewsletterSettings = ({ campId, firekeeper_id, members }: Props) => {
           <h3 className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Drafts ({drafts.length})</h3>
           <div className="space-y-2">
             {drafts.map(d => (
-              <div key={d.id} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card">
+              <div key={d.id} className="flex items-center justify-between p-3 rounded-[5px] border border-border bg-card">
                 <div>
                   <p className="font-body text-sm text-foreground">{d.title}</p>
                   <p className="font-body text-[10px] text-muted-foreground">Last edited {new Date(d.updated_at).toLocaleDateString()}</p>
@@ -186,7 +186,7 @@ const CampNewsletterSettings = ({ campId, firekeeper_id, members }: Props) => {
           <h3 className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Scheduled ({scheduled.length})</h3>
           <div className="space-y-2">
             {scheduled.map(s => (
-              <div key={s.id} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card">
+              <div key={s.id} className="flex items-center justify-between p-3 rounded-[5px] border border-border bg-card">
                 <div>
                   <p className="font-body text-sm text-foreground">{s.title}</p>
                   <p className="font-body text-[10px] text-muted-foreground">

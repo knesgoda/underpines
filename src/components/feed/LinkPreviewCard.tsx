@@ -61,7 +61,7 @@ const LinkPreviewCard = ({ url }: Props) => {
   if (!og && !failed) {
     // Loading skeleton
     return (
-      <div className="mt-2 rounded-lg border border-border overflow-hidden animate-pulse">
+      <div className="mt-2 rounded-[4px] border border-border overflow-hidden animate-pulse">
         <div className="h-[80px] bg-muted" />
         <div className="p-3 space-y-2">
           <div className="h-3 w-20 bg-muted rounded" />
@@ -82,7 +82,7 @@ const LinkPreviewCard = ({ url }: Props) => {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-2 block rounded-lg border border-border overflow-hidden hover:shadow-md transition-shadow bg-card"
+      className="mt-2 block rounded-[4px] border border-border overflow-hidden hover:shadow-md transition-shadow bg-card"
     >
       {displayImage && (
         <img

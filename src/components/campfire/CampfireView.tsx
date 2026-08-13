@@ -444,7 +444,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
             <span className="text-sm">{campfire.campfire_type === 'flicker' ? '🕯️' : '🔥'}</span>
             <h2 className="font-body text-sm font-medium text-foreground truncate">{headerName}</h2>
             {campfire.campfire_type === 'flicker' && flickerTimeLeft && flickerTimeLeft !== 'expired' && (
-              <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+              <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-[3px] shrink-0">
                 {flickerTimeLeft}
               </span>
             )}
@@ -467,12 +467,12 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
         </div>
         <div className="flex items-center gap-1">
           {campfire.campfire_type === 'group' && (
-            <button onClick={() => setShowLog(!showLog)} className="p-2 rounded-lg text-muted-foreground hover:bg-muted" title="The Log">
+            <button onClick={() => setShowLog(!showLog)} className="p-2 rounded-[4px] text-muted-foreground hover:bg-muted" title="The Log">
               🪵
             </button>
           )}
           <div className="relative">
-            <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 rounded-lg text-muted-foreground hover:bg-muted">
+            <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 rounded-[4px] text-muted-foreground hover:bg-muted">
               <MoreHorizontal size={18} />
             </button>
             <AnimatePresence>
@@ -481,7 +481,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-30"
+                  className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-[5px] shadow-lg overflow-hidden z-30"
                 >
                   {campfire.campfire_type === 'one_on_one' && otherParticipant && (
                     <MenuBtn onClick={() => { setMenuOpen(false); navigate(`/${otherParticipant.handle}`); }}>
@@ -543,7 +543,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                     </div>
                   )}
 
-                  <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} group transition-colors ${highlightMsgId === msg.id ? 'bg-amber-light/30 rounded-xl' : ''}`}>
+                  <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} group transition-colors ${highlightMsgId === msg.id ? 'bg-amber-light/30 rounded-[5px]' : ''}`}>
                     <div className="max-w-[75%]">
                       {/* Sender name for group chats */}
                       {!isMine && campfire.campfire_type === 'group' && (
@@ -553,14 +553,14 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                       )}
 
                       {msg.is_faded ? (
-                        <div className="px-3 py-2 rounded-2xl bg-muted">
+                        <div className="px-3 py-2 rounded-[5px] bg-muted">
                           <p className="font-body text-xs text-muted-foreground italic">
                             A message from {msg.created_at ? new Date(msg.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : 'the past'}
                           </p>
                         </div>
                       ) : msg.message_type === 'photo' && msg.media_url ? (
                         <div
-                          className={`rounded-2xl overflow-hidden cursor-pointer ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
+                          className={`rounded-[5px] overflow-hidden cursor-pointer ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
                           onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
                           onDoubleClick={() => setReactionMsgId(msg.id)}
                         >
@@ -599,7 +599,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                         />
                       ) : (
                         <div
-                          className={`px-3 py-2 rounded-2xl ${
+                          className={`px-3 py-2 rounded-[5px] ${
                             isMine
                               ? 'bg-primary/15 text-foreground rounded-br-md'
                               : 'bg-card border border-border text-foreground rounded-bl-md'
@@ -662,7 +662,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
           {newMsgPill && (
             <button
               onClick={() => { setAutoScroll(true); setNewMsgPill(false); if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }}
-              className="absolute bottom-16 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-xs shadow-lg"
+              className="absolute bottom-16 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-xs shadow-lg"
             >
               ↓ New message
             </button>
@@ -682,7 +682,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                 <div className="px-3 pt-2 pb-1">
                   <div className="flex gap-1.5 overflow-x-auto">
                     {stagedPreviews.map((src, i) => (
-                      <div key={i} className="relative shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-border">
+                      <div key={i} className="relative shrink-0 w-16 h-16 rounded-[4px] overflow-hidden border border-border">
                         {stagedFiles[i]?.type.startsWith('video') ? (
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <span className="text-lg">▶</span>
@@ -728,7 +728,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   onKeyDown={handleKeyDown}
                   placeholder="Type a message..."
                   rows={1}
-                  className="flex-1 resize-none max-h-[120px] py-2 px-3 rounded-xl border border-border bg-background font-body text-sm outline-none"
+                  className="flex-1 resize-none max-h-[120px] py-2 px-3 rounded-[5px] border border-border bg-background font-body text-sm outline-none"
                   style={{ minHeight: '36px' }}
                   onInput={(e) => {
                     const t = e.currentTarget;
@@ -794,7 +794,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-sm max-h-[60dvh] overflow-hidden border border-border"
+              className="relative bg-card rounded-t-2xl md:rounded-[5px] w-full max-w-sm max-h-[60dvh] overflow-hidden border border-border"
             >
               <div className="p-4 border-b border-border flex items-center justify-between">
                 <h3 className="font-body text-sm font-medium text-foreground">The Fire ({participants.length})</h3>

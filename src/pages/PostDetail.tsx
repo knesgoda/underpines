@@ -283,12 +283,12 @@ const PostDetail = () => {
           {(post.post_type === 'spark' || post.post_type === 'bulletin') && post.image_url && (
             <button
               onClick={() => { setLightboxImages([post.image_url!]); setLightboxIndex(0); }}
-              className="mt-3 rounded-lg overflow-hidden block w-full text-left cursor-zoom-in"
+              className="mt-3 rounded-[4px] overflow-hidden block w-full text-left cursor-zoom-in"
             >
               <MediaImage
                 src={post.image_url}
                 alt=""
-                className="block w-full h-auto rounded-lg bg-muted"
+                className="block w-full h-auto rounded-[4px] bg-muted"
                 style={{ maxHeight: '600px', objectFit: 'contain', minHeight: '160px' }}
               />
             </button>
@@ -299,7 +299,7 @@ const PostDetail = () => {
             const sorted = [...post.post_media].sort((a, b) => a.position - b.position);
             const imageUrls = sorted.filter(m => m.media_type !== 'video').map(m => m.url);
             return (
-              <div className={`mt-3 rounded-lg overflow-hidden ${
+              <div className={`mt-3 rounded-[4px] overflow-hidden ${
                 sorted.length === 1 ? '' :
                 sorted.length === 2 ? 'grid grid-cols-2 gap-1' :
                 'grid grid-cols-3 gap-1'
@@ -310,7 +310,7 @@ const PostDetail = () => {
                     className={`relative ${i === 0 && sorted.length >= 3 ? 'col-span-2 row-span-2' : ''}`}
                   >
                     {media.media_type === 'video' ? (
-                      <MediaVideo src={media.url} className="w-full h-auto rounded-lg" style={{ maxHeight: '600px', minHeight: '160px' }} controls muted />
+                      <MediaVideo src={media.url} className="w-full h-auto rounded-[4px]" style={{ maxHeight: '600px', minHeight: '160px' }} controls muted />
                     ) : (
                       <button
                         onClick={() => { setLightboxImages(imageUrls); setLightboxIndex(imageUrls.indexOf(media.url)); }}
@@ -319,7 +319,7 @@ const PostDetail = () => {
                         <MediaImage
                           src={media.url}
                           alt=""
-                          className="block w-full h-auto rounded-lg bg-muted"
+                          className="block w-full h-auto rounded-[4px] bg-muted"
                           style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', minHeight: '160px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
                         />
                       </button>
@@ -334,7 +334,7 @@ const PostDetail = () => {
           {post.is_quote_post && post.quoted_post && (() => {
             const canSeeQuote = post.quoted_post.author_id === user?.id || circleIds.includes(post.quoted_post.author_id);
             return canSeeQuote ? (
-              <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
+              <div className="mt-3 rounded-[4px] border border-border bg-muted/30 p-3">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-body text-xs font-medium text-foreground">
                     {post.quoted_post.author?.display_name}
@@ -348,7 +348,7 @@ const PostDetail = () => {
                 </p>
               </div>
             ) : (
-              <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3 opacity-50">
+              <div className="mt-3 rounded-[4px] border border-border bg-muted/30 p-3 opacity-50">
                 <p className="font-body text-xs text-muted-foreground italic">A post from someone you are not friends with.</p>
               </div>
             );

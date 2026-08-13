@@ -131,7 +131,7 @@ export const WelcomePeople = ({ onNext, onBack }: { onNext: () => void; onBack: 
               type="button"
               onClick={() => toggle(s.id)}
               aria-pressed={on}
-              className={`flex items-center gap-3 rounded-md border p-3 text-left transition-colors ${
+              className={`flex items-center gap-3 rounded-[3px] border p-3 text-left transition-colors ${
                 on ? 'border-primary bg-secondary' : 'border-border bg-card hover:bg-secondary'
               }`}
             >
@@ -159,7 +159,7 @@ export const WelcomePeople = ({ onNext, onBack }: { onNext: () => void; onBack: 
         >
           Back
         </button>
-        <Button onClick={send} disabled={sending} className="ml-auto rounded-pill h-12 px-8 font-body">
+        <Button onClick={send} disabled={sending} className="ml-auto rounded-[3px] h-11 px-8 font-body">
           {sending ? 'Sending…' : picked.size > 0 ? `Add ${picked.size} and continue` : 'Skip for now'}
         </Button>
       </div>

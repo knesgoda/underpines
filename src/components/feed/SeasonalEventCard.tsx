@@ -69,7 +69,7 @@ const SeasonalEventCard = ({ onShareThought }: SeasonalEventCardProps) => {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, height: 0 }}
-        className="rounded-2xl overflow-hidden bg-card border border-border shadow-card mb-4"
+        className="rounded-[5px] overflow-hidden bg-card border border-border shadow-card mb-4"
       >
         <div className="relative w-full h-48 overflow-hidden">
           <SeasonalIllustration illustrationKey={event.illustration_key} className="w-full h-full" />
@@ -84,13 +84,13 @@ const SeasonalEventCard = ({ onShareThought }: SeasonalEventCardProps) => {
           <div className="flex items-center gap-3 pt-1">
             <button
               onClick={handleShare}
-              className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
+              className="px-4 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
             >
               Share a thought →
             </button>
             <button
               onClick={handleDismiss}
-              className="px-4 py-2 rounded-full font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="px-4 py-2 rounded-[3px] font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               🌲 Skip
             </button>

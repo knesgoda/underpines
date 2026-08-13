@@ -147,7 +147,7 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
               <button
                 onClick={handleReply}
                 disabled={!replyText.trim() || posting}
-                className="px-3 py-1 rounded-full bg-primary text-primary-foreground font-body text-xs font-medium disabled:opacity-40"
+                className="px-3 py-1 rounded-[3px] bg-primary text-primary-foreground font-body text-xs font-medium disabled:opacity-40"
               >
                 Reply ↑
               </button>
@@ -204,7 +204,7 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
 
                       {/* Depth 3+ → campfire prompt */}
                       {depth3.length > 0 && (
-                        <div className="mt-2 py-2 px-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center gap-2">
+                        <div className="mt-2 py-2 px-3 rounded-[4px] bg-primary/5 border border-primary/10 flex items-center gap-2">
                           <Flame size={14} className="text-primary shrink-0" />
                           <p className="text-xs font-body text-muted-foreground">
                             This conversation is getting good — take it to a Campfire?{' '}

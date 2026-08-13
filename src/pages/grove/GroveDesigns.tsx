@@ -108,9 +108,9 @@ const GroveDesigns = () => {
               <CardContent className="p-4">
                 <div className="flex gap-4">
                   {d.preview_image_url ? (
-                    <img src={d.preview_image_url} alt={d.name} className="w-24 h-24 rounded-xl object-cover flex-shrink-0" />
+                    <img src={d.preview_image_url} alt={d.name} className="w-24 h-24 rounded-[5px] object-cover flex-shrink-0" />
                   ) : (
-                    <div className="w-24 h-24 rounded-xl bg-[hsl(var(--pine-mid)/0.3)] flex items-center justify-center text-2xl flex-shrink-0">🏕️</div>
+                    <div className="w-24 h-24 rounded-[5px] bg-[hsl(var(--pine-mid)/0.3)] flex items-center justify-center text-2xl flex-shrink-0">🏕️</div>
                   )}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-display text-base text-[hsl(var(--pine-pale))]">{d.name}</h3>

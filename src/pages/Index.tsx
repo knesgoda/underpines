@@ -76,7 +76,7 @@ const Waitlist = () => {
 
   if (state === 'done') {
     return (
-      <div className="rounded-lg border border-border bg-card p-6 shadow-sm text-center">
+      <div className="rounded-[5px] border border-border bg-card p-6 shadow-panel text-center">
         <p className="font-display text-lg text-foreground mb-1">You're on the list.</p>
         <p className="text-sm text-muted-foreground font-body">
           We'll find you when there's a seat by the fire.
@@ -95,12 +95,12 @@ const Waitlist = () => {
           onChange={(e) => { setEmail(e.target.value); if (state === 'error') setState('idle'); }}
           placeholder="you@example.com"
           aria-label="Email address"
-          className="h-12 rounded-pill px-5 font-body bg-card"
+          className="h-12 rounded-[3px] px-5 font-body bg-card"
         />
         <Button
           type="submit"
           disabled={state === 'sending'}
-          className="h-12 rounded-pill px-8 font-body bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
+          className="h-12 rounded-[3px] px-8 font-body bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
         >
           {state === 'sending' ? 'Joining…' : 'Join the waitlist'}
         </Button>
@@ -190,7 +190,7 @@ const Index = () => {
 
           <div className="space-y-6">
             {PRINCIPLES.map((p) => (
-              <div key={p.title} className="rounded-lg border border-border bg-card p-6 shadow-sm">
+              <div key={p.title} className="rounded-[5px] border border-border bg-card p-6 shadow-panel">
                 <h3 className="font-display text-lg text-foreground mb-2">{p.title}</h3>
                 <p className="text-sm text-muted-foreground font-body leading-relaxed">{p.body}</p>
               </div>

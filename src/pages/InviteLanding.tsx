@@ -120,7 +120,7 @@ const InviteLanding = () => {
               translucent white, so it reads in light as well as dark. Copy from
               main, which added the root invite: an open link has no inviter to
               name. */}
-          <div className="rounded-lg border border-border bg-card p-8 mb-8 shadow-sm">
+          <div className="rounded-[5px] border border-border bg-card p-8 mb-8 shadow-panel">
              <p className="text-xl font-display text-foreground leading-relaxed">
                {invite?.is_root
                  ? "There's a seat by the fire, and it's yours."
@@ -129,7 +129,7 @@ const InviteLanding = () => {
 
             <Button
               onClick={() => navigate('/onboarding')}
-              className="mt-8 rounded-pill px-10 h-14 text-base font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+              className="mt-8 rounded-[3px] px-10 h-14 text-base font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             >
               Come in
             </Button>

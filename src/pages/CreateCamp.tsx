@@ -115,7 +115,7 @@ const CreateCamp = () => {
             {/* Cover upload */}
             <button
               onClick={() => fileRef.current?.click()}
-              className="w-full aspect-square max-w-[200px] mx-auto mb-6 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-muted transition-colors overflow-hidden"
+              className="w-full aspect-square max-w-[200px] mx-auto mb-6 rounded-[5px] border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-muted transition-colors overflow-hidden"
             >
               {coverPreview ? (
                 <img src={coverPreview} alt="" className="w-full h-full object-cover" />
@@ -133,13 +133,13 @@ const CreateCamp = () => {
                 value={name}
                 onChange={e => setName(e.target.value.slice(0, 60))}
                 placeholder="Group name"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-card font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                className="w-full px-4 py-3 rounded-[5px] border border-border bg-card font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               />
               <input
                 value={description}
                 onChange={e => setDescription(e.target.value.slice(0, 120))}
                 placeholder="One-line description"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-card font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                className="w-full px-4 py-3 rounded-[5px] border border-border bg-card font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
 
@@ -148,7 +148,7 @@ const CreateCamp = () => {
               <button
                 onClick={() => setStep('visibility')}
                 disabled={!name.trim()}
-                className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40"
+                className="px-4 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40"
               >
                 Continue →
               </button>
@@ -166,7 +166,7 @@ const CreateCamp = () => {
                 <button
                   key={opt.value}
                   onClick={() => setVisibility(opt.value)}
-                  className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
+                  className={`w-full text-left px-4 py-3 rounded-[5px] border transition-colors ${
                     visibility === opt.value
                       ? 'border-primary bg-primary/5'
                       : 'border-border bg-card hover:bg-muted'
@@ -180,7 +180,7 @@ const CreateCamp = () => {
 
             <div className="flex items-center justify-between">
               <button onClick={() => setStep('identity')} className="font-body text-sm text-muted-foreground hover:text-foreground">← Back</button>
-              <button onClick={() => setStep('review')} className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium">
+              <button onClick={() => setStep('review')} className="px-4 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium">
                 Continue →
               </button>
             </div>
@@ -193,9 +193,9 @@ const CreateCamp = () => {
 
             <div className="flex flex-col items-center gap-4 mb-6">
               {coverPreview ? (
-                <img src={coverPreview} alt="" className="w-24 h-24 rounded-2xl object-cover" />
+                <img src={coverPreview} alt="" className="w-24 h-24 rounded-[5px] object-cover" />
               ) : (
-                <div className="w-24 h-24 rounded-2xl bg-secondary flex items-center justify-center">
+                <div className="w-24 h-24 rounded-[5px] bg-secondary flex items-center justify-center">
                   <Flame size={32} className="text-muted-foreground" />
                 </div>
               )}
@@ -215,7 +215,7 @@ const CreateCamp = () => {
               <button
                 onClick={handleCreate}
                 disabled={creating}
-                className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50"
+                className="px-5 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50"
               >
                 {creating ? 'Creating...' : 'Light the fire →'}
               </button>

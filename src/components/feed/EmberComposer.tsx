@@ -155,7 +155,7 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
           onChange={e => setCaption(e.target.value)}
           onFocus={scrollCaptionIntoView}
           placeholder="A thought, a story, a photo..."
-          className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-foreground font-body text-sm outline-none resize-none placeholder:text-muted-foreground/50 min-h-[60px]"
+          className="w-full rounded-[5px] border border-border bg-background px-3 py-2.5 text-foreground font-body text-sm outline-none resize-none placeholder:text-muted-foreground/50 min-h-[60px]"
           rows={2}
         />
       )}
@@ -163,7 +163,7 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
       {previews.length === 0 ? (
         <button
           onClick={() => inputRef.current?.click()}
-          className="w-full py-10 rounded-xl border-2 border-dashed border-border hover:border-primary/30 transition-colors flex flex-col items-center gap-2"
+          className="w-full py-10 rounded-[5px] border-2 border-dashed border-border hover:border-primary/30 transition-colors flex flex-col items-center gap-2"
         >
           <ImagePlus size={28} className="text-muted-foreground" />
           <span className="font-body text-sm text-muted-foreground">Tap to add photos or video</span>
@@ -177,7 +177,7 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
             'grid-cols-3'
           }`}>
             {previews.map((src, i) => (
-              <div key={i} className={`relative rounded-lg overflow-hidden ${i === 0 && previews.length >= 3 ? 'col-span-2 row-span-2' : ''}`}>
+              <div key={i} className={`relative rounded-[4px] overflow-hidden ${i === 0 && previews.length >= 3 ? 'col-span-2 row-span-2' : ''}`}>
                 {files[i]?.type.startsWith('video') ? (
                   <video src={src} className="w-full h-full object-cover max-h-[200px]" />
                 ) : (
@@ -219,7 +219,7 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         <button
           onClick={handlePost}
           disabled={files.length === 0 || posting}
-          className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90 flex items-center gap-2"
+          className="px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90 flex items-center gap-2"
         >
           {posting ? (
             <>

@@ -7,7 +7,7 @@ interface DeviceProps {
 
 /* ─── Radio ─── */
 export const RadioSVG = ({ playing, accent, cardBg, background }: DeviceProps) => (
-  <svg viewBox="0 0 160 120" width="160" height="120" className="drop-shadow-sm">
+  <svg viewBox="0 0 160 120" width="160" height="120" className="drop-shadow-panel">
     <rect x="10" y="20" width="140" height="90" rx="16" ry="16"
       fill={cardBg} stroke={accent} strokeWidth="2" opacity="0.9" />
     <rect x="18" y="28" width="124" height="74" rx="10" ry="10"
@@ -47,7 +47,7 @@ export const RadioSVG = ({ playing, accent, cardBg, background }: DeviceProps) =
 
 /* ─── Walkman ─── */
 export const WalkmanSVG = ({ playing, accent, cardBg, background }: DeviceProps) => (
-  <svg viewBox="0 0 140 160" width="130" height="150" className="drop-shadow-sm">
+  <svg viewBox="0 0 140 160" width="130" height="150" className="drop-shadow-panel">
     {/* Body */}
     <rect x="10" y="10" width="120" height="140" rx="12" ry="12"
       fill={cardBg} stroke={accent} strokeWidth="2" opacity="0.9"/>
@@ -103,7 +103,7 @@ export const WalkmanSVG = ({ playing, accent, cardBg, background }: DeviceProps)
 
 /* ─── Discman ─── */
 export const DiscmanSVG = ({ playing, accent, cardBg, background }: DeviceProps) => (
-  <svg viewBox="0 0 160 140" width="150" height="130" className="drop-shadow-sm">
+  <svg viewBox="0 0 160 140" width="150" height="130" className="drop-shadow-panel">
     {/* Body - round */}
     <ellipse cx="80" cy="70" rx="70" ry="60" fill={cardBg} stroke={accent} strokeWidth="2" opacity="0.9"/>
     {/* Lid - semi-transparent */}
@@ -152,7 +152,7 @@ export const DiscmanSVG = ({ playing, accent, cardBg, background }: DeviceProps)
 export const MP3PlayerSVG = ({ playing, accent, cardBg, background, songTitle }: DeviceProps & { songTitle?: string }) => {
   const displayText = songTitle || 'No track';
   return (
-    <svg viewBox="0 0 100 170" width="95" height="162" className="drop-shadow-sm">
+    <svg viewBox="0 0 100 170" width="95" height="162" className="drop-shadow-panel">
       {/* Body */}
       <rect x="5" y="5" width="90" height="160" rx="14" ry="14"
         fill={cardBg} stroke={accent} strokeWidth="2" opacity="0.9"/>

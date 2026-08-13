@@ -65,7 +65,7 @@ const SettingsPage = () => {
             <button
               key={t.key}
               onClick={() => setTheme(t.key)}
-              className={`relative rounded-xl border-2 p-3 transition-all text-left ${
+              className={`relative rounded-[5px] border-2 p-3 transition-all text-left ${
                 theme === t.key
                   ? 'border-primary shadow-soft'
                   : 'border-border hover:border-muted-foreground/30'
@@ -73,7 +73,7 @@ const SettingsPage = () => {
             >
               {/* Mini preview */}
               <div
-                className="rounded-lg h-16 mb-2 flex items-end p-2 gap-1"
+                className="rounded-[4px] h-16 mb-2 flex items-end p-2 gap-1"
                 style={{ backgroundColor: t.preview.bg }}
               >
                 <div
@@ -110,7 +110,7 @@ const SettingsPage = () => {
               key={s.key}
               type="button"
               onClick={() => setSkin(s.key)}
-              className={`rounded-md border p-3 text-left transition-colors ${
+              className={`rounded-[3px] border p-3 text-left transition-colors ${
                 skin === s.key ? 'border-primary bg-secondary' : 'border-border bg-card hover:bg-secondary'
               }`}
               aria-pressed={skin === s.key}
@@ -169,8 +169,9 @@ const SettingsPage = () => {
 
 const SettingsSection = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="mb-6">
-    <p className="font-display text-xs uppercase tracking-wide text-muted-foreground mb-2">{label}</p>
-    <div className="rounded-xl border border-border bg-card overflow-hidden divide-y divide-border">
+    <p className="font-body text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-2">{label}</p>
+    <div className="rounded-[5px] border border-border bg-card shadow-panel overflow-hidden divide-y divide-border">
+
       {children}
     </div>
   </div>

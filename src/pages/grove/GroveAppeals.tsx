@@ -72,7 +72,7 @@ const GroveAppeals = () => {
           (appeals ?? []).map((appeal) => (
             <div
               key={appeal.id}
-              className="rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3"
+              className="rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3"
             >
               <button
                 type="button"
@@ -119,21 +119,21 @@ const GroveAppeals = () => {
                         <button
                           type="button"
                           onClick={() => decide(appeal, 'reverse')}
-                          className="rounded-full bg-[hsl(var(--amber-deep)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--amber-light))]"
+                          className="rounded-[3px] bg-[hsl(var(--amber-deep)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--amber-light))]"
                         >
                           Reverse &amp; restore
                         </button>
                         <button
                           type="button"
                           onClick={() => decide(appeal, 'modify')}
-                          className="rounded-full bg-[hsl(var(--pine-mid)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--pine-pale))]"
+                          className="rounded-[3px] bg-[hsl(var(--pine-mid)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--pine-pale))]"
                         >
                           Modify
                         </button>
                         <button
                           type="button"
                           onClick={() => decide(appeal, 'uphold')}
-                          className="rounded-full bg-[hsl(var(--pine-mid)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--pine-pale))]"
+                          className="rounded-[3px] bg-[hsl(var(--pine-mid)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--pine-pale))]"
                         >
                           Uphold
                         </button>

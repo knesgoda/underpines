@@ -16,7 +16,7 @@ const InviteRow = () => {
   return (
     <Link
       to="/invites"
-      className="flex items-center gap-3 rounded-2xl bg-card border border-border p-4 shadow-soft hover:bg-muted/50 transition-colors"
+      className="flex items-center gap-3 rounded-[5px] bg-card border border-border p-4 shadow-soft hover:bg-muted/50 transition-colors"
     >
       <div className="flex items-center justify-center w-9 h-9 rounded-full bg-primary/10">
         <Flame size={18} className="text-primary" />

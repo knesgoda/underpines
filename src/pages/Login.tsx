@@ -45,7 +45,7 @@ const Login = () => {
           transition={{ duration: 0.8 }}
           className="w-full max-w-sm"
         >
-          <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
+          <div className="rounded-[5px] border border-border bg-card p-8 shadow-panel">
             <h2 className="text-2xl font-display text-foreground text-center mb-8">
               Welcome back
             </h2>
@@ -56,7 +56,7 @@ const Login = () => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="Email"
-                className="h-12 rounded-md bg-background border-border text-foreground placeholder:text-muted-foreground font-body"
+                className="h-12 rounded-[3px] bg-background border-border text-foreground placeholder:text-muted-foreground font-body"
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
               />
               <div className="relative">
@@ -65,7 +65,7 @@ const Login = () => {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="h-12 rounded-md bg-background border-border text-foreground placeholder:text-muted-foreground font-body pr-12"
+                  className="h-12 rounded-[3px] bg-background border-border text-foreground placeholder:text-muted-foreground font-body pr-12"
                   onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 />
                 <button
@@ -81,7 +81,7 @@ const Login = () => {
             <Button
               onClick={handleLogin}
               disabled={loading || !email || !password}
-              className="w-full mt-6 rounded-pill h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+              className="w-full mt-6 rounded-[3px] h-11 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             >
               {loading ? 'Signing you in...' : 'Sign in'}
             </Button>

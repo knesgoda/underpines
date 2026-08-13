@@ -96,7 +96,7 @@ const PrivacySettings = () => {
       </p>
 
       {/* Visibility controls */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Who can reach you</p>
         <div className="space-y-5">
           <VisibilityRow
@@ -121,7 +121,7 @@ const PrivacySettings = () => {
       </div>
 
       {/* Page display */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Your page</p>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -142,7 +142,7 @@ const PrivacySettings = () => {
       </div>
 
       {/* Messaging */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Messaging</p>
         <div className="space-y-4">
           <div className="flex items-center justify-between">

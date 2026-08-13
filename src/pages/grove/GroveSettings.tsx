@@ -129,7 +129,7 @@ const GroveSettings = () => {
           </div>
 
           {inviteSlug && (
-            <div className="flex items-center gap-2 bg-[hsl(var(--pine-darkest))] rounded-lg px-3 py-2 border border-[hsl(var(--pine-mid)/0.2)]">
+            <div className="flex items-center gap-2 bg-[hsl(var(--pine-darkest))] rounded-[4px] px-3 py-2 border border-[hsl(var(--pine-mid)/0.2)]">
               <code className="text-xs text-[hsl(var(--pine-light)/0.8)] flex-1 break-all font-body">
                 {inviteUrl}
               </code>

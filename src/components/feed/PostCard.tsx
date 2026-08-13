@@ -126,7 +126,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: post._optimistic ? 0.7 : 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="rounded-xl bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] mb-3 overflow-hidden cursor-pointer"
+      className="rounded-[5px] bg-card shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] mb-3 overflow-hidden cursor-pointer"
       style={{ borderLeft: `3px solid ${accent}` }}
       onClick={handleCardClick}
     >
@@ -164,7 +164,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="p-1 rounded-md text-muted-foreground hover:bg-muted transition-colors"
+                className="p-1 rounded-[3px] text-muted-foreground hover:bg-muted transition-colors"
               >
                 <MoreHorizontal size={16} />
               </button>
@@ -174,7 +174,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-1 w-44 bg-card border border-border rounded-xl shadow-card overflow-hidden z-20"
+                    className="absolute right-0 top-full mt-1 w-44 bg-card border border-border rounded-[5px] shadow-card overflow-hidden z-20"
                   >
                     {!isOwner && (
                       <>
@@ -236,14 +236,14 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                 <button
                   type="button"
                   onClick={() => onImageClick?.([post.image_url!], 0)}
-                  className="mt-3 rounded-lg overflow-hidden block w-full text-left cursor-zoom-in"
+                  className="mt-3 rounded-[4px] overflow-hidden block w-full text-left cursor-zoom-in"
                   style={{ minHeight: '1px' }}
                   aria-label="View full image"
                 >
                   <MediaImage
                     src={post.image_url}
                     alt=""
-                    className="block w-full h-auto rounded-lg bg-muted"
+                    className="block w-full h-auto rounded-[4px] bg-muted"
                     style={{ maxHeight: '600px', objectFit: 'contain', minHeight: '120px' }}
                     loading="lazy"
                   />
@@ -285,7 +285,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                 const sorted = [...post.post_media].sort((a, b) => a.position - b.position);
                 const imageUrls = sorted.filter(m => m.media_type !== 'video').map(m => m.url);
                 return (
-                  <div className={`rounded-lg overflow-hidden ${
+                  <div className={`rounded-[4px] overflow-hidden ${
                     sorted.length === 1 ? '' :
                     sorted.length === 2 ? 'grid grid-cols-2 gap-1' :
                     'grid grid-cols-3 gap-1'
@@ -298,7 +298,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                         {media.media_type === 'video' ? (
                           <MediaVideo
                             src={media.url}
-                            className="w-full h-auto rounded-lg"
+                            className="w-full h-auto rounded-[4px]"
                             style={{ maxHeight: '600px', minHeight: '120px' }}
                             controls
                             muted
@@ -314,14 +314,14 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                             <MediaImage
                               src={media.url}
                               alt=""
-                              className="block w-full h-auto rounded-lg bg-muted"
+                              className="block w-full h-auto rounded-[4px] bg-muted"
                               style={{ maxHeight: sorted.length === 1 ? '600px' : '300px', minHeight: '120px', objectFit: sorted.length === 1 ? 'contain' : 'cover' }}
                               loading="lazy"
                             />
                           </button>
                         )}
                         {i === 0 && sorted.length > 3 && (
-                          <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-body px-2 py-0.5 rounded-full">
+                          <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-body px-2 py-0.5 rounded-[3px]">
                             +{sorted.length - 1} more
                           </div>
                         )}
@@ -340,7 +340,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
           const canSeeQuote = quotedAuthorId === user?.id || circleIds.includes(quotedAuthorId);
 
           return canSeeQuote ? (
-            <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
+            <div className="mt-3 rounded-[4px] border border-border bg-muted/30 p-3">
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-body text-xs font-medium text-foreground">
                   {post.quoted_post.author?.display_name}
@@ -354,7 +354,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
               </p>
             </div>
           ) : (
-            <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3 opacity-50">
+            <div className="mt-3 rounded-[4px] border border-border bg-muted/30 p-3 opacity-50">
               <p className="font-body text-xs text-muted-foreground italic">
                 A post from someone outside your Circles.
               </p>
@@ -404,7 +404,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
       <BlockConfirmDialog />
       {/* Delete confirmation */}
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogContent className="rounded-[5px] max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-lg">Let this one go?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">
@@ -412,8 +412,8 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-[3px] bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

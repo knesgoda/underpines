@@ -215,7 +215,7 @@ const CollectionEditor = () => {
       {step === 1 && (
         <div className="space-y-4">
           <div
-            className="w-full aspect-square max-w-[200px] mx-auto rounded-xl border-2 border-dashed border-border bg-muted/50 flex items-center justify-center cursor-pointer overflow-hidden"
+            className="w-full aspect-square max-w-[200px] mx-auto rounded-[5px] border-2 border-dashed border-border bg-muted/50 flex items-center justify-center cursor-pointer overflow-hidden"
             onClick={() => document.getElementById('cover-input')?.click()}
           >
             {(coverFile || coverUrl) ? (
@@ -233,19 +233,19 @@ const CollectionEditor = () => {
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="Title"
-            className="w-full px-4 py-3 rounded-xl border border-border bg-background font-body text-sm outline-none"
+            className="w-full px-4 py-3 rounded-[5px] border border-border bg-background font-body text-sm outline-none"
           />
           <input
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="One-line description"
-            className="w-full px-4 py-3 rounded-xl border border-border bg-background font-body text-sm outline-none"
+            className="w-full px-4 py-3 rounded-[5px] border border-border bg-background font-body text-sm outline-none"
           />
 
           <button
             onClick={() => setStep(2)}
             disabled={!title.trim()}
-            className="w-full py-3 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="w-full py-3 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             Continue →
           </button>
@@ -257,14 +257,14 @@ const CollectionEditor = () => {
         <div className="space-y-4">
           <p className="font-body text-sm text-foreground mb-2">Who can read this Collection?</p>
 
-          <label className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer ${!isPaid ? 'border-primary bg-primary/5' : 'border-border'}`}>
+          <label className={`flex items-start gap-3 p-4 rounded-[5px] border cursor-pointer ${!isPaid ? 'border-primary bg-primary/5' : 'border-border'}`}>
             <input type="radio" checked={!isPaid} onChange={() => setIsPaid(false)} className="mt-1" />
             <div>
               <p className="font-body text-sm font-medium text-foreground">Free — anyone in your Circle</p>
             </div>
           </label>
 
-          <label className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer ${isPaid ? 'border-primary bg-primary/5' : 'border-border'}`}>
+          <label className={`flex items-start gap-3 p-4 rounded-[5px] border cursor-pointer ${isPaid ? 'border-primary bg-primary/5' : 'border-border'}`}>
             <input type="radio" checked={isPaid} onChange={() => setIsPaid(true)} className="mt-1" />
             <div>
               <p className="font-body text-sm font-medium text-foreground">Paid — subscribers only</p>
@@ -280,13 +280,13 @@ const CollectionEditor = () => {
                     type="number"
                     value={priceCents / 100}
                     onChange={e => setPriceCents(Math.max(1, Number(e.target.value)) * 100)}
-                    className="w-20 px-3 py-2 rounded-lg border border-border bg-background font-body text-sm outline-none"
+                    className="w-20 px-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm outline-none"
                   />
                 </div>
                 <select
                   value={priceType}
                   onChange={e => setPriceType(e.target.value)}
-                  className="px-3 py-2 rounded-lg border border-border bg-background font-body text-sm outline-none"
+                  className="px-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm outline-none"
                 >
                   <option value="month">per month</option>
                   <option value="one-time">one-time</option>
@@ -298,7 +298,7 @@ const CollectionEditor = () => {
             </div>
           )}
 
-          <button onClick={() => setStep(3)} className="w-full py-3 rounded-full bg-primary text-primary-foreground font-body text-sm">
+          <button onClick={() => setStep(3)} className="w-full py-3 rounded-[3px] bg-primary text-primary-foreground font-body text-sm">
             Continue →
           </button>
         </div>
@@ -313,12 +313,12 @@ const CollectionEditor = () => {
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search your posts..."
-            className="w-full px-4 py-2.5 rounded-xl border border-border bg-background font-body text-sm outline-none"
+            className="w-full px-4 py-2.5 rounded-[5px] border border-border bg-background font-body text-sm outline-none"
           />
 
           <div className="max-h-[200px] overflow-y-auto space-y-1">
             {availablePosts.map(p => (
-              <button key={p.id} onClick={() => addPost(p)} className="w-full text-left flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-muted transition-colors">
+              <button key={p.id} onClick={() => addPost(p)} className="w-full text-left flex items-center justify-between px-3 py-2.5 rounded-[4px] hover:bg-muted transition-colors">
                 <span className="font-body text-sm text-foreground truncate flex-1">{postLabel(p)}</span>
                 <Plus size={14} className="text-primary shrink-0 ml-2" />
               </button>
@@ -333,7 +333,7 @@ const CollectionEditor = () => {
               <p className="font-body text-xs text-muted-foreground mb-2">Posts in this Collection ({selectedPosts.length}):</p>
               <Reorder.Group axis="y" values={selectedPosts} onReorder={setSelectedPosts} className="space-y-1">
                 {selectedPosts.map(p => (
-                  <Reorder.Item key={p.id} value={p} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border cursor-grab active:cursor-grabbing">
+                  <Reorder.Item key={p.id} value={p} className="flex items-center gap-2 px-3 py-2 rounded-[4px] bg-card border border-border cursor-grab active:cursor-grabbing">
                     <GripVertical size={14} className="text-muted-foreground shrink-0" />
                     <span className="font-body text-sm text-foreground truncate flex-1">{postLabel(p)}</span>
                     <button onClick={() => removePost(p.id)} className="text-muted-foreground hover:text-destructive shrink-0">
@@ -348,7 +348,7 @@ const CollectionEditor = () => {
           <button
             onClick={handlePublish}
             disabled={saving}
-            className="w-full py-3 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="w-full py-3 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             {saving ? 'Saving...' : isEdit ? 'Update Collection' : 'Publish Collection →'}
           </button>
@@ -357,13 +357,13 @@ const CollectionEditor = () => {
             <>
               {/* Stats */}
               {isPaid && (
-                <div className="mt-4 p-4 rounded-xl border border-border bg-card">
+                <div className="mt-4 p-4 rounded-[5px] border border-border bg-card">
                   <p className="font-body text-xs text-muted-foreground">Waitlist: {waitlistCount} people interested</p>
                   <p className="font-body text-xs text-muted-foreground mt-1">Subscription revenue dashboard coming soon</p>
                 </div>
               )}
 
-              <button onClick={() => setDeleteOpen(true)} className="w-full mt-2 py-2.5 rounded-full border border-destructive/30 text-destructive font-body text-sm flex items-center justify-center gap-2">
+              <button onClick={() => setDeleteOpen(true)} className="w-full mt-2 py-2.5 rounded-[3px] border border-destructive/30 text-destructive font-body text-sm flex items-center justify-center gap-2">
                 <Trash2 size={14} /> Delete Collection
               </button>
             </>
@@ -374,7 +374,7 @@ const CollectionEditor = () => {
 
     {/* Delete Collection confirmation */}
     <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-      <AlertDialogContent className="rounded-2xl max-w-sm">
+      <AlertDialogContent className="rounded-[5px] max-w-sm">
         <AlertDialogHeader>
           <AlertDialogTitle className="font-display text-lg">Let this Collection go?</AlertDialogTitle>
           <AlertDialogDescription className="font-body text-sm text-muted-foreground">
@@ -382,8 +382,8 @@ const CollectionEditor = () => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-[3px] bg-destructive text-destructive-foreground hover:bg-destructive/90">
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

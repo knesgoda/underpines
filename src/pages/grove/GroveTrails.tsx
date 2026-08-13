@@ -90,9 +90,9 @@ const GroveTrails = () => {
           >
             @{node.handle}
           </Link>
-          <span className={`rounded-full px-2 py-0.5 text-[10px] ${concern.className}`}>{concern.label}</span>
+          <span className={`rounded-[3px] px-2 py-0.5 text-[10px] ${concern.className}`}>{concern.label}</span>
           {node.invites_frozen && (
-            <span className="rounded-full bg-[hsl(var(--pine-mid)/0.4)] px-2 py-0.5 text-[10px] text-[hsl(var(--pine-light)/0.8)]">
+            <span className="rounded-[3px] bg-[hsl(var(--pine-mid)/0.4)] px-2 py-0.5 text-[10px] text-[hsl(var(--pine-light)/0.8)]">
               invites frozen
             </span>
           )}
@@ -104,7 +104,7 @@ const GroveTrails = () => {
             <button
               type="button"
               onClick={() => setClosing({ node, reopen: node.invites_frozen })}
-              className="ml-auto rounded-full bg-[hsl(var(--pine-mid)/0.3)] px-2.5 py-1 text-[10px] text-[hsl(var(--pine-pale))] hover:bg-[hsl(var(--pine-mid)/0.5)]"
+              className="ml-auto rounded-[3px] bg-[hsl(var(--pine-mid)/0.3)] px-2.5 py-1 text-[10px] text-[hsl(var(--pine-pale))] hover:bg-[hsl(var(--pine-mid)/0.5)]"
             >
               {node.invites_frozen ? 'Reopen trail' : 'Close trail'}
             </button>
@@ -140,9 +140,9 @@ const GroveTrails = () => {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="@handle"
           aria-label="Look up a member's trail"
-          className="rounded-md border border-[hsl(var(--pine-mid)/0.4)] bg-[hsl(var(--pine-dark))] px-3 py-1.5 text-sm text-[hsl(var(--pine-pale))]"
+          className="rounded-[3px] border border-[hsl(var(--pine-mid)/0.4)] bg-[hsl(var(--pine-dark))] px-3 py-1.5 text-sm text-[hsl(var(--pine-pale))]"
         />
-        <button type="submit" className="rounded-md bg-[hsl(var(--amber-deep)/0.3)] px-4 py-1.5 text-sm text-[hsl(var(--amber-light))]">
+        <button type="submit" className="rounded-[3px] bg-[hsl(var(--amber-deep)/0.3)] px-4 py-1.5 text-sm text-[hsl(var(--amber-light))]">
           Look up
         </button>
       </form>
@@ -153,7 +153,7 @@ const GroveTrails = () => {
 
       {self && (
         <>
-          <section className="rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] p-4">
+          <section className="rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] p-4">
             <h2 className="mb-2 font-display text-sm text-[hsl(var(--amber-mid))]">Branch summary</h2>
             <p className="text-sm text-[hsl(var(--pine-pale))]">
               {descendants.length} accounts descend from @{self.handle}
@@ -165,7 +165,7 @@ const GroveTrails = () => {
             </p>
           </section>
 
-          <section className="rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] p-4">
+          <section className="rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] p-4">
             <h2 className="mb-2 font-display text-sm text-[hsl(var(--amber-mid))]">Lineage</h2>
             {ancestors.length > 0 && (
               <ul className="mb-1 border-b border-[hsl(var(--pine-mid)/0.2)] pb-2">
@@ -185,7 +185,7 @@ const GroveTrails = () => {
         </>
       )}
 
-      <section className="rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] p-4">
+      <section className="rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] p-4">
         <h2 className="mb-2 font-display text-sm text-[hsl(var(--amber-mid))]">
           Currently closed trails ({data?.frozen.length ?? 0})
         </h2>

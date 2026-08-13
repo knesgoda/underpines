@@ -151,7 +151,7 @@ const GroveCaseDetail = () => {
   };
 
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <section className="rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] p-4">
+    <section className="rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] p-4">
       <h2 className="mb-3 font-display text-sm text-[hsl(var(--amber-mid))]">{title}</h2>
       {children}
     </section>
