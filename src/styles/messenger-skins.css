@@ -92,3 +92,35 @@
 .skin-picker-scroll { max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none; }
 .skin-picker-scroll::-webkit-scrollbar { display:none; }
 .skin-picker-scroll button { flex:0 0 auto;min-width:0;white-space:nowrap;padding:8px 12px; }
+
+/**
+ * Skin surface for the ported (Tailwind) messenger screens.
+ *
+ * The handoff classes above only reach the desktop stage markup. These
+ * `.msg-skin-*` hooks let the mobile conversation list, the thread header and
+ * the message bubbles pick up the same --msg-* palette, so the chosen skin is
+ * visible on every message screen rather than only the desktop shell.
+ */
+.skin-pines { --msg-bg:#f5ead9;--msg-panel:#fffdf7;--msg-line:#d8c9b8;--msg-title:#202942;--msg-accent:#e65f3c;--msg-text:#172033;--msg-soft:#fff3df; }
+
+.msg-skin-surface { background:var(--msg-panel);color:var(--msg-text); }
+.msg-skin-strip { background:var(--msg-soft);border-bottom:1px solid var(--msg-line);color:var(--msg-text); }
+.msg-skin-header { background:var(--msg-title);border-bottom:1px solid var(--msg-line); }
+.msg-skin-header, .msg-skin-header p, .msg-skin-header h2, .msg-skin-header span, .msg-skin-header button { color:#fff !important; }
+.msg-skin-row { background:transparent;border-bottom:1px solid var(--msg-line); }
+.msg-skin-row:hover, .msg-skin-row.is-active { background:var(--msg-soft); }
+.msg-skin-title { color:var(--msg-text); }
+.msg-skin-sub { color:var(--msg-text);opacity:.62; }
+.msg-skin-label { color:var(--msg-accent); }
+.msg-skin-history { background:var(--msg-panel);color:var(--msg-text); }
+.msg-skin-bubble { background:#fff;border:1px solid var(--msg-line);color:var(--msg-text); }
+.msg-skin-bubble.is-mine { background:var(--msg-soft); }
+.msg-skin-composer { background:var(--msg-soft);border-top:1px solid var(--msg-line); }
+.msg-skin-composer textarea { background:var(--msg-panel);border:1px solid var(--msg-line);color:var(--msg-text); }
+.msg-skin-send { color:var(--msg-accent); }
+
+/* Per-skin corner + type language on the ported surfaces */
+.skin-icu .msg-skin-bubble, .skin-bullseye .msg-skin-bubble { border-radius:0; }
+.skin-icu .msg-skin-bubble p, .skin-bullseye .msg-skin-bubble p { font-family:inherit; }
+.skin-emessen .msg-skin-bubble { border-radius:12px;box-shadow:0 2px 7px rgba(50,89,116,.1); }
+.skin-emessen .msg-skin-composer { background:linear-gradient(#fff,#dbe8f8); }

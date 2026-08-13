@@ -199,9 +199,9 @@ const Campfires = () => {
     }
 
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col" style={{ height: 'calc(100dvh - 56px)' }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="msg-skin-surface flex flex-col" style={{ height: 'calc(100dvh - 56px)' }}>
         <CampfireListHeader filter={filter} setFilter={setFilter} skin={skin} setSkin={setSkin} />
-        <div className="flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
+        <div className="msg-skin-surface flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
           <CampfireList
             campfires={filtered}
             displayName={displayName}
@@ -321,8 +321,8 @@ const CampfireListHeader = ({ filter, setFilter, skin, setSkin }: {
   skin: MessengerSkin;
   setSkin: (s: MessengerSkin) => void;
 }) => (
-  <div className="p-4 border-b border-border">
-    <h1 className="font-display text-lg text-foreground mb-3">Messages</h1>
+  <div className="msg-skin-strip p-4">
+    <h1 className="msg-skin-title font-display text-lg mb-3">Messages</h1>
     <div className="skin-picker skin-picker-scroll mb-3" role="group" aria-label="Messenger skin">
       {SKIN_OPTIONS.map(opt => (
         <button
@@ -395,10 +395,10 @@ const CampfireList = ({
       {/* Conversations on a timer */}
       {flickers.length > 0 && (
         <div>
-          <p className="font-display text-[10px] uppercase tracking-widest text-muted-foreground px-4 pt-4 pb-2">
+          <p className="msg-skin-label font-display text-[10px] uppercase tracking-widest px-4 pt-4 pb-2">
             🕯️ Expiring soon
           </p>
-          <div className="divide-y divide-border">
+          <div>
             {flickers.map(c => {
               const expired = isFlickerExpired(c);
               const timeLeft = flickerTimeRemaining(c.expires_at);
@@ -406,14 +406,14 @@ const CampfireList = ({
                 <button
                   key={c.id}
                   onClick={() => onSelect(c.id)}
-                  className={`w-full text-left px-4 py-3 transition-colors ${
-                    selectedId === c.id ? 'bg-primary/8' : 'hover:bg-muted/50'
+                  className={`msg-skin-row w-full text-left px-4 py-3 transition-colors ${
+                    selectedId === c.id ? 'is-active' : ''
                   } ${expired ? 'opacity-50' : ''}`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-lg shrink-0">🕯️</span>
                     <div className="min-w-0 flex-1">
-                      <p className="font-body text-sm font-medium text-foreground truncate">{displayName(c)}</p>
+                      <p className="msg-skin-title font-body text-sm font-medium truncate">{displayName(c)}</p>
                       {expired ? (
                         <div className="flex items-center gap-1.5">
                           <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0 opacity-60">
@@ -433,16 +433,16 @@ const CampfireList = ({
                               <animate attributeName="opacity" values="0.35;0.1;0.35" dur="2.8s" repeatCount="indefinite" />
                             </circle>
                           </svg>
-                          <p className="font-body text-xs text-muted-foreground/60 italic">Burned down to embers</p>
+                          <p className="msg-skin-sub font-body text-xs italic">Burned down to embers</p>
                         </div>
                       ) : (
-                        <p className="font-body text-xs text-muted-foreground">
-                          Burns out in <span className="text-foreground/70">{timeLeft}</span>
+                        <p className="msg-skin-sub font-body text-xs">
+                          Burns out in <span>{timeLeft}</span>
                         </p>
                       )}
                     </div>
                     {!expired && timeLeft && (
-                      <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-[3px] shrink-0">
+                      <span className="msg-skin-sub font-body text-[10px] px-2 py-0.5 rounded-[3px] shrink-0">
                         {timeLeft}
                       </span>
                     )}
@@ -456,11 +456,11 @@ const CampfireList = ({
 
       {/* Regular campfires */}
       {others.length > 0 && flickers.length > 0 && (
-        <p className="font-display text-[10px] uppercase tracking-widest text-muted-foreground px-4 pt-4 pb-2">
+        <p className="msg-skin-label font-display text-[10px] uppercase tracking-widest px-4 pt-4 pb-2">
           🔥 Campfires
         </p>
       )}
-      <div className="divide-y divide-border">
+      <div>
         {others.map(c => {
           const isEmbers = c.is_embers;
 
@@ -468,8 +468,8 @@ const CampfireList = ({
             <button
               key={c.id}
               onClick={() => onSelect(c.id)}
-              className={`w-full text-left px-4 py-3 transition-colors ${
-                selectedId === c.id ? 'bg-primary/8' : 'hover:bg-muted/50'
+              className={`msg-skin-row w-full text-left px-4 py-3 transition-colors ${
+                selectedId === c.id ? 'is-active' : ''
               } ${isEmbers ? 'opacity-70' : ''}`}
             >
               <div className="flex items-center gap-3">
@@ -477,23 +477,23 @@ const CampfireList = ({
                   {isEmbers ? '🌙' : '🔥'}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-body text-sm font-medium text-foreground truncate">{displayName(c)}</p>
+                  <p className="msg-skin-title font-body text-sm font-medium truncate">{displayName(c)}</p>
                   {isEmbers && c.daysSinceLastMessage ? (
                     <div className="flex items-center gap-2">
-                      <p className="font-body text-xs text-muted-foreground">Quiet for {c.daysSinceLastMessage} days</p>
+                      <p className="msg-skin-sub font-body text-xs">Quiet for {c.daysSinceLastMessage} days</p>
                       <span
-                        className="font-body text-xs text-primary cursor-pointer hover:underline"
+                        className="msg-skin-send font-body text-xs cursor-pointer hover:underline"
                         onClick={(e) => { e.stopPropagation(); onNudge?.(c.id); }}
                         role="button"
                         tabIndex={0}
                       >Nudge</span>
                     </div>
                   ) : c.lastMessage ? (
-                    <p className="font-body text-xs text-muted-foreground truncate">
+                    <p className="msg-skin-sub font-body text-xs truncate">
                       {c.lastMessage} · {c.lastMessageTime ? formatTimeAgo(c.lastMessageTime) : ''}
                     </p>
                   ) : (
-                    <p className="font-body text-xs text-muted-foreground">New campfire</p>
+                    <p className="msg-skin-sub font-body text-xs">New campfire</p>
                   )}
                 </div>
               </div>
