@@ -143,7 +143,7 @@ const CampfireLog = ({ campfireId, isFirekeeper, onClose }: Props) => {
               onChange={e => setNewContent(e.target.value)}
               placeholder={newType === 'note' ? 'Add a note (max 300 chars)' : 'Link title'}
               maxLength={300}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm outline-none resize-none"
+              className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm outline-none resize-none"
               rows={2}
             />
             {newType === 'link' && (
@@ -151,7 +151,7 @@ const CampfireLog = ({ campfireId, isFirekeeper, onClose }: Props) => {
                 value={newLinkUrl}
                 onChange={e => setNewLinkUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm outline-none"
+                className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm outline-none"
               />
             )}
             <div className="flex gap-2">

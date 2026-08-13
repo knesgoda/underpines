@@ -110,7 +110,7 @@ export const WelcomeName = ({ onNext }: { onNext: () => void }) => {
       <Button
         onClick={save}
         disabled={!ready || saving}
-        className="mt-4 w-full rounded-pill h-12 font-body"
+        className="mt-4 w-full rounded-[3px] h-11 font-body"
       >
         {saving ? 'Saving…' : 'Continue'}
       </Button>

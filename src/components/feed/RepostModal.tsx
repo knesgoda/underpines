@@ -81,7 +81,7 @@ const RepostModal = ({ post, open, onClose, onReposted }: RepostModalProps) => {
               </p>
 
               {/* Preview card */}
-              <div className="rounded-lg border border-[#e5e7eb] bg-white p-3 mb-5 shadow-sm">
+              <div className="rounded-lg border border-[#e5e7eb] bg-white p-3 mb-5 shadow-panel">
                 <div className="flex items-center gap-2 mb-2">
                   <UserAvatar
                     avatarUrl={post.author?.avatar_url}

@@ -82,7 +82,7 @@ const StepCredentials = () => {
       <Button
         onClick={handleContinue}
         disabled={!ready}
-        className="mt-4 w-full rounded-pill h-12 font-body"
+        className="mt-4 w-full rounded-[3px] h-11 font-body"
       >
         Continue
       </Button>

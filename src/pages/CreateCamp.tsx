@@ -133,13 +133,13 @@ const CreateCamp = () => {
                 value={name}
                 onChange={e => setName(e.target.value.slice(0, 60))}
                 placeholder="Group name"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-card font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                className="w-full px-4 py-3 rounded-[5px] border border-border bg-card font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               />
               <input
                 value={description}
                 onChange={e => setDescription(e.target.value.slice(0, 120))}
                 placeholder="One-line description"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-card font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                className="w-full px-4 py-3 rounded-[5px] border border-border bg-card font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
 

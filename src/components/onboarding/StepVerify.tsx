@@ -155,7 +155,7 @@ const StepVerify = () => {
             value={digit}
             onChange={(e) => handleCodeChange(i, e.target.value)}
             onKeyDown={(e) => handleKeyDown(i, e)}
-            className="w-12 h-14 text-center text-xl font-body rounded-xl border border-border bg-card shadow-soft focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-12 h-14 text-center text-xl font-body rounded-[5px] border border-border bg-card shadow-soft focus:outline-none focus:ring-2 focus:ring-ring"
           />
         ))}
       </div>

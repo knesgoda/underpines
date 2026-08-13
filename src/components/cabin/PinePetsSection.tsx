@@ -197,7 +197,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
       </div>
       <p className="text-xs font-body text-muted-foreground mb-3">Your companions in the Cabin</p>
 
-      <div className="rounded-xl border border-border bg-card overflow-hidden p-4">
+      <div className="rounded-[5px] border border-border bg-card overflow-hidden p-4">
         {/* Add button */}
         <Button
           variant="outline"

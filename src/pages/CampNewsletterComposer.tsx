@@ -328,11 +328,11 @@ const CampNewsletterComposer = () => {
           <div className="space-y-3">
             <div>
               <label className="font-body text-xs text-muted-foreground mb-1 block">Date</label>
-              <input type="date" value={scheduleDate} onChange={e => setScheduleDate(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground" />
+              <input type="date" value={scheduleDate} onChange={e => setScheduleDate(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground" />
             </div>
             <div>
               <label className="font-body text-xs text-muted-foreground mb-1 block">Time</label>
-              <input type="time" value={scheduleTime} onChange={e => setScheduleTime(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground" />
+              <input type="time" value={scheduleTime} onChange={e => setScheduleTime(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground" />
             </div>
           </div>
           <div className="flex justify-end gap-2 mt-4">

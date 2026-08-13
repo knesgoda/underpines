@@ -32,7 +32,7 @@ const Gate = () => {
             <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--primary))" opacity="0.8" />
           </svg>
 
-          <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
+          <div className="rounded-[5px] border border-border bg-card p-8 shadow-panel">
             <h1 className="text-2xl font-display text-foreground mb-3">
               Under Pines is invite-only.
             </h1>
@@ -44,7 +44,7 @@ const Gate = () => {
 
             <Button
               onClick={() => navigate('/login', { state: { from } })}
-              className="mt-8 w-full rounded-pill h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+              className="mt-8 w-full rounded-[3px] h-11 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             >
               Sign in
             </Button>

@@ -304,7 +304,7 @@ const CampfireListHeader = ({ filter, setFilter }: { filter: FilterTab; setFilte
         <button
           key={t.key}
           onClick={() => setFilter(t.key)}
-          className={`flex-1 py-1.5 rounded-md font-body text-xs transition-colors ${filter === t.key ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'}`}
+          className={`flex-1 py-1.5 rounded-md font-body text-xs transition-colors ${filter === t.key ? 'bg-card text-foreground shadow-panel' : 'text-muted-foreground'}`}
         >
           {t.icon} {t.label}
         </button>

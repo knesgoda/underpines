@@ -76,7 +76,7 @@ const Waitlist = () => {
 
   if (state === 'done') {
     return (
-      <div className="rounded-lg border border-border bg-card p-6 shadow-sm text-center">
+      <div className="rounded-[5px] border border-border bg-card p-6 shadow-panel text-center">
         <p className="font-display text-lg text-foreground mb-1">You're on the list.</p>
         <p className="text-sm text-muted-foreground font-body">
           We'll find you when there's a seat by the fire.
@@ -190,7 +190,7 @@ const Index = () => {
 
           <div className="space-y-6">
             {PRINCIPLES.map((p) => (
-              <div key={p.title} className="rounded-lg border border-border bg-card p-6 shadow-sm">
+              <div key={p.title} className="rounded-[5px] border border-border bg-card p-6 shadow-panel">
                 <h3 className="font-display text-lg text-foreground mb-2">{p.title}</h3>
                 <p className="text-sm text-muted-foreground font-body leading-relaxed">{p.body}</p>
               </div>

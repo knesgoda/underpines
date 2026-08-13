@@ -252,7 +252,7 @@ const Invites = () => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="friend@example.com"
-                className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 font-body text-sm"
+                className="mt-1 w-full rounded-[5px] border border-border bg-card px-3 py-2 font-body text-sm"
               />
             </label>
             <label className="block">
@@ -261,7 +261,7 @@ const Invites = () => {
                 type="text"
                 value={firstName}
                 onChange={e => setFirstName(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 font-body text-sm"
+                className="mt-1 w-full rounded-[5px] border border-border bg-card px-3 py-2 font-body text-sm"
               />
             </label>
             <label className="block">
@@ -271,7 +271,7 @@ const Invites = () => {
                 onChange={e => setMessage(e.target.value)}
                 rows={2}
                 maxLength={500}
-                className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 font-body text-sm resize-none"
+                className="mt-1 w-full rounded-[5px] border border-border bg-card px-3 py-2 font-body text-sm resize-none"
               />
             </label>
             <button

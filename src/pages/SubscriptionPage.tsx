@@ -9,7 +9,7 @@ const SubscriptionPage = () => {
       <h1 className="font-display text-2xl text-foreground mb-6">Your Subscription</h1>
 
       <div className="space-y-4">
-        <div className="rounded-xl border border-border bg-card p-6 text-center space-y-3">
+        <div className="rounded-[5px] border border-border bg-card p-6 text-center space-y-3">
           <span className="text-3xl">🌲</span>
           <h2 className="font-display text-lg text-foreground">Pines+ is coming soon</h2>
           <p className="font-body text-sm text-muted-foreground">

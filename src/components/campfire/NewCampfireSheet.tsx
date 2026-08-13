@@ -314,7 +314,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
                 onClick={() => setIsFlicker(!isFlicker)}
                 className={`w-11 h-6 rounded-full transition-colors ${isFlicker ? 'bg-primary' : 'bg-muted'}`}
               >
-                <div className={`w-5 h-5 rounded-full bg-card shadow-sm transition-transform ${isFlicker ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                <div className={`w-5 h-5 rounded-full bg-card shadow-panel transition-transform ${isFlicker ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
             </div>
 

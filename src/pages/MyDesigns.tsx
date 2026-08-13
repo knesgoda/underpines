@@ -65,7 +65,7 @@ const MyDesigns = () => {
 
       <div className="space-y-4">
         {designs.map(d => (
-          <div key={d.id} className="flex gap-4 rounded-2xl border border-border bg-card p-4">
+          <div key={d.id} className="flex gap-4 rounded-[5px] border border-border bg-card p-4">
             {d.preview_image_url ? (
               <img src={d.preview_image_url} alt={d.name} className="w-20 h-20 rounded-xl object-cover flex-shrink-0" />
             ) : (

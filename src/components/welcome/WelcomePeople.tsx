@@ -159,7 +159,7 @@ export const WelcomePeople = ({ onNext, onBack }: { onNext: () => void; onBack: 
         >
           Back
         </button>
-        <Button onClick={send} disabled={sending} className="ml-auto rounded-pill h-12 px-8 font-body">
+        <Button onClick={send} disabled={sending} className="ml-auto rounded-[3px] h-11 px-8 font-body">
           {sending ? 'Sending…' : picked.size > 0 ? `Add ${picked.size} and continue` : 'Skip for now'}
         </Button>
       </div>

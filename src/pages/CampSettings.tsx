@@ -154,15 +154,15 @@ const CampSettings = () => {
       <div className="space-y-4 mb-8">
         <div>
           <label className="font-body text-xs text-muted-foreground mb-1 block">Name</label>
-          <input value={name} onChange={e => setName(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground focus:outline-none" />
+          <input value={name} onChange={e => setName(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground focus:outline-none" />
         </div>
         <div>
           <label className="font-body text-xs text-muted-foreground mb-1 block">Description</label>
-          <input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground focus:outline-none" />
+          <input value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground focus:outline-none" />
         </div>
         <div>
           <label className="font-body text-xs text-muted-foreground mb-1 block">Visibility</label>
-          <select value={visibility} onChange={e => setVisibility(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border bg-card font-body text-sm text-foreground focus:outline-none">
+          <select value={visibility} onChange={e => setVisibility(e.target.value)} className="w-full px-3 py-2 rounded-[5px] border border-border bg-card font-body text-sm text-foreground focus:outline-none">
             <option value="open">Open</option>
             <option value="ember">Ember</option>
             <option value="hidden">Hidden</option>
@@ -177,7 +177,7 @@ const CampSettings = () => {
           <h2 className="font-body text-sm font-medium text-foreground mb-3">Pending Requests ({requests.length})</h2>
           <div className="space-y-2">
             {requests.map(req => (
-              <div key={req.id} className="flex items-center justify-between px-3 py-2 rounded-lg border border-border bg-card">
+              <div key={req.id} className="flex items-center justify-between px-3 py-2 rounded-[5px] border border-border bg-card">
                 <span className="font-body text-sm text-foreground">{req.profile?.display_name || 'Unknown'}</span>
                 <div className="flex gap-2">
                   <button onClick={() => acceptRequest(req.id, req.user_id)} className="px-3 py-1 rounded-full bg-primary text-primary-foreground font-body text-xs">Accept</button>

@@ -466,7 +466,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                           onClick={() => setAnimalType(at.key)}
                           className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all duration-150 ${
                             selected
-                              ? 'border-primary bg-accent/20 shadow-sm'
+                              ? 'border-primary bg-accent/20 shadow-panel'
                               : 'border-border hover:border-muted-foreground/30 hover:bg-muted/30'
                           }`}
                         >

@@ -94,7 +94,7 @@ const TrailPassLanding = () => {
             <rect x="20" y="52" width="8" height="16" rx="2" fill="hsl(var(--primary))" opacity="0.8" />
           </svg>
 
-          <div className="rounded-lg border border-border bg-card p-8 mb-8 shadow-sm">
+          <div className="rounded-[5px] border border-border bg-card p-8 mb-8 shadow-panel">
             <p className="text-xl font-display text-foreground leading-relaxed">
               {status.inviter_name
                 ? `${status.inviter_name} saved you a place Under Pines.`

@@ -111,7 +111,7 @@ const CrossPostCard = ({ postId, note, isMine }: CrossPostCardProps) => {
   // Not in circles — redacted view
   if (!inCircle) {
     return (
-      <div className={`rounded-xl border border-border bg-card px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
+      <div className={`rounded-[5px] border border-border bg-card px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
         <p className="font-body text-xs text-muted-foreground">
           A post from someone outside your Circles
         </p>
@@ -130,7 +130,7 @@ const CrossPostCard = ({ postId, note, isMine }: CrossPostCardProps) => {
   return (
     <button
       onClick={handleTap}
-      className={`w-full text-left rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors overflow-hidden ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
+      className={`w-full text-left rounded-[5px] border border-border bg-card hover:bg-muted/50 transition-colors overflow-hidden ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
     >
       <div className="px-3 pt-3 pb-2">
         {/* Author row */}

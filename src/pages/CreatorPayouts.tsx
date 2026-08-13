@@ -121,7 +121,7 @@ const CreatorPayouts = () => {
 
       {/* No account — onboarding */}
       {noAccount && (
-        <div className="rounded-xl border border-border bg-card p-8 text-center">
+        <div className="rounded-[5px] border border-border bg-card p-8 text-center">
           <p className="font-body text-sm text-foreground mb-2">Set up payouts to publish paid Collections.</p>
           <p className="font-body text-xs text-muted-foreground mb-1">
             Under Pines uses Stripe to send your earnings directly to your bank account.
@@ -141,7 +141,7 @@ const CreatorPayouts = () => {
 
       {/* Pending account */}
       {isPending && (
-        <div className="rounded-xl border border-border bg-card p-6 mb-6">
+        <div className="rounded-[5px] border border-border bg-card p-6 mb-6">
           <p className="font-body text-sm text-foreground mb-2">Your Stripe account is {account.account_status}.</p>
           <p className="font-body text-xs text-muted-foreground mb-3">Complete your onboarding to start receiving payouts.</p>
           <button
@@ -158,7 +158,7 @@ const CreatorPayouts = () => {
       {isActive && (
         <>
           {/* Account info */}
-          <div className="rounded-xl border border-border bg-card p-4 mb-4 flex items-center justify-between">
+          <div className="rounded-[5px] border border-border bg-card p-4 mb-4 flex items-center justify-between">
             <div>
               <p className="font-body text-xs text-muted-foreground">Connected account</p>
               <p className="font-body text-sm text-foreground">••••{account.stripe_account_id.slice(-4)}</p>
@@ -174,7 +174,7 @@ const CreatorPayouts = () => {
 
           {/* Collections summary */}
           {collectionEarnings.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-4 mb-4">
+            <div className="rounded-[5px] border border-border bg-card p-4 mb-4">
               <h2 className="font-display text-sm text-foreground mb-3">Collections</h2>
               <div className="space-y-3">
                 {collectionEarnings.map(c => (
@@ -207,7 +207,7 @@ const CreatorPayouts = () => {
 
           {/* Earnings history */}
           {payouts.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-4 mb-4">
+            <div className="rounded-[5px] border border-border bg-card p-4 mb-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="font-display text-sm text-foreground">Earnings History</h2>
                 <button onClick={downloadCSV} className="flex items-center gap-1 font-body text-xs text-primary hover:underline">

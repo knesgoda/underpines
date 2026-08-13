@@ -76,7 +76,7 @@ const SuspendedPage = ({ reason, suspendedUntil, isPermanent }: SuspendedPagePro
 
         {checkedAppeal && (
           openAppeal ? (
-            <p className="font-body text-sm text-muted-foreground rounded-xl border border-border bg-card px-4 py-3">
+            <p className="font-body text-sm text-muted-foreground rounded-[5px] border border-border bg-card px-4 py-3">
               The Ranger Station has your appeal and will take a careful look.
             </p>
           ) : showAppeal ? (

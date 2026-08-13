@@ -357,7 +357,7 @@ const CollectionEditor = () => {
             <>
               {/* Stats */}
               {isPaid && (
-                <div className="mt-4 p-4 rounded-xl border border-border bg-card">
+                <div className="mt-4 p-4 rounded-[5px] border border-border bg-card">
                   <p className="font-body text-xs text-muted-foreground">Waitlist: {waitlistCount} people interested</p>
                   <p className="font-body text-xs text-muted-foreground mt-1">Subscription revenue dashboard coming soon</p>
                 </div>

@@ -161,7 +161,7 @@ const NotificationSettings = () => {
       </div>
 
       {/* Daily Ember */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Daily Ember</p>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -194,7 +194,7 @@ const NotificationSettings = () => {
       </div>
 
       {/* Real-time notifications */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
           Real-time notifications {prefs.quiet_mode && <span className="text-amber-glow">(paused by Quiet Mode)</span>}
         </p>
@@ -235,7 +235,7 @@ const NotificationSettings = () => {
       <PushNotificationsSection />
 
       {/* Always Daily Ember */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-6">
+      <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
         <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Always in Daily Ember only</p>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -260,7 +260,7 @@ const PushNotificationsSection = () => {
   const { state, subscribe } = usePushNotifications();
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 mb-6">
+    <div className="rounded-[5px] border border-border bg-card p-5 mb-6">
       <p className="font-body text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">Push Notifications</p>
       {state === 'unsupported' ? (
         <p className="font-body text-xs text-muted-foreground">Push notifications are not supported in this browser.</p>

@@ -163,7 +163,7 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
       {canWrite && (
         <>
           {showForm ? (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-4 rounded-xl border border-border bg-card p-4 space-y-3">
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-4 rounded-[5px] border border-border bg-card p-4 space-y-3">
               <div className="flex gap-2 mb-2">
                 {(['note', 'link', 'resource'] as const).map(t => (
                   <button

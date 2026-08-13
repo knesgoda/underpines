@@ -180,7 +180,7 @@ const CollectionView = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4"
           >
-            <div className="rounded-2xl border border-border bg-card p-8 text-center max-w-sm w-full shadow-lg">
+            <div className="rounded-[5px] border border-border bg-card p-8 text-center max-w-sm w-full shadow-lg">
               <p className="text-3xl mb-3">💚</p>
               <p className="font-display text-lg text-foreground mb-2">You're subscribed.</p>
               <p className="font-body text-sm text-muted-foreground mb-4">
@@ -243,7 +243,7 @@ const CollectionView = () => {
       <AnimatePresence>
         {showManage && subscriptionInfo && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-            <div className="mt-4 rounded-xl border border-border bg-card p-5">
+            <div className="mt-4 rounded-[5px] border border-border bg-card p-5">
               <p className="font-body text-sm text-foreground mb-1">Your subscription to</p>
               <p className="font-display text-lg text-foreground mb-2">{collection.title}</p>
               <p className="font-body text-xs text-muted-foreground mb-1">
@@ -286,7 +286,7 @@ const CollectionView = () => {
 
       {/* Paid gate */}
       {isPaid && !canViewAll && (
-        <div className="mt-6 rounded-xl border border-border bg-card p-8 text-center">
+        <div className="mt-6 rounded-[5px] border border-border bg-card p-8 text-center">
           <p className="text-3xl mb-3">📚</p>
           <p className="font-body text-sm text-foreground mb-1">This Collection continues for subscribers.</p>
           <button

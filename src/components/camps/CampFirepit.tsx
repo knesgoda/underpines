@@ -111,7 +111,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
     <div>
       {/* Composer */}
       {isScout ? (
-        <div className="rounded-xl border border-border bg-card p-4 mb-4 text-center">
+        <div className="rounded-[5px] border border-border bg-card p-4 mb-4 text-center">
           <p className="font-body text-sm text-muted-foreground">
             🌱 You're a Scout in this Camp for {scoutDays ?? 0} more days. Explore and react — posting unlocks soon.
           </p>
@@ -124,14 +124,14 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
                 <button
                   key={type}
                   onClick={() => openComposer(type)}
-                  className="flex-1 py-2.5 rounded-xl border border-border bg-card font-body text-xs text-muted-foreground hover:bg-muted transition-colors capitalize"
+                  className="flex-1 py-2.5 rounded-[5px] border border-border bg-card font-body text-xs text-muted-foreground hover:bg-muted transition-colors capitalize"
                 >
                   {type === 'spark' ? '✨ ' : type === 'story' ? '📖 ' : '🔥 '}{type}
                 </button>
               ))}
             </div>
           ) : (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="rounded-xl border border-border bg-card p-4 space-y-3">
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="rounded-[5px] border border-border bg-card p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-body text-xs text-muted-foreground capitalize">{composerType}</span>
                 <button onClick={() => setComposerType(null)} className="font-body text-xs text-muted-foreground hover:text-foreground">Cancel</button>

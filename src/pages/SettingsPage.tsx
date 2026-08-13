@@ -170,7 +170,7 @@ const SettingsPage = () => {
 const SettingsSection = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="mb-6">
     <p className="font-display text-xs uppercase tracking-wide text-muted-foreground mb-2">{label}</p>
-    <div className="rounded-xl border border-border bg-card overflow-hidden divide-y divide-border">
+    <div className="rounded-[5px] border border-border bg-card overflow-hidden divide-y divide-border">
       {children}
     </div>
   </div>
