@@ -9,6 +9,13 @@ import { supabase } from '@/integrations/supabase/client';
  * Historically we stored the *public* URL in the database, so this module
  * accepts either shape: a legacy `/object/public/post-media/<path>` URL or a
  * bare object path. That means no data migration is needed.
+ *
+ * Two things keep the signing round trips off the critical path:
+ *  - a screen that already knows every image it is about to render calls
+ *    `primeSignedMediaUrls` once, and all of them are signed in ONE request
+ *    instead of one request per <img>
+ *  - signatures persist in sessionStorage, so a reload inside the TTL paints
+ *    images without re-signing anything
  */
 
 const BUCKET = 'post-media';
@@ -17,6 +24,7 @@ const SIGNED_MARKER = `/object/sign/${BUCKET}/`;
 const TTL_SECONDS = 3600;
 // Re-sign a little before the real expiry so a long-lived tab never shows a 400.
 const REFRESH_MARGIN_MS = 5 * 60 * 1000;
+const STORAGE_KEY = 'underpines-signed-media';
 
 /** Pull the storage object path out of whatever we were handed. */
 export const extractPostMediaPath = (input: string | null | undefined): string | null => {
@@ -36,8 +44,45 @@ export const extractPostMediaPath = (input: string | null | undefined): string |
 /** True when the URL is already a signed post-media URL we can use as-is. */
 const isAlreadySigned = (input: string) => input.includes(SIGNED_MARKER);
 
-const cache = new Map<string, { url: string; expiresAt: number }>();
+type CacheEntry = { url: string; expiresAt: number };
+
+/**
+ * Session-scoped, not local: a signed URL is a bearer capability, so it lives
+ * no longer than the tab. The browser's HTTP cache holds the images themselves.
+ */
+const readPersisted = (): Map<string, CacheEntry> => {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return new Map();
+    const now = Date.now();
+    const entries = (JSON.parse(raw) as [string, CacheEntry][]).filter(
+      ([path, entry]) =>
+        typeof path === 'string' &&
+        typeof entry?.url === 'string' &&
+        typeof entry?.expiresAt === 'number' &&
+        entry.expiresAt > now + REFRESH_MARGIN_MS,
+    );
+    return new Map(entries);
+  } catch {
+    return new Map();
+  }
+};
+
+const cache = readPersisted();
 const inflight = new Map<string, Promise<string | null>>();
+
+const persist = () => {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify([...cache]));
+  } catch {
+    // Storage full or disabled — the in-memory cache still works.
+  }
+};
+
+const freshHit = (path: string): CacheEntry | null => {
+  const hit = cache.get(path);
+  return hit && hit.expiresAt > Date.now() + REFRESH_MARGIN_MS ? hit : null;
+};
 
 /**
  * Forget the cached signature for a stored reference.
@@ -49,13 +94,16 @@ const inflight = new Map<string, Promise<string | null>>();
  */
 export const invalidateSignedMediaUrl = (input: string | null | undefined) => {
   const path = extractPostMediaPath(input);
-  if (path) cache.delete(path);
+  if (path) {
+    cache.delete(path);
+    persist();
+  }
 };
 
 
 export const getSignedMediaUrl = async (path: string): Promise<string | null> => {
-  const hit = cache.get(path);
-  if (hit && hit.expiresAt > Date.now() + REFRESH_MARGIN_MS) return hit.url;
+  const hit = freshHit(path);
+  if (hit) return hit.url;
 
   const pending = inflight.get(path);
   if (pending) return pending;
@@ -65,6 +113,7 @@ export const getSignedMediaUrl = async (path: string): Promise<string | null> =>
       const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, TTL_SECONDS);
       if (error || !data?.signedUrl) return null;
       cache.set(path, { url: data.signedUrl, expiresAt: Date.now() + TTL_SECONDS * 1000 });
+      persist();
       return data.signedUrl;
     } catch {
       return null;
@@ -75,6 +124,48 @@ export const getSignedMediaUrl = async (path: string): Promise<string | null> =>
 
   inflight.set(path, request);
   return request;
+};
+
+/**
+ * Sign a whole screenful of media in one storage request.
+ *
+ * Call this the moment a query returns rows that carry media references — the
+ * per-path promises are registered synchronously, so every <MediaImage> that
+ * mounts afterwards joins the batch instead of firing its own request. Fire and
+ * forget; failures degrade to the per-image path.
+ */
+export const primeSignedMediaUrls = (inputs: (string | null | undefined)[]) => {
+  const paths = [...new Set(inputs.map(extractPostMediaPath).filter((p): p is string => !!p))]
+    .filter(path => !freshHit(path) && !inflight.has(path));
+  if (paths.length === 0) return;
+
+  const batch = (async (): Promise<Map<string, string>> => {
+    try {
+      const { data, error } = await supabase.storage.from(BUCKET).createSignedUrls(paths, TTL_SECONDS);
+      if (error || !data) return new Map();
+      const expiresAt = Date.now() + TTL_SECONDS * 1000;
+      const byPath = new Map<string, string>();
+      for (const row of data) {
+        if (row.path && row.signedUrl && !row.error) {
+          byPath.set(row.path, row.signedUrl);
+          cache.set(row.path, { url: row.signedUrl, expiresAt });
+        }
+      }
+      if (byPath.size > 0) persist();
+      return byPath;
+    } catch {
+      return new Map();
+    }
+  })();
+
+  for (const path of paths) {
+    inflight.set(
+      path,
+      batch
+        .then(byPath => byPath.get(path) ?? null)
+        .finally(() => inflight.delete(path)),
+    );
+  }
 };
 
 export interface SignedMedia {
@@ -98,10 +189,8 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     if (isAlreadySigned(input)) return { url: input, loading: false, failed: false };
     const path = extractPostMediaPath(input);
     if (!path) return { url: input, loading: false, failed: false };
-    const hit = cache.get(path);
-    if (hit && hit.expiresAt > Date.now() + REFRESH_MARGIN_MS) {
-      return { url: hit.url, loading: false, failed: false };
-    }
+    const hit = freshHit(path);
+    if (hit) return { url: hit.url, loading: false, failed: false };
     return { url: null, loading: true, failed: false };
   });
 
@@ -112,8 +201,8 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     const path = extractPostMediaPath(input);
     if (!path) { setState({ url: input, loading: false, failed: false }); return; }
 
-    const hit = cache.get(path);
-    if (hit && hit.expiresAt > Date.now() + REFRESH_MARGIN_MS) {
+    const hit = freshHit(path);
+    if (hit) {
       setState({ url: hit.url, loading: false, failed: false });
       return;
     }
@@ -143,4 +232,3 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
 
   return { ...state, retry };
 };
-

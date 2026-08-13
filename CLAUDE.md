@@ -118,7 +118,48 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-13 (LATEST) — pre-beta review + signed-out lockdown + P1
+**As of 2026-08-13 (LATEST) — runtime load-speed pass (branch
+`claude/app-performance-optimization-in6h1o`, pushed, not merged).**
+
+Entry bundle was already at target (196.8 kB gzip, +91 B over baseline), so
+this pass attacked the network waterfalls that remained after the bundle work:
+
+- **Feed collapsed from 3 serial round trips to 2 (1 on revisits).**
+  `useFeedPosts` now embeds `author`, `reactions` and `post_media` directly in
+  the posts query via PostgREST FK embedding (`profiles!posts_author_id_fkey`
+  etc. — FKs verified against prod), and embeds `author` + camp name in the
+  camp_posts query. The social graph (circles/mutes/camp memberships) moved to
+  its own `['feed-graph', uid]` query with a 5-minute staleTime, so feed
+  refetches inside that window skip it entirely.
+- **Media signing batched + persisted.** `post-media` is now PRIVATE in prod
+  (confirmed via `query_database` — the Aug 13 "403 fallback" commits were the
+  other half of that cutover), so every image needs a signed URL. Previously
+  each `<MediaImage>` fired its own `createSignedUrl` round trip before the
+  browser could even start the image download. New `primeSignedMediaUrls()`
+  signs a whole screenful in ONE `createSignedUrls` batch request; per-path
+  promises register in the inflight map synchronously so mounting components
+  join the batch. The signature cache also persists in sessionStorage (tab-
+  scoped, TTL-checked on hydrate), so a reload inside the 1-hour TTL paints
+  images with zero signing requests. Feed primes on data arrival; other
+  screens (Photos, collections, campfires) still use the per-image path and
+  could adopt priming later.
+- **Likely-next route chunks prefetch on idle.** Once a signed-in member's
+  first screen settles, AppLayout warms the HomePage/Campfires/MyPage chunks
+  (requestIdleCallback, module-flag guarded), so tapping Feed/Messages/My Page
+  is a cache hit instead of a chunk fetch.
+- **Verified:** tsc clean, eslint clean on changed files (and the 6 pre-
+  existing `any` errors in useFeedPosts are gone), 114 vitest pass (6 new
+  batch/persistence tests), build clean, entry 196.8 kB gzip, signed-out
+  Chromium sweep green on 10 routes × both themes. Signed-in feed against real
+  data is Kevin's eyeball (sandbox can't reach Supabase) — specifically: feed
+  renders with authors/reactions/images, a camp post shows its camp name, and
+  images appear after a hard reload without new `/storage/v1/object/sign`
+  requests in the network tab.
+- **Possible follow-up:** a `get_feed()` definer RPC (the `get_boot_state`
+  pattern) would take the feed to one round trip flat, but needs a migration +
+  coordinated deploy; deliberately not started here.
+
+**Previously (2026-08-13) — pre-beta review + signed-out lockdown + P1
 security (branch `claude/platform-review-auth-seo-vytbcj`, pushed, not merged).
 Full writeup: `docs/pre-beta-review-2026-08.md`.**
 
