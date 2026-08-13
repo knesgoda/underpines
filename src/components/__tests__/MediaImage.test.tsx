@@ -54,7 +54,9 @@ afterEach(() => {
 });
 
 const fallback = () => document.querySelector('[data-media-state="unavailable"]');
+const retrySkeleton = () => document.querySelector('[data-media-state="retrying"]');
 const img = () => document.querySelector('img') as HTMLImageElement | null;
+
 
 /** Let the pending backoff timer fire and the re-sign promise settle. */
 const flushBackoff = async (ms: number) => {
