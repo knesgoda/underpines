@@ -18,6 +18,9 @@ import {
   MODULE_TYPES,
   type PageModuleDraft,
 } from '@/hooks/usePageEditor';
+import { useAlbums } from '@/hooks/usePhotos';
+import { useFeaturedAlbumRows, useSaveFeaturedAlbums } from '@/hooks/useFeaturedPage';
+
 import { contrastRatio, hexToHslTriplet, hslTripletToHex } from '@/lib/color';
 import { addModule, moveItem, moveModule, removeModule, updateModule } from '@/lib/pageModules';
 // profile.css supplies .module and .page-2006, which the preview reuses so it
