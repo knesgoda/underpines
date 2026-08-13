@@ -42,10 +42,13 @@
 .buddy-footer { height:35px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--msg-line); }.buddy-footer button { border:0;border-right:1px solid var(--msg-line);background:#f8efe3;font-size:9px;cursor:pointer; }
 /* Skin palettes. Each retro skin's furniture lives in its own consolidated
    section further down; these token blocks are the palette the base
-   .msg-skin-* rules read when a skin has no more specific rule. */
-.skin-icu { --msg-bg:#128985;--msg-panel:#d4d0c8;--msg-line:#808080;--msg-title:#000080;--msg-accent:#3bb54a;--msg-text:#000;--msg-soft:#d4d0c8;font-family:Tahoma,Arial,sans-serif; }
-.skin-bullseye { --msg-bg:#d4d0c8;--msg-panel:#fff;--msg-line:#808080;--msg-title:#000080;--msg-accent:#0000ff;--msg-text:#000;--msg-soft:#d4d0c8;font-family:Arial,sans-serif; }
-.skin-emessen { --msg-bg:#dbe9f8;--msg-panel:#f8fcff;--msg-line:#91afd2;--msg-title:#2b62b4;--msg-accent:#4da746;--msg-text:#24314c;font-family:Tahoma,"Trebuchet MS",Arial,sans-serif;--msg-soft:#e6f1fc; }
+   .msg-skin-* rules read when a skin has no more specific rule.
+   The `.skin-X .messenger-page` arm matters: .messenger-page re-declares the
+   full --msg-* set on itself, which would otherwise mask the skin's palette
+   for everything inside the desktop stage. */
+.skin-icu, .skin-icu .messenger-page { --msg-bg:#128985;--msg-panel:#d4d0c8;--msg-line:#808080;--msg-title:#000080;--msg-accent:#3bb54a;--msg-text:#000;--msg-soft:#d4d0c8;font-family:Tahoma,Arial,sans-serif; }
+.skin-bullseye, .skin-bullseye .messenger-page { --msg-bg:#d4d0c8;--msg-panel:#fff;--msg-line:#808080;--msg-title:#000080;--msg-accent:#0000d0;--msg-text:#000;--msg-soft:#d4d0c8;font-family:Arial,sans-serif; }
+.skin-emessen, .skin-emessen .messenger-page { --msg-bg:#dbe9f8;--msg-panel:#f8fcff;--msg-line:#91afd2;--msg-title:#2b62b4;--msg-accent:#4da746;--msg-text:#24314c;font-family:Tahoma,"Trebuchet MS",Arial,sans-serif;--msg-soft:#e6f1fc; }
 
 
 /**
@@ -161,8 +164,659 @@
 .skin-thumb-compose { display:flex;align-items:center;gap:2px;padding:0 3px;height:10px;background:var(--t-soft); }
 .skin-thumb-input { flex:1;height:6px;border:1px solid var(--t-line);border-radius:var(--t-radius);background:var(--t-panel); }
 .skin-thumb-send { width:9px;height:6px;border-radius:var(--t-radius);background:var(--t-accent); }
-.skin-thumb--icu { --t-bg:#128985;--t-panel:#fff;--t-line:#808080;--t-title:#2761a7;--t-accent:#c02a13;--t-soft:#d4d0c8;--t-radius:0; }
-.skin-thumb--bullseye { --t-bg:#bfbfbf;--t-panel:#fff;--t-line:#7f7f7f;--t-title:#0f6fe8;--t-accent:#d01111;--t-soft:#ece9d8;--t-radius:0; }
-.skin-thumb--emessen { --t-bg:#cadcf2;--t-panel:#fff;--t-line:#a3bad6;--t-title:#4c78c9;--t-accent:#61bd55;--t-soft:#e3effc;--t-radius:5px; }
+/* Retro thumbs draw their transcript shapes rather than bubbles */
+.skin-thumb-row { display:flex;align-items:center;gap:2px; }
+.skin-thumb-row.is-indent { padding-left:6px; }
+.skin-thumb-dot { width:4px;height:4px;background:var(--t-accent); }
+.skin-thumb-line { display:block;height:3px;width:55%;background:#9a9a9a; }
+.skin-thumb-line.is-header { width:40%;height:3px;background:#000; }
+.skin-thumb-line.is-them { background:var(--t-name-them,#0000ff); }
+.skin-thumb-line.is-mine { background:var(--t-name-mine,#ff0000);width:40%; }
+.skin-thumb-line.is-says { width:60%;background:#8a97a5; }
+.skin-thumb-line.is-text { width:45%;background:#2b2b2b; }
+
+/* Thumb palettes, kept in sync with each skin's real chrome */
+.skin-thumb--icu { --t-bg:#128985;--t-panel:#fff;--t-line:#808080;--t-title:#000080;--t-accent:#3bb54a;--t-soft:#d4d0c8;--t-radius:0;--t-name-them:#d00000;--t-name-mine:#0000a0; }
+.skin-thumb--bullseye { --t-bg:#3a6ea5;--t-panel:#fff;--t-line:#808080;--t-title:#000080;--t-accent:#b8b4ac;--t-soft:#d4d0c8;--t-radius:0;--t-name-them:#0000ff;--t-name-mine:#ff0000; }
+.skin-thumb--emessen { --t-bg:#c3d9f0;--t-panel:#fff;--t-line:#7f9db9;--t-title:#2b62b4;--t-accent:#61bd55;--t-soft:#dfecfa;--t-radius:3px; }
 
 .skin-picker button { display:flex;flex-direction:column;align-items:center;gap:5px; }
+
+/* =========================================================================
+   ICU — the classic-ICQ look (Win9x chrome on a teal desktop).
+   Bevels follow the recipe documented at the top of this file.
+   ========================================================================= */
+
+/* Type: everything inside the skinned surfaces is small Tahoma. */
+.skin-icu .messenger-stage, .skin-icu .messenger-stage *,
+.skin-icu .msg-skin-surface, .skin-icu .msg-skin-surface *,
+.skin-icu .msg-skin-header, .skin-icu .msg-skin-header *,
+.skin-icu .msg-skin-strip, .skin-icu .msg-skin-strip *,
+.skin-icu .msg-skin-history, .skin-icu .msg-skin-history *,
+.skin-icu .msg-skin-composer, .skin-icu .msg-skin-composer *,
+.skin-icu .msg-skin-banner, .skin-icu .msg-skin-banner *,
+.skin-icu .msg-skin-dialog, .skin-icu .msg-skin-dialog * {
+  font-family: Tahoma, "MS Sans Serif", Geneva, sans-serif;
+  letter-spacing: 0;
+}
+
+/* Desktop stage: flat teal desktop, two grey raised windows on it */
+.skin-icu .messenger-stage { background:#128985;border:0;border-radius:0;box-shadow:none; }
+.skin-icu .buddy-window, .skin-icu .chat-shell {
+  background:#d4d0c8;border:0;border-radius:0;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px #808080, inset 2px 2px #fff, 3px 3px 0 rgba(6,74,71,.55);
+  padding:3px;
+}
+.skin-icu .window-title {
+  height:21px;flex:0 0 21px;padding:0 3px;gap:4px;
+  background:linear-gradient(90deg,#000080,#1084d0);
+  color:#fff;font:700 11px Tahoma,sans-serif;
+}
+.skin-icu .window-controls i {
+  width:14px;height:14px;border:0;border-radius:0;background:#d4d0c8;color:#000;font-size:8px;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-icu .skin-mark { font-size:0; }
+.skin-icu .skin-mark::before { content:"✿";font-size:13px;color:#3bb54a; }
+
+/* Buddy list: grey chrome around a sunken white list */
+.skin-icu .self-card { background:#d4d0c8;border-bottom:0;padding:6px 8px; }
+.skin-icu .self-card b { font:700 11px Tahoma,sans-serif;color:#000; }
+.skin-icu .self-card small { font-size:10px;color:#3f3f3f; }
+.skin-icu .avatar { border-radius:0;border:1px solid #808080;outline:0;box-shadow:none; }
+.skin-icu .buddy-tools { border-bottom:0;padding:3px;gap:3px;display:flex; }
+.skin-icu .buddy-tools button, .skin-icu .buddy-footer button {
+  flex:1;height:22px;border:0;border-right:0;border-radius:0;background:#d4d0c8;color:#000;font:11px Tahoma,sans-serif;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-icu .buddy-tools button:active, .skin-icu .buddy-footer button:active {
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+.skin-icu .buddy-search {
+  margin:0 3px 3px;border:0;height:23px;background:#fff;color:#000;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-icu .buddy-search input { font-size:11px; }
+.skin-icu .buddy-group {
+  margin:0 3px 3px;padding:0 2px 4px;background:#fff;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-icu .group-label {
+  border:0;border-radius:0;margin:2px 0;padding:2px 6px;background:#d4d0c8;color:#000;
+  font:700 11px Tahoma,sans-serif;letter-spacing:0;
+  box-shadow:inset -1px -1px #808080, inset 1px 1px #fff;
+}
+.skin-icu .buddy { border-radius:0;padding:2px 5px;gap:5px; }
+.skin-icu .buddy .avatar { display:none; }
+.skin-icu .buddy:hover { background:#e8e8e8; }
+.skin-icu .buddy.active, .skin-icu .buddy.active:hover { background:#000080; }
+.skin-icu .buddy b { font:400 11px Tahoma,sans-serif;color:#0000a0; }
+.skin-icu .buddy small { font-size:9px;color:#808080;margin-top:0; }
+.skin-icu .buddy.active b, .skin-icu .buddy.active small { color:#fff; }
+.skin-icu .buddy-presence { font-size:0;width:14px; }
+.skin-icu .buddy-presence::before { content:"✿";font-size:12px;color:#3bb54a; }
+.skin-icu .buddy.is-offline .buddy-presence::before { color:#d0342c; }
+.skin-icu .buddy em { border-radius:0;background:#000080; }
+.skin-icu .buddy-footer { border-top:0;height:auto;padding:3px;gap:3px;display:flex; }
+.skin-icu .chat-empty { color:#000; }
+.skin-icu .chat-empty button { color:#0000a0 !important; }
+
+/* Thread header. Mobile: the navy title bar itself. Desktop (.chat-body):
+   the grey info strip that sat under ICQ's real title bar. */
+.skin-icu .msg-skin-header {
+  background:linear-gradient(90deg,#000080,#1084d0);
+  border-bottom:0;padding:4px 6px;min-height:26px;
+  --msg-chip-bg:#d4d0c8; --msg-chip-fg:#000; --msg-chip-radius:0;
+}
+.skin-icu .msg-skin-header h2 { font:700 11px Tahoma,sans-serif; }
+.skin-icu .msg-skin-header p { font-size:10px; }
+.skin-icu .chat-body .msg-skin-header {
+  background:#d4d0c8; --msg-header-fg:#000;
+  box-shadow:inset 0 -1px 0 #808080, inset 0 1px 0 #fff;
+  min-height:30px;
+}
+.skin-icu .chat-body .msg-skin-header h2 { color:#0000a0; }
+
+/* Transcript: sunken white field of `nick: message` lines */
+.skin-icu .msg-skin-history {
+  background:#fff;margin:0 4px;padding:6px 8px;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-icu .msg-skin-line { justify-content:flex-start; }
+.skin-icu .msg-skin-line-body { max-width:98%; }
+.skin-icu .msg-skin-name {
+  display:inline;margin:0;padding:0;
+  font:700 11px Tahoma,sans-serif;color:#d00000;
+}
+.skin-icu .msg-skin-name::after { content:": "; }
+.skin-icu .msg-skin-name.is-mine { color:#0000a0; }
+.skin-icu .msg-skin-bubble, .skin-icu .msg-skin-bubble.is-mine {
+  display:inline;background:transparent;border:0;border-radius:0;box-shadow:none;padding:0;
+}
+.skin-icu .msg-skin-bubble p { display:inline;font:11px/1.5 Tahoma,sans-serif;color:#000; }
+.skin-icu .msg-skin-time {
+  display:inline;opacity:1;margin:0 0 0 5px;padding:0;text-align:left;
+  font:10px Tahoma,sans-serif;color:#808080;
+}
+.skin-icu .msg-skin-media { border-radius:0;border:1px solid #808080; }
+.skin-icu .msg-skin-divider { margin:6px 0; }
+.skin-icu .msg-skin-divider-line { background:#c0c0c0; }
+.skin-icu .msg-skin-divider-text { font:10px Tahoma,sans-serif;color:#808080; }
+.skin-icu .msg-skin-empty p { color:#000; }
+.skin-icu .msg-skin-banner { background:#ffffe1;border-top:1px solid #808080;border-bottom:1px solid #808080; }
+.skin-icu .msg-skin-banner p { color:#000;font-size:11px; }
+.skin-icu .msg-skin-faded { background:#ffffe1;border:1px solid #808080;border-radius:0; }
+.skin-icu .msg-skin-faded p { color:#3f3f3f; }
+.skin-icu .msg-skin-pill {
+  background:#d4d0c8;color:#000;border-radius:0;font:11px Tahoma,sans-serif;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf, 2px 2px 4px rgba(0,0,0,.35);
+}
+.skin-icu .msg-skin-menu {
+  background:#d4d0c8;border:0;border-radius:0;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf, 3px 3px 6px rgba(0,0,0,.3);
+}
+.skin-icu .msg-skin-menu button { color:#000;font:11px Tahoma,sans-serif; }
+.skin-icu .msg-skin-menu button:hover { background:#000080;color:#fff; }
+.skin-icu .msg-skin-dialog {
+  background:#d4d0c8;border:0;border-radius:0;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-icu .msg-skin-voice {
+  background:#d4d0c8;border:0;border-radius:0;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-icu .msg-skin-voice button { border-radius:0;background:#d4d0c8;color:#000;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff; }
+.skin-icu .msg-skin-crosspost { border-radius:0;border:1px solid #808080;background:#fff; }
+
+/* Composer: grey bar, sunken input, raised grey buttons, labelled Send */
+.skin-icu .msg-skin-composer { background:#d4d0c8;border-top:0;box-shadow:inset 0 1px 0 #808080, inset 0 2px 0 #fff; }
+.skin-icu .msg-skin-composer textarea {
+  background:#fff;border:0;border-radius:0;font:11px Tahoma,sans-serif;color:#000;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-icu .msg-skin-composer textarea:focus { border:0; }
+.skin-icu .msg-skin-composer-strip { border-bottom:1px solid #808080; }
+.skin-icu .msg-skin-thumb { border:1px solid #808080;border-radius:0;background:#fff; }
+.skin-icu .msg-skin-icon-btn {
+  background:#d4d0c8;border:0;border-radius:0;color:#000;padding:5px;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-icu .msg-skin-icon-btn:hover { background:#d4d0c8; }
+.skin-icu .msg-skin-icon-btn:active { box-shadow:inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080; }
+.skin-icu .msg-skin-icon-btn.is-recording { color:#c00; }
+.skin-icu .msg-skin-send-icon { display:none; }
+.skin-icu .msg-skin-send-label { display:inline; }
+.skin-icu .msg-skin-send-btn {
+  width:auto;min-width:72px;height:26px;max-width:33vw;
+  background:#d4d0c8;border:0;border-radius:0;color:#000;font:700 11px Tahoma,sans-serif;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-icu .msg-skin-send-btn:hover:not(:disabled) { filter:none; }
+.skin-icu .msg-skin-send-btn:active:not(:disabled) { box-shadow:inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080; }
+.skin-icu .msg-skin-panel {
+  background:#d4d0c8;border:0;border-radius:0;color:#000;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-icu .msg-skin-bar { background:#000080;border-radius:0; }
+.skin-icu .msg-skin-note { color:#000;opacity:1;font-size:11px; }
+
+/* Mobile screens: the phone surface becomes the grey ICQ window itself.
+   (These hooks only render on the mobile layouts, so no media query needed.) */
+.skin-icu .msg-skin-surface { background:#d4d0c8;color:#000; }
+.skin-icu .msg-skin-surface .msg-skin-surface {
+  background:#fff;margin:0 4px 4px;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-icu .msg-skin-strip { background:#d4d0c8;border-bottom:0;box-shadow:inset 0 -1px 0 #808080; }
+.skin-icu .msg-skin-strip h1 {
+  background:linear-gradient(90deg,#000080,#1084d0);color:#fff;
+  font:700 11px Tahoma,sans-serif;padding:5px 8px;margin:-16px -16px 10px;
+}
+.skin-icu .msg-skin-label {
+  background:#d4d0c8;color:#000;font:700 11px Tahoma,sans-serif;letter-spacing:0;text-transform:none;
+  margin:4px;padding:2px 6px;
+  box-shadow:inset -1px -1px #808080, inset 1px 1px #fff;
+}
+.skin-icu .msg-skin-row { background:#fff;border-bottom:0;padding:6px 10px; }
+.skin-icu .msg-skin-row:hover { background:#e8e8e8; }
+.skin-icu .msg-skin-row.is-active { background:#000080; }
+.skin-icu .msg-skin-row.is-active .msg-skin-title, .skin-icu .msg-skin-row.is-active .msg-skin-sub { color:#fff; }
+.skin-icu .msg-skin-title { color:#0000a0;font:400 12px Tahoma,sans-serif; }
+.skin-icu .msg-skin-sub { color:#808080;opacity:1;font-size:10px; }
+.skin-icu .msg-skin-send { color:#0000a0; }
+.skin-icu .msg-skin-tabs { background:#d4d0c8;border-radius:0;padding:3px;gap:3px; }
+.skin-icu .msg-skin-tab {
+  border-radius:0;background:#d4d0c8;color:#000;font:11px Tahoma,sans-serif;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-icu .msg-skin-tab.is-active {
+  background:#c8c4bc;color:#000;box-shadow:inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+.skin-icu .msg-skin-fab {
+  border-radius:0;background:#d4d0c8;color:#000;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf, 3px 3px 8px rgba(0,0,0,.4);
+}
+
+/* =========================================================================
+   Bullseye — the AIM look (Win9x chrome, buddy tree, ScreenName: transcript).
+   ========================================================================= */
+
+.skin-bullseye .messenger-stage, .skin-bullseye .messenger-stage *,
+.skin-bullseye .msg-skin-surface, .skin-bullseye .msg-skin-surface *,
+.skin-bullseye .msg-skin-header, .skin-bullseye .msg-skin-header *,
+.skin-bullseye .msg-skin-strip, .skin-bullseye .msg-skin-strip *,
+.skin-bullseye .msg-skin-history, .skin-bullseye .msg-skin-history *,
+.skin-bullseye .msg-skin-composer, .skin-bullseye .msg-skin-composer *,
+.skin-bullseye .msg-skin-banner, .skin-bullseye .msg-skin-banner *,
+.skin-bullseye .msg-skin-dialog, .skin-bullseye .msg-skin-dialog * {
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+}
+
+/* Desktop: Win98-blue desktop, raised grey windows */
+.skin-bullseye .messenger-stage { background:#3a6ea5;border:0;border-radius:0;box-shadow:none; }
+.skin-bullseye .buddy-window, .skin-bullseye .chat-shell {
+  background:#d4d0c8;border:0;border-radius:0;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px #808080, inset 2px 2px #fff, 3px 3px 0 rgba(16,42,66,.45);
+  padding:3px;
+}
+.skin-bullseye .window-title {
+  height:21px;flex:0 0 21px;padding:0 3px;gap:4px;
+  background:linear-gradient(90deg,#000080,#1084d0);
+  color:#fff;font:700 11px Arial,sans-serif;
+}
+.skin-bullseye .window-controls i {
+  width:14px;height:14px;border:0;border-radius:0;background:#d4d0c8;color:#000;font-size:8px;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-bullseye .skin-mark { font-size:0; }
+.skin-bullseye .skin-mark::before { content:"☻";font-size:12px;color:#ffcf00; }
+
+/* Buddy list: the AIM tree — bold group headers, indented rows,
+   italic grey offline names, yellow selection */
+.skin-bullseye .self-card { background:#d4d0c8;border-bottom:0;padding:6px 8px; }
+.skin-bullseye .self-card b { font:700 12px Arial,sans-serif;color:#000; }
+.skin-bullseye .self-card small { font-size:10px;color:#3f3f3f; }
+.skin-bullseye .avatar { border-radius:0;border:1px solid #808080;outline:0;box-shadow:none; }
+.skin-bullseye .buddy-tools { border-bottom:0;padding:3px;gap:3px;display:flex; }
+.skin-bullseye .buddy-tools button, .skin-bullseye .buddy-footer button {
+  flex:1;height:22px;border:0;border-right:0;border-radius:0;background:#d4d0c8;color:#000;font:11px Arial,sans-serif;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-bullseye .buddy-tools button:active, .skin-bullseye .buddy-footer button:active {
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+.skin-bullseye .buddy-search {
+  margin:0 3px 3px;border:0;height:23px;background:#fff;color:#000;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-bullseye .buddy-search input { font-size:11px; }
+.skin-bullseye .buddy-group {
+  margin:0 3px 3px;padding:2px 2px 4px;background:#fff;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-bullseye .group-label {
+  border:0;border-bottom:0;border-radius:0;margin:2px 0 0;padding:3px 4px;background:none;color:#000;
+  font:700 13px Arial,sans-serif;letter-spacing:0;
+}
+.skin-bullseye .buddy { border-radius:0;padding:1px 4px 1px 20px;gap:5px; }
+.skin-bullseye .buddy .avatar { display:none; }
+.skin-bullseye .buddy-presence { display:none; }
+.skin-bullseye .buddy:hover { background:#e6f2ff; }
+.skin-bullseye .buddy.active, .skin-bullseye .buddy.active:hover { background:#ffff19;outline:1px dotted #000;outline-offset:-1px; }
+.skin-bullseye .buddy b { font:400 13px Arial,sans-serif;color:#000; }
+.skin-bullseye .buddy.is-offline b { font-style:italic;color:#808080; }
+.skin-bullseye .buddy small { font-size:10px;color:#808080;margin-top:0; }
+.skin-bullseye .buddy.active b, .skin-bullseye .buddy.active small { color:#000; }
+.skin-bullseye .buddy em { border-radius:0;background:#000080; }
+.skin-bullseye .buddy-footer { border-top:0;height:auto;padding:3px;gap:3px;display:flex; }
+.skin-bullseye .chat-empty { color:#000; }
+.skin-bullseye .chat-empty button { color:#0000d0 !important; }
+
+/* Thread header: navy title bar on mobile, grey info band on desktop */
+.skin-bullseye .msg-skin-header {
+  background:linear-gradient(90deg,#000080,#1084d0);
+  border-bottom:0;padding:4px 6px;min-height:26px;
+  --msg-chip-bg:#d4d0c8; --msg-chip-fg:#000; --msg-chip-radius:0;
+}
+.skin-bullseye .msg-skin-header h2 { font:700 11px Arial,sans-serif; }
+.skin-bullseye .msg-skin-header p { font-size:10px; }
+.skin-bullseye .chat-body .msg-skin-header {
+  background:#d4d0c8; --msg-header-fg:#000;
+  box-shadow:inset 0 -1px 0 #808080, inset 0 1px 0 #fff;
+  min-height:30px;
+}
+.skin-bullseye .chat-body .msg-skin-header h2 { color:#000; }
+
+/* Transcript: white field of `ScreenName: message` lines —
+   name bold blue for them, bold red for you, message text black */
+.skin-bullseye .msg-skin-history {
+  background:#fff;margin:0 4px;padding:6px 8px;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-bullseye .msg-skin-line { justify-content:flex-start; }
+.skin-bullseye .msg-skin-line-body { max-width:100%; }
+.skin-bullseye .msg-skin-name {
+  display:inline;margin:0;padding:0;
+  font:700 13px Arial,sans-serif;color:#0000ff;
+}
+.skin-bullseye .msg-skin-name::after { content:": "; }
+.skin-bullseye .msg-skin-name.is-mine { color:#ff0000; }
+.skin-bullseye .msg-skin-bubble, .skin-bullseye .msg-skin-bubble.is-mine {
+  display:inline;background:transparent;border:0;border-radius:0;box-shadow:none;padding:0;
+}
+.skin-bullseye .msg-skin-bubble p { display:inline;font:13px/1.45 Arial,sans-serif;color:#000; }
+.skin-bullseye .msg-skin-time { text-align:left;font-size:10px;color:#808080;padding:0; }
+.skin-bullseye .msg-skin-media { border-radius:0;border:1px solid #808080; }
+.skin-bullseye .msg-skin-divider { margin:6px 0; }
+.skin-bullseye .msg-skin-divider-line { background:#c0c0c0; }
+.skin-bullseye .msg-skin-divider-text { font:10px Arial,sans-serif;color:#808080; }
+.skin-bullseye .msg-skin-empty p { color:#000; }
+.skin-bullseye .msg-skin-banner { background:#ffffe1;border-top:1px solid #808080;border-bottom:1px solid #808080; }
+.skin-bullseye .msg-skin-banner p { color:#000;font-size:11px; }
+.skin-bullseye .msg-skin-faded { background:#ffffe1;border:1px solid #808080;border-radius:0; }
+.skin-bullseye .msg-skin-faded p { color:#3f3f3f; }
+.skin-bullseye .msg-skin-pill {
+  background:#d4d0c8;color:#000;border-radius:0;font:11px Arial,sans-serif;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf, 2px 2px 4px rgba(0,0,0,.35);
+}
+.skin-bullseye .msg-skin-menu {
+  background:#d4d0c8;border:0;border-radius:0;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf, 3px 3px 6px rgba(0,0,0,.3);
+}
+.skin-bullseye .msg-skin-menu button { color:#000;font:11px Arial,sans-serif; }
+.skin-bullseye .msg-skin-menu button:hover { background:#000080;color:#fff; }
+.skin-bullseye .msg-skin-dialog {
+  background:#d4d0c8;border:0;border-radius:0;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-bullseye .msg-skin-voice {
+  background:#d4d0c8;border:0;border-radius:0;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-bullseye .msg-skin-voice button { border-radius:0;background:#d4d0c8;color:#000;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff; }
+.skin-bullseye .msg-skin-crosspost { border-radius:0;border:1px solid #808080;background:#fff; }
+
+/* Composer: the lower third of the AIM IM window — format-strip buttons,
+   sunken typing box, and the tall labelled Send button */
+.skin-bullseye .msg-skin-composer { background:#d4d0c8;border-top:0;box-shadow:inset 0 1px 0 #808080, inset 0 2px 0 #fff; }
+.skin-bullseye .msg-skin-composer textarea {
+  background:#fff;border:0;border-radius:0;font:13px Arial,sans-serif;color:#000;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-bullseye .msg-skin-composer textarea:focus { border:0; }
+.skin-bullseye .msg-skin-composer-strip { border-bottom:1px solid #808080; }
+.skin-bullseye .msg-skin-thumb { border:1px solid #808080;border-radius:0;background:#fff; }
+.skin-bullseye .msg-skin-icon-btn {
+  background:#d4d0c8;border:0;border-radius:0;color:#000;padding:5px;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-bullseye .msg-skin-icon-btn:hover { background:#d4d0c8; }
+.skin-bullseye .msg-skin-icon-btn:active { box-shadow:inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080; }
+.skin-bullseye .msg-skin-icon-btn.is-recording { color:#c00; }
+.skin-bullseye .msg-skin-send-icon { display:none; }
+.skin-bullseye .msg-skin-send-label { display:inline; }
+.skin-bullseye .msg-skin-send-btn {
+  width:56px;height:44px;max-width:30vw;
+  background:#d4d0c8;border:0;border-radius:0;color:#000;font:700 12px Arial,sans-serif;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-bullseye .msg-skin-send-btn:hover:not(:disabled) { filter:none; }
+.skin-bullseye .msg-skin-send-btn:active:not(:disabled) { box-shadow:inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080; }
+.skin-bullseye .msg-skin-panel {
+  background:#d4d0c8;border:0;border-radius:0;color:#000;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-bullseye .msg-skin-bar { background:#000080;border-radius:0; }
+.skin-bullseye .msg-skin-note { color:#000;opacity:1;font-size:11px; }
+
+/* Mobile screens */
+.skin-bullseye .msg-skin-surface { background:#d4d0c8;color:#000; }
+.skin-bullseye .msg-skin-surface .msg-skin-surface {
+  background:#fff;margin:0 4px 4px;
+  box-shadow:inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+.skin-bullseye .msg-skin-strip { background:#d4d0c8;border-bottom:0;box-shadow:inset 0 -1px 0 #808080; }
+.skin-bullseye .msg-skin-strip h1 {
+  background:linear-gradient(90deg,#000080,#1084d0);color:#fff;
+  font:700 11px Arial,sans-serif;padding:5px 8px;margin:-16px -16px 10px;
+}
+.skin-bullseye .msg-skin-label {
+  background:none;color:#000;font:700 13px Arial,sans-serif;letter-spacing:0;text-transform:none;
+  padding:8px 8px 2px;
+}
+.skin-bullseye .msg-skin-row { background:#fff;border-bottom:0;padding:4px 8px 4px 22px; }
+.skin-bullseye .msg-skin-row:hover { background:#e6f2ff; }
+.skin-bullseye .msg-skin-row.is-active { background:#ffff19;outline:1px dotted #000;outline-offset:-2px; }
+.skin-bullseye .msg-skin-row.is-active .msg-skin-title, .skin-bullseye .msg-skin-row.is-active .msg-skin-sub { color:#000; }
+.skin-bullseye .msg-skin-title { color:#000;font:400 13px Arial,sans-serif; }
+.skin-bullseye .msg-skin-sub { color:#808080;opacity:1;font-size:10px;font-style:italic; }
+.skin-bullseye .msg-skin-send { color:#0000d0; }
+.skin-bullseye .msg-skin-tabs { background:#d4d0c8;border-radius:0;padding:3px;gap:3px; }
+.skin-bullseye .msg-skin-tab {
+  border-radius:0;background:#d4d0c8;color:#000;font:11px Arial,sans-serif;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+.skin-bullseye .msg-skin-tab.is-active {
+  background:#c8c4bc;color:#000;box-shadow:inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+.skin-bullseye .msg-skin-fab {
+  border-radius:0;background:#d4d0c8;color:#000;
+  box-shadow:inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf, 3px 3px 8px rgba(0,0,0,.4);
+}
+
+/* =========================================================================
+   Emessen — the MSN / Windows Live Messenger look (XP silver-blue glass).
+   ========================================================================= */
+
+.skin-emessen .messenger-stage, .skin-emessen .messenger-stage *,
+.skin-emessen .msg-skin-surface, .skin-emessen .msg-skin-surface *,
+.skin-emessen .msg-skin-header, .skin-emessen .msg-skin-header *,
+.skin-emessen .msg-skin-strip, .skin-emessen .msg-skin-strip *,
+.skin-emessen .msg-skin-history, .skin-emessen .msg-skin-history *,
+.skin-emessen .msg-skin-composer, .skin-emessen .msg-skin-composer *,
+.skin-emessen .msg-skin-banner, .skin-emessen .msg-skin-banner *,
+.skin-emessen .msg-skin-dialog, .skin-emessen .msg-skin-dialog * {
+  font-family: Tahoma, "Trebuchet MS", Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+/* Desktop: soft blue field, rounded glass windows with the Luna title bar */
+.skin-emessen .messenger-stage {
+  background:linear-gradient(#e7f1fb,#c3d9f0);
+  border:1px solid #a9c6e4;border-radius:8px;box-shadow:0 10px 32px rgba(31,74,130,.22);
+}
+.skin-emessen .buddy-window, .skin-emessen .chat-shell {
+  background:linear-gradient(#ffffff,#dcebfb);
+  border:1px solid #6f9dd9;border-radius:6px;
+  box-shadow:0 4px 14px rgba(31,74,130,.25);
+}
+.skin-emessen .window-title {
+  height:26px;flex:0 0 26px;padding:0 8px;gap:5px;
+  border-radius:5px 5px 0 0;
+  background:linear-gradient(#3f8ce8,#2b62b4 55%,#1c5db6);
+  color:#fff;font:700 12px Tahoma,sans-serif;text-shadow:0 1px 1px rgba(0,0,0,.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+}
+.skin-emessen .window-controls i { border-radius:50%;border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.15); }
+.skin-emessen .skin-mark { font-size:0; }
+.skin-emessen .skin-mark::before { content:"●";font-size:10px;color:#7ddc6e;text-shadow:0 0 3px rgba(125,220,110,.8); }
+
+/* Contact list: white rows, green presence, personal message in grey italic,
+   and the existing action buttons dressed as MSN 8's "I want to…" link list */
+.skin-emessen .self-card { background:linear-gradient(#fdfeff,#d7e8fb);border-bottom:1px solid #b9cde4;padding:9px 10px; }
+.skin-emessen .self-card b { font:700 12px Tahoma,sans-serif;color:#1b3f6e; }
+.skin-emessen .self-card small { font-size:10px;color:#7d8b9c;font-style:italic; }
+.skin-emessen .avatar { border-radius:4px;border:1px solid #7f9db9;outline:0;box-shadow:0 1px 3px rgba(31,74,130,.3); }
+.skin-emessen .buddy-tools { display:flex;flex-direction:column;border-bottom:1px solid #d5e4f5;padding:3px 0; }
+.skin-emessen .buddy-tools button {
+  height:auto;border:0;border-right:0;background:none;text-align:left;
+  color:#2e58a8;font:11px Tahoma,sans-serif;padding:3px 12px;cursor:pointer;
+}
+.skin-emessen .buddy-tools button::before { content:"✚ ";color:#61bd55;font-weight:700; }
+.skin-emessen .buddy-tools button:hover { text-decoration:underline;background:none; }
+.skin-emessen .buddy-search { margin:6px 8px;border:1px solid #7f9db9;border-radius:3px;background:#fff;height:24px; }
+.skin-emessen .buddy-search input { font-size:11px; }
+.skin-emessen .buddy-group { background:#fff;margin:0 8px 6px;border:1px solid #d5e4f5;border-radius:4px;padding:2px; }
+.skin-emessen .group-label {
+  border:0;border-bottom:0;background:none;color:#33578b;
+  font:700 11px Tahoma,sans-serif;letter-spacing:0;padding:5px 6px 3px;
+}
+.skin-emessen .buddy { border-radius:3px;padding:3px 6px;gap:7px; }
+.skin-emessen .buddy:hover { background:#eaf6ff; }
+.skin-emessen .buddy.active, .skin-emessen .buddy.active:hover {
+  background:linear-gradient(#dff0ff,#c9e4fb);box-shadow:inset 0 0 0 1px #98bddb;
+}
+.skin-emessen .buddy b { font:400 12px Tahoma,sans-serif;color:#1e1e1e; }
+.skin-emessen .buddy small { font-size:10px;color:#7d8b9c;font-style:italic;margin-top:0; }
+.skin-emessen .buddy-presence { font-size:0;width:12px; }
+.skin-emessen .buddy-presence::before { content:"●";font-size:10px;color:#4cbb3c; }
+.skin-emessen .buddy.is-offline .buddy-presence::before { color:#b0b0b0; }
+.skin-emessen .buddy.is-offline b { color:#8a8a8a; }
+.skin-emessen .buddy em { background:#61bd55; }
+.skin-emessen .buddy-footer { display:flex;flex-direction:column;height:auto;border-top:1px solid #d5e4f5;padding:3px 0; }
+.skin-emessen .buddy-footer button {
+  border:0;border-right:0;background:none;text-align:left;
+  color:#2e58a8;font:11px Tahoma,sans-serif;padding:3px 12px;
+}
+.skin-emessen .buddy-footer button::before { content:"✚ ";color:#61bd55;font-weight:700; }
+.skin-emessen .buddy-footer button:hover { text-decoration:underline; }
+.skin-emessen .chat-empty { color:#24314c; }
+.skin-emessen .chat-empty button { color:#2e58a8 !important; }
+
+/* Thread header. Mobile: the Luna title bar. Desktop: WLM's pale "To:" banner
+   under the real title bar, with the framed display picture on the right. */
+.skin-emessen .msg-skin-header {
+  background:linear-gradient(#3f8ce8,#2b62b4 55%,#1c5db6);
+  border-bottom:0;padding:5px 8px;min-height:30px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+  --msg-chip-bg:#fff; --msg-chip-fg:#2b62b4; --msg-chip-radius:8px;
+}
+.skin-emessen .msg-skin-header h2 { font:700 12px Tahoma,sans-serif;text-shadow:0 1px 1px rgba(0,0,0,.3); }
+.skin-emessen .msg-skin-header p { font-size:10px;font-style:italic; }
+.skin-emessen .chat-body .msg-skin-header {
+  background:linear-gradient(#fdfeff,#dcebfb); --msg-header-fg:#1b3f6e;
+  border-bottom:1px solid #b9cde4;box-shadow:none;
+}
+.skin-emessen .chat-body .msg-skin-header h2 { color:#1b3f6e;text-shadow:none; }
+.skin-emessen .msg-skin-dp {
+  display:grid;place-items:center;width:42px;height:42px;
+  background:linear-gradient(#ffffff,#dbe9f8);border:1px solid #7f9db9;border-radius:4px;
+  color:#2b62b4;font:700 17px Tahoma,sans-serif;
+  box-shadow:0 1px 4px rgba(31,74,130,.35), inset 0 1px 0 #fff;
+}
+
+/* Transcript: white rounded panel of "Name says:" lines */
+.skin-emessen .msg-skin-history {
+  background:#fff;border:1px solid #b9cde4;border-radius:4px;margin:6px;padding:8px 10px;
+  box-shadow:inset 0 1px 0 #fff;
+}
+.skin-emessen .msg-skin-line { justify-content:flex-start; }
+.skin-emessen .msg-skin-line-body { max-width:96%; }
+.skin-emessen .msg-skin-name {
+  display:block;margin:7px 0 1px;padding:0;
+  font:11px Tahoma,sans-serif;color:#6b6b6b;
+}
+.skin-emessen .msg-skin-name::after { content:" says:"; }
+.skin-emessen .msg-skin-bubble, .skin-emessen .msg-skin-bubble.is-mine {
+  display:block;background:transparent;border:0;border-radius:0;box-shadow:none;
+  padding:0 0 0 14px;
+}
+.skin-emessen .msg-skin-bubble p { font:12px/1.5 Tahoma,sans-serif;color:#000; }
+.skin-emessen .msg-skin-time { text-align:left;font-size:10px;color:#9aa7b5;padding:0 0 0 14px; }
+.skin-emessen .msg-skin-media { border-radius:4px;border:1px solid #b9cde4;margin-left:14px; }
+.skin-emessen .msg-skin-divider { margin:8px 0; }
+.skin-emessen .msg-skin-divider-line { background:#d5e4f5; }
+.skin-emessen .msg-skin-divider-text { font:10px Tahoma,sans-serif;color:#8fa6c0; }
+.skin-emessen .msg-skin-empty p { color:#24314c; }
+.skin-emessen .msg-skin-banner { background:#f0f6fd;border-top:1px solid #b9cde4;border-bottom:1px solid #b9cde4; }
+.skin-emessen .msg-skin-banner p { color:#33578b;font-size:11px; }
+.skin-emessen .msg-skin-faded { background:#f0f6fd;border:1px solid #b9cde4;border-radius:4px; }
+.skin-emessen .msg-skin-faded p { color:#7d8b9c; }
+.skin-emessen .msg-skin-pill {
+  background:linear-gradient(#fdfdfd,#dfe7f2);color:#1b3f6e;border:1px solid #7f9db9;border-radius:3px;
+  box-shadow:0 2px 5px rgba(31,74,130,.3);
+}
+.skin-emessen .msg-skin-menu { background:#fff;border:1px solid #7f9db9;border-radius:4px;box-shadow:0 3px 9px rgba(31,74,130,.3); }
+.skin-emessen .msg-skin-menu button { color:#1e1e1e;font:11px Tahoma,sans-serif; }
+.skin-emessen .msg-skin-menu button:hover { background:#eaf6ff;color:#1b3f6e; }
+.skin-emessen .msg-skin-dialog { background:#fff;border:1px solid #7f9db9;border-radius:6px; }
+.skin-emessen .msg-skin-voice { background:#f0f6fd;border:1px solid #b9cde4;border-radius:4px; }
+.skin-emessen .msg-skin-crosspost { border:1px solid #b9cde4;border-radius:4px;background:#fff; }
+
+/* Composer: glass strip, XP field, flat toolbar icons, silver Send */
+.skin-emessen .msg-skin-composer {
+  background:linear-gradient(#f7fbff,#dfecfa);
+  border-top:1px solid #b9cde4;box-shadow:inset 0 1px 0 #fff;
+}
+.skin-emessen .msg-skin-composer textarea {
+  background:#fff;border:1px solid #7f9db9;border-radius:3px;font:12px Tahoma,sans-serif;color:#000;
+}
+.skin-emessen .msg-skin-composer textarea:focus { border-color:#2b62b4; }
+.skin-emessen .msg-skin-composer-strip { border-bottom:1px solid #b9cde4; }
+.skin-emessen .msg-skin-thumb { border:1px solid #7f9db9;border-radius:3px;background:#fff; }
+.skin-emessen .msg-skin-icon-btn {
+  background:transparent;border:1px solid transparent;border-radius:3px;color:#2e58a8;padding:5px;
+}
+.skin-emessen .msg-skin-icon-btn:hover { background:linear-gradient(#fff,#dcebfb);border-color:#7f9db9; }
+.skin-emessen .msg-skin-icon-btn.is-recording { color:#c00; }
+.skin-emessen .msg-skin-send-icon { display:none; }
+.skin-emessen .msg-skin-send-label { display:inline; }
+.skin-emessen .msg-skin-send-btn {
+  width:60px;height:38px;max-width:30vw;
+  background:linear-gradient(#fdfdfd,#dfe7f2);border:1px solid #7f9db9;border-radius:3px;
+  color:#000;font:11px Tahoma,sans-serif;
+}
+.skin-emessen .msg-skin-send-btn:hover:not(:disabled) { filter:none;background:linear-gradient(#ffffff,#e9f0f8); }
+.skin-emessen .msg-skin-send-btn:active:not(:disabled) { background:linear-gradient(#dfe7f2,#fdfdfd); }
+.skin-emessen .msg-skin-panel { background:#fff;border:1px solid #7f9db9;border-radius:4px;color:#24314c; }
+.skin-emessen .msg-skin-bar { background:#61bd55; }
+.skin-emessen .msg-skin-note { color:#33578b;opacity:1;font-size:11px; }
+
+/* Mobile screens: the surface becomes the glass window */
+.skin-emessen .msg-skin-surface { background:linear-gradient(#ffffff,#dcebfb);color:#24314c; }
+.skin-emessen .msg-skin-surface .msg-skin-surface { background:#fff;margin:0 6px 6px;border:1px solid #d5e4f5;border-radius:4px; }
+.skin-emessen .msg-skin-strip { background:linear-gradient(#fdfeff,#d7e8fb);border-bottom:1px solid #b9cde4; }
+.skin-emessen .msg-skin-strip h1 {
+  background:linear-gradient(#3f8ce8,#2b62b4 55%,#1c5db6);color:#fff;
+  font:700 12px Tahoma,sans-serif;text-shadow:0 1px 1px rgba(0,0,0,.35);
+  padding:6px 10px;margin:-16px -16px 10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+}
+.skin-emessen .msg-skin-label {
+  background:none;color:#33578b;font:700 11px Tahoma,sans-serif;letter-spacing:0;text-transform:none;
+  padding:8px 10px 2px;
+}
+.skin-emessen .msg-skin-row { background:#fff;border-bottom:0;padding:6px 10px; }
+.skin-emessen .msg-skin-row:hover { background:#eaf6ff; }
+.skin-emessen .msg-skin-row.is-active { background:linear-gradient(#dff0ff,#c9e4fb);box-shadow:inset 0 0 0 1px #98bddb; }
+.skin-emessen .msg-skin-title { color:#1e1e1e;font:400 12px Tahoma,sans-serif; }
+.skin-emessen .msg-skin-sub { color:#7d8b9c;opacity:1;font-size:10px;font-style:italic; }
+.skin-emessen .msg-skin-send { color:#2e58a8; }
+.skin-emessen .msg-skin-tabs { background:transparent;border-radius:0;padding:0 0 4px;gap:4px; }
+.skin-emessen .msg-skin-tab {
+  background:linear-gradient(#fdfdfd,#dfe7f2);border:1px solid #7f9db9;border-radius:3px;
+  color:#1b3f6e;font:11px Tahoma,sans-serif;
+}
+.skin-emessen .msg-skin-tab.is-active { background:linear-gradient(#c9e4fb,#dff0ff);box-shadow:inset 0 1px 2px rgba(31,74,130,.3); }
+.skin-emessen .msg-skin-fab {
+  background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.9) 0 18%, transparent 40%), linear-gradient(#8fdc7a,#4aa63c);
+  border:1px solid #3f8c33;color:#fff;
+  box-shadow:0 4px 10px rgba(31,74,130,.4), inset 0 1px 0 rgba(255,255,255,.6);
+}
+
+/* Cross-cutting fixes: content rendered on the skins' white/grey cards must
+   not follow the app theme's foreground (invisible in dark mode), and the
+   accent-colored bits inside skinned widgets take period colors. */
+.skin-icu .msg-skin-crosspost p, .skin-bullseye .msg-skin-crosspost p { color:#000; }
+.skin-emessen .msg-skin-crosspost p { color:#1e1e1e; }
+.skin-icu .msg-skin-crosspost .text-primary { color:#0000a0; }
+.skin-bullseye .msg-skin-crosspost .text-primary { color:#0000d0; }
+.skin-emessen .msg-skin-crosspost .text-primary { color:#2e58a8; }
+.skin-icu .msg-skin-voice .bg-primary, .skin-bullseye .msg-skin-voice .bg-primary { background:#000080; }
+.skin-emessen .msg-skin-voice .bg-primary { background:#2e58a8; }
+.skin-icu .msg-skin-voice .text-primary, .skin-bullseye .msg-skin-voice .text-primary { color:#000080; }
+.skin-emessen .msg-skin-voice .text-primary { color:#2e58a8; }
+.skin-emessen .msg-skin-voice button { background:#e3eefb; }
