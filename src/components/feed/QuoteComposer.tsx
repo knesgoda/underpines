@@ -123,7 +123,7 @@ const QuoteComposer = ({ post, open, onClose, onQuoted }: QuoteComposerProps) =>
             <button
               onClick={handleQuote}
               disabled={!content.trim() || posting}
-              className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 hover:opacity-90"
+              className="px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 hover:opacity-90"
             >
               Quote post ↑
             </button>

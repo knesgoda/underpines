@@ -90,9 +90,9 @@ const GroveTrails = () => {
           >
             @{node.handle}
           </Link>
-          <span className={`rounded-full px-2 py-0.5 text-[10px] ${concern.className}`}>{concern.label}</span>
+          <span className={`rounded-[3px] px-2 py-0.5 text-[10px] ${concern.className}`}>{concern.label}</span>
           {node.invites_frozen && (
-            <span className="rounded-full bg-[hsl(var(--pine-mid)/0.4)] px-2 py-0.5 text-[10px] text-[hsl(var(--pine-light)/0.8)]">
+            <span className="rounded-[3px] bg-[hsl(var(--pine-mid)/0.4)] px-2 py-0.5 text-[10px] text-[hsl(var(--pine-light)/0.8)]">
               invites frozen
             </span>
           )}
@@ -104,7 +104,7 @@ const GroveTrails = () => {
             <button
               type="button"
               onClick={() => setClosing({ node, reopen: node.invites_frozen })}
-              className="ml-auto rounded-full bg-[hsl(var(--pine-mid)/0.3)] px-2.5 py-1 text-[10px] text-[hsl(var(--pine-pale))] hover:bg-[hsl(var(--pine-mid)/0.5)]"
+              className="ml-auto rounded-[3px] bg-[hsl(var(--pine-mid)/0.3)] px-2.5 py-1 text-[10px] text-[hsl(var(--pine-pale))] hover:bg-[hsl(var(--pine-mid)/0.5)]"
             >
               {node.invites_frozen ? 'Reopen trail' : 'Close trail'}
             </button>

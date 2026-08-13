@@ -400,7 +400,7 @@ const CampfireList = ({
                       )}
                     </div>
                     {!expired && timeLeft && (
-                      <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+                      <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-[3px] shrink-0">
                         {timeLeft}
                       </span>
                     )}

@@ -295,7 +295,7 @@ const CampNewsletterComposer = () => {
               <div className="text-[#1a1a2e] text-sm"><Markdown>{body}</Markdown></div>
             </div>
             <div className="text-center mt-6">
-              <span className="inline-block px-4 py-2 bg-[#c2752a] text-[#f5f0e8] rounded-full text-xs">Read the full newsletter →</span>
+              <span className="inline-block px-4 py-2 bg-[#c2752a] text-[#f5f0e8] rounded-[3px] text-xs">Read the full newsletter →</span>
             </div>
           </div>
         </DialogContent>

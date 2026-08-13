@@ -87,7 +87,7 @@ const ReactionBar = ({ postId, reactions, onReactionChange }: ReactionBarProps) 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 4 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-full left-0 mb-2 flex items-center gap-1 bg-card border border-border rounded-full px-2 py-1.5 shadow-card z-20"
+            className="absolute bottom-full left-0 mb-2 flex items-center gap-1 bg-card border border-border rounded-[3px] px-2 py-1.5 shadow-card z-20"
           >
             {REACTIONS.map((r, i) => (
               <motion.button

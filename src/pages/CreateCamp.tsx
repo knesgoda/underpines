@@ -148,7 +148,7 @@ const CreateCamp = () => {
               <button
                 onClick={() => setStep('visibility')}
                 disabled={!name.trim()}
-                className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40"
+                className="px-4 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40"
               >
                 Continue →
               </button>
@@ -180,7 +180,7 @@ const CreateCamp = () => {
 
             <div className="flex items-center justify-between">
               <button onClick={() => setStep('identity')} className="font-body text-sm text-muted-foreground hover:text-foreground">← Back</button>
-              <button onClick={() => setStep('review')} className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium">
+              <button onClick={() => setStep('review')} className="px-4 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium">
                 Continue →
               </button>
             </div>
@@ -215,7 +215,7 @@ const CreateCamp = () => {
               <button
                 onClick={handleCreate}
                 disabled={creating}
-                className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50"
+                className="px-5 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50"
               >
                 {creating ? 'Creating...' : 'Light the fire →'}
               </button>

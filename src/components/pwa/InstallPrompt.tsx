@@ -36,7 +36,7 @@ const InstallPrompt = () => {
               </div>
               <button
                 onClick={dismiss}
-                className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
+                className="px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
               >
                 Got it
               </button>
@@ -52,13 +52,13 @@ const InstallPrompt = () => {
               <div className="flex items-center justify-center gap-3">
                 <button
                   onClick={dismiss}
-                  className="px-5 py-2 rounded-full border border-border font-body text-sm text-foreground hover:bg-muted transition-colors"
+                  className="px-5 py-2 rounded-[3px] border border-border font-body text-sm text-foreground hover:bg-muted transition-colors"
                 >
                   Not now
                 </button>
                 <button
                   onClick={install}
-                  className="px-5 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
+                  className="px-5 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm hover:opacity-90 transition-opacity"
                 >
                   Add to home screen
                 </button>

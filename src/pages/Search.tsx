@@ -326,7 +326,7 @@ const Search = () => {
                     )}
                     <div className="flex items-center gap-2 mt-1.5">
                       {c.visibility === 'ember' && (
-                        <span className="text-[10px] font-body text-amber-deep bg-amber-light/30 px-1.5 py-0.5 rounded-full">Ember Camp 🔥</span>
+                        <span className="text-[10px] font-body text-amber-deep bg-amber-light/30 px-1.5 py-0.5 rounded-[3px]">Ember Camp 🔥</span>
                       )}
                       <Button size="sm" variant="outline" className="text-xs font-body h-7" onClick={() => navigate(`/camps/${c.id}`)}>
                         {c.visibility === 'ember' ? 'Request invite' : 'View Camp'}

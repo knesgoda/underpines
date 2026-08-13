@@ -168,7 +168,7 @@ const CampSettings = () => {
             <option value="hidden">Hidden</option>
           </select>
         </div>
-        <button onClick={saveBasic} className="px-4 py-2 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium">Save changes</button>
+        <button onClick={saveBasic} className="px-4 py-2 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium">Save changes</button>
       </div>
 
       {/* Pending requests */}
@@ -180,8 +180,8 @@ const CampSettings = () => {
               <div key={req.id} className="flex items-center justify-between px-3 py-2 rounded-[5px] border border-border bg-card">
                 <span className="font-body text-sm text-foreground">{req.profile?.display_name || 'Unknown'}</span>
                 <div className="flex gap-2">
-                  <button onClick={() => acceptRequest(req.id, req.user_id)} className="px-3 py-1 rounded-full bg-primary text-primary-foreground font-body text-xs">Accept</button>
-                  <button onClick={() => declineRequest(req.id)} className="px-3 py-1 rounded-full border border-border font-body text-xs text-muted-foreground">Decline</button>
+                  <button onClick={() => acceptRequest(req.id, req.user_id)} className="px-3 py-1 rounded-[3px] bg-primary text-primary-foreground font-body text-xs">Accept</button>
+                  <button onClick={() => declineRequest(req.id)} className="px-3 py-1 rounded-[3px] border border-border font-body text-xs text-muted-foreground">Decline</button>
                 </div>
               </div>
             ))}
@@ -224,7 +224,7 @@ const CampSettings = () => {
       {/* Danger zone */}
       <div>
         <h2 className="font-body text-sm font-medium text-destructive mb-3">Danger Zone</h2>
-        <button onClick={() => setArchiveOpen(true)} className="px-4 py-2 rounded-full border border-destructive text-destructive font-body text-sm hover:bg-destructive/10 transition-colors">
+        <button onClick={() => setArchiveOpen(true)} className="px-4 py-2 rounded-[3px] border border-destructive text-destructive font-body text-sm hover:bg-destructive/10 transition-colors">
           Close this group
         </button>
       </div>
@@ -239,8 +239,8 @@ const CampSettings = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmPassFirekeeping} className="font-body text-sm rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
+            <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmPassFirekeeping} className="font-body text-sm rounded-[3px] bg-primary text-primary-foreground hover:bg-primary/90">
               Pass Firekeeping
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -257,8 +257,8 @@ const CampSettings = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it going</AlertDialogCancel>
-            <AlertDialogAction onClick={archiveCamp} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it going</AlertDialogCancel>
+            <AlertDialogAction onClick={archiveCamp} className="font-body text-sm rounded-[3px] bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Close it
             </AlertDialogAction>
           </AlertDialogFooter>

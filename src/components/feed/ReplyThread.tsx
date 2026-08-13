@@ -147,7 +147,7 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
               <button
                 onClick={handleReply}
                 disabled={!replyText.trim() || posting}
-                className="px-3 py-1 rounded-full bg-primary text-primary-foreground font-body text-xs font-medium disabled:opacity-40"
+                className="px-3 py-1 rounded-[3px] bg-primary text-primary-foreground font-body text-xs font-medium disabled:opacity-40"
               >
                 Reply ↑
               </button>

@@ -169,7 +169,7 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
                   <button
                     key={t}
                     onClick={() => setFormType(t)}
-                    className={`px-3 py-1 rounded-full font-body text-xs transition-colors capitalize ${formType === t ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
+                    className={`px-3 py-1 rounded-[3px] font-body text-xs transition-colors capitalize ${formType === t ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
                   >
                     {t}
                   </button>
@@ -198,7 +198,7 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
               />
               <div className="flex justify-between">
                 <button onClick={() => setShowForm(false)} className="font-body text-xs text-muted-foreground">Cancel</button>
-                <button onClick={handleAdd} disabled={!formTitle.trim() || saving} className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-xs font-medium disabled:opacity-40">
+                <button onClick={handleAdd} disabled={!formTitle.trim() || saving} className="px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-xs font-medium disabled:opacity-40">
                   Add to Lodge
                 </button>
               </div>
@@ -222,8 +222,8 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)} className="font-body text-sm rounded-[3px] bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Remove
             </AlertDialogAction>
           </AlertDialogFooter>

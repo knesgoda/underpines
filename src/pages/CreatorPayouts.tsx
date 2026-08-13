@@ -132,7 +132,7 @@ const CreatorPayouts = () => {
           <button
             onClick={startConnect}
             disabled={actionLoading}
-            className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             {actionLoading ? 'Loading...' : 'Connect with Stripe →'}
           </button>
@@ -147,7 +147,7 @@ const CreatorPayouts = () => {
           <button
             onClick={startConnect}
             disabled={actionLoading}
-            className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             {actionLoading ? 'Loading...' : 'Continue onboarding →'}
           </button>
@@ -166,7 +166,7 @@ const CreatorPayouts = () => {
             <button
               onClick={openStripeDashboard}
               disabled={actionLoading}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-border font-body text-xs text-foreground hover:bg-muted disabled:opacity-50"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-[3px] border border-border font-body text-xs text-foreground hover:bg-muted disabled:opacity-50"
             >
               Manage <ExternalLink size={12} />
             </button>

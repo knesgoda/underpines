@@ -219,7 +219,7 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         <button
           onClick={handlePost}
           disabled={files.length === 0 || posting}
-          className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90 flex items-center gap-2"
+          className="px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90 flex items-center gap-2"
         >
           {posting ? (
             <>

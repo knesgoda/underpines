@@ -188,7 +188,7 @@ const CollectionView = () => {
               </p>
               <button
                 onClick={() => setShowSuccess(false)}
-                className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm"
+                className="px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm"
               >
                 Start reading →
               </button>
@@ -255,7 +255,7 @@ const CollectionView = () => {
                 </p>
               )}
               <div className="flex gap-2">
-                <button onClick={() => setShowManage(false)} className="px-4 py-2 rounded-full border border-border font-body text-xs text-foreground hover:bg-muted">
+                <button onClick={() => setShowManage(false)} className="px-4 py-2 rounded-[3px] border border-border font-body text-xs text-foreground hover:bg-muted">
                   Close
                 </button>
                 <button
@@ -265,7 +265,7 @@ const CollectionView = () => {
                     if (data?.url) window.location.href = data.url;
                     else toast.error('Could not open subscription management');
                   }}
-                  className="px-4 py-2 rounded-full border border-destructive/30 font-body text-xs text-destructive hover:bg-destructive/5"
+                  className="px-4 py-2 rounded-[3px] border border-destructive/30 font-body text-xs text-destructive hover:bg-destructive/5"
                 >
                   Cancel subscription
                 </button>
@@ -292,7 +292,7 @@ const CollectionView = () => {
           <button
             onClick={handleSubscribe}
             disabled={checkoutLoading}
-            className="mt-3 px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="mt-3 px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             {checkoutLoading ? 'Loading...' : `$${((collection.price_cents || 0) / 100).toFixed(0)} / ${collection.price_type || 'month'} — Subscribe to continue reading`}
           </button>

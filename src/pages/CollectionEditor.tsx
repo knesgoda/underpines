@@ -245,7 +245,7 @@ const CollectionEditor = () => {
           <button
             onClick={() => setStep(2)}
             disabled={!title.trim()}
-            className="w-full py-3 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="w-full py-3 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             Continue →
           </button>
@@ -298,7 +298,7 @@ const CollectionEditor = () => {
             </div>
           )}
 
-          <button onClick={() => setStep(3)} className="w-full py-3 rounded-full bg-primary text-primary-foreground font-body text-sm">
+          <button onClick={() => setStep(3)} className="w-full py-3 rounded-[3px] bg-primary text-primary-foreground font-body text-sm">
             Continue →
           </button>
         </div>
@@ -348,7 +348,7 @@ const CollectionEditor = () => {
           <button
             onClick={handlePublish}
             disabled={saving}
-            className="w-full py-3 rounded-full bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
+            className="w-full py-3 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
           >
             {saving ? 'Saving...' : isEdit ? 'Update Collection' : 'Publish Collection →'}
           </button>
@@ -363,7 +363,7 @@ const CollectionEditor = () => {
                 </div>
               )}
 
-              <button onClick={() => setDeleteOpen(true)} className="w-full mt-2 py-2.5 rounded-full border border-destructive/30 text-destructive font-body text-sm flex items-center justify-center gap-2">
+              <button onClick={() => setDeleteOpen(true)} className="w-full mt-2 py-2.5 rounded-[3px] border border-destructive/30 text-destructive font-body text-sm flex items-center justify-center gap-2">
                 <Trash2 size={14} /> Delete Collection
               </button>
             </>
@@ -382,8 +382,8 @@ const CollectionEditor = () => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-[3px] bg-destructive text-destructive-foreground hover:bg-destructive/90">
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

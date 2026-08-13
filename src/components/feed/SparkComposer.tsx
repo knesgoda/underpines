@@ -226,7 +226,7 @@ const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerPr
           <button
             onClick={handlePost}
             disabled={!!isSubmitBlocked}
-            className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90"
+            className="px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-40 transition-opacity hover:opacity-90"
           >
             Post to Pines ↑
           </button>

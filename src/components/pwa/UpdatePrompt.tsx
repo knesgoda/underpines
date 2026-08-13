@@ -27,13 +27,13 @@ const UpdatePrompt = () => {
           <div className="flex gap-2 shrink-0">
             <button
               onClick={() => updateServiceWorker(true)}
-              className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-xs hover:opacity-90 transition-opacity"
+              className="px-3 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-xs hover:opacity-90 transition-opacity"
             >
               Update now
             </button>
             <button
               onClick={() => setDismissed(true)}
-              className="px-3 py-1.5 rounded-full border border-border font-body text-xs text-muted-foreground hover:bg-muted transition-colors"
+              className="px-3 py-1.5 rounded-[3px] border border-border font-body text-xs text-muted-foreground hover:bg-muted transition-colors"
             >
               Later
             </button>

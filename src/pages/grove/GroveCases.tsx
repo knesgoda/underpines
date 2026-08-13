@@ -128,7 +128,7 @@ const GroveCases = () => {
             >
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${PRIORITY_STYLE[c.priority]}`}>
+                  <span className={`rounded-[3px] px-2 py-0.5 text-[10px] font-medium ${PRIORITY_STYLE[c.priority]}`}>
                     {c.priority}
                   </span>
                   <span className="text-sm text-[hsl(var(--pine-pale))]">

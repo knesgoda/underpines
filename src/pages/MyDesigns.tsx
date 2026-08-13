@@ -113,7 +113,7 @@ const MyDesigns = () => {
       </div>
 
       <div className="mt-6 border-t border-border pt-6 space-y-4">
-        <Button onClick={() => navigate('/designs/create')} className="rounded-full font-body text-sm w-full">
+        <Button onClick={() => navigate('/designs/create')} className="rounded-[3px] font-body text-sm w-full">
           Create a new design
         </Button>
       </div>

@@ -109,14 +109,14 @@ const AvatarCropModal = ({ imageSrc, onCancel, onSave }: AvatarCropModalProps) =
           <Button
             variant="ghost"
             onClick={onCancel}
-            className="rounded-full text-white/70 hover:text-white hover:bg-white/10 font-body"
+            className="rounded-[3px] text-white/70 hover:text-white hover:bg-white/10 font-body"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="rounded-full bg-primary text-primary-foreground font-body px-6"
+            className="rounded-[3px] bg-primary text-primary-foreground font-body px-6"
           >
             {saving ? 'Saving…' : 'Save photo'}
           </Button>

@@ -321,7 +321,7 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
                           </button>
                         )}
                         {i === 0 && sorted.length > 3 && (
-                          <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-body px-2 py-0.5 rounded-full">
+                          <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-body px-2 py-0.5 rounded-[3px]">
                             +{sorted.length - 1} more
                           </div>
                         )}
@@ -412,8 +412,8 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-body text-sm rounded-full">Keep it</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="font-body text-sm rounded-[3px]">Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="font-body text-sm rounded-[3px] bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

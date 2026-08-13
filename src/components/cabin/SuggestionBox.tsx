@@ -258,7 +258,7 @@ const SuggestionBox = ({ cabinOwnerId, cabinOwnerHandle, atmosphere }: Props) =>
               <button
                 onClick={handleSubmit}
                 disabled={!content.trim() || submitting}
-                className="px-4 py-1.5 rounded-full font-body text-xs font-medium transition-all duration-200 disabled:opacity-30 active:scale-[0.97]"
+                className="px-4 py-1.5 rounded-[3px] font-body text-xs font-medium transition-all duration-200 disabled:opacity-30 active:scale-[0.97]"
                 style={{
                   backgroundColor: atmosphere.accent,
                   color: atmosphere.cardBg,

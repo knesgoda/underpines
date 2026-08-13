@@ -330,7 +330,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
               type="button"
               onClick={handleNext}
               disabled={selected.length === 0 || creating}
-              className="w-full py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {creating ? (
                 <>
@@ -356,12 +356,12 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
               className="w-full px-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm outline-none"
             />
             <div className="flex gap-2">
-              <button type="button" onClick={() => setStep('pick')} disabled={creating} className="flex-1 py-2.5 rounded-full border border-border font-body text-sm text-muted-foreground disabled:opacity-50">Back</button>
+              <button type="button" onClick={() => setStep('pick')} disabled={creating} className="flex-1 py-2.5 rounded-[3px] border border-border font-body text-sm text-muted-foreground disabled:opacity-50">Back</button>
               <button
                 type="button"
                 onClick={createGroup}
                 disabled={!groupName.trim() || creating}
-                className="flex-1 py-2.5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {creating ? (
                   <>

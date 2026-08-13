@@ -142,7 +142,7 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
       <button
         onClick={sendRequest}
         disabled={acting}
-        className="rounded-full border-2 border-primary px-5 py-2 font-body text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
+        className="rounded-[3px] border-2 border-primary px-5 py-2 font-body text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
       >
         Add friend
       </button>
@@ -151,7 +151,7 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
 
   if (status === 'pending_sent') {
     return (
-      <div className="flex items-center gap-2 rounded-full border border-border px-4 py-2 opacity-60">
+      <div className="flex items-center gap-2 rounded-[3px] border border-border px-4 py-2 opacity-60">
         <motion.span
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -170,14 +170,14 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
         <button
           onClick={acceptRequest}
           disabled={acting}
-          className="rounded-full bg-primary px-4 py-2 font-body text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+          className="rounded-[3px] bg-primary px-4 py-2 font-body text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
         >
           Accept
         </button>
         <button
           onClick={declineRequest}
           disabled={acting}
-          className="rounded-full border border-border px-4 py-1.5 font-body text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
+          className="rounded-[3px] border border-border px-4 py-1.5 font-body text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
         >
           Not now
         </button>
@@ -187,12 +187,12 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-2 font-body text-sm text-primary">
+      <span className="flex items-center gap-1.5 rounded-[3px] bg-primary/10 px-4 py-2 font-body text-sm text-primary">
         <Check size={14} /> Friends
       </span>
       <button
         onClick={openMessages}
-        className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 font-body text-sm font-medium text-primary-foreground hover:opacity-90"
+        className="flex items-center gap-1.5 rounded-[3px] bg-primary px-4 py-2 font-body text-sm font-medium text-primary-foreground hover:opacity-90"
       >
         <MessageSquare size={14} /> Message
       </button>

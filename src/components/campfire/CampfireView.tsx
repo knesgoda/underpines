@@ -444,7 +444,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
             <span className="text-sm">{campfire.campfire_type === 'flicker' ? '🕯️' : '🔥'}</span>
             <h2 className="font-body text-sm font-medium text-foreground truncate">{headerName}</h2>
             {campfire.campfire_type === 'flicker' && flickerTimeLeft && flickerTimeLeft !== 'expired' && (
-              <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+              <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-[3px] shrink-0">
                 {flickerTimeLeft}
               </span>
             )}
@@ -662,7 +662,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
           {newMsgPill && (
             <button
               onClick={() => { setAutoScroll(true); setNewMsgPill(false); if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }}
-              className="absolute bottom-16 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-xs shadow-lg"
+              className="absolute bottom-16 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-xs shadow-lg"
             >
               ↓ New message
             </button>

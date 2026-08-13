@@ -118,7 +118,7 @@ const GroveWaitlist = () => {
             type="button"
             onClick={() => setFilter(f.key)}
             className={cn(
-              'rounded-full px-3 py-1.5 text-xs transition-colors',
+              'rounded-[3px] px-3 py-1.5 text-xs transition-colors',
               filter === f.key
                 ? 'bg-[hsl(var(--amber-deep)/0.3)] text-[hsl(var(--amber-light))]'
                 : 'bg-[hsl(var(--pine-mid)/0.2)] text-[hsl(var(--pine-light)/0.7)] hover:text-[hsl(var(--pine-light))]',
@@ -161,7 +161,7 @@ const GroveWaitlist = () => {
                   <button
                     type="button"
                     onClick={() => setStatus(row, 'invited')}
-                    className="rounded-full bg-[hsl(var(--amber-deep)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--amber-light))]"
+                    className="rounded-[3px] bg-[hsl(var(--amber-deep)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--amber-light))]"
                   >
                     Mark invited
                   </button>
@@ -170,7 +170,7 @@ const GroveWaitlist = () => {
                   <button
                     type="button"
                     onClick={() => setStatus(row, 'declined')}
-                    className="rounded-full bg-[hsl(var(--pine-mid)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--pine-pale))]"
+                    className="rounded-[3px] bg-[hsl(var(--pine-mid)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--pine-pale))]"
                   >
                     Decline
                   </button>
@@ -179,7 +179,7 @@ const GroveWaitlist = () => {
                   <button
                     type="button"
                     onClick={() => setStatus(row, 'waiting')}
-                    className="rounded-full bg-[hsl(var(--pine-mid)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--pine-pale))]"
+                    className="rounded-[3px] bg-[hsl(var(--pine-mid)/0.3)] px-3 py-1.5 text-xs text-[hsl(var(--pine-pale))]"
                   >
                     Back to waiting
                   </button>
@@ -187,7 +187,7 @@ const GroveWaitlist = () => {
                 <button
                   type="button"
                   onClick={() => remove(row)}
-                  className="rounded-full bg-[hsl(var(--pine-mid)/0.15)] px-3 py-1.5 text-xs text-[hsl(var(--pine-light)/0.6)] hover:text-[hsl(var(--pine-light))]"
+                  className="rounded-[3px] bg-[hsl(var(--pine-mid)/0.15)] px-3 py-1.5 text-xs text-[hsl(var(--pine-light)/0.6)] hover:text-[hsl(var(--pine-light))]"
                 >
                   Remove
                 </button>

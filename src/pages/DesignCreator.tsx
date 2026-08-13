@@ -96,10 +96,10 @@ const DesignCreator = () => {
         <div>
           <label className="text-sm font-body text-foreground block mb-2">Price</label>
           <div className="flex gap-3">
-            <button onClick={() => setIsFreeSelected(true)} className={`px-4 py-2 rounded-full text-sm font-body border transition-colors ${isFreeSelected ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}>
+            <button onClick={() => setIsFreeSelected(true)} className={`px-4 py-2 rounded-[3px] text-sm font-body border transition-colors ${isFreeSelected ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}>
               Free
             </button>
-            <button onClick={() => setIsFreeSelected(false)} className={`px-4 py-2 rounded-full text-sm font-body border transition-colors ${!isFreeSelected ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}>
+            <button onClick={() => setIsFreeSelected(false)} className={`px-4 py-2 rounded-[3px] text-sm font-body border transition-colors ${!isFreeSelected ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground'}`}>
               Paid
             </button>
           </div>
@@ -148,8 +148,8 @@ const DesignCreator = () => {
         </div>
 
         <div className="flex gap-3 pt-4">
-          <Button variant="ghost" onClick={() => navigate(-1)} className="rounded-full font-body text-sm">Cancel</Button>
-          <Button onClick={handleSubmit} disabled={submitting || !name.trim()} className="rounded-full font-body text-sm">
+          <Button variant="ghost" onClick={() => navigate(-1)} className="rounded-[3px] font-body text-sm">Cancel</Button>
+          <Button onClick={handleSubmit} disabled={submitting || !name.trim()} className="rounded-[3px] font-body text-sm">
             {submitting ? 'Submitting…' : 'Submit for review →'}
           </Button>
         </div>
