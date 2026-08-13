@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Plus, Flame, Moon, CandlestickChart, ArrowLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import CampfireView from '@/components/campfire/CampfireView';
+import SkinThumb from '@/components/campfire/SkinThumb';
 import MessengerSkinScope from '@/components/campfire/MessengerSkinScope';
 import NewCampfireSheet from '@/components/campfire/NewCampfireSheet';
 import BuddyWindow from '@/components/campfire/BuddyWindow';
@@ -258,6 +259,7 @@ const Campfires = () => {
               aria-pressed={skin === opt.key}
               onClick={() => setSkin(opt.key)}
             >
+              <SkinThumb skin={opt.key} />
               {opt.label}
             </button>
           ))}
@@ -332,6 +334,7 @@ const CampfireListHeader = ({ filter, setFilter, skin, setSkin }: {
           aria-pressed={skin === opt.key}
           onClick={() => setSkin(opt.key)}
         >
+          <SkinThumb skin={opt.key} />
           {opt.label}
         </button>
       ))}

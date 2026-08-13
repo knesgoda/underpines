@@ -115,8 +115,13 @@ const SettingsPage = () => {
               }`}
               aria-pressed={skin === s.key}
             >
-              <span className="block font-body text-sm text-foreground">{s.label}</span>
-              <span className="block font-body text-xs text-muted-foreground">{s.description}</span>
+              <span className="flex items-center gap-2">
+                <SkinThumb skin={s.key} />
+                <span className="min-w-0">
+                  <span className="block font-body text-sm text-foreground">{s.label}</span>
+                  <span className="block font-body text-xs text-muted-foreground">{s.description}</span>
+                </span>
+              </span>
             </button>
           ))}
         </div>
