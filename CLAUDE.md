@@ -126,7 +126,40 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-13 (LATEST) — join-approval RLS hardening + SECURITY.md
+**As of 2026-08-13 (LATEST) — invite-rotation + price-table + pine-pet path
+fixes (branch `claude/security-issues-review-26w33x`, pushed, not merged).**
+
+Three more scanner findings fixed — migration
+`supabase/migrations/20260813240000_invite_rotation_and_price_visibility.sql`,
+**applied LIVE to prod via `query_database`** (NOT in Lovable's ledger):
+
+- **(Critical) `rotate_invite_link`** now requires the caller to BE the
+  `_user_id` it rotates (was: any member could pass an admin's id and kill
+  that admin's founder invite link). Also fixed a pre-existing breakage found
+  by the exploit test: rotation was updating BOTH of the founder's infinite
+  invites (personal + the root `open-trail` link) into the same slug →
+  unique-constraint error, i.e. rotation never worked. Now excludes
+  `is_root`; `GroveSettings.tsx` founder-link fetch also excludes root (its
+  `maybeSingle()` was erroring on two rows, blanking the panel).
+- **(Warning) `collection_stripe_prices`** SELECT no longer `USING(true)` to
+  anon — authenticated-only, published-or-author scoped. INSERT → authenticated.
+- **(Warning) pine-pet edge fns** (`generate-pine-pet`, `finalize-pine-pet`,
+  `regenerate-pine-pet-atmosphere`) now reject storage paths outside
+  `${userId}/` — they service-role-read/wrote client-supplied paths.
+  **⚠️ Needs edge-function deploy** (rides with the already-pending pine-pet
+  deploys). DB + policy changes are live; client change is cosmetic-safe
+  either way.
+- Two "ignored" linter findings (anon/authenticated-executable definer fns)
+  reviewed — ignore reasons still accurate, left as-is.
+
+**Verified:** 7-case impersonated exploit test in a rolled-back transaction
+(all pass, slugs unchanged after rollback), `pg_policies`/`pg_proc` state
+checked, tsc clean, eslint clean on changed files, 130 vitest pass, build
+clean, entry 196.8 kB gzip (unchanged). Signed-in eyeballs for Kevin: rotate
+the founder link once from `/grove/settings` (should finally work), and a
+pet creation round-trip after the edge deploy.
+
+**Previously (2026-08-13) — join-approval RLS hardening + SECURITY.md
 (branch `claude/security-issues-documentation-ri5yme`, pushed, not merged).**
 
 Three database-schema-review findings fixed — migration

@@ -113,6 +113,13 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "API keys not configured" }), { status: 500, headers: corsHeaders });
     }
 
+    // Defense in depth: pets created before finalize-pine-pet validated paths
+    // could carry a foreign original_photo_path; never service-role-read
+    // outside the owner's folder.
+    if (typeof pet.original_photo_path !== "string" || !pet.original_photo_path.startsWith(`${userId}/`) || pet.original_photo_path.includes("..")) {
+      return new Response(JSON.stringify({ error: "Invalid original photo path" }), { status: 403, headers: corsHeaders });
+    }
+
     // Download original photo
     const { data: photoData, error: photoError } = await supabase.storage
       .from("pine-pets-originals")
