@@ -345,6 +345,94 @@ const PageCustomizer = () => {
           </section>
 
           <section className="panel module">
+            <h2>The corkboard</h2>
+            <p className="mb-3 text-sm text-muted-foreground">
+              The albums pinned up on your page, in the order you put them, with the photo you want
+              showing. Nothing here moves or hides a photo — every album stays on your Photos page.
+              Pick none and your newest four go up on their own.
+            </p>
+
+            {(albums ?? []).length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No albums yet. Post some photos and they will show up here.
+              </p>
+            ) : (
+              <>
+                {featuredPicks.map((pick, i) => {
+                  const album = (albums ?? []).find(a => a.id === pick.album_id);
+                  if (!album) return null;
+                  return (
+                    <div key={pick.album_id} className="module-row">
+                      <div className="module-row-head">
+                        <span className="rank">{i + 1}</span>
+                        <b className="mr-auto">{album.title}</b>
+                        <button
+                          type="button"
+                          onClick={() => setFeaturedPicks(p => moveItem(p, i, -1))}
+                          disabled={i === 0}
+                          aria-label={`Move ${album.title} up`}
+                        >↑</button>
+                        <button
+                          type="button"
+                          onClick={() => setFeaturedPicks(p => moveItem(p, i, 1))}
+                          disabled={i === featuredPicks.length - 1}
+                          aria-label={`Move ${album.title} down`}
+                        >↓</button>
+                        <button
+                          type="button"
+                          onClick={() => setFeaturedPicks(p => p.filter(x => x.album_id !== pick.album_id))}
+                          aria-label={`Take ${album.title} off the board`}
+                        ><X size={13} /></button>
+                      </div>
+                      <label className="field">
+                        <span>Which photo shows</span>
+                        <select
+                          value={pick.cover_media_id ?? ''}
+                          onChange={e =>
+                            setFeaturedPicks(p =>
+                              p.map(x =>
+                                x.album_id === pick.album_id
+                                  ? { ...x, cover_media_id: e.target.value || null }
+                                  : x,
+                              ),
+                            )
+                          }
+                        >
+                          <option value="">The first one</option>
+                          {album.photos.map((photo, n) => (
+                            <option key={photo.id} value={photo.id}>Photo {n + 1}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  );
+                })}
+
+                {(albums ?? []).some(a => !featuredPicks.find(p => p.album_id === a.id)) && (
+                  <label className="field mt-3">
+                    <span>Pin up an album</span>
+                    <select
+                      value=""
+                      onChange={e => {
+                        if (e.target.value) {
+                          setFeaturedPicks(p => [...p, { album_id: e.target.value, cover_media_id: null }]);
+                        }
+                      }}
+                    >
+                      <option value="">Pick an album…</option>
+                      {(albums ?? [])
+                        .filter(a => !featuredPicks.find(p => p.album_id === a.id))
+                        .map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
+                    </select>
+                  </label>
+                )}
+              </>
+            )}
+          </section>
+
+
+
+          <section className="panel module">
             <h2>Your modules</h2>
             <p className="mb-3 text-sm text-muted-foreground">
               Blurbs down the side of your page. Order is yours.
