@@ -173,6 +173,7 @@ const PageCustomizer = () => {
         saveTheme.mutateAsync(theme),
         saveModules.mutateAsync(modules),
         saveTopFriends.mutateAsync(topFriendIds),
+        saveFeatured.mutateAsync(featuredPicks),
       ]);
       toast.success('Your page is saved.');
       navigate('/me');
@@ -182,7 +183,8 @@ const PageCustomizer = () => {
   };
 
   const saving = saveBasics.isPending || saveTheme.isPending || saveModules.isPending
-    || saveTopFriends.isPending;
+    || saveTopFriends.isPending || saveFeatured.isPending;
+
 
   // Only accepted friends can be picked, and only once each. `chosen` follows
   // topFriendIds so the list reorders with the ids rather than with the
