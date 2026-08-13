@@ -93,8 +93,13 @@ export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }
       onError={(event) => {
         onError?.(event);
         // Backoff-guarded: false means we've spent the attempts for this object.
-        if (!resign()) setGivenUp(true);
+        const attempt = attemptsRef.current + 1;
+        attemptsRef.current = attempt;
+        const willRetry = resign();
+        logMediaFailure(src, willRetry ? 'fetch_forbidden' : 'gave_up', { attempt, kind: 'photo' });
+        if (!willRetry) setGivenUp(true);
       }}
+
       {...rest}
     />
   );
