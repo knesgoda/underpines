@@ -10,6 +10,9 @@ interface Props {
   profileId: string;
   isOwner: boolean;
   isInCircle: boolean;
+  /** Narrow the history to certain kinds — the Journal tab asks for stories. */
+  postTypes?: string[];
+  emptyMessage?: string;
 }
 
 /**
@@ -18,11 +21,13 @@ interface Props {
  * circle get sparks and bulletins in full, stories as a title, embers behind
  * a blur.
  */
-const CabinPostHistory = ({ profileId, isOwner, isInCircle }: Props) => {
+const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMessage }: Props) => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
+
+  const typeKey = postTypes?.join(',') ?? '';
 
   useEffect(() => {
     const load = async () => {
@@ -37,8 +42,13 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle }: Props) => {
         query = query.eq('is_published', true);
       }
 
+      if (typeKey) {
+        query = query.in('post_type', typeKey.split(','));
+      }
+
       const { data } = await query;
       if (!data) { setLoading(false); return; }
+
 
       const { data: prof } = await supabase
         .from('profiles')
@@ -69,7 +79,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle }: Props) => {
       setLoading(false);
     };
     load();
-  }, [profileId, isOwner]);
+  }, [profileId, isOwner, typeKey]);
 
   // Visibility gating for visitors outside the circle. Sparks and bulletins
   // are written for a wide audience; stories and embers only tease.
@@ -111,17 +121,19 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle }: Props) => {
   if (loading) return null;
 
   if (posts.length === 0) {
+    const empty = emptyMessage ?? 'Nothing posted yet.';
     return (
-      <section className="panel module">
+      <section className="paper module">
         {isOwner ? (
-          <p className="text-sm text-muted-foreground">
-            Nothing posted yet. <Link to="/" className="album-link">Write something →</Link>
+          <p className="quiet">
+            {empty} <Link to="/" className="album-link">Write something →</Link>
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">Nothing posted yet.</p>
+          <p className="quiet">{empty}</p>
         )}
       </section>
     );
+
   }
 
   return (

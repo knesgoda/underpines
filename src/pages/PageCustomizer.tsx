@@ -18,6 +18,9 @@ import {
   MODULE_TYPES,
   type PageModuleDraft,
 } from '@/hooks/usePageEditor';
+import { useAlbums } from '@/hooks/usePhotos';
+import { useFeaturedAlbumRows, useSaveFeaturedAlbums } from '@/hooks/useFeaturedPage';
+
 import { contrastRatio, hexToHslTriplet, hslTripletToHex } from '@/lib/color';
 import { addModule, moveItem, moveModule, removeModule, updateModule } from '@/lib/pageModules';
 // profile.css supplies .module and .page-2006, which the preview reuses so it
@@ -45,11 +48,15 @@ const PageCustomizer = () => {
   const { data: savedTheme } = usePageTheme(profile?.id);
   const { data: savedTopFriends } = useTopFriends(profile?.id);
   const { data: friendLists } = useFriendLists();
+  const { data: albums } = useAlbums(profile?.id);
+  const { data: savedFeatured } = useFeaturedAlbumRows(profile?.id);
 
   const saveBasics = useSaveBasics(user?.id);
   const saveModules = useSaveModules(user?.id);
   const saveTheme = useSavePageTheme(user?.id);
   const saveTopFriends = useSaveTopFriends(user?.id);
+  const saveFeatured = useSaveFeaturedAlbums(user?.id);
+
 
   const [displayName, setDisplayName] = useState('');
   const [mantra, setMantra] = useState('');
@@ -65,6 +72,10 @@ const PageCustomizer = () => {
   const [full2006, setFull2006] = useState(false);
   const [modules, setModules] = useState<PageModuleDraft[]>([]);
   const [topFriendIds, setTopFriendIds] = useState<string[]>([]);
+  /** The corkboard: which albums are pinned up, in order, and which photo shows. */
+  const [featuredPicks, setFeaturedPicks] = useState<{ album_id: string; cover_media_id: string | null }[]>([]);
+
+
 
   // Seed the form once the profile arrives. Keyed on profile.id rather than the
   // object so a background refetch cannot stomp on what is being typed.
@@ -97,6 +108,13 @@ const PageCustomizer = () => {
     if (!savedTopFriends) return;
     setTopFriendIds(savedTopFriends.map(t => t.friend_id));
   }, [savedTopFriends]);
+
+  useEffect(() => {
+    if (!savedFeatured) return;
+    setFeaturedPicks(savedFeatured.map(r => ({ album_id: r.album_id, cover_media_id: r.cover_media_id })));
+  }, [savedFeatured]);
+
+
 
   useEffect(() => {
     if (!savedModules) return;
@@ -155,6 +173,7 @@ const PageCustomizer = () => {
         saveTheme.mutateAsync(theme),
         saveModules.mutateAsync(modules),
         saveTopFriends.mutateAsync(topFriendIds),
+        saveFeatured.mutateAsync(featuredPicks),
       ]);
       toast.success('Your page is saved.');
       navigate('/me');
@@ -164,7 +183,8 @@ const PageCustomizer = () => {
   };
 
   const saving = saveBasics.isPending || saveTheme.isPending || saveModules.isPending
-    || saveTopFriends.isPending;
+    || saveTopFriends.isPending || saveFeatured.isPending;
+
 
   // Only accepted friends can be picked, and only once each. `chosen` follows
   // topFriendIds so the list reorders with the ids rather than with the
@@ -323,6 +343,94 @@ const PageCustomizer = () => {
               </>
             )}
           </section>
+
+          <section className="panel module">
+            <h2>The corkboard</h2>
+            <p className="mb-3 text-sm text-muted-foreground">
+              The albums pinned up on your page, in the order you put them, with the photo you want
+              showing. Nothing here moves or hides a photo — every album stays on your Photos page.
+              Pick none and your newest four go up on their own.
+            </p>
+
+            {(albums ?? []).length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No albums yet. Post some photos and they will show up here.
+              </p>
+            ) : (
+              <>
+                {featuredPicks.map((pick, i) => {
+                  const album = (albums ?? []).find(a => a.id === pick.album_id);
+                  if (!album) return null;
+                  return (
+                    <div key={pick.album_id} className="module-row">
+                      <div className="module-row-head">
+                        <span className="rank">{i + 1}</span>
+                        <b className="mr-auto">{album.title}</b>
+                        <button
+                          type="button"
+                          onClick={() => setFeaturedPicks(p => moveItem(p, i, -1))}
+                          disabled={i === 0}
+                          aria-label={`Move ${album.title} up`}
+                        >↑</button>
+                        <button
+                          type="button"
+                          onClick={() => setFeaturedPicks(p => moveItem(p, i, 1))}
+                          disabled={i === featuredPicks.length - 1}
+                          aria-label={`Move ${album.title} down`}
+                        >↓</button>
+                        <button
+                          type="button"
+                          onClick={() => setFeaturedPicks(p => p.filter(x => x.album_id !== pick.album_id))}
+                          aria-label={`Take ${album.title} off the board`}
+                        ><X size={13} /></button>
+                      </div>
+                      <label className="field">
+                        <span>Which photo shows</span>
+                        <select
+                          value={pick.cover_media_id ?? ''}
+                          onChange={e =>
+                            setFeaturedPicks(p =>
+                              p.map(x =>
+                                x.album_id === pick.album_id
+                                  ? { ...x, cover_media_id: e.target.value || null }
+                                  : x,
+                              ),
+                            )
+                          }
+                        >
+                          <option value="">The first one</option>
+                          {album.photos.map((photo, n) => (
+                            <option key={photo.id} value={photo.id}>Photo {n + 1}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  );
+                })}
+
+                {(albums ?? []).some(a => !featuredPicks.find(p => p.album_id === a.id)) && (
+                  <label className="field mt-3">
+                    <span>Pin up an album</span>
+                    <select
+                      value=""
+                      onChange={e => {
+                        if (e.target.value) {
+                          setFeaturedPicks(p => [...p, { album_id: e.target.value, cover_media_id: null }]);
+                        }
+                      }}
+                    >
+                      <option value="">Pick an album…</option>
+                      {(albums ?? [])
+                        .filter(a => !featuredPicks.find(p => p.album_id === a.id))
+                        .map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
+                    </select>
+                  </label>
+                )}
+              </>
+            )}
+          </section>
+
+
 
           <section className="panel module">
             <h2>Your modules</h2>

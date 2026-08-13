@@ -1,76 +1,457 @@
 /**
- * "My Page" — the handoff's profile, in its own route chunk.
+ * "My Page" — the scrapbook. Route-scoped: only MyPage imports this.
  *
- * Replaces the Cabin: a customizable personal page rather than an animated
- * scene. Module slots come from cabin_widgets, which already stored exactly
- * this.
+ * The vocabulary is paper: ivory sheets with thin warm-grey rules, navy type, a
+ * muted coral accent, and analog fasteners (tape, pins, clips) on a cork board.
+ * Everything resolves through tokens plus a few local paper variables, so a
+ * page owner's custom colours still come through.
  */
 
-/* Capped and centered: an uncapped 1fr column let the page sprawl across the
-   full 1180px shell, far past the feed's reading measure. */
-.profile-layout {
-  display: grid;
-  grid-template-columns: 300px minmax(0, 600px);
-  gap: 22px;
-  align-items: start;
-  justify-content: center;
+.profile-page {
+  --paper: hsl(var(--card));
+  --paper-edge: hsl(var(--foreground) / 0.14);
+  --paper-rule: hsl(var(--foreground) / 0.09);
+  --ink: hsl(var(--foreground));
+  --ink-quiet: hsl(var(--muted-foreground));
+  --accent-warm: hsl(var(--primary));
+  --cork: hsl(28 34% 62%);
+  --cork-deep: hsl(26 30% 46%);
+  --tape-colour: hsl(46 44% 84% / 0.85);
+  max-width: 1120px;
 }
 
-.profile-side { display: grid; gap: 16px; }
-.profile-main { display: grid; gap: 15px; min-width: 0; }
+/* A paper surface: subtle tooth, a soft edge, almost no shadow. */
+.profile-page .paper {
+  position: relative;
+  border: 1px solid var(--paper-edge);
+  border-radius: 3px;
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(hsl(var(--foreground) / 0.022) 1px, transparent 1px),
+    radial-gradient(hsl(var(--foreground) / 0.016) 1px, transparent 1px);
+  background-size: 7px 7px, 11px 11px;
+  background-position: 0 0, 4px 5px;
+  box-shadow: 0 1px 2px hsl(var(--foreground) / 0.06);
+  padding: 18px;
+  color: var(--ink);
+}
 
-.profile-hero { display: flex; gap: 16px; align-items: center; padding: 18px; }
+.profile-page .paper.module > h2 {
+  margin: 0 0 10px;
+  border-bottom: 1px solid var(--paper-rule);
+  padding-bottom: 6px;
+  color: var(--accent-warm);
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
 
-.profile-name h1 { margin: 4px 0; }
+.profile-page .paper p { font-size: 13.5px; line-height: 1.6; }
+.profile-page .quiet { color: var(--ink-quiet); font-size: 13px; line-height: 1.6; }
 
-.profile-name small {
-  display: block;
-  color: hsl(var(--muted-foreground));
+/* A small paper button — thin rule, no fill, coral on hover. */
+.profile-page .paper-button {
+  display: inline-block;
+  border: 1px solid var(--paper-edge);
+  border-radius: 3px;
+  background: none;
+  padding: 6px 11px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profile-page .paper-button:hover { border-color: var(--accent-warm); color: var(--accent-warm); }
+
+.profile-page .album-link,
+.profile-page .corkboard-link {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--accent-warm);
+}
+
+.profile-page .album-link:hover,
+.profile-page .corkboard-link:hover { text-decoration: underline; }
+
+/* ---------- Header sheet ---------- */
+
+.profile-sheet {
+  margin-bottom: 18px;
+  padding: 26px 22px 22px;
+  overflow: hidden;
+}
+
+.profile-sheet-inner { display: flex; gap: 20px; align-items: center; }
+
+.profile-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 34px);
+  line-height: 1.08;
+  color: var(--ink);
+}
+
+.profile-handle {
+  margin: 5px 0 0;
+  color: var(--ink-quiet);
   font-size: 12px;
+  letter-spacing: 0.05em;
 }
 
-.profile-mantra {
-  margin: 6px 0 0;
-  color: hsl(var(--muted-foreground));
+.quote-rule {
+  display: block;
+  width: 34px;
+  height: 1px;
+  margin: 11px 0 9px;
+  background: var(--accent-warm);
+}
+
+.profile-quote {
+  margin: 0;
+  color: var(--ink);
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 13px;
+  font-size: 15px;
+  line-height: 1.45;
 }
 
-/* Top friends — the grid is the point; order is meaningful. */
-.top-friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+/* Masking tape across the top of the sheet. */
+.profile-sheet > .tape {
+  position: absolute;
+  top: -8px;
+  left: 32px;
+  width: 86px;
+  height: 20px;
+  transform: rotate(-2.5deg);
+  background: var(--tape-colour);
+  border-left: 1px solid hsl(var(--foreground) / 0.07);
+  border-right: 1px solid hsl(var(--foreground) / 0.07);
+}
 
-.top-friend {
+/* Pencil pines in the sheet's corners — decoration, low contrast. */
+.sheet-pine {
+  position: absolute;
+  bottom: -6px;
+  width: 74px;
+  color: var(--accent-warm);
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+.sheet-pine-left { left: 10px; }
+.sheet-pine-right { right: 10px; transform: scaleX(-1); }
+
+/* ---------- Columns ---------- */
+
+.profile-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.profile-wall,
+.profile-memorabilia { display: grid; gap: 16px; min-width: 0; }
+
+/* ---------- Tabs ---------- */
+
+.paper-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--paper-edge);
+}
+
+.paper-tabs a,
+.paper-tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  margin-bottom: -1px;
+  padding: 9px 13px;
+  color: var(--ink-quiet);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paper-tabs a:hover,
+.paper-tabs button:hover { color: var(--ink); }
+
+.paper-tabs .is-active { color: var(--accent-warm); border-bottom-color: var(--accent-warm); }
+
+/* ---------- At a glance ---------- */
+
+.glance { overflow: hidden; }
+
+.glance-cabin {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 66px;
+  color: var(--accent-warm);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.glance-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+
+.glance-list li {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.glance-list svg { flex: none; margin-top: 2px; color: var(--accent-warm); }
+
+.glance-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+/* ---------- Friends ---------- */
+
+.module-head { display: flex; align-items: baseline; gap: 10px; }
+.module-head > h2 { flex: 1; }
+
+.count-switch { display: flex; gap: 3px; margin-bottom: 10px; }
+
+.count-switch button {
+  border: 1px solid var(--paper-edge);
+  border-radius: 2px;
+  background: none;
+  padding: 1px 6px;
+  color: var(--ink-quiet);
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.count-switch button.is-active { border-color: var(--accent-warm); color: var(--accent-warm); }
+
+.friend-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 13px 10px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.friend-chip {
   display: grid;
   justify-items: center;
   gap: 5px;
   text-align: center;
   text-decoration: none;
-  color: inherit;
-  font-size: 10px;
+  color: var(--ink);
+  font-size: 10.5px;
   font-weight: 700;
 }
 
-.top-friend span.rank {
-  color: hsl(var(--muted-foreground));
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+.friend-chip span {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.top-friend b { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.friend-chip:hover span { color: var(--accent-warm); }
 
-/* Wall */
+/* ---------- Corkboard ---------- */
+
+.corkboard {
+  border: 1px solid var(--cork-deep);
+  border-radius: 3px;
+  padding: 16px;
+  background-color: var(--cork);
+  background-image:
+    radial-gradient(hsl(26 30% 38% / 0.28) 1.1px, transparent 1.2px),
+    radial-gradient(hsl(34 42% 76% / 0.3) 1px, transparent 1.1px);
+  background-size: 9px 9px, 14px 14px;
+  background-position: 0 0, 5px 7px;
+  box-shadow: inset 0 0 26px hsl(26 30% 32% / 0.28);
+}
+
+.corkboard-head { margin-bottom: 13px; }
+
+.corkboard-head h2 {
+  margin: 0;
+  color: hsl(30 42% 19%);
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.corkboard-empty { margin: 0 0 12px; color: hsl(30 42% 21%); font-size: 12.5px; }
+
+.corkboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 16px;
+  margin: 0 0 14px;
+  padding: 2px;
+  list-style: none;
+}
+
+.profile-page .corkboard-link { color: hsl(30 46% 17%); }
+
+/* A Polaroid: white frame, deep bottom lip for the caption, a slight tilt from
+   the album's own id. */
+.polaroid {
+  position: relative;
+  display: block;
+  padding: 8px 8px 0;
+  background: hsl(40 32% 98%);
+  border: 1px solid hsl(30 18% 82%);
+  box-shadow: 0 3px 7px hsl(26 30% 22% / 0.34);
+  color: hsl(222 32% 22%);
+  text-decoration: none;
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.polaroid:hover,
+.polaroid:focus-visible {
+  transform: rotate(0deg) scale(1.02);
+  box-shadow: 0 6px 15px hsl(26 30% 22% / 0.42);
+}
+
+.polaroid-photo { display: block; }
+
+.polaroid-photo img,
+.polaroid-blank {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: hsl(30 12% 89%);
+}
+
+.polaroid-caption {
+  display: block;
+  padding: 8px 3px 12px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.polaroid-caption b { font-family: var(--font-display); font-size: 12.5px; font-weight: 600; }
+
+.polaroid-caption small {
+  display: block;
+  margin-top: 2px;
+  color: hsl(222 12% 50%);
+  font-size: 10px;
+}
+
+/* Fasteners. Each album gets one deterministically, so a board looks arranged
+   rather than randomised on every render. */
+.polaroid .attachment {
+  position: absolute;
+  z-index: 1;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.polaroid .attachment.pin-red,
+.polaroid .attachment.pin-brass {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  box-shadow:
+    0 1px 2px hsl(26 30% 18% / 0.5),
+    inset -2px -2px 3px hsl(0 0% 0% / 0.22),
+    inset 2px 2px 3px hsl(0 0% 100% / 0.45);
+}
+
+.polaroid .attachment.pin-red { background: hsl(4 60% 52%); }
+.polaroid .attachment.pin-brass { background: hsl(40 56% 56%); }
+
+.polaroid .attachment.tape {
+  width: 54px;
+  height: 17px;
+  transform: translateX(-50%) rotate(-4deg);
+  background: var(--tape-colour);
+  border-left: 1px solid hsl(30 20% 62% / 0.5);
+  border-right: 1px solid hsl(30 20% 62% / 0.5);
+}
+
+.polaroid .attachment.clip {
+  top: -11px;
+  left: auto;
+  right: 12px;
+  width: 11px;
+  height: 25px;
+  transform: none;
+  border: 2px solid hsl(210 8% 62%);
+  border-bottom-color: transparent;
+  border-radius: 6px 6px 3px 3px;
+}
+
+/* ---------- Wall composer ---------- */
+
+.wall-composer { display: grid; gap: 10px; }
+
+.wall-composer-line {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  width: 100%;
+  border: 1px dashed var(--paper-edge);
+  border-radius: 3px;
+  background: hsl(var(--background));
+  padding: 9px 12px;
+  color: var(--ink-quiet);
+  font-family: var(--font-body);
+  font-size: 13px;
+  text-align: left;
+  cursor: text;
+}
+
+.wall-composer-line:hover { border-color: var(--accent-warm); color: var(--ink); }
+
+.wall-composer-kinds { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.wall-composer-kinds button {
+  border: 1px solid var(--paper-edge);
+  border-radius: 3px;
+  background: none;
+  padding: 5px 10px;
+  color: var(--ink-quiet);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wall-composer-kinds button:hover { border-color: var(--accent-warm); color: var(--accent-warm); }
+
+/* ---------- Wall notes (the guestbook) ---------- */
+
 .wall-form { display: grid; gap: 8px; }
 
 .wall-form textarea {
   width: 100%;
-  min-height: 66px;
+  min-height: 64px;
   resize: vertical;
-  border: 1px solid hsl(var(--border));
+  border: 1px solid var(--paper-edge);
   border-radius: 3px;
   background: hsl(var(--background));
-  color: hsl(var(--foreground));
+  color: var(--ink);
   padding: 9px 11px;
   font-family: var(--font-body);
   font-size: 13px;
@@ -80,7 +461,7 @@
   display: flex;
   gap: 10px;
   padding: 11px 0;
-  border-top: 1px dashed hsl(var(--border));
+  border-top: 1px dashed var(--paper-rule);
 }
 
 .wall-note:first-of-type { border-top: 0; }
@@ -88,88 +469,46 @@
 
 .wall-note small {
   display: block;
-  color: hsl(var(--muted-foreground));
-  font-size: 10px;
   margin-top: 3px;
-}
-
-/* Photos strip */
-.photo-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-
-.photo-strip img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 2px;
-  display: block;
-}
-
-.visit-count {
-  color: hsl(var(--muted-foreground));
+  color: var(--ink-quiet);
   font-size: 10px;
-  letter-spacing: 0.04em;
 }
 
-/* The song on your page. Never autoplays — the controls are the whole point,
-   and an autoplaying page is the one thing about 2006 nobody misses. */
+/* The song on your page. Never autoplays — pressing play is the visitor's. */
 .page-song { display: grid; gap: 7px; }
-
 .page-song b { font-size: 13px; }
-.page-song small { color: hsl(var(--muted-foreground)); font-size: 11px; }
+.page-song small { display: block; color: var(--ink-quiet); font-size: 11px; }
 .page-song audio { width: 100%; height: 32px; }
 
 /**
- * Full 2006 mode.
- *
- * A page-owner opt-in, scoped to the profile wrapper so it can never reach the
- * topbar or anyone else's page. Hard borders, a tiled ground and display type —
- * the era's actual visual grammar rather than a joke about it.
+ * Full 2006 mode — kept from the old page, retuned for paper. A page-owner
+ * opt-in scoped to this wrapper, so it can never reach the topbar.
  */
-.page-2006 {
-  background-image:
-    repeating-linear-gradient(45deg, hsl(var(--foreground) / 0.035) 0 6px, transparent 6px 12px);
-  padding: 14px;
-  border-radius: 3px;
-}
-
-.page-2006 .panel {
+.profile-page.page-2006 .paper {
   border-width: 2px;
-  border-style: solid;
   border-radius: 0;
   box-shadow: 3px 3px 0 hsl(var(--foreground) / 0.16);
 }
 
-.page-2006 .module > h2 {
+.profile-page.page-2006 .paper.module > h2 {
   border-bottom-width: 2px;
   font-size: 10px;
   letter-spacing: 0.16em;
 }
 
-.page-2006 .profile-name h1 {
-  font-family: var(--font-display);
-  font-style: italic;
+.profile-page.page-2006 .profile-title { font-style: italic; }
+
+@media (max-width: 900px) {
+  .profile-columns { grid-template-columns: minmax(0, 1fr); }
+  /* On a phone the mobile design's order is header, at a glance, friends,
+     corkboard, then the wall. */
+  .profile-memorabilia { order: -1; }
 }
 
-/* Posts — bare handoff post cards under a module-style heading, not panels
-   nested inside a panel. */
-.profile-posts { display: grid; gap: 15px; }
-
-.profile-posts > h2 {
-  margin: 0;
-  border-bottom: 1px solid hsl(var(--border));
-  padding-bottom: 6px;
-  color: hsl(var(--primary));
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-@media (max-width: 980px) {
-  .profile-layout { grid-template-columns: minmax(0, 640px); }
-}
-
-@media (max-width: 700px) {
-  .profile-hero { flex-direction: column; text-align: center; }
-  .top-friends { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 560px) {
+  .profile-sheet-inner { flex-direction: column; text-align: center; }
+  .quote-rule { margin-left: auto; margin-right: auto; }
+  .sheet-pine { width: 58px; opacity: 0.16; }
+  .friend-grid { grid-template-columns: repeat(4, 1fr); gap: 11px 8px; }
+  .paper-tabs { overflow-x: auto; }
 }
