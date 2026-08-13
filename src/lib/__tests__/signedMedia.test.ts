@@ -159,7 +159,8 @@ describe('useSignedMediaUrl', () => {
 
   it('is inert for an empty source', async () => {
     const { hook } = await render(null);
-    expect(hook.result.current).toEqual({ url: null, loading: false, failed: false });
+    expect(hook.result.current).toMatchObject({ url: null, loading: false, failed: false });
+    expect(typeof hook.result.current.retry).toBe('function');
     expect(createSignedUrl).not.toHaveBeenCalled();
   });
 });

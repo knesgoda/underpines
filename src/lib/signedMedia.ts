@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 /**
@@ -39,6 +39,20 @@ const isAlreadySigned = (input: string) => input.includes(SIGNED_MARKER);
 const cache = new Map<string, { url: string; expiresAt: number }>();
 const inflight = new Map<string, Promise<string | null>>();
 
+/**
+ * Forget the cached signature for a stored reference.
+ *
+ * A signature can be minted successfully and still be refused by Storage later —
+ * the clock ran past the expiry, or the viewer's access changed mid-session — in
+ * which case the browser reports a 403 on the <img> itself. Dropping the cache
+ * entry lets the next read mint a fresh signature instead of replaying a dead one.
+ */
+export const invalidateSignedMediaUrl = (input: string | null | undefined) => {
+  const path = extractPostMediaPath(input);
+  if (path) cache.delete(path);
+};
+
+
 export const getSignedMediaUrl = async (path: string): Promise<string | null> => {
   const hit = cache.get(path);
   if (hit && hit.expiresAt > Date.now() + REFRESH_MARGIN_MS) return hit.url;
@@ -67,14 +81,19 @@ export interface SignedMedia {
   url: string | null;
   loading: boolean;
   failed: boolean;
+  /** Drop the cached signature and mint a fresh one (used after a 403 on the media itself). */
+  retry: () => void;
 }
+
+type SignedMediaState = Omit<SignedMedia, 'retry'>;
 
 /**
  * Resolve a stored post-media reference to a usable src.
  * Non-post-media values (external URLs, blob previews) pass straight through.
  */
 export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia => {
-  const [state, setState] = useState<SignedMedia>(() => {
+  const [attempt, setAttempt] = useState(0);
+  const [state, setState] = useState<SignedMediaState>(() => {
     if (!input) return { url: null, loading: false, failed: false };
     if (isAlreadySigned(input)) return { url: input, loading: false, failed: false };
     const path = extractPostMediaPath(input);
@@ -115,7 +134,13 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     }, TTL_SECONDS * 1000 - REFRESH_MARGIN_MS);
 
     return () => { alive = false; window.clearTimeout(timer); };
+  }, [input, attempt]);
+
+  const retry = useCallback(() => {
+    invalidateSignedMediaUrl(input);
+    setAttempt((n) => n + 1);
   }, [input]);
 
-  return state;
+  return { ...state, retry };
 };
+
