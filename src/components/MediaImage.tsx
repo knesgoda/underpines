@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ImgHTMLAttributes, VideoHTMLAttributes } from 'react';
 import { ImageOff, RotateCw } from 'lucide-react';
 import { useSignedMediaUrl } from '@/lib/signedMedia';
+import { logMediaFailure } from '@/lib/mediaTelemetry';
+
 
 /**
  * Drop-in <img>/<video> for anything stored in the private `post-media` bucket.
