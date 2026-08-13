@@ -41,10 +41,13 @@ export interface PageProfile {
   pinned_song_title: string | null;
   pinned_song_artist: string | null;
   pinned_song_preview_url: string | null;
+  /** How many friends this page pins up: 4, 8 or 12. */
+  featured_friends_count: number | null;
 }
 
 const FIELDS =
-  'id, display_name, handle, bio, mantra, avatar_url, default_avatar_key, accent_color, cabin_mood, city, created_at, currently_type, currently_value, pinned_song_title, pinned_song_artist, pinned_song_preview_url';
+  'id, display_name, handle, bio, mantra, avatar_url, default_avatar_key, accent_color, cabin_mood, city, created_at, currently_type, currently_value, pinned_song_title, pinned_song_artist, pinned_song_preview_url, featured_friends_count';
+
 
 /**
  * The customizer's theme settings live in a reserved `cabin_widgets` row
