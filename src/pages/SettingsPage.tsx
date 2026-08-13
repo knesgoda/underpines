@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import SkinThumb from '@/components/campfire/SkinThumb';
+import '@/styles/messenger-skins.css';
 
 const themes: { key: AppTheme; label: string; emoji: string; description: string; preview: { bg: string; card: string; accent: string } }[] = [
   {
@@ -115,8 +117,13 @@ const SettingsPage = () => {
               }`}
               aria-pressed={skin === s.key}
             >
-              <span className="block font-body text-sm text-foreground">{s.label}</span>
-              <span className="block font-body text-xs text-muted-foreground">{s.description}</span>
+              <span className="flex items-center gap-2">
+                <SkinThumb skin={s.key} />
+                <span className="min-w-0">
+                  <span className="block font-body text-sm text-foreground">{s.label}</span>
+                  <span className="block font-body text-xs text-muted-foreground">{s.description}</span>
+                </span>
+              </span>
             </button>
           ))}
         </div>
