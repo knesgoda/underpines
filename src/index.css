@@ -163,7 +163,13 @@
     @apply bg-background text-foreground;
     font-family: var(--font-body);
     line-height: 1.6;
+    /* The handoff's low sun behind the top of the fold — a faint ember in dark,
+       a pale sun in light, on every screen rather than only the logged-out ones. */
+    background-image: radial-gradient(circle at 50% -180px, hsl(var(--accent) / 0.3) 0, transparent 34%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
+
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
