@@ -118,7 +118,11 @@
     --input: 224 30% 22%;
     --ring: 12 77% 57%;
 
+    /* Deeper ground under dark surfaces, same flat construction. */
+    --shadow-panel: 0 2px 0 hsl(254 27% 6% / 0.5), 0 10px 30px hsl(254 27% 5% / 0.45);
+
     /* Nature tokens */
+
     --pine-darkest: 254 27% 10%;
     --pine-dark: 254 27% 19%;
     --pine-mid: 171 28% 38%;
