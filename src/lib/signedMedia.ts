@@ -158,16 +158,21 @@ export const getSignedMediaUrl = async (path: string): Promise<string | null> =>
   const request = (async () => {
     try {
       const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, TTL_SECONDS);
-      if (error || !data?.signedUrl) return null;
+      if (error || !data?.signedUrl) {
+        logMediaFailure(path, 'sign_failed');
+        return null;
+      }
       cache.set(path, { url: data.signedUrl, expiresAt: Date.now() + TTL_SECONDS * 1000 });
       persist();
       return data.signedUrl;
     } catch {
+      logMediaFailure(path, 'sign_failed');
       return null;
     } finally {
       inflight.delete(path);
     }
   })();
+
 
   inflight.set(path, request);
   return request;
