@@ -48,11 +48,15 @@ const PageCustomizer = () => {
   const { data: savedTheme } = usePageTheme(profile?.id);
   const { data: savedTopFriends } = useTopFriends(profile?.id);
   const { data: friendLists } = useFriendLists();
+  const { data: albums } = useAlbums(profile?.id);
+  const { data: savedFeatured } = useFeaturedAlbumRows(profile?.id);
 
   const saveBasics = useSaveBasics(user?.id);
   const saveModules = useSaveModules(user?.id);
   const saveTheme = useSavePageTheme(user?.id);
   const saveTopFriends = useSaveTopFriends(user?.id);
+  const saveFeatured = useSaveFeaturedAlbums(user?.id);
+
 
   const [displayName, setDisplayName] = useState('');
   const [mantra, setMantra] = useState('');
