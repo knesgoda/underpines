@@ -40,22 +40,25 @@ with sensitive(col) as (
          'ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY'
 
   -- 2. No table-wide SELECT: that is what makes column grants meaningful.
+  --    Matched with a regex, not LIKE — an ACL entry is `role=privs/grantor`,
+  --    and the grantor name ("postgres") contains letters that would false-match.
   union all
   select 'table-wide SELECT revoked from authenticated',
-         (select relacl from tbl) not like '%authenticated=%r%', 
+         (select relacl from tbl) !~ 'authenticated=[^/]*r',
          'a table-level GRANT SELECT re-exposes every column, including geolocation and age'
 
   union all
   select 'table-wide SELECT revoked from anon',
-         (select relacl from tbl) not like '%anon=%r%',
+         (select relacl from tbl) !~ '\manon=[^/]*r',
          'signed-out visitors must not read profiles at all'
 
   -- 3. No table-wide UPDATE: profile writes are column-scoped (this is what
   --    keeps is_pines_plus, seedling, consent and age fields non-forgeable).
   union all
   select 'table-wide UPDATE revoked from authenticated',
-         (select relacl from tbl) not like '%authenticated=%w%',
+         (select relacl from tbl) !~ 'authenticated=[^/]*w',
          'a table-level GRANT UPDATE lets a member mint Pines+ / bypass the age gate'
+
 
   -- 4. Each sensitive column: no SELECT grant to authenticated or anon.
   union all
