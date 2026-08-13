@@ -163,3 +163,110 @@
 .skin-thumb--bullseye { --t-bg:#c7c7c7;--t-panel:#fff;--t-line:#7c7c7c;--t-title:#075ad9;--t-accent:#0047ff;--t-soft:#e6f2ff;--t-radius:0; }
 .skin-thumb--emessen { --t-bg:#dbe9f8;--t-panel:#f8fcff;--t-line:#91afd2;--t-title:#4e7ed2;--t-accent:#4da746;--t-soft:#e8f8e5;--t-radius:4px; }
 .skin-picker button { display:flex;flex-direction:column;align-items:center;gap:5px; }
+
+/**
+ * ICU, in detail.
+ *
+ * The palette hooks alone left the ported screens looking like Under Pines in
+ * green. This block gives ICU the era's actual furniture on the real message
+ * surfaces: teal desktop, beveled grey chrome, a blue gradient title bar, a
+ * flat white transcript with coloured nicknames instead of bubbles, an inset
+ * white input and an outset Send chip with the red label.
+ */
+.skin-icu .msg-skin-surface,
+.skin-icu .msg-skin-surface *,
+.skin-icu .msg-skin-strip,
+.skin-icu .msg-skin-strip *,
+.skin-icu .msg-skin-row,
+.skin-icu .msg-skin-row * {
+  font-family: Tahoma, "MS Sans Serif", Geneva, sans-serif !important;
+  letter-spacing: 0;
+}
+
+/* Conversation list: grey utility panel on the teal desktop */
+.skin-icu .msg-skin-surface { background: #128985; }
+.skin-icu .msg-skin-strip {
+  background: #d4d0c8;
+  border-bottom: 2px groove #fff;
+  box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #fff;
+}
+.skin-icu .msg-skin-strip h1,
+.skin-icu .msg-skin-title { color: #000 !important; font-weight: 700; }
+.skin-icu .msg-skin-label {
+  background: #c5c5c5;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #808080;
+  color: #000 !important;
+  font-weight: 700;
+}
+.skin-icu .msg-skin-row {
+  background: #fff;
+  border-bottom: 1px dotted #b9b5ae;
+}
+.skin-icu .msg-skin-row:hover { background: #eef4ff; }
+.skin-icu .msg-skin-row.is-active { background: #001c9b; }
+.skin-icu .msg-skin-row.is-active .msg-skin-title,
+.skin-icu .msg-skin-row.is-active .msg-skin-sub { color: #fff !important; }
+.skin-icu .msg-skin-sub { color: #444 !important; opacity: 1; font-size: 11px; }
+
+/* Thread: title bar, then a flat transcript */
+.skin-icu .msg-skin-header {
+  background: linear-gradient(90deg, #17318a, #4c8cd5);
+  border: 0;
+  border-bottom: 1px solid #0b1f5c;
+  padding: 4px 6px !important;
+  min-height: 25px;
+}
+.skin-icu .msg-skin-header h2 { font-size: 11px !important; font-weight: 700; }
+.skin-icu .msg-skin-history {
+  background: #fff;
+  border: 2px inset #d4d0c8;
+  margin: 4px;
+}
+.skin-icu .msg-skin-bubble,
+.skin-icu .msg-skin-bubble.is-mine {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 1px 2px !important;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #001c9b;
+}
+.skin-icu .msg-skin-bubble.is-mine { color: #b4451b; }
+
+/* Composer: grey strip, inset field, outset chips */
+.skin-icu .msg-skin-composer {
+  background: #d4d0c8;
+  border-top: 2px groove #fff;
+}
+.skin-icu .msg-skin-composer textarea {
+  background: #fff;
+  border: 2px inset #d4d0c8 !important;
+  border-radius: 0 !important;
+  font-size: 12px;
+}
+.skin-icu .msg-skin-composer textarea:focus { border-color: #808080; }
+.skin-icu .msg-skin-icon-btn {
+  background: #d4d0c8;
+  border: 2px outset #fff;
+  border-radius: 0 !important;
+  color: #000;
+  padding: 3px !important;
+}
+.skin-icu .msg-skin-icon-btn:active { border-style: inset; }
+.skin-icu .msg-skin-send-btn {
+  background: #d4d0c8;
+  border: 2px outset #fff;
+  border-radius: 0 !important;
+  color: #c02a13;
+}
+.skin-icu .msg-skin-panel,
+.skin-icu .msg-skin-thumb {
+  background: #d4d0c8;
+  border: 2px inset #fff;
+  border-radius: 0 !important;
+}
+.skin-icu .msg-skin-bar { background: #079a29; }
+.skin-icu .msg-skin-note { color: #000 !important; opacity: 1; font-size: 11px; }
