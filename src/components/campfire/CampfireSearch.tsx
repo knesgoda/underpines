@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Search, Mic } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { ilikePattern } from '@/lib/searchQuery';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -68,7 +69,7 @@ const CampfireSearch = ({ campfireId, campfireName, onBack, onJumpToMessage }: P
           setLoading(false);
           return;
         }
-        const pattern = `%${query.trim()}%`;
+        const pattern = ilikePattern(query);
         const { data } = await supabase
           .from('campfire_messages')
           .select('*, profiles!campfire_messages_sender_id_fkey(display_name, handle)')

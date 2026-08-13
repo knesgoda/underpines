@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { ilikePattern } from '@/lib/searchQuery';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -30,7 +31,8 @@ const GroveMembers = () => {
       let query = supabase.from('profiles').select('id, handle, display_name, created_at, header_image_url').order('created_at', { ascending: false }).limit(100);
 
       if (search) {
-        query = query.or(`handle.ilike.%${search}%,display_name.ilike.%${search}%`);
+        const pattern = ilikePattern(search);
+        query = query.or(`handle.ilike.${pattern},display_name.ilike.${pattern}`);
       }
 
       const { data } = await query;
