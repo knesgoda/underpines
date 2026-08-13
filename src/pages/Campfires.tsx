@@ -433,11 +433,11 @@ const CampfireList = ({
                               <animate attributeName="opacity" values="0.35;0.1;0.35" dur="2.8s" repeatCount="indefinite" />
                             </circle>
                           </svg>
-                          <p className="font-body text-xs text-muted-foreground/60 italic">Burned down to embers</p>
+                          <p className="msg-skin-sub font-body text-xs italic">Burned down to embers</p>
                         </div>
                       ) : (
-                        <p className="font-body text-xs text-muted-foreground">
-                          Burns out in <span className="text-foreground/70">{timeLeft}</span>
+                        <p className="msg-skin-sub font-body text-xs">
+                          Burns out in <span>{timeLeft}</span>
                         </p>
                       )}
                     </div>
