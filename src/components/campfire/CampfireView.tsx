@@ -674,7 +674,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               </p>
             </div>
           ) : (
-            <div className="border-t border-border shrink-0" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
+            <div className="msg-skin-composer shrink-0" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
               {/* Media preview strip */}
               {stagedPreviews.length > 0 && (
                 <div className="px-3 pt-2 pb-1">
@@ -726,7 +726,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   onKeyDown={handleKeyDown}
                   placeholder="Type a message..."
                   rows={1}
-                  className="flex-1 resize-none max-h-[120px] py-2 px-3 rounded-[5px] border border-border bg-background font-body text-sm outline-none"
+                  className="flex-1 resize-none max-h-[120px] py-2 px-3 rounded-[5px] font-body text-sm outline-none"
                   style={{ minHeight: '36px' }}
                   onInput={(e) => {
                     const t = e.currentTarget;
@@ -738,7 +738,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   type="button"
                   onClick={() => { stagedFiles.length > 0 ? sendStagedMedia() : sendMessage(); }}
                   disabled={uploadingMedia || (stagedFiles.length === 0 && !input.trim() && !sending)}
-                  className="p-2 text-primary hover:opacity-80 disabled:opacity-30 shrink-0"
+                  className="msg-skin-send p-2 hover:opacity-80 disabled:opacity-30 shrink-0"
                 >
                   {uploadingMedia ? (
                     <span className="text-xs">...</span>
