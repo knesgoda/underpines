@@ -134,7 +134,7 @@ const AgeGateInterstitial = ({ onComplete }: AgeGateInterstitialProps) => {
         <Button
           onClick={handleSubmit}
           disabled={!isComplete || saving}
-          className="rounded-pill px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+          className="rounded-[3px] px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
         >
           {saving ? 'Saving…' : 'Continue →'}
         </Button>

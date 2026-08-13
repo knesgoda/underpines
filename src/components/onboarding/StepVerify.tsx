@@ -130,7 +130,7 @@ const StepVerify = () => {
         <Button
           onClick={handleSendCode}
           disabled={sending}
-          className="rounded-pill px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+          className="rounded-[3px] px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
         >
           {sending ? 'Creating your account…' : 'Create my account'}
         </Button>
@@ -163,7 +163,7 @@ const StepVerify = () => {
       <Button
         onClick={() => {}}
         disabled={verifying || code.some(d => !d)}
-        className="rounded-pill px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+        className="rounded-[3px] px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
       >
         {verifying ? 'Confirming...' : 'Confirm →'}
       </Button>

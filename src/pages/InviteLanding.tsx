@@ -129,7 +129,7 @@ const InviteLanding = () => {
 
             <Button
               onClick={() => navigate('/onboarding')}
-              className="mt-8 rounded-pill px-10 h-14 text-base font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+              className="mt-8 rounded-[3px] px-10 h-14 text-base font-display bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
             >
               Come in
             </Button>

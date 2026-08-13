@@ -88,7 +88,7 @@ const StepParentalConsent = ({
       <Button
         onClick={handleSendConsent}
         disabled={!parentEmail.trim() || sending}
-        className="rounded-pill px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
+        className="rounded-[3px] px-8 h-12 text-base font-body bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
       >
         {sending ? 'Sending…' : 'Send consent request'}
       </Button>
