@@ -202,7 +202,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
         <Button
           variant="outline"
           size="sm"
-          className="rounded-lg text-xs font-body gap-1.5 mb-4 border-dashed border-border hover:border-primary hover:text-primary"
+          className="rounded-[4px] text-xs font-body gap-1.5 mb-4 border-dashed border-border hover:border-primary hover:text-primary"
           onClick={() => setCreationOpen(true)}
         >
           <Plus size={14} />
@@ -224,7 +224,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
                   onDragOver={(e) => handleDragOver(e, idx)}
                   onDrop={() => handleDrop(idx)}
                   onDragEnd={() => { setDraggedIdx(null); setDragOverIdx(null); }}
-                  className={`relative rounded-lg border p-3 transition-all duration-200 ${pet.is_ambassador ? '' : 'cursor-grab active:cursor-grabbing'} group ${
+                  className={`relative rounded-[4px] border p-3 transition-all duration-200 ${pet.is_ambassador ? '' : 'cursor-grab active:cursor-grabbing'} group ${
                     dragOverIdx === idx ? 'ring-2 ring-primary/30' : ''
                   } ${pet.is_resting ? 'opacity-60' : ''}`}
                   style={{
@@ -255,7 +255,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => togglePin(pet)}
-                            className="absolute top-1.5 right-8 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-muted"
+                            className="absolute top-1.5 right-8 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-[3px] hover:bg-muted"
                           >
                             {pet.is_pinned
                               ? <Pin size={12} className="text-primary" />
@@ -274,7 +274,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
                   {!pet.is_ambassador && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-muted">
+                      <button className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-[3px] hover:bg-muted">
                         <MoreVertical size={12} className="text-muted-foreground" />
                       </button>
                     </DropdownMenuTrigger>
@@ -313,7 +313,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
                   )}
 
                   {/* Sprite */}
-                  <div className="w-full aspect-square rounded-md bg-muted/30 flex items-center justify-center mb-2 overflow-hidden">
+                  <div className="w-full aspect-square rounded-[3px] bg-muted/30 flex items-center justify-center mb-2 overflow-hidden">
                     {spriteUrl ? (
                       <img
                         src={spriteUrl}
@@ -331,7 +331,7 @@ const PinePetsSection = ({ activeAtmosphere = 'morning_mist' }: PinePetsSectionP
                       <Input
                         value={renameValue}
                         onChange={e => setRenameValue(e.target.value.slice(0, 50))}
-                        className="h-6 text-xs rounded-md px-1.5"
+                        className="h-6 text-xs rounded-[3px] px-1.5"
                         autoFocus
                         onKeyDown={e => {
                           if (e.key === 'Enter') submitRename(pet);

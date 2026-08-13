@@ -78,7 +78,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
 
   if (isSeedling) {
     return (
-      <div className="rounded-xl bg-card border border-border shadow-soft p-4 mb-4">
+      <div className="rounded-[5px] bg-card border border-border shadow-soft p-4 mb-4">
         <p className="font-body text-sm text-muted-foreground">
           🌱 You're still settling in. Read, look around, set up your page — posting unlocks in {daysLeft} {daysLeft === 1 ? 'day' : 'days'}.
         </p>
@@ -89,7 +89,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
   // Mobile: keep the simple stub (mobile uses bottom nav compose)
   if (isMobile) {
     return (
-      <div className="rounded-xl bg-card border border-border shadow-soft p-4 mb-4">
+      <div className="rounded-[5px] bg-card border border-border shadow-soft p-4 mb-4">
         {!expanded && !activeType ? (
           <button
             onClick={() => { setExpanded(true); setComposerOpen(true); }}
@@ -128,7 +128,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
                 <button
                   key={type}
                   onClick={() => handleTypeSelect(type)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border hover:bg-muted transition-colors font-body text-sm"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-[4px] border border-border hover:bg-muted transition-colors font-body text-sm"
                 >
                   <span>{icon}</span>
                   <span>{label}</span>
@@ -149,7 +149,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
 
   // Desktop: inline compose card
   return (
-    <div className="rounded-lg bg-card border border-border shadow-panel mb-4">
+    <div className="rounded-[4px] bg-card border border-border shadow-panel mb-4">
       {activeType ? (
         <div className="p-4">
           <AnimatePresence mode="wait">
@@ -180,7 +180,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
             <span className="flex-1 font-body text-sm text-muted-foreground">
               What's on your mind?
             </span>
-            <span className="shrink-0 px-3 py-1.5 rounded-md bg-primary text-primary-foreground font-body text-sm font-medium">
+            <span className="shrink-0 px-3 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm font-medium">
               New Post
             </span>
           </button>
@@ -200,7 +200,7 @@ const ComposerStub = ({ onPost, profile }: ComposerStubProps) => {
                   <button
                     key={type}
                     onClick={() => handleTypeSelect(type)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-border hover:bg-muted transition-colors font-body text-sm"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-[4px] border border-border hover:bg-muted transition-colors font-body text-sm"
                   >
                     <span>{icon}</span>
                     <span>{label}</span>

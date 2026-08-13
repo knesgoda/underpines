@@ -35,7 +35,7 @@ const InviteBanner = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, height: 0, marginBottom: 0 }}
           transition={{ duration: 0.3 }}
-          className="rounded-2xl bg-card border border-border p-4 mb-4 shadow-soft"
+          className="rounded-[5px] bg-card border border-border p-4 mb-4 shadow-soft"
         >
           <div className="flex items-start gap-3">
             <Flame size={18} className="text-primary shrink-0 mt-0.5" />

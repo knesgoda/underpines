@@ -104,7 +104,7 @@ const TrailPassLanding = () => {
               Create your account to join them.
             </p>
             {status.personal_message && (
-              <blockquote className="mt-4 rounded-xl bg-muted/50 px-4 py-3 text-sm font-body text-muted-foreground italic">
+              <blockquote className="mt-4 rounded-[5px] bg-muted/50 px-4 py-3 text-sm font-body text-muted-foreground italic">
                 “{status.personal_message}”
               </blockquote>
             )}

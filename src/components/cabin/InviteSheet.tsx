@@ -43,12 +43,12 @@ const InviteSheet = ({ open, onOpenChange }: InviteSheetProps) => {
           <div className="space-y-4">
             {/* Link display + copy */}
             <div className="flex items-center gap-2">
-              <div className="flex-1 rounded-xl bg-muted px-4 py-3 font-body text-sm text-foreground truncate">
+              <div className="flex-1 rounded-[5px] bg-muted px-4 py-3 font-body text-sm text-foreground truncate">
                 {inviteUrl}
               </div>
               <button
                 onClick={handleCopy}
-                className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                className="shrink-0 flex items-center justify-center w-10 h-10 rounded-[5px] bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
               </button>

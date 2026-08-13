@@ -137,7 +137,7 @@ const CampfireSearch = ({ campfireId, campfireName, onBack, onJumpToMessage }: P
                 <button
                   key={m.id}
                   onClick={() => onJumpToMessage(m.id)}
-                  className="aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
+                  className="aspect-square rounded-[4px] overflow-hidden hover:opacity-80 transition-opacity"
                 >
                   <MediaImage src={m.media_url} alt="" className="w-full h-full object-cover" />
                 </button>
@@ -162,7 +162,7 @@ const CampfireSearch = ({ campfireId, campfireName, onBack, onJumpToMessage }: P
               <button
                 key={m.id}
                 onClick={() => onJumpToMessage(m.id)}
-                className="w-full text-left p-3 rounded-xl hover:bg-muted/50 transition-colors"
+                className="w-full text-left p-3 rounded-[5px] hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">

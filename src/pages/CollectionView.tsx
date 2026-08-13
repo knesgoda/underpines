@@ -199,7 +199,7 @@ const CollectionView = () => {
 
       {/* Cover */}
       {collection.cover_image_url && (
-        <div className="w-full h-[200px] rounded-xl overflow-hidden mb-6">
+        <div className="w-full h-[200px] rounded-[5px] overflow-hidden mb-6">
           <MediaImage src={collection.cover_image_url} alt="" className="w-full h-full object-cover" />
         </div>
       )}

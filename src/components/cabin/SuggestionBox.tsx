@@ -198,7 +198,7 @@ const SuggestionBox = ({ cabinOwnerId, cabinOwnerHandle, atmosphere }: Props) =>
       className="max-w-md mx-auto px-6 pb-16"
     >
       <div
-        className="rounded-2xl p-5 transition-colors duration-500"
+        className="rounded-[5px] p-5 transition-colors duration-500"
         style={{
           backgroundColor: atmosphere.cardBg,
           border: `1px solid ${atmosphere.border}`,
@@ -238,7 +238,7 @@ const SuggestionBox = ({ cabinOwnerId, cabinOwnerHandle, atmosphere }: Props) =>
               onChange={e => setContent(e.target.value.slice(0, MAX_CHARS))}
               placeholder="A thought for the forest..."
               rows={3}
-              className="w-full rounded-xl px-3 py-2.5 font-body text-sm resize-none outline-none placeholder:opacity-40 transition-colors"
+              className="w-full rounded-[5px] px-3 py-2.5 font-body text-sm resize-none outline-none placeholder:opacity-40 transition-colors"
               style={{
                 backgroundColor: `${atmosphere.background}`,
                 color: atmosphere.text,

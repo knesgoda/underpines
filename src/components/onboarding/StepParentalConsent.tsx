@@ -80,7 +80,7 @@ const StepParentalConsent = ({
         value={parentEmail}
         onChange={(e) => setParentEmail(e.target.value)}
         placeholder="parent@example.com"
-        className="text-center text-lg h-14 rounded-xl border-border bg-card shadow-soft font-body max-w-sm"
+        className="text-center text-lg h-14 rounded-[5px] border-border bg-card shadow-soft font-body max-w-sm"
         autoFocus
         onKeyDown={(e) => e.key === 'Enter' && handleSendConsent()}
       />

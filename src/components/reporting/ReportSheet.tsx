@@ -152,7 +152,7 @@ const ReportSheet = ({
               </RadioGroup>
 
               {reason === 'suspected_bot' && (
-                <div className="rounded-xl border border-border bg-muted/40 p-3 space-y-2">
+                <div className="rounded-[5px] border border-border bg-muted/40 p-3 space-y-2">
                   <p className="font-body text-xs text-muted-foreground">
                     What seemed unusual? (optional)
                   </p>

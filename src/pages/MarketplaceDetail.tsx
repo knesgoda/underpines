@@ -123,7 +123,7 @@ const MarketplaceDetail = () => {
             className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
             onClick={() => setShowPurchased(false)}
           >
-            <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-sm mx-4" onClick={e => e.stopPropagation()}>
+            <div className="bg-card border border-border rounded-[5px] p-8 text-center max-w-sm mx-4" onClick={e => e.stopPropagation()}>
               <p className="text-3xl mb-4">🌲</p>
               <h2 className="font-display text-xl text-foreground mb-2">{design.name} is yours.</h2>
               <div className="flex gap-2 justify-center mt-6">
@@ -141,9 +141,9 @@ const MarketplaceDetail = () => {
 
       {/* Preview image */}
       {design.preview_image_url ? (
-        <img src={design.preview_image_url} alt={design.name} className="w-full h-64 object-cover rounded-2xl mb-6" />
+        <img src={design.preview_image_url} alt={design.name} className="w-full h-64 object-cover rounded-[5px] mb-6" />
       ) : (
-        <div className="w-full h-64 bg-muted rounded-2xl mb-6 flex items-center justify-center text-5xl">🏕️</div>
+        <div className="w-full h-64 bg-muted rounded-[5px] mb-6 flex items-center justify-center text-5xl">🏕️</div>
       )}
 
       <h1 className="font-display text-2xl text-foreground">{design.name}</h1>

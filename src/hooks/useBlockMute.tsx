@@ -44,7 +44,7 @@ export const useBlockMute = ({ targetUserId, targetDisplayName, onComplete }: Us
 
   const BlockConfirmDialog = () => (
     <AlertDialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
-      <AlertDialogContent className="rounded-2xl max-w-sm">
+      <AlertDialogContent className="rounded-[5px] max-w-sm">
         <AlertDialogHeader>
           <AlertDialogTitle className="font-display text-lg">
             Step away from {targetDisplayName || 'this person'}'s fire?

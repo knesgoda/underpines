@@ -231,12 +231,12 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) handleClose(); }}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-xl border-border">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 rounded-[5px] border-border">
         {/* Header */}
         <DialogHeader className="px-6 pt-6 pb-2">
           <div className="flex items-center gap-3">
             {step > 1 && !generating && !showSuccess && (
-              <button onClick={() => goTo(step - 1)} className="p-1 rounded-md hover:bg-muted transition-colors">
+              <button onClick={() => goTo(step - 1)} className="p-1 rounded-[3px] hover:bg-muted transition-colors">
                 <ArrowLeft size={16} className="text-muted-foreground" />
               </button>
             )}
@@ -346,7 +346,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                 transition={{ duration: 0.2, ease: 'easeOut' }}
               >
                 {errorMessage && (
-                  <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <div className="mb-4 p-3 rounded-[4px] bg-destructive/10 border border-destructive/20">
                     <p className="text-xs font-body text-destructive">{errorMessage}</p>
                   </div>
                 )}
@@ -356,7 +356,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                   onDrop={handleDrop}
                   onDragOver={e => e.preventDefault()}
                   onClick={() => fileInputRef.current?.click()}
-                  className="relative border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 hover:border-primary/50 hover:bg-accent/10"
+                  className="relative border-2 border-dashed rounded-[4px] cursor-pointer transition-colors duration-200 hover:border-primary/50 hover:bg-accent/10"
                   style={{
                     borderColor: preview ? 'hsl(var(--primary) / 0.4)' : 'hsl(var(--border))',
                     minHeight: preview ? 'auto' : 200,
@@ -378,7 +378,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                       <img
                         src={preview}
                         alt="Pet photo preview"
-                        className="w-full max-h-64 object-contain rounded-md"
+                        className="w-full max-h-64 object-contain rounded-[3px]"
                       />
                       <button
                         onClick={(e) => {
@@ -409,7 +409,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                     disabled={!file}
                     onClick={() => goTo(2)}
                     size="sm"
-                    className="rounded-lg text-xs font-body gap-1.5"
+                    className="rounded-[4px] text-xs font-body gap-1.5"
                   >
                     Next <ArrowRight size={12} />
                   </Button>
@@ -429,7 +429,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                 transition={{ duration: 0.2, ease: 'easeOut' }}
               >
                 {errorMessage && (
-                  <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <div className="mb-4 p-3 rounded-[4px] bg-destructive/10 border border-destructive/20">
                     <p className="text-xs font-body text-destructive">{errorMessage}</p>
                   </div>
                 )}
@@ -443,7 +443,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                     value={petName}
                     onChange={e => setPetName(e.target.value.slice(0, 50))}
                     placeholder="e.g. Biscuit"
-                    className="rounded-lg text-sm"
+                    className="rounded-[4px] text-sm"
                     autoFocus
                   />
                   <p className="text-[10px] font-body text-muted-foreground/40 mt-1 text-right">
@@ -464,7 +464,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                         <button
                           key={at.key}
                           onClick={() => setAnimalType(at.key)}
-                          className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all duration-150 ${
+                          className={`flex flex-col items-center gap-1.5 p-3 rounded-[4px] border-2 transition-all duration-150 ${
                             selected
                               ? 'border-primary bg-accent/20 shadow-panel'
                               : 'border-border hover:border-muted-foreground/30 hover:bg-muted/30'
@@ -489,7 +489,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                     disabled={!petName.trim() || !animalType}
                     onClick={handleGenerate}
                     size="sm"
-                    className="rounded-lg text-xs font-body gap-1.5"
+                    className="rounded-[4px] text-xs font-body gap-1.5"
                   >
                     Create Pine Pet
                   </Button>
@@ -518,7 +518,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                     <button
                       key={v.index}
                       onClick={() => setSelectedIdx(v.index)}
-                      className={`relative rounded-lg border-2 overflow-hidden transition-all duration-200 aspect-square ${
+                      className={`relative rounded-[4px] border-2 overflow-hidden transition-all duration-200 aspect-square ${
                         selectedIdx === v.index
                           ? 'border-primary shadow-md ring-2 ring-primary/20'
                           : 'border-border hover:border-muted-foreground/40'
@@ -552,7 +552,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                 </div>
 
                 {errorMessage && (
-                  <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <div className="mb-4 p-3 rounded-[4px] bg-destructive/10 border border-destructive/20">
                     <p className="text-xs font-body text-destructive">{errorMessage}</p>
                   </div>
                 )}
@@ -562,7 +562,7 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
                     disabled={selectedIdx === null || finalizing}
                     onClick={handleFinalize}
                     size="sm"
-                    className="rounded-lg text-xs font-body gap-1.5"
+                    className="rounded-[4px] text-xs font-body gap-1.5"
                   >
                     {finalizing ? (
                       <>

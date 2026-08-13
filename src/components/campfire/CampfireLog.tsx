@@ -101,7 +101,7 @@ const CampfireLog = ({ campfireId, isFirekeeper, onClose }: Props) => {
         )}
 
         {items.map(item => (
-          <div key={item.id} className={`p-3 rounded-xl border border-border bg-background ${item.is_pinned ? 'ring-1 ring-primary/20' : ''}`}>
+          <div key={item.id} className={`p-3 rounded-[5px] border border-border bg-background ${item.is_pinned ? 'ring-1 ring-primary/20' : ''}`}>
             {item.is_pinned && <p className="font-body text-[10px] text-primary mb-1">📌 Pinned</p>}
 
             {item.content_type === 'link' && item.link_url ? (
@@ -109,7 +109,7 @@ const CampfireLog = ({ campfireId, isFirekeeper, onClose }: Props) => {
                 {item.content}
               </a>
             ) : item.content_type === 'photo' && item.photo_url ? (
-              <MediaImage src={item.photo_url} alt="" className="rounded-lg h-[160px] max-h-[160px] object-cover mb-1" />
+              <MediaImage src={item.photo_url} alt="" className="rounded-[4px] h-[160px] max-h-[160px] object-cover mb-1" />
             ) : (
               <p className="font-body text-sm text-foreground">{item.content}</p>
             )}
@@ -133,10 +133,10 @@ const CampfireLog = ({ campfireId, isFirekeeper, onClose }: Props) => {
         ))}
 
         {showAdd && (
-          <div className="p-3 rounded-xl border border-border bg-background space-y-2">
+          <div className="p-3 rounded-[5px] border border-border bg-background space-y-2">
             <div className="flex gap-2">
-              <button onClick={() => setNewType('note')} className={`px-2 py-1 rounded-md font-body text-xs ${newType === 'note' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>Note</button>
-              <button onClick={() => setNewType('link')} className={`px-2 py-1 rounded-md font-body text-xs ${newType === 'link' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>Link</button>
+              <button onClick={() => setNewType('note')} className={`px-2 py-1 rounded-[3px] font-body text-xs ${newType === 'note' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>Note</button>
+              <button onClick={() => setNewType('link')} className={`px-2 py-1 rounded-[3px] font-body text-xs ${newType === 'link' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>Link</button>
             </div>
             <textarea
               value={newContent}
@@ -155,8 +155,8 @@ const CampfireLog = ({ campfireId, isFirekeeper, onClose }: Props) => {
               />
             )}
             <div className="flex gap-2">
-              <button onClick={() => setShowAdd(false)} className="flex-1 py-1.5 rounded-lg border border-border font-body text-xs text-muted-foreground">Cancel</button>
-              <button onClick={addItem} disabled={!newContent.trim()} className="flex-1 py-1.5 rounded-lg bg-primary text-primary-foreground font-body text-xs disabled:opacity-50">Add</button>
+              <button onClick={() => setShowAdd(false)} className="flex-1 py-1.5 rounded-[4px] border border-border font-body text-xs text-muted-foreground">Cancel</button>
+              <button onClick={addItem} disabled={!newContent.trim()} className="flex-1 py-1.5 rounded-[4px] bg-primary text-primary-foreground font-body text-xs disabled:opacity-50">Add</button>
             </div>
           </div>
         )}
@@ -164,7 +164,7 @@ const CampfireLog = ({ campfireId, isFirekeeper, onClose }: Props) => {
 
       {!showAdd && (
         <div className="p-3 border-t border-border">
-          <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1 py-2 rounded-lg border border-dashed border-border font-body text-xs text-muted-foreground hover:text-foreground">
+          <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1 py-2 rounded-[4px] border border-dashed border-border font-body text-xs text-muted-foreground hover:text-foreground">
             <Plus size={14} /> Add to the Log
           </button>
         </div>

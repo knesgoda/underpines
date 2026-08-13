@@ -120,7 +120,7 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
               key={item.id}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`rounded-xl border bg-card p-4 ${item.is_pinned ? 'border-primary/30' : 'border-border'}`}
+              className={`rounded-[5px] border bg-card p-4 ${item.is_pinned ? 'border-primary/30' : 'border-border'}`}
             >
               {item.is_pinned && (
                 <div className="flex items-center gap-1 mb-2">
@@ -179,21 +179,21 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
                 value={formTitle}
                 onChange={e => setFormTitle(e.target.value)}
                 placeholder="Title"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                className="w-full px-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
               />
               {(formType === 'link' || formType === 'resource') && (
                 <input
                   value={formUrl}
                   onChange={e => setFormUrl(e.target.value)}
                   placeholder="URL"
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                  className="w-full px-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                 />
               )}
               <textarea
                 value={formContent}
                 onChange={e => setFormContent(e.target.value)}
                 placeholder={formType === 'note' ? 'Content' : 'Description (optional)'}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background font-body text-sm text-foreground resize-none placeholder:text-muted-foreground focus:outline-none min-h-[60px]"
+                className="w-full px-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm text-foreground resize-none placeholder:text-muted-foreground focus:outline-none min-h-[60px]"
                 rows={3}
               />
               <div className="flex justify-between">
@@ -206,7 +206,7 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
           ) : (
             <button
               onClick={() => setShowForm(true)}
-              className="mt-4 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-border font-body text-xs text-muted-foreground hover:bg-muted transition-colors"
+              className="mt-4 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-[5px] border border-dashed border-border font-body text-xs text-muted-foreground hover:bg-muted transition-colors"
             >
               <Plus size={14} /> Add to Lodge
             </button>
@@ -214,7 +214,7 @@ const CampLodge = ({ campId, canWrite, isFirekeeper }: Props) => {
         </>
       )}
       <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
-        <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogContent className="rounded-[5px] max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-lg">Let this one go?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">

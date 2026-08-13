@@ -284,7 +284,7 @@ const Invites = () => {
               {sending ? 'Sending…' : 'Send Trail Pass'}
             </button>
             {newPassLink && (
-              <div className="rounded-xl border border-border bg-muted/40 p-3 space-y-2">
+              <div className="rounded-[5px] border border-border bg-muted/40 p-3 space-y-2">
                 <p className="text-xs text-muted-foreground">
                   {emailWasSent
                     ? 'Sent! You can also share the link directly:'

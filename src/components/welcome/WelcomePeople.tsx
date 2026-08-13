@@ -131,7 +131,7 @@ export const WelcomePeople = ({ onNext, onBack }: { onNext: () => void; onBack: 
               type="button"
               onClick={() => toggle(s.id)}
               aria-pressed={on}
-              className={`flex items-center gap-3 rounded-md border p-3 text-left transition-colors ${
+              className={`flex items-center gap-3 rounded-[3px] border p-3 text-left transition-colors ${
                 on ? 'border-primary bg-secondary' : 'border-border bg-card hover:bg-secondary'
               }`}
             >

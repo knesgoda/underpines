@@ -72,7 +72,7 @@ const GroveAppeals = () => {
           (appeals ?? []).map((appeal) => (
             <div
               key={appeal.id}
-              className="rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3"
+              className="rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3"
             >
               <button
                 type="button"

@@ -255,7 +255,7 @@ const Search = () => {
                   <Link
                     key={p.id}
                     to={`/${p.handle}`}
-                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-[5px] hover:bg-muted/50 transition-colors"
                   >
                     <Avatar className="h-10 w-10">
                       <AvatarFallback className="bg-secondary text-secondary-foreground font-body text-sm">
@@ -304,11 +304,11 @@ const Search = () => {
           ) : (
             <div className="space-y-2">
               {camps.map((c: any) => (
-                <div key={c.id} className="flex items-start gap-3 p-3 rounded-xl bg-card border border-border">
+                <div key={c.id} className="flex items-start gap-3 p-3 rounded-[5px] bg-card border border-border">
                   {c.cover_image_url ? (
-                    <MediaImage src={c.cover_image_url} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                    <MediaImage src={c.cover_image_url} alt="" className="w-12 h-12 rounded-[4px] object-cover shrink-0" />
                   ) : (
-                    <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 rounded-[4px] bg-secondary flex items-center justify-center shrink-0">
                       <Tent size={20} className="text-muted-foreground" />
                     </div>
                   )}
@@ -370,7 +370,7 @@ const Search = () => {
                 <Link
                   key={m.id}
                   to={`/campfires`}
-                  className="block p-3 rounded-xl bg-card border border-border hover:bg-muted/30 transition-colors"
+                  className="block p-3 rounded-[5px] bg-card border border-border hover:bg-muted/30 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-body text-xs font-medium text-primary">{m.campfires?.name || 'Campfire'}</span>

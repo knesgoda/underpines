@@ -299,7 +299,7 @@ const CabinPets = ({ ownerId, atmosphere = 'morning_mist' }: CabinPetsProps) => 
               style={{ zIndex: 12 }}
             >
               <span
-                className="px-2 py-0.5 rounded-md text-[10px] font-body"
+                className="px-2 py-0.5 rounded-[3px] text-[10px] font-body"
                 style={{
                   backgroundColor: 'rgba(0,0,0,0.6)',
                   color: '#fff',

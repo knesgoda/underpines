@@ -20,7 +20,7 @@ const SubscriptionPage = () => {
           </p>
         </div>
 
-        <div className="rounded-xl bg-muted/50 p-4">
+        <div className="rounded-[5px] bg-muted/50 p-4">
           <p className="font-body text-xs text-muted-foreground font-medium mb-2">What Pines+ will include:</p>
           <ul className="space-y-1 font-body text-xs text-muted-foreground">
             <li>🌲 8 atmospheres (vs. 3 free)</li>

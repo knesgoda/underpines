@@ -69,7 +69,7 @@ const SeasonalEventCard = ({ onShareThought }: SeasonalEventCardProps) => {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, height: 0 }}
-        className="rounded-2xl overflow-hidden bg-card border border-border shadow-card mb-4"
+        className="rounded-[5px] overflow-hidden bg-card border border-border shadow-card mb-4"
       >
         <div className="relative w-full h-48 overflow-hidden">
           <SeasonalIllustration illustrationKey={event.illustration_key} className="w-full h-full" />

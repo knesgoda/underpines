@@ -62,7 +62,7 @@ const RangerActionDialog = ({
               <select
                 value={reasonCode}
                 onChange={(e) => setReasonCode(e.target.value)}
-                className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-[3px] border border-border bg-background px-3 py-2 text-sm"
               >
                 {REASON_CODES.map((code) => (
                   <option key={code} value={code}>

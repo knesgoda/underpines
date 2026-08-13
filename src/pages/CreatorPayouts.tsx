@@ -107,7 +107,7 @@ const CreatorPayouts = () => {
 
       {/* Connected success */}
       {connected && isActive && (
-        <div className="mb-6 rounded-xl bg-primary/10 p-5 text-center">
+        <div className="mb-6 rounded-[5px] bg-primary/10 p-5 text-center">
           <p className="text-2xl mb-2">🌲</p>
           <p className="font-body text-sm text-foreground font-medium">You're all set.</p>
           <p className="font-body text-xs text-muted-foreground mt-1">
@@ -195,7 +195,7 @@ const CreatorPayouts = () => {
 
           {/* Upcoming payout */}
           {totalPending > 0 && (
-            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 mb-4">
+            <div className="rounded-[5px] border border-primary/30 bg-primary/5 p-4 mb-4">
               <p className="font-body text-xs text-muted-foreground">Upcoming payout</p>
               <p className="font-display text-xl text-foreground">${(totalPending / 100).toFixed(2)}</p>
               <p className="font-body text-xs text-muted-foreground">

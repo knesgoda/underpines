@@ -247,7 +247,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="relative bg-card rounded-t-2xl md:rounded-2xl w-full max-w-md max-h-[80dvh] overflow-hidden border border-border shadow-lg"
+        className="relative bg-card rounded-t-2xl md:rounded-[5px] w-full max-w-md max-h-[80dvh] overflow-hidden border border-border shadow-lg"
       >
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h3 className="font-body text-sm font-medium text-foreground">
@@ -264,7 +264,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Who do you want to sit with?"
-                className="w-full pl-8 pr-3 py-2 rounded-lg border border-border bg-background font-body text-sm outline-none"
+                className="w-full pl-8 pr-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm outline-none"
               />
             </div>
 
@@ -283,7 +283,7 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
                       type="button"
                       onClick={() => toggleSelect(m.id)}
                       disabled={disabled}
-                      className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-3 ${
+                      className={`w-full text-left px-3 py-2.5 rounded-[4px] transition-colors flex items-center gap-3 ${
                         isSelected ? 'bg-primary/10' : disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-muted'
                       }`}
                     >
@@ -346,14 +346,14 @@ const NewCampfireSheet = ({ onClose, onCreated }: Props) => {
               value={groupName}
               onChange={e => setGroupName(e.target.value)}
               placeholder="Name this Campfire"
-              className="w-full px-3 py-2.5 rounded-lg border border-border bg-background font-body text-sm outline-none"
+              className="w-full px-3 py-2.5 rounded-[4px] border border-border bg-background font-body text-sm outline-none"
               autoFocus
             />
             <input
               value={vibe}
               onChange={e => setVibe(e.target.value)}
               placeholder="What this fire is about (optional)"
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background font-body text-sm outline-none"
+              className="w-full px-3 py-2 rounded-[4px] border border-border bg-background font-body text-sm outline-none"
             />
             <div className="flex gap-2">
               <button type="button" onClick={() => setStep('pick')} disabled={creating} className="flex-1 py-2.5 rounded-full border border-border font-body text-sm text-muted-foreground disabled:opacity-50">Back</button>

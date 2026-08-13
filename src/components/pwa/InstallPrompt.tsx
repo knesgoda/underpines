@@ -17,7 +17,7 @@ const InstallPrompt = () => {
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-card rounded-2xl border border-border p-8 max-w-sm w-full text-center shadow-lg"
+          className="bg-card rounded-[5px] border border-border p-8 max-w-sm w-full text-center shadow-lg"
         >
           <p className="text-3xl mb-4">🌲</p>
 

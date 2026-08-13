@@ -294,7 +294,7 @@ const Campfires = () => {
 const CampfireListHeader = ({ filter, setFilter }: { filter: FilterTab; setFilter: (f: FilterTab) => void }) => (
   <div className="p-4 border-b border-border">
     <h1 className="font-display text-lg text-foreground mb-3">Campfires</h1>
-    <div className="flex gap-1 bg-muted rounded-lg p-0.5">
+    <div className="flex gap-1 bg-muted rounded-[4px] p-0.5">
       {([
         { key: 'all', label: 'All', icon: '🔥' },
         { key: 'active', label: 'Active', icon: '🔥' },
@@ -304,7 +304,7 @@ const CampfireListHeader = ({ filter, setFilter }: { filter: FilterTab; setFilte
         <button
           key={t.key}
           onClick={() => setFilter(t.key)}
-          className={`flex-1 py-1.5 rounded-md font-body text-xs transition-colors ${filter === t.key ? 'bg-card text-foreground shadow-panel' : 'text-muted-foreground'}`}
+          className={`flex-1 py-1.5 rounded-[3px] font-body text-xs transition-colors ${filter === t.key ? 'bg-card text-foreground shadow-panel' : 'text-muted-foreground'}`}
         >
           {t.icon} {t.label}
         </button>

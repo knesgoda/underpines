@@ -65,7 +65,7 @@ const SettingsPage = () => {
             <button
               key={t.key}
               onClick={() => setTheme(t.key)}
-              className={`relative rounded-xl border-2 p-3 transition-all text-left ${
+              className={`relative rounded-[5px] border-2 p-3 transition-all text-left ${
                 theme === t.key
                   ? 'border-primary shadow-soft'
                   : 'border-border hover:border-muted-foreground/30'
@@ -73,7 +73,7 @@ const SettingsPage = () => {
             >
               {/* Mini preview */}
               <div
-                className="rounded-lg h-16 mb-2 flex items-end p-2 gap-1"
+                className="rounded-[4px] h-16 mb-2 flex items-end p-2 gap-1"
                 style={{ backgroundColor: t.preview.bg }}
               >
                 <div
@@ -110,7 +110,7 @@ const SettingsPage = () => {
               key={s.key}
               type="button"
               onClick={() => setSkin(s.key)}
-              className={`rounded-md border p-3 text-left transition-colors ${
+              className={`rounded-[3px] border p-3 text-left transition-colors ${
                 skin === s.key ? 'border-primary bg-secondary' : 'border-border bg-card hover:bg-secondary'
               }`}
               aria-pressed={skin === s.key}

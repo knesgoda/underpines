@@ -50,7 +50,7 @@ const CollectionsShelf = ({ profileId, handle, isOwner, atmosphere }: Props) => 
 
   return (
     <div
-      className="rounded-2xl p-5 shadow-soft transition-colors duration-700"
+      className="rounded-[5px] p-5 shadow-soft transition-colors duration-700"
       style={{ backgroundColor: atmosphere.cardBg, borderColor: atmosphere.border, borderWidth: 1 }}
     >
       <h3 className="font-display text-sm mb-1" style={{ color: atmosphere.text, opacity: 0.6 }}>Collections</h3>
@@ -79,7 +79,7 @@ const CollectionsShelf = ({ profileId, handle, isOwner, atmosphere }: Props) => 
         <div className="space-y-3">
           {collections.map(c => (
             <Link key={c.id} to={`/${handle}/collections/${c.id}`} className="flex items-center gap-3 group">
-              <div className="w-14 h-14 rounded-lg bg-muted overflow-hidden shrink-0">
+              <div className="w-14 h-14 rounded-[4px] bg-muted overflow-hidden shrink-0">
                 {c.cover_image_url ? (
                   <MediaImage src={c.cover_image_url} alt="" className="w-full h-full object-cover" />
                 ) : (

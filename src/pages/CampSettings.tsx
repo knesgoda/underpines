@@ -194,7 +194,7 @@ const CampSettings = () => {
         <h2 className="font-body text-sm font-medium text-foreground mb-3">Members ({members.length})</h2>
         <div className="space-y-1">
           {members.map(m => (
-            <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-muted transition-colors">
+            <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-[4px] hover:bg-muted transition-colors">
               <div className="flex items-center gap-2">
                 <span className="text-sm">{roleLabel(m.role)}</span>
                 <span className="font-body text-sm text-foreground">{m.profile?.display_name || 'Unknown'}</span>
@@ -231,7 +231,7 @@ const CampSettings = () => {
 
       {/* Pass Firekeeping confirmation */}
       <AlertDialog open={!!passTarget} onOpenChange={(open) => !open && setPassTarget(null)}>
-        <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogContent className="rounded-[5px] max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-lg">Pass the torch?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">
@@ -249,7 +249,7 @@ const CampSettings = () => {
 
       {/* Close-group confirmation */}
       <AlertDialog open={archiveOpen} onOpenChange={setArchiveOpen}>
-        <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogContent className="rounded-[5px] max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-lg">Close this group?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">

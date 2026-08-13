@@ -63,7 +63,7 @@ const GroveLayout = () => {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors',
+                  'flex items-center gap-2.5 px-3 py-2 rounded-[3px] text-sm transition-colors',
                   isActive
                     ? 'bg-[hsl(var(--amber-deep)/0.15)] text-[hsl(var(--amber-mid))]'
                     : 'text-[hsl(var(--pine-light)/0.7)] hover:text-[hsl(var(--pine-light))] hover:bg-[hsl(var(--pine-mid)/0.2)]'

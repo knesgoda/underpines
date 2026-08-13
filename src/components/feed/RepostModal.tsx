@@ -48,7 +48,7 @@ const RepostModal = ({ post, open, onClose, onReposted }: RepostModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) { onClose(); setTimeout(() => setStatus('idle'), 300); } }}>
-      <DialogContent className="sm:max-w-md rounded-2xl border-[#e5e7eb] bg-[#f9fafb] p-0 gap-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md rounded-[5px] border-[#e5e7eb] bg-[#f9fafb] p-0 gap-0 overflow-hidden">
         <AnimatePresence mode="wait">
           {status === 'success' ? (
             <motion.div
@@ -81,7 +81,7 @@ const RepostModal = ({ post, open, onClose, onReposted }: RepostModalProps) => {
               </p>
 
               {/* Preview card */}
-              <div className="rounded-lg border border-[#e5e7eb] bg-white p-3 mb-5 shadow-panel">
+              <div className="rounded-[4px] border border-[#e5e7eb] bg-white p-3 mb-5 shadow-panel">
                 <div className="flex items-center gap-2 mb-2">
                   <UserAvatar
                     avatarUrl={post.author?.avatar_url}
@@ -107,14 +107,14 @@ const RepostModal = ({ post, open, onClose, onReposted }: RepostModalProps) => {
               <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => { onClose(); setTimeout(() => setStatus('idle'), 300); }}
-                  className="px-4 py-2 rounded-lg font-body text-sm text-[#1f2937]/70 hover:bg-[#e5e7eb]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#16a34a]/30"
+                  className="px-4 py-2 rounded-[4px] font-body text-sm text-[#1f2937]/70 hover:bg-[#e5e7eb]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#16a34a]/30"
                 >
                   Never mind
                 </button>
                 <button
                   onClick={handleRepost}
                   disabled={status === 'loading'}
-                  className="px-4 py-2 rounded-lg font-body text-sm font-medium bg-[#16a34a] text-white hover:bg-[#16a34a]/90 transition-colors disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[#16a34a]/40"
+                  className="px-4 py-2 rounded-[4px] font-body text-sm font-medium bg-[#16a34a] text-white hover:bg-[#16a34a]/90 transition-colors disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[#16a34a]/40"
                 >
                   {status === 'loading' ? 'Sharing…' : 'Share it 🌲'}
                 </button>

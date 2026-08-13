@@ -56,7 +56,7 @@ const Login = () => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="Email"
-                className="h-12 rounded-md bg-background border-border text-foreground placeholder:text-muted-foreground font-body"
+                className="h-12 rounded-[3px] bg-background border-border text-foreground placeholder:text-muted-foreground font-body"
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
               />
               <div className="relative">
@@ -65,7 +65,7 @@ const Login = () => {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="h-12 rounded-md bg-background border-border text-foreground placeholder:text-muted-foreground font-body pr-12"
+                  className="h-12 rounded-[3px] bg-background border-border text-foreground placeholder:text-muted-foreground font-body pr-12"
                   onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 />
                 <button

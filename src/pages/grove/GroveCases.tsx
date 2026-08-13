@@ -67,7 +67,7 @@ const GroveCases = () => {
 
   const StatCard = ({ label, value, to }: { label: string; value: number; to?: string }) => {
     const body = (
-      <div className="rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3">
+      <div className="rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3">
         <div className="text-2xl font-display text-[hsl(var(--pine-pale))]">{value}</div>
         <div className="text-xs text-[hsl(var(--pine-light)/0.65)]">{label}</div>
       </div>
@@ -96,7 +96,7 @@ const GroveCases = () => {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="rounded-md border border-[hsl(var(--pine-mid)/0.4)] bg-[hsl(var(--pine-dark))] px-3 py-1.5 text-sm text-[hsl(var(--pine-pale))]"
+          className="rounded-[3px] border border-[hsl(var(--pine-mid)/0.4)] bg-[hsl(var(--pine-dark))] px-3 py-1.5 text-sm text-[hsl(var(--pine-pale))]"
           aria-label="Filter by case type"
         >
           <option value="all">All types</option>
@@ -124,7 +124,7 @@ const GroveCases = () => {
             <Link
               key={c.id}
               to={`/grove/cases/${c.id}`}
-              className="block rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3 hover:border-[hsl(var(--amber-mid)/0.5)] transition-colors"
+              className="block rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3 hover:border-[hsl(var(--amber-mid)/0.5)] transition-colors"
             >
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2">

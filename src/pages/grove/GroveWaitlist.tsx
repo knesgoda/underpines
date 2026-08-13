@@ -140,7 +140,7 @@ const GroveWaitlist = () => {
           visible.map((row) => (
             <div
               key={row.id}
-              className="rounded-lg border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3"
+              className="rounded-[4px] border border-[hsl(var(--pine-mid)/0.3)] bg-[hsl(var(--pine-dark))] px-4 py-3"
             >
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <button

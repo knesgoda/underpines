@@ -115,7 +115,7 @@ const CreateCamp = () => {
             {/* Cover upload */}
             <button
               onClick={() => fileRef.current?.click()}
-              className="w-full aspect-square max-w-[200px] mx-auto mb-6 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-muted transition-colors overflow-hidden"
+              className="w-full aspect-square max-w-[200px] mx-auto mb-6 rounded-[5px] border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-muted transition-colors overflow-hidden"
             >
               {coverPreview ? (
                 <img src={coverPreview} alt="" className="w-full h-full object-cover" />
@@ -166,7 +166,7 @@ const CreateCamp = () => {
                 <button
                   key={opt.value}
                   onClick={() => setVisibility(opt.value)}
-                  className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
+                  className={`w-full text-left px-4 py-3 rounded-[5px] border transition-colors ${
                     visibility === opt.value
                       ? 'border-primary bg-primary/5'
                       : 'border-border bg-card hover:bg-muted'
@@ -193,9 +193,9 @@ const CreateCamp = () => {
 
             <div className="flex flex-col items-center gap-4 mb-6">
               {coverPreview ? (
-                <img src={coverPreview} alt="" className="w-24 h-24 rounded-2xl object-cover" />
+                <img src={coverPreview} alt="" className="w-24 h-24 rounded-[5px] object-cover" />
               ) : (
-                <div className="w-24 h-24 rounded-2xl bg-secondary flex items-center justify-center">
+                <div className="w-24 h-24 rounded-[5px] bg-secondary flex items-center justify-center">
                   <Flame size={32} className="text-muted-foreground" />
                 </div>
               )}

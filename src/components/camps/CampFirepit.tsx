@@ -182,7 +182,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
               key={post.id}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`rounded-xl border bg-card p-4 ${post.is_pinned ? 'border-primary/30' : 'border-border'}`}
+              className={`rounded-[5px] border bg-card p-4 ${post.is_pinned ? 'border-primary/30' : 'border-border'}`}
             >
               {post.is_pinned && (
                 <div className="flex items-center gap-1 mb-2">
@@ -210,7 +210,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
                       <MoreHorizontal size={14} className="text-muted-foreground" />
                     </button>
                     {menuOpenId === post.id && (
-                      <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-10 py-1 min-w-[140px]">
+                      <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-[4px] shadow-lg z-10 py-1 min-w-[140px]">
                         <button
                           onClick={() => { setDeleteConfirmId(post.id); setMenuOpenId(null); }}
                           className="w-full text-left px-3 py-1.5 font-body text-xs text-destructive hover:bg-muted flex items-center gap-2"
@@ -239,7 +239,7 @@ const CampFirepit = ({ campId, isScout, scoutDays, canModerate }: Props) => {
         </div>
       )}
       <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
-        <AlertDialogContent className="rounded-2xl max-w-sm">
+        <AlertDialogContent className="rounded-[5px] max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-lg">Let this one go?</AlertDialogTitle>
             <AlertDialogDescription className="font-body text-sm text-muted-foreground">

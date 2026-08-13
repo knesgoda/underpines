@@ -20,7 +20,7 @@ const UpdatePrompt = () => {
         exit={{ opacity: 0, y: 40 }}
         className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-auto z-50"
       >
-        <div className="bg-card border border-border rounded-xl p-4 shadow-lg flex items-center gap-3">
+        <div className="bg-card border border-border rounded-[5px] p-4 shadow-lg flex items-center gap-3">
           <span className="font-body text-sm text-foreground">
             🌲 A new version of Under Pines is ready.
           </span>

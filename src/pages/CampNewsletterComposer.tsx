@@ -261,7 +261,7 @@ const CampNewsletterComposer = () => {
         />
 
         {frequencyError && (
-          <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+          <div className="mb-4 p-3 rounded-[4px] bg-destructive/10 border border-destructive/20">
             <p className="font-body text-sm text-destructive">{frequencyError}</p>
           </div>
         )}
@@ -277,7 +277,7 @@ const CampNewsletterComposer = () => {
           <ToolbarBtn onClick={insertLink}><LinkIcon size={16} /></ToolbarBtn>
         </div>
 
-        <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="Write the newsletter. Markdown works." aria-label="Newsletter body" className="min-h-[40vh] w-full resize-y rounded-md border border-border bg-background p-3 font-body text-sm text-foreground outline-none" />
+        <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="Write the newsletter. Markdown works." aria-label="Newsletter body" className="min-h-[40vh] w-full resize-y rounded-[3px] border border-border bg-background p-3 font-body text-sm text-foreground outline-none" />
       </div>
 
       {/* Preview Modal */}
@@ -286,7 +286,7 @@ const CampNewsletterComposer = () => {
           <DialogHeader>
             <DialogTitle className="font-display">Email Preview</DialogTitle>
           </DialogHeader>
-          <div className="bg-[#f5f0e8] rounded-lg p-6 font-serif text-sm">
+          <div className="bg-[#f5f0e8] rounded-[4px] p-6 font-serif text-sm">
             <p className="text-center text-xs text-[#8b7355] tracking-widest mb-4">UNDER PINES</p>
             <div className="border-t border-[#d4c5a9] pt-4 mb-4">
               <p className="text-xs text-[#8b7355] tracking-wider mb-2">FROM YOUR CAMPS</p>
@@ -348,7 +348,7 @@ const CampNewsletterComposer = () => {
 const ToolbarBtn = ({ children, active, onClick }: { children: React.ReactNode; active?: boolean; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className={`p-2 rounded-md transition-colors ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
+    className={`p-2 rounded-[3px] transition-colors ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
   >
     {children}
   </button>

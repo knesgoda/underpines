@@ -92,7 +92,7 @@ const CrossPostCard = ({ postId, note, isMine }: CrossPostCardProps) => {
 
   if (loading) {
     return (
-      <div className={`rounded-xl border border-border bg-muted/50 px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
+      <div className={`rounded-[5px] border border-border bg-muted/50 px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
         <div className="h-3 w-24 bg-muted rounded animate-pulse mb-2" />
         <div className="h-3 w-40 bg-muted rounded animate-pulse" />
       </div>
@@ -102,7 +102,7 @@ const CrossPostCard = ({ postId, note, isMine }: CrossPostCardProps) => {
   // Post was deleted or inaccessible
   if (!post) {
     return (
-      <div className={`rounded-xl border border-border bg-muted/40 px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
+      <div className={`rounded-[5px] border border-border bg-muted/40 px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
         <p className="font-body text-xs text-muted-foreground italic">This post is no longer available.</p>
       </div>
     );

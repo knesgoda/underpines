@@ -72,7 +72,7 @@ const MobileComposerSheet = () => {
                 <button
                   key={type}
                   onClick={() => handleTypeSelect(type)}
-                  className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-border hover:bg-muted transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3.5 rounded-[5px] border border-border hover:bg-muted transition-colors text-left"
                 >
                   <span className="text-xl">{icon}</span>
                   <div>

@@ -143,7 +143,7 @@ const NotificationSettings = () => {
       <h1 className="font-display text-2xl text-foreground mb-6">Notifications</h1>
 
       {/* Quiet Mode — prominently first */}
-      <div className="rounded-xl border-2 border-primary/20 bg-card p-6 mb-6">
+      <div className="rounded-[5px] border-2 border-primary/20 bg-card p-6 mb-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-body text-base font-semibold text-foreground">Quiet Mode 🌲</h2>
           <Switch
