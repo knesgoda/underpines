@@ -1,76 +1,371 @@
 /**
- * "My Page" — the handoff's profile, in its own route chunk.
+ * "My Page" — the scrapbook. Route-scoped: only MyPage imports this.
  *
- * Replaces the Cabin: a customizable personal page rather than an animated
- * scene. Module slots come from cabin_widgets, which already stored exactly
- * this.
+ * The vocabulary is paper: ivory sheets with thin warm-grey rules, navy type,
+ * a muted coral accent, and analog fasteners (tape, pins, clips) on a cork
+ * board. Everything is drawn from tokens plus a few local paper variables, so
+ * a page owner's custom colours still come through.
  */
 
-/* Capped and centered: an uncapped 1fr column let the page sprawl across the
-   full 1180px shell, far past the feed's reading measure. */
-.profile-layout {
-  display: grid;
-  grid-template-columns: 300px minmax(0, 600px);
-  gap: 22px;
-  align-items: start;
-  justify-content: center;
+.profile-page {
+  --paper: hsl(var(--card));
+  --paper-edge: hsl(var(--foreground) / 0.14);
+  --paper-rule: hsl(var(--foreground) / 0.09);
+  --ink: hsl(var(--foreground));
+  --ink-quiet: hsl(var(--muted-foreground));
+  --accent-warm: hsl(var(--primary));
+  --cork: hsl(28 34% 62%);
+  --cork-deep: hsl(26 30% 48%);
+  --tape: hsl(46 46% 82% / 0.85);
+  max-width: 1120px;
 }
 
-.profile-side { display: grid; gap: 16px; }
-.profile-main { display: grid; gap: 15px; min-width: 0; }
+/* A paper surface: subtle tooth, a soft edge, almost no shadow. */
+.profile-page .paper {
+  position: relative;
+  border: 1px solid var(--paper-edge);
+  border-radius: 3px;
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(hsl(var(--foreground) / 0.022) 1px, transparent 1px),
+    radial-gradient(hsl(var(--foreground) / 0.018) 1px, transparent 1px);
+  background-size: 7px 7px, 11px 11px;
+  background-position: 0 0, 4px 5px;
+  box-shadow: 0 1px 2px hsl(var(--foreground) / 0.06);
+  padding: 18px;
+  color: var(--ink);
+}
 
-.profile-hero { display: flex; gap: 16px; align-items: center; padding: 18px; }
+.profile-page .paper.module > h2 {
+  margin: 0 0 10px;
+  border-bottom: 1px solid var(--paper-rule);
+  padding-bottom: 6px;
+  color: var(--accent-warm);
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
 
-.profile-name h1 { margin: 4px 0; }
+.profile-page .paper p { font-size: 13.5px; line-height: 1.6; }
+.profile-page .quiet { color: var(--ink-quiet); font-size: 13px; }
 
-.profile-name small {
+/* ---------- Header ---------- */
+
+.profile-head {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 22px;
+  overflow: hidden;
+}
+
+.profile-head-text { min-width: 0; flex: 1; }
+
+.profile-head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 32px);
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.profile-head .handle {
   display: block;
-  color: hsl(var(--muted-foreground));
+  margin-top: 4px;
+  color: var(--ink-quiet);
   font-size: 12px;
+  letter-spacing: 0.04em;
 }
 
-.profile-mantra {
-  margin: 6px 0 0;
-  color: hsl(var(--muted-foreground));
+.profile-head .pullquote {
+  margin: 10px 0 0;
+  border-left: 2px solid var(--accent-warm);
+  padding-left: 10px;
+  color: var(--ink);
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 13px;
+  font-size: 14px;
 }
 
-/* Top friends — the grid is the point; order is meaningful. */
-.top-friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+/* Avatar on the header sheet, taped down like a photo. */
+.profile-head-avatar {
+  position: relative;
+  flex: none;
+  padding: 7px 7px 22px;
+  background: hsl(0 0% 100% / 0.7);
+  border: 1px solid var(--paper-edge);
+  box-shadow: 0 2px 5px hsl(var(--foreground) / 0.1);
+  transform: rotate(-1.5deg);
+}
 
-.top-friend {
+.profile-head-avatar::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 54px;
+  height: 17px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: var(--tape);
+  border-left: 1px solid hsl(var(--foreground) / 0.06);
+  border-right: 1px solid hsl(var(--foreground) / 0.06);
+}
+
+.profile-flourish { color: var(--accent-warm); opacity: 0.55; flex: none; }
+
+/* ---------- Columns ---------- */
+
+.profile-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.profile-wall,
+.profile-memorabilia { display: grid; gap: 16px; min-width: 0; }
+
+/* ---------- Tabs ---------- */
+
+.profile-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--paper-edge);
+  padding-bottom: 0;
+}
+
+.profile-tabs a,
+.profile-tabs button {
+  border: 0;
+  background: none;
+  padding: 8px 12px;
+  color: var(--ink-quiet);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.profile-tabs a:hover,
+.profile-tabs button:hover { color: var(--ink); }
+
+.profile-tabs .is-active {
+  color: var(--accent-warm);
+  border-bottom-color: var(--accent-warm);
+}
+
+/* ---------- At a glance ---------- */
+
+.glance-list { display: grid; gap: 9px; }
+
+.glance-row {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.glance-row svg { flex: none; margin-top: 2px; color: var(--accent-warm); }
+.glance-row small { display: block; color: var(--ink-quiet); font-size: 11px; }
+
+.glance-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+/* ---------- Friends ---------- */
+
+.friends-head { display: flex; align-items: baseline; gap: 8px; }
+.friends-head .count-picker { margin-left: auto; display: flex; gap: 3px; }
+
+.count-picker button {
+  border: 1px solid var(--paper-edge);
+  border-radius: 2px;
+  background: none;
+  padding: 1px 6px;
+  color: var(--ink-quiet);
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.count-picker button.is-active {
+  border-color: var(--accent-warm);
+  color: var(--accent-warm);
+}
+
+.friends-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 10px; }
+
+.friend-cell {
   display: grid;
   justify-items: center;
   gap: 5px;
   text-align: center;
   text-decoration: none;
-  color: inherit;
-  font-size: 10px;
+  color: var(--ink);
+  font-size: 10.5px;
   font-weight: 700;
 }
 
-.top-friend span.rank {
-  color: hsl(var(--muted-foreground));
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+.friend-cell b { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.friend-cell:hover b { color: var(--accent-warm); }
+
+/* ---------- Corkboard ---------- */
+
+.corkboard {
+  border: 1px solid var(--cork-deep);
+  border-radius: 3px;
+  padding: 16px;
+  background-color: var(--cork);
+  background-image:
+    radial-gradient(hsl(26 30% 40% / 0.28) 1.1px, transparent 1.2px),
+    radial-gradient(hsl(34 40% 74% / 0.3) 1px, transparent 1.1px);
+  background-size: 9px 9px, 14px 14px;
+  background-position: 0 0, 5px 7px;
+  box-shadow: inset 0 0 24px hsl(26 30% 34% / 0.25);
 }
 
-.top-friend b { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.corkboard-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: hsl(30 40% 20%);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
 
-/* Wall */
+.corkboard-head .album-link { color: hsl(30 45% 18%); }
+
+.corkboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 14px; }
+
+/* A Polaroid: white frame, deep bottom lip for the caption, slight tilt. */
+.polaroid {
+  position: relative;
+  display: block;
+  padding: 8px 8px 0;
+  background: hsl(40 30% 98%);
+  border: 1px solid hsl(30 20% 82%);
+  box-shadow: 0 3px 7px hsl(26 30% 24% / 0.34);
+  text-decoration: none;
+  color: hsl(222 30% 20%);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.polaroid:hover { transform: rotate(0deg) scale(1.02); box-shadow: 0 6px 14px hsl(26 30% 24% / 0.4); }
+
+.polaroid img,
+.polaroid .polaroid-blank {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: hsl(30 12% 88%);
+}
+
+.polaroid .polaroid-blank { display: grid; place-items: center; color: hsl(30 10% 55%); font-size: 10px; }
+
+.polaroid figcaption {
+  padding: 8px 2px 12px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.polaroid figcaption small { display: block; color: hsl(222 12% 48%); font-size: 10px; font-family: var(--font-body); }
+
+/* Fasteners. Each album gets one deterministically, so a board looks arranged
+   rather than randomised on every render. */
+.polaroid::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.polaroid.pin-red::before,
+.polaroid.pin-brass::before {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px hsl(26 30% 20% / 0.5), inset -2px -2px 3px hsl(0 0% 0% / 0.25), inset 2px 2px 3px hsl(0 0% 100% / 0.45);
+}
+
+.polaroid.pin-red::before { background: hsl(4 62% 52%); }
+.polaroid.pin-brass::before { background: hsl(40 58% 56%); }
+
+.polaroid.tape::before {
+  width: 52px;
+  height: 16px;
+  transform: translateX(-50%) rotate(-4deg);
+  background: var(--tape);
+  border-left: 1px solid hsl(30 20% 60% / 0.5);
+  border-right: 1px solid hsl(30 20% 60% / 0.5);
+}
+
+.polaroid.clip::before {
+  top: -10px;
+  left: auto;
+  right: 12px;
+  width: 11px;
+  height: 24px;
+  transform: none;
+  border: 2px solid hsl(210 8% 62%);
+  border-radius: 6px 6px 3px 3px;
+  border-bottom-color: transparent;
+}
+
+.corkboard-empty {
+  color: hsl(30 40% 22%);
+  font-size: 12.5px;
+}
+
+/* ---------- Wall composer ---------- */
+
+.wall-composer { display: grid; gap: 10px; }
+
+.wall-composer-head { display: flex; gap: 10px; align-items: center; }
+
+.wall-composer-stub {
+  flex: 1;
+  border: 1px dashed var(--paper-edge);
+  border-radius: 3px;
+  background: hsl(var(--background));
+  padding: 10px 12px;
+  color: var(--ink-quiet);
+  font-family: var(--font-body);
+  font-size: 13px;
+  text-align: left;
+  cursor: text;
+}
+
+.wall-composer-stub:hover { border-color: var(--accent-warm); color: var(--ink); }
+
+.wall-composer-kinds { display: flex; gap: 8px; }
+
+/* ---------- Wall notes (the guestbook) ---------- */
+
 .wall-form { display: grid; gap: 8px; }
 
 .wall-form textarea {
   width: 100%;
-  min-height: 66px;
+  min-height: 64px;
   resize: vertical;
-  border: 1px solid hsl(var(--border));
+  border: 1px solid var(--paper-edge);
   border-radius: 3px;
   background: hsl(var(--background));
-  color: hsl(var(--foreground));
+  color: var(--ink);
   padding: 9px 11px;
   font-family: var(--font-body);
   font-size: 13px;
@@ -80,7 +375,7 @@
   display: flex;
   gap: 10px;
   padding: 11px 0;
-  border-top: 1px dashed hsl(var(--border));
+  border-top: 1px dashed var(--paper-rule);
 }
 
 .wall-note:first-of-type { border-top: 0; }
@@ -88,88 +383,49 @@
 
 .wall-note small {
   display: block;
-  color: hsl(var(--muted-foreground));
+  color: var(--ink-quiet);
   font-size: 10px;
   margin-top: 3px;
 }
 
-/* Photos strip */
-.photo-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.visit-count { color: var(--ink-quiet); font-size: 10px; letter-spacing: 0.04em; }
 
-.photo-strip img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 2px;
-  display: block;
-}
-
-.visit-count {
-  color: hsl(var(--muted-foreground));
-  font-size: 10px;
-  letter-spacing: 0.04em;
-}
-
-/* The song on your page. Never autoplays — the controls are the whole point,
-   and an autoplaying page is the one thing about 2006 nobody misses. */
+/* The song on your page. Never autoplays. */
 .page-song { display: grid; gap: 7px; }
-
 .page-song b { font-size: 13px; }
-.page-song small { color: hsl(var(--muted-foreground)); font-size: 11px; }
+.page-song small { display: block; color: var(--ink-quiet); font-size: 11px; }
 .page-song audio { width: 100%; height: 32px; }
 
 /**
- * Full 2006 mode.
- *
- * A page-owner opt-in, scoped to the profile wrapper so it can never reach the
- * topbar or anyone else's page. Hard borders, a tiled ground and display type —
- * the era's actual visual grammar rather than a joke about it.
+ * Full 2006 mode — kept from the old page, retuned for paper. A page-owner
+ * opt-in, scoped to this wrapper so it can never reach the topbar.
  */
-.page-2006 {
-  background-image:
-    repeating-linear-gradient(45deg, hsl(var(--foreground) / 0.035) 0 6px, transparent 6px 12px);
-  padding: 14px;
-  border-radius: 3px;
-}
-
-.page-2006 .panel {
+.profile-page.page-2006 .paper {
   border-width: 2px;
-  border-style: solid;
   border-radius: 0;
   box-shadow: 3px 3px 0 hsl(var(--foreground) / 0.16);
 }
 
-.page-2006 .module > h2 {
+.profile-page.page-2006 .paper.module > h2 {
   border-bottom-width: 2px;
   font-size: 10px;
   letter-spacing: 0.16em;
 }
 
-.page-2006 .profile-name h1 {
-  font-family: var(--font-display);
-  font-style: italic;
+.profile-page.page-2006 .profile-head h1 { font-style: italic; }
+
+@media (max-width: 900px) {
+  .profile-columns { grid-template-columns: minmax(0, 1fr); }
+  /* On a phone the memorabilia reads first — that is the mobile design's
+     order: header, at a glance, friends, corkboard, then the wall. */
+  .profile-memorabilia { order: -1; }
+  .friends-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* Posts — bare handoff post cards under a module-style heading, not panels
-   nested inside a panel. */
-.profile-posts { display: grid; gap: 15px; }
-
-.profile-posts > h2 {
-  margin: 0;
-  border-bottom: 1px solid hsl(var(--border));
-  padding-bottom: 6px;
-  color: hsl(var(--primary));
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-@media (max-width: 980px) {
-  .profile-layout { grid-template-columns: minmax(0, 640px); }
-}
-
-@media (max-width: 700px) {
-  .profile-hero { flex-direction: column; text-align: center; }
-  .top-friends { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 560px) {
+  .profile-head { flex-direction: column; text-align: center; }
+  .profile-head .pullquote { border-left: 0; padding: 0; }
+  .profile-head-avatar { transform: rotate(-2deg); }
+  .corkboard-grid { grid-template-columns: repeat(2, 1fr); gap: 14px 12px; }
+  .profile-tabs { overflow-x: auto; }
 }
