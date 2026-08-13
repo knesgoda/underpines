@@ -80,11 +80,17 @@ export const isSafeToLog = (value: string): boolean =>
 const reported = new Set<string>();
 
 const post = (event: MediaFailureEvent) => {
-  // Fire and forget; a telemetry failure must never surface to the viewer.
-  void supabase.functions
-    .invoke('log-media-access-failure', { body: event })
-    .catch(() => undefined);
+  // Fire and forget, and swallow everything: a broken image is already a bad
+  // moment for the viewer — telemetry must not add an exception on top of it.
+  try {
+    void supabase.functions
+      .invoke('log-media-access-failure', { body: event })
+      .catch(() => undefined);
+  } catch {
+    // No functions client (SSR, tests) — the console line is still recorded.
+  }
 };
+
 
 /**
  * Record a signed-media failure: redacted line in the browser console (so a
