@@ -10,6 +10,15 @@ import NewCampfireSheet from '@/components/campfire/NewCampfireSheet';
 import BuddyWindow from '@/components/campfire/BuddyWindow';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { formatTimeAgo } from '@/lib/time';
+import { useTheme, type MessengerSkin } from '@/contexts/ThemeContext';
+
+/** Skin names as the handoff labels them in the messenger heading picker. */
+const SKIN_OPTIONS: { key: MessengerSkin; label: string }[] = [
+  { key: 'pines', label: 'Under Pines' },
+  { key: 'icu', label: 'ICU' },
+  { key: 'bullseye', label: 'Bullseye' },
+  { key: 'emessen', label: 'Emessen' },
+];
 
 interface CampfireItem {
   id: string;
@@ -32,6 +41,7 @@ type FilterTab = 'all' | 'active' | 'embers' | 'flickers';
 const Campfires = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const { skin, setSkin } = useTheme();
   const [campfires, setCampfires] = useState<CampfireItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterTab>('all');
@@ -190,7 +200,7 @@ const Campfires = () => {
 
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col" style={{ height: 'calc(100dvh - 56px)' }}>
-        <CampfireListHeader filter={filter} setFilter={setFilter} />
+        <CampfireListHeader filter={filter} setFilter={setFilter} skin={skin} setSkin={setSkin} />
         <div className="flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
           <CampfireList
             campfires={filtered}
@@ -239,7 +249,21 @@ const Campfires = () => {
           <h1>Messages</h1>
           <p>Conversations, in the order they happened.</p>
         </div>
+        <div className="skin-picker" role="group" aria-label="Messenger skin">
+          {SKIN_OPTIONS.map(opt => (
+            <button
+              key={opt.key}
+              type="button"
+              className={skin === opt.key ? 'active' : ''}
+              aria-pressed={skin === opt.key}
+              onClick={() => setSkin(opt.key)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
+
 
       <div className="messenger-stage">
         <BuddyWindow
@@ -291,9 +315,27 @@ const Campfires = () => {
 
 // Sub-components
 
-const CampfireListHeader = ({ filter, setFilter }: { filter: FilterTab; setFilter: (f: FilterTab) => void }) => (
+const CampfireListHeader = ({ filter, setFilter, skin, setSkin }: {
+  filter: FilterTab;
+  setFilter: (f: FilterTab) => void;
+  skin: MessengerSkin;
+  setSkin: (s: MessengerSkin) => void;
+}) => (
   <div className="p-4 border-b border-border">
-    <h1 className="font-display text-lg text-foreground mb-3">Campfires</h1>
+    <h1 className="font-display text-lg text-foreground mb-3">Messages</h1>
+    <div className="skin-picker skin-picker-scroll mb-3" role="group" aria-label="Messenger skin">
+      {SKIN_OPTIONS.map(opt => (
+        <button
+          key={opt.key}
+          type="button"
+          className={skin === opt.key ? 'active' : ''}
+          aria-pressed={skin === opt.key}
+          onClick={() => setSkin(opt.key)}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
     <div className="flex gap-1 bg-muted rounded-[4px] p-0.5">
       {([
         { key: 'all', label: 'All', icon: '🔥' },
