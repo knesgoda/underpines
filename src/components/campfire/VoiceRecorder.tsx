@@ -191,7 +191,7 @@ const VoiceRecorder = ({ onSend }: Props) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute bottom-full left-0 right-0 mb-1 px-3 py-2 bg-card border border-border rounded-[5px] flex items-center gap-3"
+            className="msg-skin-panel absolute bottom-full left-0 right-0 mb-1 px-3 py-2 rounded-[5px] flex items-center gap-3"
             style={{ transform: `translateX(${Math.max(slideX, -CANCEL_SLIDE_PX)}px)`, opacity: slideX < -CANCEL_SLIDE_PX * 0.5 ? 0.5 : 1 }}
           >
             <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
@@ -199,15 +199,15 @@ const VoiceRecorder = ({ onSend }: Props) => {
               {Array.from({ length: 30 }).map((_, i) => (
                 <div
                   key={i}
-                  className="w-1 bg-primary/60 rounded-full transition-all"
+                  className="msg-skin-bar w-1 rounded-full opacity-60 transition-all"
                   style={{
                     height: `${Math.max(4, (amplitudesRef.current[amplitudesRef.current.length - 30 + i] || 0) * 24)}px`,
                   }}
                 />
               ))}
             </div>
-            <span className="font-mono text-xs text-foreground w-10 text-right">{formatTime(elapsed)}</span>
-            <span className="font-body text-[10px] text-muted-foreground">← slide to cancel</span>
+            <span className="font-mono text-xs w-10 text-right">{formatTime(elapsed)}</span>
+            <span className="msg-skin-note font-body text-[10px]">← slide to cancel</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -217,8 +217,8 @@ const VoiceRecorder = ({ onSend }: Props) => {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={cancelRecording}
-        className={`p-2 shrink-0 transition-colors touch-none select-none ${
-          recording ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'
+        className={`msg-skin-icon-btn p-2 shrink-0 transition-colors touch-none select-none ${
+          recording ? 'is-recording' : ''
         }`}
         title="Hold to record voice message"
       >
