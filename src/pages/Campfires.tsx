@@ -239,7 +239,21 @@ const Campfires = () => {
           <h1>Messages</h1>
           <p>Conversations, in the order they happened.</p>
         </div>
+        <div className="skin-picker" role="group" aria-label="Messenger skin">
+          {SKIN_OPTIONS.map(opt => (
+            <button
+              key={opt.key}
+              type="button"
+              className={skin === opt.key ? 'active' : ''}
+              aria-pressed={skin === opt.key}
+              onClick={() => setSkin(opt.key)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
+
 
       <div className="messenger-stage">
         <BuddyWindow
