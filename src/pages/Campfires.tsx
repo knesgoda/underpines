@@ -199,9 +199,9 @@ const Campfires = () => {
     }
 
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col" style={{ height: 'calc(100dvh - 56px)' }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="msg-skin-surface flex flex-col" style={{ height: 'calc(100dvh - 56px)' }}>
         <CampfireListHeader filter={filter} setFilter={setFilter} skin={skin} setSkin={setSkin} />
-        <div className="flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
+        <div className="msg-skin-surface flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
           <CampfireList
             campfires={filtered}
             displayName={displayName}
@@ -321,8 +321,8 @@ const CampfireListHeader = ({ filter, setFilter, skin, setSkin }: {
   skin: MessengerSkin;
   setSkin: (s: MessengerSkin) => void;
 }) => (
-  <div className="p-4 border-b border-border">
-    <h1 className="font-display text-lg text-foreground mb-3">Messages</h1>
+  <div className="msg-skin-strip p-4">
+    <h1 className="msg-skin-title font-display text-lg mb-3">Messages</h1>
     <div className="skin-picker skin-picker-scroll mb-3" role="group" aria-label="Messenger skin">
       {SKIN_OPTIONS.map(opt => (
         <button
