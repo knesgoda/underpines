@@ -124,3 +124,27 @@
 .skin-icu .msg-skin-bubble p, .skin-bullseye .msg-skin-bubble p { font-family:inherit; }
 .skin-emessen .msg-skin-bubble { border-radius:12px;box-shadow:0 2px 7px rgba(50,89,116,.1); }
 .skin-emessen .msg-skin-composer { background:linear-gradient(#fff,#dbe8f8); }
+
+/* Composer: text input, attachment row and send control, per skin */
+.msg-skin-composer-strip { border-bottom:1px solid var(--msg-line); }
+.msg-skin-thumb { border:1px solid var(--msg-line);background:var(--msg-panel); }
+.msg-skin-panel { background:var(--msg-panel);border:1px solid var(--msg-line);color:var(--msg-text); }
+.msg-skin-bar { background:var(--msg-accent); }
+.msg-skin-composer textarea::placeholder { color:var(--msg-text);opacity:.45; }
+.msg-skin-composer textarea:focus { border-color:var(--msg-accent); }
+.msg-skin-icon-btn { color:var(--msg-accent);background:transparent;border:0;border-radius:3px;transition:background .12s ease; }
+.msg-skin-icon-btn:hover { background:var(--msg-panel); }
+.msg-skin-icon-btn.is-recording { color:#d13b2a; }
+.msg-skin-send-btn { display:flex;align-items:center;justify-content:center;background:var(--msg-accent);color:#fff;border:0;border-radius:3px; }
+.msg-skin-send-btn:hover:not(:disabled) { filter:brightness(1.06); }
+.msg-skin-note { color:var(--msg-text);opacity:.7; }
+
+.skin-icu .msg-skin-composer textarea { border:2px inset #fff;border-radius:0; }
+.skin-icu .msg-skin-icon-btn, .skin-icu .msg-skin-send-btn, .skin-icu .msg-skin-thumb { border-radius:0; }
+.skin-icu .msg-skin-send-btn { border:2px outset #fff;background:#d4d0c8;color:#000; }
+.skin-bullseye .msg-skin-composer textarea { border-radius:0; }
+.skin-bullseye .msg-skin-icon-btn, .skin-bullseye .msg-skin-thumb { border-radius:0; }
+.skin-bullseye .msg-skin-send-btn { border:3px outset #ddd;border-radius:0;background:#ddd;color:#555; }
+.skin-emessen .msg-skin-composer textarea { border-radius:9px; }
+.skin-emessen .msg-skin-icon-btn { border-radius:8px; }
+.skin-emessen .msg-skin-send-btn { border:1px solid #65a651;border-radius:8px;background:linear-gradient(#b7ec8d,#61bd55);color:#254e22;text-shadow:0 1px #fff; }
