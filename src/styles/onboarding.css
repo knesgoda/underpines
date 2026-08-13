@@ -8,13 +8,8 @@
  * Class names match the handoff exactly, so the design stays diffable.
  */
 
-.eyebrow {
-  color: hsl(var(--primary));
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
+/* .eyebrow moved to handoff-shell.css — it is a shell primitive shared with
+   the feed, and a route stylesheet cannot reliably style a shared class. */
 
 .welcome-screen {
   display: grid;

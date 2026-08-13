@@ -55,8 +55,11 @@ const Waitlist = () => {
     if (state === 'sending') return;
     setState('sending');
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any).rpc('join_waitlist', { _email: email });
+      // Goes through the join-waitlist edge function so the per-IP rate limit
+      // runs on a server-derived IP (the RPC is no longer callable directly).
+      const { data, error } = await supabase.functions.invoke('join-waitlist', {
+        body: { email },
+      });
       if (error) throw error;
       if (!data?.success) {
         setErrorMsg(

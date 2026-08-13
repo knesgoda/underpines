@@ -81,8 +81,12 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Return the ip_hash so the client can pass it during signup
-      return new Response(JSON.stringify({ valid: true, ip_hash: ipHash }), {
+      // The per-invite hourly/daily caps were just enforced above with the
+      // server-derived hash. We deliberately do NOT return the hash: the old
+      // flow round-tripped it through signup metadata, letting a client record
+      // an arbitrary hash and defeat the per-IP sub-limit. The account is
+      // recorded without a client-supplied hash now.
+      return new Response(JSON.stringify({ valid: true }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }

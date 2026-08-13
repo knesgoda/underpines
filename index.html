@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Invite-only network: keep every route out of search indexes and out
+         of AI/social crawlers. This is a single-page app with one static
+         <head>, so this default covers member profiles, cabins, posts and the
+         app shell alike. robots.txt blocks the crawl; this blocks indexing of
+         anything fetched anyway (e.g. via a shared link). -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="googlebot" content="noindex, nofollow" />
     <title>Under Pines — A quiet place on the internet</title>
     <meta name="description" content="Invite-only. Chronological. No metrics that make you feel small. Campfires instead of inboxes. Yours to keep for less than a coffee a year." />
     <meta name="author" content="Under Pines" />

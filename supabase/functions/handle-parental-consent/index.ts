@@ -41,46 +41,51 @@ Deno.serve(async (req) => {
     });
   }
 
-  if (action === 'approve') {
-    // Activate the account
-    await supabase.from('parental_consent_requests').update({
-      status: 'approved',
-      responded_at: new Date().toISOString(),
-    }).eq('id', consent.id);
+  if (action !== 'approve' && action !== 'decline') {
+    return new Response(html('Invalid action.', false), {
+      status: 400,
+      headers: { 'Content-Type': 'text/html' },
+    });
+  }
 
+  // Atomically claim the pending request. The `.eq('status','pending')` guard
+  // means only the first click wins — a second click (or an approve racing a
+  // decline) claims nothing and is told the link is spent, so the account
+  // status can't be flipped twice.
+  const { data: claimed } = await supabase
+    .from('parental_consent_requests')
+    .update({
+      status: action === 'approve' ? 'approved' : 'declined',
+      responded_at: new Date().toISOString(),
+    })
+    .eq('id', consent.id)
+    .eq('status', 'pending')
+    .select('id')
+    .maybeSingle();
+
+  if (!claimed) {
+    return new Response(html('This link has already been used.', false), {
+      status: 409,
+      headers: { 'Content-Type': 'text/html' },
+    });
+  }
+
+  if (action === 'approve') {
     await supabase.from('profiles').update({
       account_status: 'active',
     }).eq('id', consent.user_id);
 
-    return new Response(html(
-      'Thank you. Their Cabin is now ready. 🌲',
-      true
-    ), {
+    return new Response(html('Thank you. Their Cabin is now ready. 🌲', true), {
       headers: { 'Content-Type': 'text/html' },
     });
   }
 
-  if (action === 'decline') {
-    // Mark declined and suspend the account
-    await supabase.from('parental_consent_requests').update({
-      status: 'declined',
-      responded_at: new Date().toISOString(),
-    }).eq('id', consent.id);
+  // decline
+  await supabase.from('profiles').update({
+    account_status: 'suspended',
+  }).eq('id', consent.user_id);
 
-    await supabase.from('profiles').update({
-      account_status: 'suspended',
-    }).eq('id', consent.user_id);
-
-    return new Response(html(
-      'Understood. The account has been deactivated.',
-      true
-    ), {
-      headers: { 'Content-Type': 'text/html' },
-    });
-  }
-
-  return new Response(html('Invalid action.', false), {
-    status: 400,
+  return new Response(html('Understood. The account has been deactivated.', true), {
     headers: { 'Content-Type': 'text/html' },
   });
 });

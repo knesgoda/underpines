@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Environment files. The committed .env holds only the public anon key, but
+# nothing secret should ever be added to a tracked env file — keep them out.
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

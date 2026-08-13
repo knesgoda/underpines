@@ -57,12 +57,13 @@ const StepAge = () => {
     const { bracket } = calculateAge();
     const birthYear = parseInt(year);
 
-    // Log to audit for COPPA compliance
+    // Log to audit for COPPA compliance. Goes through a definer RPC now — the
+    // table no longer takes arbitrary anonymous inserts.
     try {
-      await supabase.from('age_gate_audit_log' as any).insert({
-        age_bracket: bracket,
-        action: bracket === 'under_13' ? 'blocked' : 'passed',
-        ip_hash: null, // IP hash would be set server-side in production
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).rpc('record_age_gate_event', {
+        _age_bracket: bracket,
+        _action: bracket === 'under_13' ? 'blocked' : 'passed',
       });
     } catch {
       // Non-blocking audit log

@@ -1,8 +1,29 @@
 project_id = "dzwltzkakritkwrsikvb"
 
-# Scheduled / service-to-service functions authenticate with the CRON_SECRET
-# shared secret (header `x-cron-secret`) instead of a user JWT, so the platform
-# JWT check is disabled for them. Their bodies refuse to run without the secret.
+# Every edge function is declared here so its auth posture is in version control
+# and cannot drift silently in the dashboard. Two postures:
+#
+#   verify_jwt = true   The platform requires a valid JWT (a signed-in member's,
+#                       or the public anon key for pre-auth landings). Most of
+#                       these ALSO re-verify a real member via getUser()/
+#                       requireUser() in the body.
+#
+#   verify_jwt = false  No user JWT. Used only where the caller authenticates a
+#                       different way: Stripe webhook signatures, a CRON_SECRET
+#                       shared secret, a single-use capability token in the URL,
+#                       or a deliberately public endpoint that gates itself.
+
+# ---------------------------------------------------------------------------
+# Stripe webhooks — authenticated by Stripe's request signature, never a JWT.
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.stripe-connect-webhook]
+verify_jwt = false
+
+# ---------------------------------------------------------------------------
+# Scheduled / service-to-service — gated on the CRON_SECRET shared secret
+# (header `x-cron-secret`); the bodies refuse to run without it.
 [functions.process-monthly-payouts]
 verify_jwt = false
 
@@ -12,18 +33,6 @@ verify_jwt = false
 [functions.send-push-notification]
 verify_jwt = false
 
-# User-invoked functions keep verify_jwt on (the default) and additionally
-# verify a real signed-in member via requireUser(); listed here for clarity.
-[functions.triage-report]
-verify_jwt = true
-
-[functions.fetch-og-metadata]
-verify_jwt = true
-
-[functions.send-parental-consent]
-verify_jwt = true
-
-# Additional scheduled tasks gated on CRON_SECRET (shared secret, no user JWT).
 [functions.send-daily-ember]
 verify_jwt = false
 
@@ -51,6 +60,78 @@ verify_jwt = false
 [functions.activate-seasonal-events]
 verify_jwt = false
 
-# Member-only proxy for our Spotify credentials.
+# ---------------------------------------------------------------------------
+# Public, self-gating endpoints — reachable without a session by design.
+# handle-parental-consent authenticates a single-use token from an email link;
+# join-waitlist derives its own per-IP rate limit and validates the email.
+[functions.handle-parental-consent]
+verify_jwt = false
+
+[functions.join-waitlist]
+verify_jwt = false
+
+# ---------------------------------------------------------------------------
+# Pre-auth landing helpers — called from logged-out routes with the anon key
+# (a valid JWT), so verify_jwt stays on.
+[functions.validate-invite]
+verify_jwt = true
+
+# ---------------------------------------------------------------------------
+# Member-only — verify_jwt on, and each re-verifies a real member in the body.
+[functions.triage-report]
+verify_jwt = true
+
+[functions.fetch-og-metadata]
+verify_jwt = true
+
+[functions.send-parental-consent]
+verify_jwt = true
+
 [functions.spotify-search]
+verify_jwt = true
+
+[functions.check-subscription]
+verify_jwt = true
+
+[functions.create-checkout-session]
+verify_jwt = true
+
+[functions.create-collection-checkout]
+verify_jwt = true
+
+[functions.create-collection-price]
+verify_jwt = true
+
+[functions.create-connect-account]
+verify_jwt = true
+
+[functions.create-connect-login-link]
+verify_jwt = true
+
+[functions.create-design-checkout]
+verify_jwt = true
+
+[functions.create-portal-session]
+verify_jwt = true
+
+[functions.evaluate-signup-risk]
+verify_jwt = true
+
+[functions.finalize-pine-pet]
+verify_jwt = true
+
+[functions.generate-pine-pet]
+verify_jwt = true
+
+[functions.regenerate-pine-pet-atmosphere]
+verify_jwt = true
+
+[functions.save-push-subscription]
+verify_jwt = true
+
+[functions.send-trail-pass]
+verify_jwt = true
+
+# Admin-gated seeding utility (verifies is_admin in the body).
+[functions.seed-pearl-grey]
 verify_jwt = true

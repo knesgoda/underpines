@@ -1,17 +1,17 @@
-User-agent: Googlebot
-Allow: /
-Disallow: /invite/
-
-User-agent: Bingbot
-Allow: /
-Disallow: /invite/
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# Under Pines is an invite-only network. Nothing but the public marketing
+# landing and the legal pages should ever appear in a search index — member
+# profiles, cabins, posts, camps, invite/join landings and the app itself
+# are all off-limits to crawlers. A signed-out visitor sees the invite gate
+# on every protected route anyway; this keeps handles and invite links out
+# of search results and social unfurls entirely.
+#
+# This single wildcard group applies to every crawler (including Googlebot,
+# Bingbot, Twitterbot and facebookexternalhit — do not add per-bot groups,
+# because a crawler obeys only the most specific matching group and a bare
+# Allow would re-open what this blocks).
 
 User-agent: *
-Allow: /
-Disallow: /invite/
+Disallow: /
+Allow: /$
+Allow: /privacy
+Allow: /terms

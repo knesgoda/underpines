@@ -118,7 +118,51 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-13 (latest) — retro messenger skins made period-faithful
+**As of 2026-08-13 (LATEST) — pre-beta review + signed-out lockdown + P1
+security (branch `claude/platform-review-auth-seo-vytbcj`, pushed, not merged).
+Full writeup: `docs/pre-beta-review-2026-08.md`.**
+
+⚠️ **Migrations are LIVE on prod but the frontend/edge changes are NOT deployed.**
+Three flows (new-user onboarding age step, waitlist signup, apply-a-design) are
+degraded on the live site until this branch is published + edge functions
+deployed — inherent to the fix (the DB now blocks the direct column writes the
+old client still does). **Deploy this branch + the edge functions to close the
+window.** See the "CRITICAL: deploy coordination" section of the review doc.
+
+What shipped:
+- **Search lockdown:** `robots.txt` hard-blocks all but `/`, `/privacy`,
+  `/terms`; `noindex` meta added to `index.html`; `AppLayout` gate now covers
+  the auth-loading window so no protected page mounts/fetches for a logged-out
+  visitor. Verify the live `robots.txt` matches the repo (Lovable's SEO panel
+  can override it).
+- **P1 security (4 migrations, applied via `query_database` — NOT in Lovable's
+  ledger — and verified against prod incl. a live impersonated exploit test):**
+  `profiles` UPDATE revoked + column-scoped (killed self-serve Pines+, age-gate
+  bypass, consent escape, free paid designs, seedling escape); age verification
+  moved to `set_age_verification` definer RPC (server rejects a client that lies
+  about a minor's age); `apply_cabin_design` RPC + free-only `design_purchases`
+  INSERT; `join_waitlist` per-IP throttle (now service-role-only, fronted by the
+  new `join-waitlist` edge fn); `age_gate_audit_log` anon-insert dropped for the
+  `record_age_gate_event` RPC.
+- **Edge/code (need deploy):** pine-pet cost abuse closed
+  (`regenerate-pine-pet-atmosphere` Pines+ + rate limit; `generate-pine-pet`
+  fixed to check `is_pines_plus` not a nonexistent table); `validate-invite`
+  stops handing the ip_hash to the client; `handle-parental-consent` auth +
+  atomic status claim; **all 36 functions declared in `config.toml`**.
+- **Client data-loss bugs:** posts now appear after posting (feed + My Page);
+  campfire messages restore + toast on failure; Spark keeps text on failure;
+  root `ErrorBoundary`; `.eyebrow` moved to `handoff-shell.css`; `.env`
+  gitignored.
+- **Verified:** tsc/eslint(changed)/85 vitest/build clean, entry 192.1 kB gzip.
+
+Open (from the review doc): CORS still `*` (ready impl in doc — needs real
+origins); `post-media` bucket still public (Kevin's coordinated cutover);
+no password-reset flow (add early in beta); server-side signup IP; several
+non-blocking client bugs (inert feed reaction buttons, realtime channel churn).
+
+---
+
+**As of 2026-08-13 — retro messenger skins made period-faithful
 (branch `claude/retro-messenger-skins-mgrjir`, pushed, not yet merged).**
 
 Kevin's ask: ICU should look exactly like ICQ 2001b, Bullseye exactly like
