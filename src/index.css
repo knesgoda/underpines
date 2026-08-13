@@ -48,6 +48,12 @@
     /* The handoff sits around 3–5px, not the 12px this used to carry. */
     --radius: 0.25rem;
 
+    /* The handoff's panel shadow: one hairline ledge plus a wide, weak lift.
+       Flat rather than blurred — that flatness is what makes surfaces read as
+       paper on a table instead of floating glass. */
+    --shadow-panel: 0 2px 0 hsl(24 20% 13% / 0.06), 0 9px 28px hsl(20 33% 20% / 0.07);
+
+
     /* Nature tokens — kept because components reference them directly,
        remapped onto the new palette. */
     --pine-darkest: 221 38% 15%;
