@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { logMediaFailure } from '@/lib/mediaTelemetry';
+
 
 /**
  * The `post-media` bucket is private. Everything stored in it — post images,
