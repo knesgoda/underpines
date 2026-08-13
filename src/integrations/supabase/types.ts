@@ -4834,6 +4834,7 @@ export type Database = {
           email: string
           email_normalized: string
           id: string
+          ip_hash: string | null
           status: string
         }
         Insert: {
@@ -4841,6 +4842,7 @@ export type Database = {
           email: string
           email_normalized: string
           id?: string
+          ip_hash?: string | null
           status?: string
         }
         Update: {
@@ -4848,6 +4850,7 @@ export type Database = {
           email?: string
           email_normalized?: string
           id?: string
+          ip_hash?: string | null
           status?: string
         }
         Relationships: []
@@ -4907,6 +4910,7 @@ export type Database = {
           id: string
         }[]
       }
+      apply_cabin_design: { Args: { _design_id: string }; Returns: Json }
       cabin_append_history: {
         Args: { _detail: Json; _kind: string; _owner: string }
         Returns: undefined
@@ -5048,7 +5052,10 @@ export type Database = {
       }
       is_ranger: { Args: { _user_id: string }; Returns: boolean }
       is_waitlist_admin: { Args: never; Returns: boolean }
-      join_waitlist: { Args: { _email: string }; Returns: Json }
+      join_waitlist: {
+        Args: { _email: string; _ip_hash?: string }
+        Returns: Json
+      }
       normalize_content_for_hash: {
         Args: { _content: string }
         Returns: string
@@ -5178,6 +5185,10 @@ export type Database = {
         }
         Returns: Json
       }
+      record_age_gate_event: {
+        Args: { _action: string; _age_bracket: string }
+        Returns: undefined
+      }
       record_cabin_visit: { Args: { _profile_id: string }; Returns: undefined }
       redeem_trail_pass: { Args: { _token: string }; Returns: Json }
       refresh_my_invites: { Args: never; Returns: Json }
@@ -5186,6 +5197,10 @@ export type Database = {
         Returns: Json
       }
       rotate_invite_link: { Args: { _user_id: string }; Returns: string }
+      set_age_verification: {
+        Args: { _age_bracket: string; _birth_year: number }
+        Returns: Json
+      }
     }
     Enums: {
       animal_type:
