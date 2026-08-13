@@ -195,4 +195,53 @@ describe('MediaImage 403 fallback', () => {
     // A budget is available again for this reference.
     expect(signedMedia.claimSignedMediaResign(OBJECT_PATH)).not.toBeNull();
   });
+
+  it('shows a skeleton for the whole re-sign window instead of a broken frame', async () => {
+    createSignedUrl.mockResolvedValueOnce(signed('one')).mockResolvedValueOnce(signed('two'));
+    const { MediaImage } = await load();
+
+    render(<MediaImage src={OBJECT_PATH} alt="Trail photo" />);
+    await waitFor(() => expect(img()).not.toBeNull());
+
+    vi.useFakeTimers();
+    await act(async () => { fireEvent.error(img()!); });
+
+    // Mid-backoff: no broken <img>, no unavailable card — just the skeleton.
+    expect(retrySkeleton()).not.toBeNull();
+    expect(img()).toBeNull();
+    expect(fallback()).toBeNull();
+
+    await flushBackoff(500);
+    expect(retrySkeleton()).toBeNull();
+    expect(img()?.src).toContain('token=two');
+  });
+
+  it('disables "Try again" until the attempt it started has landed', async () => {
+    let release: ((value: unknown) => void) | undefined;
+    createSignedUrl
+      .mockResolvedValueOnce(denied())
+      .mockImplementationOnce(() => new Promise((resolve) => { release = resolve; }));
+    const { MediaImage } = await load();
+
+    render(<MediaImage src={OBJECT_PATH} alt="Trail photo" />);
+    await waitFor(() => expect(fallback()).not.toBeNull());
+
+    const button = () => screen.getByRole('button', { name: /try again|trying/i });
+    expect(button()).not.toBeDisabled();
+
+    await act(async () => { fireEvent.click(button()); });
+
+    // The second signing request is still in flight: inert button, busy label.
+    expect(button()).toBeDisabled();
+    expect(button()).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByText('Trying…')).toBeInTheDocument();
+
+    // Clicking again while busy must not fire another signing request.
+    await act(async () => { fireEvent.click(button()); });
+    expect(createSignedUrl).toHaveBeenCalledTimes(2);
+
+    await act(async () => { release?.(signed('fresh')); });
+    await waitFor(() => expect(img()?.src).toContain('token=fresh'));
+  });
 });
+
