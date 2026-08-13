@@ -10,6 +10,9 @@ interface Props {
   profileId: string;
   isOwner: boolean;
   isInCircle: boolean;
+  /** Narrow the history to certain kinds — the Journal tab asks for stories. */
+  postTypes?: string[];
+  emptyMessage?: string;
 }
 
 /**
@@ -18,11 +21,13 @@ interface Props {
  * circle get sparks and bulletins in full, stories as a title, embers behind
  * a blur.
  */
-const CabinPostHistory = ({ profileId, isOwner, isInCircle }: Props) => {
+const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMessage }: Props) => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
+
+  const typeKey = postTypes?.join(',') ?? '';
 
   useEffect(() => {
     const load = async () => {
@@ -37,8 +42,13 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle }: Props) => {
         query = query.eq('is_published', true);
       }
 
+      if (typeKey) {
+        query = query.in('post_type', typeKey.split(','));
+      }
+
       const { data } = await query;
       if (!data) { setLoading(false); return; }
+
 
       const { data: prof } = await supabase
         .from('profiles')
