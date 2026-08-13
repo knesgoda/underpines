@@ -112,8 +112,9 @@ describe('getSignedMediaUrl — denied viewer', () => {
     createSignedUrl.mockResolvedValue(deny());
     const { getSignedMediaUrl } = await load();
     const url = await getSignedMediaUrl(OBJECT_PATH);
-    expect(url).not.toContain('/object/public/');
     expect(url).toBeNull();
+    expect(String(url)).not.toContain('/object/public/');
+
   });
 });
 
