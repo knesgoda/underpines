@@ -92,7 +92,7 @@ describe('MediaImage 403 fallback', () => {
 
     await flushBackoff(1);
     expect(createSignedUrl).toHaveBeenCalledTimes(2);
-    await waitFor(() => expect(img()?.src).toContain('token=two'));
+    expect(img()?.src).toContain('token=two');
     expect(fallback()).toBeNull();
   });
 
@@ -111,13 +111,14 @@ describe('MediaImage 403 fallback', () => {
     for (const delay of [500, 1000, 2000]) {
       await act(async () => { fireEvent.error(img()!); });
       await flushBackoff(delay);
-      await waitFor(() => expect(img()).not.toBeNull());
+      expect(img()).not.toBeNull();
     }
 
     // Budget spent: the next 403 gives up rather than scheduling another re-sign.
     const callsBeforeGiveUp = createSignedUrl.mock.calls.length;
     await act(async () => { fireEvent.error(img()!); });
-    await waitFor(() => expect(fallback()).not.toBeNull());
+    expect(fallback()).not.toBeNull();
+
 
     await flushBackoff(60_000);
     expect(createSignedUrl.mock.calls.length).toBe(callsBeforeGiveUp);
