@@ -63,33 +63,23 @@ type MediaImageProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> & {
 };
 
 export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }: MediaImageProps) => {
-  const { url, loading, failed, retry } = useSignedMediaUrl(src);
-  // 0 = fine, 1 = one automatic re-sign spent, 2 = give up and show the placard.
-  const [brokenStage, setBrokenStage] = useState(0);
+  const { url, loading, failed, retry, resign } = useSignedMediaUrl(src);
+  // true once the re-sign budget for this reference is spent.
+  const [givenUp, setGivenUp] = useState(false);
 
-  useEffect(() => { setBrokenStage(0); }, [src]);
+  useEffect(() => { setGivenUp(false); }, [src]);
 
-  if (!url || (failed && !loading)) {
-    if (loading) return <Placeholder className={className} style={style} />;
+  const manualRetry = () => { setGivenUp(false); retry(); };
+
+  if (givenUp || !url || (failed && !loading)) {
+    if (loading && !givenUp) return <Placeholder className={className} style={style} />;
     return (
       <MediaFallback
         kind="photo"
         className={className}
         style={style}
         label={alt || "Photo unavailable"}
-        onRetry={() => { setBrokenStage(0); retry(); }}
-      />
-    );
-  }
-
-  if (brokenStage >= 2) {
-    return (
-      <MediaFallback
-        kind="photo"
-        className={className}
-        style={style}
-        label={alt || "Photo unavailable"}
-        onRetry={() => { setBrokenStage(0); retry(); }}
+        onRetry={manualRetry}
       />
     );
   }
@@ -102,10 +92,8 @@ export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }
       style={style}
       onError={(event) => {
         onError?.(event);
-        setBrokenStage((stage) => {
-          if (stage === 0) { retry(); return 1; }
-          return 2;
-        });
+        // Backoff-guarded: false means we've spent the attempts for this object.
+        if (!resign()) setGivenUp(true);
       }}
       {...rest}
     />
@@ -117,20 +105,20 @@ type MediaVideoProps = Omit<VideoHTMLAttributes<HTMLVideoElement>, 'src'> & {
 };
 
 export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVideoProps) => {
-  const { url, loading, failed, retry } = useSignedMediaUrl(src);
-  const [brokenStage, setBrokenStage] = useState(0);
+  const { url, loading, failed, retry, resign } = useSignedMediaUrl(src);
+  const [givenUp, setGivenUp] = useState(false);
 
-  useEffect(() => { setBrokenStage(0); }, [src]);
+  useEffect(() => { setGivenUp(false); }, [src]);
 
-  if (!url || (failed && !loading) || brokenStage >= 2) {
-    if (loading) return <Placeholder className={className} style={style} />;
+  if (givenUp || !url || (failed && !loading)) {
+    if (loading && !givenUp) return <Placeholder className={className} style={style} />;
     return (
       <MediaFallback
         kind="video"
         className={className}
         style={style}
         label="Video unavailable"
-        onRetry={() => { setBrokenStage(0); retry(); }}
+        onRetry={() => { setGivenUp(false); retry(); }}
       />
     );
   }
@@ -142,14 +130,12 @@ export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVid
       style={style}
       onError={(event) => {
         onError?.(event);
-        setBrokenStage((stage) => {
-          if (stage === 0) { retry(); return 1; }
-          return 2;
-        });
+        if (!resign()) setGivenUp(true);
       }}
       {...rest}
     />
   );
 };
+
 
 export default MediaImage;
