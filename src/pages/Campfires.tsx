@@ -10,6 +10,15 @@ import NewCampfireSheet from '@/components/campfire/NewCampfireSheet';
 import BuddyWindow from '@/components/campfire/BuddyWindow';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { formatTimeAgo } from '@/lib/time';
+import { useTheme, type MessengerSkin } from '@/contexts/ThemeContext';
+
+/** Skin names as the handoff labels them in the messenger heading picker. */
+const SKIN_OPTIONS: { key: MessengerSkin; label: string }[] = [
+  { key: 'pines', label: 'Under Pines' },
+  { key: 'icu', label: 'ICU' },
+  { key: 'bullseye', label: 'Bullseye' },
+  { key: 'emessen', label: 'Emessen' },
+];
 
 interface CampfireItem {
   id: string;
@@ -32,6 +41,7 @@ type FilterTab = 'all' | 'active' | 'embers' | 'flickers';
 const Campfires = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const { skin, setSkin } = useTheme();
   const [campfires, setCampfires] = useState<CampfireItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterTab>('all');
