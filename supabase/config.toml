@@ -39,6 +39,18 @@ verify_jwt = false
 [functions.check-reporter-patterns]
 verify_jwt = false
 
+[functions.camp-health-check]
+verify_jwt = false
+
+[functions.send-annual-wrapped]
+verify_jwt = false
+
+[functions.inactive-member-nudge]
+verify_jwt = false
+
+[functions.activate-seasonal-events]
+verify_jwt = false
+
 # Member-only proxy for our Spotify credentials.
 [functions.spotify-search]
 verify_jwt = true
