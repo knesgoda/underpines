@@ -82,7 +82,7 @@ const VoiceMessageBubble = ({ mediaUrl, durationSeconds, waveformData, mimeType,
 
   return (
     <div
-      className={`flex items-center gap-2 px-3 py-2 rounded-[5px] min-w-[200px] max-w-[280px] ${
+      className={`msg-skin-voice ${isMine ? 'is-mine' : ''} flex items-center gap-2 px-3 py-2 rounded-[5px] min-w-[200px] max-w-[280px] ${
         isMine
           ? 'bg-primary/15 rounded-br-md'
           : 'bg-card border border-border rounded-bl-md'

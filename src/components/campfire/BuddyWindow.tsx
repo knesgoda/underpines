@@ -129,7 +129,7 @@ export const BuddyWindow = ({
                   <button
                     key={c.id}
                     type="button"
-                    className={`buddy ${selectedId === c.id ? 'active' : ''}`}
+                    className={`buddy ${selectedId === c.id ? 'active' : ''} ${online ? 'is-online' : 'is-offline'}`}
                     onClick={() => onSelect(c.id)}
                   >
                     <span className="buddy-presence" aria-hidden="true">{online ? '●' : '○'}</span>

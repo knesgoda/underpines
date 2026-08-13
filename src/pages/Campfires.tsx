@@ -215,7 +215,7 @@ const Campfires = () => {
         {/* Mobile FAB */}
         <button
           onClick={() => setShowNewSheet(true)}
-          className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+          className="msg-skin-fab fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Start a new Campfire"
         >
           <Flame size={22} />
@@ -339,7 +339,7 @@ const CampfireListHeader = ({ filter, setFilter, skin, setSkin }: {
         </button>
       ))}
     </div>
-    <div className="flex gap-1 bg-muted rounded-[4px] p-0.5">
+    <div className="msg-skin-tabs flex gap-1 bg-muted rounded-[4px] p-0.5">
       {([
         { key: 'all', label: 'All', icon: '🔥' },
         { key: 'active', label: 'Active', icon: '🔥' },
@@ -349,7 +349,7 @@ const CampfireListHeader = ({ filter, setFilter, skin, setSkin }: {
         <button
           key={t.key}
           onClick={() => setFilter(t.key)}
-          className={`flex-1 py-1.5 rounded-[3px] font-body text-xs transition-colors ${filter === t.key ? 'bg-card text-foreground shadow-panel' : 'text-muted-foreground'}`}
+          className={`msg-skin-tab ${filter === t.key ? 'is-active' : ''} flex-1 py-1.5 rounded-[3px] font-body text-xs transition-colors ${filter === t.key ? 'bg-card text-foreground shadow-panel' : 'text-muted-foreground'}`}
         >
           {t.icon} {t.label}
         </button>
@@ -379,7 +379,7 @@ const CampfireList = ({
 }) => {
   if (campfires.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center py-16 px-6">
+      <div className="msg-skin-empty flex-1 flex items-center justify-center py-16 px-6">
         <div className="text-center">
           <p className="text-3xl mb-3">🔥</p>
           <p className="font-body text-sm text-muted-foreground">
