@@ -72,6 +72,10 @@ const PageCustomizer = () => {
   const [full2006, setFull2006] = useState(false);
   const [modules, setModules] = useState<PageModuleDraft[]>([]);
   const [topFriendIds, setTopFriendIds] = useState<string[]>([]);
+  /** The corkboard: which albums are pinned up, in order, and which photo shows. */
+  const [featuredPicks, setFeaturedPicks] = useState<{ album_id: string; cover_media_id: string | null }[]>([]);
+
+
 
   // Seed the form once the profile arrives. Keyed on profile.id rather than the
   // object so a background refetch cannot stomp on what is being typed.
