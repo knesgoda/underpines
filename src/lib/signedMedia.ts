@@ -226,6 +226,12 @@ export interface SignedMedia {
   url: string | null;
   loading: boolean;
   failed: boolean;
+  /**
+   * True from the moment a re-sign is claimed (manually or automatically) until
+   * the next signature resolves — including the backoff wait. Callers use it to
+   * show a loading state and to keep "Try again" inert until the attempt lands.
+   */
+  resigning: boolean;
   /** Manual retry: clears the re-sign budget and mints a fresh signature now. */
   retry: () => void;
   /**
@@ -236,7 +242,8 @@ export interface SignedMedia {
   resign: () => boolean;
 }
 
-type SignedMediaState = Omit<SignedMedia, 'retry' | 'resign'>;
+type SignedMediaState = Omit<SignedMedia, 'retry' | 'resign' | 'resigning'>;
+
 
 
 /**
