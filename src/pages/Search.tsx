@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { ilikePattern } from '@/lib/searchQuery';
 import { Search as SearchIcon, Lock, Users, Tent, Flame, TreePine } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -96,7 +97,7 @@ const Search = () => {
 
   /* ───── Posts ───── */
   const searchPosts = async (q: string) => {
-    const pattern = `%${q}%`;
+    const pattern = ilikePattern(q);
     const [{ data: feedPosts }, { data: campPosts }] = await Promise.all([
       supabase
         .from('posts')
@@ -126,7 +127,7 @@ const Search = () => {
 
   /* ───── People ───── */
   const searchPeople = async (q: string) => {
-    const pattern = `%${q}%`;
+    const pattern = ilikePattern(q);
     const { data } = await supabase
       .from('profiles')
       .select('id, display_name, handle, mantra, city, accent_color')
@@ -144,7 +145,7 @@ const Search = () => {
 
   /* ───── Camps ───── */
   const searchCamps = async (q: string) => {
-    const pattern = `%${q}%`;
+    const pattern = ilikePattern(q);
     const { data } = await supabase
       .from('camps')
       .select('*')
@@ -172,7 +173,7 @@ const Search = () => {
   /* ───── Campfires ───── */
   const searchCampfires = async (q: string) => {
     if (!isPinesPlus) return;
-    const pattern = `%${q}%`;
+    const pattern = ilikePattern(q);
     const { data } = await supabase
       .from('campfire_messages')
       .select('*, campfires!campfire_messages_campfire_id_fkey(name), profiles!campfire_messages_sender_id_fkey(display_name, handle)')
