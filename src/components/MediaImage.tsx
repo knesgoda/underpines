@@ -66,10 +66,12 @@ export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }
   const { url, loading, failed, retry, resign } = useSignedMediaUrl(src);
   // true once the re-sign budget for this reference is spent.
   const [givenUp, setGivenUp] = useState(false);
+  const attemptsRef = useRef(0);
 
-  useEffect(() => { setGivenUp(false); }, [src]);
+  useEffect(() => { setGivenUp(false); attemptsRef.current = 0; }, [src]);
 
-  const manualRetry = () => { setGivenUp(false); retry(); };
+  const manualRetry = () => { setGivenUp(false); attemptsRef.current = 0; retry(); };
+
 
   if (givenUp || !url || (failed && !loading)) {
     if (loading && !givenUp) return <Placeholder className={className} style={style} />;
