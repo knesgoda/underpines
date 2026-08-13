@@ -102,6 +102,11 @@ describe('the SQL regression suite stays in sync', () => {
   });
 
   it('is read-only', () => {
-    expect(sql).not.toMatch(/\b(insert into|update |delete from|drop |alter |grant |revoke )\b/i);
+    // Strip `--` comments first: the explanatory notes name the DDL we guard against.
+    const statements = sql.replace(/--[^\n]*/g, '');
+    expect(statements).not.toMatch(
+      /\b(insert into|update |delete from|drop |alter |grant |revoke )\b/i,
+    );
   });
+
 });
