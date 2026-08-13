@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { logMediaFailure } from '@/lib/mediaTelemetry';
+
 
 /**
  * The `post-media` bucket is private. Everything stored in it — post images,
@@ -112,6 +114,7 @@ export const invalidateSignedMediaUrl = (input: string | null | undefined) => {
  * an image out of the feed and back) cannot buy a fresh budget.
  */
 export const MAX_RESIGN_ATTEMPTS = 3;
+
 const BASE_RESIGN_DELAY_MS = 500;
 const MAX_RESIGN_DELAY_MS = 8000;
 /** Forget the ledger for a path once it has been quiet this long. */
@@ -157,16 +160,21 @@ export const getSignedMediaUrl = async (path: string): Promise<string | null> =>
   const request = (async () => {
     try {
       const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, TTL_SECONDS);
-      if (error || !data?.signedUrl) return null;
+      if (error || !data?.signedUrl) {
+        logMediaFailure(path, 'sign_failed');
+        return null;
+      }
       cache.set(path, { url: data.signedUrl, expiresAt: Date.now() + TTL_SECONDS * 1000 });
       persist();
       return data.signedUrl;
     } catch {
+      logMediaFailure(path, 'sign_failed');
       return null;
     } finally {
       inflight.delete(path);
     }
   })();
+
 
   inflight.set(path, request);
   return request;

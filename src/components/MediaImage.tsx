@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ImgHTMLAttributes, VideoHTMLAttributes } from 'react';
 import { ImageOff, RotateCw } from 'lucide-react';
 import { useSignedMediaUrl } from '@/lib/signedMedia';
+import { logMediaFailure } from '@/lib/mediaTelemetry';
+
 
 /**
  * Drop-in <img>/<video> for anything stored in the private `post-media` bucket.
@@ -66,10 +68,12 @@ export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }
   const { url, loading, failed, retry, resign } = useSignedMediaUrl(src);
   // true once the re-sign budget for this reference is spent.
   const [givenUp, setGivenUp] = useState(false);
+  const attemptsRef = useRef(0);
 
-  useEffect(() => { setGivenUp(false); }, [src]);
+  useEffect(() => { setGivenUp(false); attemptsRef.current = 0; }, [src]);
 
-  const manualRetry = () => { setGivenUp(false); retry(); };
+  const manualRetry = () => { setGivenUp(false); attemptsRef.current = 0; retry(); };
+
 
   if (givenUp || !url || (failed && !loading)) {
     if (loading && !givenUp) return <Placeholder className={className} style={style} />;
@@ -93,8 +97,13 @@ export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }
       onError={(event) => {
         onError?.(event);
         // Backoff-guarded: false means we've spent the attempts for this object.
-        if (!resign()) setGivenUp(true);
+        const attempt = attemptsRef.current + 1;
+        attemptsRef.current = attempt;
+        const willRetry = resign();
+        logMediaFailure(src, willRetry ? 'fetch_forbidden' : 'gave_up', { attempt, kind: 'photo' });
+        if (!willRetry) setGivenUp(true);
       }}
+
       {...rest}
     />
   );
@@ -107,8 +116,9 @@ type MediaVideoProps = Omit<VideoHTMLAttributes<HTMLVideoElement>, 'src'> & {
 export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVideoProps) => {
   const { url, loading, failed, retry, resign } = useSignedMediaUrl(src);
   const [givenUp, setGivenUp] = useState(false);
+  const attemptsRef = useRef(0);
 
-  useEffect(() => { setGivenUp(false); }, [src]);
+  useEffect(() => { setGivenUp(false); attemptsRef.current = 0; }, [src]);
 
   if (givenUp || !url || (failed && !loading)) {
     if (loading && !givenUp) return <Placeholder className={className} style={style} />;
@@ -118,7 +128,7 @@ export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVid
         className={className}
         style={style}
         label="Video unavailable"
-        onRetry={() => { setGivenUp(false); retry(); }}
+        onRetry={() => { setGivenUp(false); attemptsRef.current = 0; retry(); }}
       />
     );
   }
@@ -130,8 +140,13 @@ export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVid
       style={style}
       onError={(event) => {
         onError?.(event);
-        if (!resign()) setGivenUp(true);
+        const attempt = attemptsRef.current + 1;
+        attemptsRef.current = attempt;
+        const willRetry = resign();
+        logMediaFailure(src, willRetry ? 'fetch_forbidden' : 'gave_up', { attempt, kind: 'video' });
+        if (!willRetry) setGivenUp(true);
       }}
+
       {...rest}
     />
   );

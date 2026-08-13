@@ -17,8 +17,12 @@ const createSignedUrl = vi.fn();
 const createSignedUrls = vi.fn();
 
 vi.mock('@/integrations/supabase/client', () => ({
-  supabase: { storage: { from: () => ({ createSignedUrl, createSignedUrls }) } },
+  supabase: {
+    storage: { from: () => ({ createSignedUrl, createSignedUrls }) },
+    functions: { invoke: vi.fn().mockResolvedValue({ data: null, error: null }) },
+  },
 }));
+
 
 const OBJECT_PATH = 'user-1/posts/abc.jpg';
 

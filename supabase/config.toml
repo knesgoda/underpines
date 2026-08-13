@@ -84,6 +84,11 @@ verify_jwt = true
 [functions.fetch-og-metadata]
 verify_jwt = true
 
+# Redacted diagnostics for private post-media read failures.
+[functions.log-media-access-failure]
+verify_jwt = true
+
+
 [functions.send-parental-consent]
 verify_jwt = true
 
