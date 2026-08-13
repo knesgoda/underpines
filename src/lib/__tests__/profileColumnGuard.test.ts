@@ -18,7 +18,7 @@ import path from 'node:path';
  * set_age_verification, record_age_gate_event).
  */
 
-const SENSITIVE = ['latitude', 'longitude', 'zip_code', 'age_bracket', 'birth_year'] as const;
+const SENSITIVE = ['latitude', 'longitude', 'zip_code', 'age_bracket', 'birth_year', 'hometown'] as const;
 
 const SRC = path.resolve(__dirname, '../..');
 const REPO = path.resolve(SRC, '..');
