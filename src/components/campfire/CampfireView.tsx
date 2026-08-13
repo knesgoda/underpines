@@ -433,9 +433,9 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-0">
+    <div className="msg-skin-surface flex-1 flex flex-col min-h-0">
       {/* Header */}
-      <div className="border-b border-border px-4 py-3 flex items-center gap-3 shrink-0">
+      <div className="msg-skin-header px-4 py-3 flex items-center gap-3 shrink-0">
         <button onClick={onBack} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft size={20} />
         </button>
@@ -520,7 +520,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
       <div className="flex-1 flex min-h-0">
         {/* Messages */}
         <div className="flex-1 flex flex-col min-h-0 relative">
-          <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto overscroll-y-contain px-4 py-3 space-y-1" style={{ touchAction: 'pan-y' }}>
+          <div ref={scrollRef} onScroll={handleScroll} className="msg-skin-history flex-1 overflow-y-auto overscroll-y-contain px-4 py-3 space-y-1" style={{ touchAction: 'pan-y' }}>
             {messages.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-3xl mb-2">🔥</p>
