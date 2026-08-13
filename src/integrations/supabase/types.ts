@@ -4978,6 +4978,7 @@ export type Database = {
         Returns: undefined
       }
       cabin_visible_to_viewer: { Args: { _owner: string }; Returns: boolean }
+      can_read_post_media: { Args: { _name: string }; Returns: boolean }
       can_see_post: {
         Args: { _post_id: string; _user_id: string }
         Returns: boolean
