@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import CampfireView from '@/components/campfire/CampfireView';
+import MessengerSkinScope from '@/components/campfire/MessengerSkinScope';
 
 interface Props {
   campId: string;
@@ -32,7 +33,11 @@ const CampBonfire = ({ campId, isScout, scoutDays }: Props) => {
   if (loading) return <div className="text-center py-8"><p className="font-body text-sm text-muted-foreground">Loading the group chat…</p></div>;
   if (!bonfireId) return <div className="text-center py-8"><p className="font-body text-sm text-muted-foreground">This group has no chat room yet.</p></div>;
 
-  return <CampfireView campfireId={bonfireId} onBack={() => {}} onRefreshList={() => {}} isScout={isScout} scoutDays={scoutDays} />;
+  return (
+    <MessengerSkinScope>
+      <CampfireView campfireId={bonfireId} onBack={() => {}} onRefreshList={() => {}} isScout={isScout} scoutDays={scoutDays} />
+    </MessengerSkinScope>
+  );
 };
 
 export default CampBonfire;
