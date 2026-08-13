@@ -159,9 +159,10 @@
 .skin-thumb-compose { display:flex;align-items:center;gap:2px;padding:0 3px;height:10px;background:var(--t-soft); }
 .skin-thumb-input { flex:1;height:6px;border:1px solid var(--t-line);border-radius:var(--t-radius);background:var(--t-panel); }
 .skin-thumb-send { width:9px;height:6px;border-radius:var(--t-radius);background:var(--t-accent); }
-.skin-thumb--icu { --t-bg:#138985;--t-panel:#f3f0f1;--t-line:#a7a1a5;--t-title:#2761a7;--t-accent:#079a29;--t-soft:#d4d0c8;--t-radius:0; }
-.skin-thumb--bullseye { --t-bg:#c7c7c7;--t-panel:#fff;--t-line:#7c7c7c;--t-title:#075ad9;--t-accent:#0047ff;--t-soft:#e6f2ff;--t-radius:0; }
-.skin-thumb--emessen { --t-bg:#dbe9f8;--t-panel:#f8fcff;--t-line:#91afd2;--t-title:#4e7ed2;--t-accent:#4da746;--t-soft:#e8f8e5;--t-radius:4px; }
+.skin-thumb--icu { --t-bg:#128985;--t-panel:#fff;--t-line:#808080;--t-title:#2761a7;--t-accent:#c02a13;--t-soft:#d4d0c8;--t-radius:0; }
+.skin-thumb--bullseye { --t-bg:#bfbfbf;--t-panel:#fff;--t-line:#7f7f7f;--t-title:#0f6fe8;--t-accent:#d01111;--t-soft:#ece9d8;--t-radius:0; }
+.skin-thumb--emessen { --t-bg:#cadcf2;--t-panel:#fff;--t-line:#a3bad6;--t-title:#4c78c9;--t-accent:#61bd55;--t-soft:#e3effc;--t-radius:5px; }
+
 .skin-picker button { display:flex;flex-direction:column;align-items:center;gap:5px; }
 
 /**
@@ -270,3 +271,255 @@
 }
 .skin-icu .msg-skin-bar { background: #079a29; }
 .skin-icu .msg-skin-note { color: #000 !important; opacity: 1; font-size: 11px; }
+
+/* ICU: flat, full-width transcript lines like the ICQ chat window */
+.skin-icu .msg-skin-line { justify-content: flex-start !important; }
+.skin-icu .msg-skin-line-body { max-width: 96% !important; }
+.skin-icu .msg-skin-history { padding: 6px 8px !important; }
+.skin-icu .msg-skin-history > div { margin-top: 0 !important; }
+.skin-icu .msg-skin-bubble,
+.skin-icu .msg-skin-bubble p,
+.skin-icu .msg-skin-name {
+  font-family: Tahoma, "MS Sans Serif", Geneva, sans-serif !important;
+  font-size: 12px !important;
+}
+.skin-icu .msg-skin-name { color: #079a29 !important; font-weight: 700; padding-left: 2px !important; }
+
+/**
+ * Bullseye, in detail — the AIM instant-message window.
+ *
+ * Windows-classic grey chrome, blue gradient title bar, and a white transcript
+ * of `ScreenName:` lines (bold blue for them, bold red for you) instead of
+ * bubbles. No new controls: the existing ones are re-dressed.
+ */
+.skin-bullseye .msg-skin-surface,
+.skin-bullseye .msg-skin-surface *,
+.skin-bullseye .msg-skin-strip,
+.skin-bullseye .msg-skin-strip *,
+.skin-bullseye .msg-skin-row,
+.skin-bullseye .msg-skin-row * {
+  font-family: Arial, Helvetica, sans-serif !important;
+  letter-spacing: 0;
+}
+
+/* Buddy list */
+.skin-bullseye .msg-skin-surface { background: #bfbfbf; }
+.skin-bullseye .msg-skin-strip {
+  background: #ece9d8;
+  border-bottom: 1px solid #7f7f7f;
+  box-shadow: inset 0 1px 0 #fff;
+}
+.skin-bullseye .msg-skin-strip h1,
+.skin-bullseye .msg-skin-title { color: #000 !important; }
+.skin-bullseye .msg-skin-label {
+  background: #ffff19;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #9a9a6a;
+  color: #000 !important;
+  font-weight: 700;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  font-size: 11px !important;
+}
+.skin-bullseye .msg-skin-row {
+  background: #fff;
+  border-bottom: 0;
+  padding-left: 22px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+.skin-bullseye .msg-skin-row:hover { background: #e6f2ff; }
+.skin-bullseye .msg-skin-row.is-active { background: #ffff19; outline: 1px dotted #000; outline-offset: -2px; }
+.skin-bullseye .msg-skin-title { font-weight: 700 !important; font-size: 13px !important; }
+.skin-bullseye .msg-skin-sub { color: #6b6b6b !important; opacity: 1; font-style: italic; font-size: 11px; }
+
+/* IM window */
+.skin-bullseye .msg-skin-header {
+  background: linear-gradient(#1680f8, #0354cc);
+  border: 0;
+  border-bottom: 1px solid #003a92;
+  padding: 4px 7px !important;
+  min-height: 27px;
+}
+.skin-bullseye .msg-skin-header h2 { font-size: 12px !important; font-weight: 700; }
+.skin-bullseye .msg-skin-history {
+  background: #fff;
+  border: 1px solid #7f7f7f;
+  margin: 4px;
+  padding: 6px 8px !important;
+}
+.skin-bullseye .msg-skin-line { justify-content: flex-start !important; }
+.skin-bullseye .msg-skin-line-body { max-width: 100% !important; }
+.skin-bullseye .msg-skin-bubble,
+.skin-bullseye .msg-skin-bubble.is-mine {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 1px 2px !important;
+  color: #0048ff !important;
+  font: 13px Arial, Helvetica, sans-serif !important;
+}
+.skin-bullseye .msg-skin-bubble p { font: 13px/1.35 Arial, Helvetica, sans-serif !important; }
+.skin-bullseye .msg-skin-bubble.is-mine { color: #ef1010 !important; }
+.skin-bullseye .msg-skin-name {
+  color: #0048ff !important;
+  font: 700 13px Arial, Helvetica, sans-serif !important;
+  padding-left: 2px !important;
+}
+
+/* Typing box + 3D Send */
+.skin-bullseye .msg-skin-composer {
+  background: #ece9d8;
+  border-top: 1px solid #7f7f7f;
+  box-shadow: inset 0 1px 0 #fff;
+}
+.skin-bullseye .msg-skin-composer textarea {
+  background: #fff;
+  border: 1px solid #7f7f7f !important;
+  border-radius: 0 !important;
+  font: 13px Arial, Helvetica, sans-serif;
+}
+.skin-bullseye .msg-skin-composer textarea:focus { border-color: #0354cc !important; }
+.skin-bullseye .msg-skin-icon-btn {
+  background: #ece9d8;
+  border: 2px outset #f6f4ea;
+  border-radius: 0 !important;
+  color: #123a86;
+  padding: 3px !important;
+}
+.skin-bullseye .msg-skin-icon-btn:active { border-style: inset; }
+.skin-bullseye .msg-skin-send-btn {
+  background: linear-gradient(#f4f2e7, #d8d4c2);
+  border: 2px outset #f6f4ea;
+  border-radius: 0 !important;
+  color: #d01111;
+  font-weight: 700;
+}
+.skin-bullseye .msg-skin-send-btn:active { border-style: inset; }
+.skin-bullseye .msg-skin-panel,
+.skin-bullseye .msg-skin-thumb {
+  background: #ece9d8;
+  border: 1px solid #7f7f7f;
+  border-radius: 0 !important;
+}
+.skin-bullseye .msg-skin-bar { background: #0048ff; }
+.skin-bullseye .msg-skin-note { color: #333 !important; opacity: 1; font-size: 11px; }
+
+/**
+ * Emessen, in detail — MSN / Windows Live Messenger.
+ *
+ * Silver-blue glass: rounded panels, gradient title bar with a white sheen,
+ * blue display-name lines above grey message text, and the green gradient
+ * Send button. Same controls, dressed in XP-era chrome.
+ */
+.skin-emessen .msg-skin-surface,
+.skin-emessen .msg-skin-surface *,
+.skin-emessen .msg-skin-strip,
+.skin-emessen .msg-skin-strip *,
+.skin-emessen .msg-skin-row,
+.skin-emessen .msg-skin-row * {
+  font-family: "Trebuchet MS", Tahoma, Arial, sans-serif !important;
+}
+
+/* Contact list */
+.skin-emessen .msg-skin-surface { background: linear-gradient(160deg, #eaf4ff, #c9dcf3); }
+.skin-emessen .msg-skin-strip {
+  background: linear-gradient(#ffffff, #d7e8fb);
+  border-bottom: 1px solid #8fb2d8;
+  box-shadow: inset 0 1px 0 #fff;
+}
+.skin-emessen .msg-skin-strip h1,
+.skin-emessen .msg-skin-title { color: #1b3f6e !important; }
+.skin-emessen .msg-skin-label {
+  color: #2f6bb5 !important;
+  background: linear-gradient(#f2f8ff, #e2eefc);
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #b9d3ee;
+  font-weight: 700;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  font-size: 11px !important;
+}
+.skin-emessen .msg-skin-row {
+  background: #fff;
+  border-bottom: 1px solid #eef4fb;
+}
+.skin-emessen .msg-skin-row:hover { background: #eaf6ff; }
+.skin-emessen .msg-skin-row.is-active {
+  background: linear-gradient(#dff0ff, #c9e4fb);
+  box-shadow: inset 0 0 0 1px #98bddb;
+}
+.skin-emessen .msg-skin-title { font-weight: 700 !important; color: #14375f !important; }
+.skin-emessen .msg-skin-sub { color: #7d8b9c !important; opacity: 1; font-style: italic; }
+
+/* Conversation window */
+.skin-emessen .msg-skin-header {
+  background: linear-gradient(#9dbdf3, #4c78c9);
+  border: 0;
+  border-bottom: 1px solid #3a63ab;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
+  min-height: 32px;
+}
+.skin-emessen .msg-skin-header h2 { font-weight: 700; text-shadow: 0 1px 1px rgba(0,0,0,.28); }
+.skin-emessen .msg-skin-history {
+  background: linear-gradient(#ffffff 60%, #f3f9ff);
+  border: 1px solid #a9c6e4;
+  border-radius: 8px;
+  margin: 6px;
+  box-shadow: inset 0 1px 0 #fff;
+}
+.skin-emessen .msg-skin-line { justify-content: flex-start !important; }
+.skin-emessen .msg-skin-line-body { max-width: 92% !important; }
+.skin-emessen .msg-skin-bubble,
+.skin-emessen .msg-skin-bubble.is-mine {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 2px 4px !important;
+  color: #3c3c3c !important;
+}
+.skin-emessen .msg-skin-bubble p { font: 13px/1.4 "Trebuchet MS", Tahoma, Arial, sans-serif !important; }
+.skin-emessen .msg-skin-name {
+  color: #2f6bb5 !important;
+  font: 700 12px "Trebuchet MS", Tahoma, Arial, sans-serif !important;
+  padding-left: 2px !important;
+}
+
+/* Typing area + green Send */
+.skin-emessen .msg-skin-composer {
+  background: linear-gradient(#f4faff, #d9e9fa);
+  border-top: 1px solid #9dbcdd;
+  box-shadow: inset 0 1px 0 #fff;
+}
+.skin-emessen .msg-skin-composer textarea {
+  background: #fff;
+  border: 1px solid #9dbcdd !important;
+  border-radius: 8px !important;
+  font: 13px "Trebuchet MS", Tahoma, Arial, sans-serif;
+}
+.skin-emessen .msg-skin-composer textarea:focus { border-color: #4c78c9 !important; }
+.skin-emessen .msg-skin-icon-btn {
+  background: linear-gradient(#ffffff, #e3effc);
+  border: 1px solid #a3bad6;
+  border-radius: 8px !important;
+  color: #2f6bb5;
+  padding: 3px !important;
+}
+.skin-emessen .msg-skin-icon-btn:hover { background: linear-gradient(#ffffff, #cfe4fa); }
+.skin-emessen .msg-skin-send-btn {
+  background: linear-gradient(#b7ec8d, #61bd55);
+  border: 1px solid #4e9945;
+  border-radius: 8px !important;
+  color: #21451f;
+  text-shadow: 0 1px 0 rgba(255,255,255,.6);
+}
+.skin-emessen .msg-skin-panel,
+.skin-emessen .msg-skin-thumb {
+  background: linear-gradient(#ffffff, #eaf4ff);
+  border: 1px solid #a3bad6;
+  border-radius: 8px !important;
+}
+.skin-emessen .msg-skin-bar { background: #4da746; }
+.skin-emessen .msg-skin-note { color: #3b5a7d !important; opacity: 1; }
