@@ -550,7 +550,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                       {!isMine && campfire.campfire_type === 'group' && (
                         prevMsg?.sender_id !== msg.sender_id || showDivider
                       ) && (
-                        <p className="font-body text-[10px] text-muted-foreground mb-0.5 px-3">{msg.senderName}</p>
+                        <p className="msg-skin-name font-body text-[10px] text-muted-foreground mb-0.5 px-3">{msg.senderName}</p>
                       )}
 
                       {msg.is_faded ? (
