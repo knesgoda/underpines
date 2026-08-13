@@ -79,7 +79,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
       setLoading(false);
     };
     load();
-  }, [profileId, isOwner]);
+  }, [profileId, isOwner, typeKey]);
 
   // Visibility gating for visitors outside the circle. Sparks and bulletins
   // are written for a wide audience; stories and embers only tease.
