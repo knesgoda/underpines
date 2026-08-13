@@ -278,10 +278,38 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     return () => { alive = false; window.clearTimeout(timer); };
   }, [input, attempt]);
 
+  const backoffTimer = useRef<number | null>(null);
+
+  // Any pending backoff belongs to the previous reference; drop it.
+  useEffect(() => () => {
+    if (backoffTimer.current !== null) window.clearTimeout(backoffTimer.current);
+  }, [input]);
+
   const retry = useCallback(() => {
+    if (backoffTimer.current !== null) {
+      window.clearTimeout(backoffTimer.current);
+      backoffTimer.current = null;
+    }
+    resetSignedMediaResigns(input);
     invalidateSignedMediaUrl(input);
     setAttempt((n) => n + 1);
   }, [input]);
 
-  return { ...state, retry };
+  const resign = useCallback(() => {
+    // A backoff is already in flight — don't stack another.
+    if (backoffTimer.current !== null) return true;
+
+    const delay = claimSignedMediaResign(input);
+    if (delay === null) return false;
+
+    backoffTimer.current = window.setTimeout(() => {
+      backoffTimer.current = null;
+      invalidateSignedMediaUrl(input);
+      setAttempt((n) => n + 1);
+    }, delay);
+    return true;
+  }, [input]);
+
+  return { ...state, retry, resign };
 };
+
