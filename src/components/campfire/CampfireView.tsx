@@ -543,8 +543,9 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                     </div>
                   )}
 
-                  <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} group transition-colors ${highlightMsgId === msg.id ? 'bg-amber-light/30 rounded-[5px]' : ''}`}>
-                    <div className="max-w-[75%]">
+                  <div className={`msg-skin-line flex ${isMine ? 'justify-end' : 'justify-start'} group transition-colors ${highlightMsgId === msg.id ? 'bg-amber-light/30 rounded-[5px]' : ''}`}>
+                    <div className="msg-skin-line-body max-w-[75%]">
+
                       {/* Sender name for group chats */}
                       {!isMine && campfire.campfire_type === 'group' && (
                         prevMsg?.sender_id !== msg.sender_id || showDivider
