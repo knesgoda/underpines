@@ -223,12 +223,27 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
     const content = input.trim();
     setInput('');
 
-    await supabase.from('campfire_messages').insert({
+    // The trust system installs rate-limit and duplicate-message triggers that
+    // raise, so an insert can genuinely fail. If it does, put the text back in
+    // the box and say so — never swallow what someone typed.
+    const { error } = await supabase.from('campfire_messages').insert({
       campfire_id: campfireId,
       sender_id: user.id,
       content,
       message_type: 'text',
     });
+
+    if (error) {
+      setInput(content);
+      toast.error(
+        /rate|slow|too many/i.test(error.message)
+          ? "You're sending a little fast — give it a moment and try again."
+          : "That message didn't send. Try again?"
+      );
+      setSending(false);
+      inputRef.current?.focus();
+      return;
+    }
 
     setSending(false);
     setAutoScroll(true);

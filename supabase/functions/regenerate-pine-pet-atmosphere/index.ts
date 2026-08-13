@@ -76,7 +76,37 @@ serve(async (req) => {
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Not cached — generate new sprite
+    // Not cached — this path costs two paid AI calls (Claude + Gemini), so it
+    // must be gated exactly like first-time generation. Without this a member
+    // could loop uncached atmospheres (or mint pet rows) into unbounded spend
+    // on our Anthropic/Gemini keys. Cached hits above stay free and ungated.
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("is_pines_plus")
+      .eq("id", userId)
+      .single();
+
+    if (!prof?.is_pines_plus) {
+      return new Response(JSON.stringify({
+        error: "Pine Pets are a Pines+ feature. Upgrade to bring your pet to life.",
+      }), { status: 403, headers: corsHeaders });
+    }
+
+    // Same 3/day budget as generation, shared through pine_pet_generations.
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+    const { count: todayCount } = await supabase
+      .from("pine_pet_generations")
+      .select("id", { count: "exact", head: true })
+      .eq("owner_id", userId)
+      .gte("created_at", todayStart.toISOString());
+
+    if ((todayCount ?? 0) >= 3) {
+      return new Response(JSON.stringify({
+        error: "You've used all your pet illustrations for today. Try again tomorrow, or pick one you already have.",
+      }), { status: 429, headers: corsHeaders });
+    }
+
     const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
     if (!anthropicKey || !geminiKey) {
@@ -192,6 +222,13 @@ IMPORTANT: Transparent background. Hand-drawn illustrated look, NOT photorealist
       .from("pine_pets")
       .update({ sprite_cache: spriteCache })
       .eq("id", pet_id);
+
+    // Record the paid generation so it counts against the daily budget.
+    await supabase.from("pine_pet_generations").insert({
+      owner_id: userId,
+      pet_id,
+      status: "complete",
+    });
 
     const { data: urlData } = supabase.storage
       .from("pine-pets-sprites")

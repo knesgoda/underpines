@@ -193,6 +193,21 @@
 .module p { margin: 0; font-size: 14px; line-height: 1.55; color: hsl(var(--foreground) / 0.9); }
 
 /**
+ * The little uppercase label above a heading. Same story as .module above: it
+ * lived in onboarding.css, but the feed's welcome panel uses it too and only
+ * imports feed.css — so the date line rendered unstyled on a fresh load and
+ * styled only if you'd passed through /onboarding first in the same session.
+ * It is a shell primitive; it belongs here.
+ */
+.eyebrow {
+  color: hsl(var(--primary));
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/**
  * Post cards (HandoffPostCard). Shared by the Feed and My Page, so the rules
  * live here rather than in feed.css — the same mistake .module made.
  */

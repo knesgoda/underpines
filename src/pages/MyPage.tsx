@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import StatePanel from '@/components/StatePanel';
@@ -42,7 +41,6 @@ const moduleLabel = (type: string) =>
 const MyPage = () => {
   const { handle } = useParams<{ handle?: string }>();
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const { data: profile, isLoading } = usePageProfile(handle);
   const isOwner = !!user && !!profile && user.id === profile.id;
 
@@ -57,6 +55,10 @@ const MyPage = () => {
 
   const [tab, setTab] = useState<ProfileTab>('wall');
   const { data: liked } = useLikedPosts(profile?.id, tab === 'likes');
+
+  // CabinPostHistory loads the wall with its own effect (not React Query), so
+  // after the owner posts we bump this to make it reload from the server.
+  const [wallRefresh, setWallRefresh] = useState(0);
 
   if (isLoading) return <PineTreeLoading />;
 
@@ -174,10 +176,10 @@ const MyPage = () => {
               {isOwner && (
                 <WallComposer
                   profile={profile}
-                  onPost={() => queryClient.invalidateQueries({ queryKey: ['page-posts', profile.id] })}
+                  onPost={() => setWallRefresh(n => n + 1)}
                 />
               )}
-              <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle />
+              <CabinPostHistory profileId={profile.id} isOwner={isOwner} isInCircle refreshKey={wallRefresh} />
               <WallNotes
                 profileId={profile.id}
                 profileName={profile.display_name}

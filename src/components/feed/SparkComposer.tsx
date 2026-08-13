@@ -102,26 +102,12 @@ const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerPr
     if (!content.trim() || !user) return;
     setPosting(true);
 
-    // Optimistic post object
-    const optimisticPost = {
-      id: crypto.randomUUID(),
-      author_id: user.id,
-      post_type: postType,
-      content: content.trim(),
-      image_url: uploadedUrl || null,
-      title: null,
-      is_published: true,
-      is_quote_post: false,
-      quoted_post_id: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      _optimistic: true,
-    };
-
-    onPost(optimisticPost);
-    setContent('');
-    clearImage();
-
+    // Write first, tell the parent second. The parent's onPost refreshes the
+    // feed / wall from the server, so it must not fire until the row is
+    // actually committed — otherwise the refetch races the insert and the new
+    // post is missing for up to the query's stale window. On failure we keep
+    // the text and image exactly where they are so nothing the person wrote is
+    // lost; they can just press Post again.
     const { data, error } = await supabase
       .from('posts')
       .insert({
@@ -133,11 +119,16 @@ const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerPr
       .select()
       .single();
 
-    if (error) {
-      onPost({ ...optimisticPost, _failed: true });
+    if (error || !data) {
       toast.error("That one didn't make it. Try again?");
+      setPosting(false);
+      return;
     }
+
+    setContent('');
+    clearImage();
     setPosting(false);
+    onPost(data as PostWithAuthor);
   };
 
   return (

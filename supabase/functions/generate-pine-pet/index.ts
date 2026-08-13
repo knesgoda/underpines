@@ -58,15 +58,17 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Invalid atmosphere" }), { status: 400, headers: corsHeaders });
     }
 
-    // Check Pines+ subscription
-    const { data: subData } = await supabase
-      .from("subscriptions")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("status", "active")
-      .limit(1);
+    // Check Pines+ — is_pines_plus is the canonical flag the rest of the app
+    // gates on (kept in sync by check-subscription / stripe-webhook). The old
+    // query hit a "subscriptions" table that does not exist, so this gate
+    // silently failed closed and no Pines+ member could ever generate a pet.
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("is_pines_plus")
+      .eq("id", userId)
+      .single();
 
-    if (!subData || subData.length === 0) {
+    if (!prof?.is_pines_plus) {
       return new Response(JSON.stringify({
         error: "Pine Pets are a Pines+ feature. Upgrade to bring your pet to life.",
       }), { status: 403, headers: corsHeaders });

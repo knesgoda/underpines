@@ -10,6 +10,7 @@ import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PineTreeLoading from "@/components/PineTreeLoading";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 import AppLayout from "@/components/navigation/AppLayout";
 
@@ -105,6 +106,13 @@ const App = () => (
             
             <BrowserRouter>
               <ScrollToTop />
+              {/* A single boundary around the whole routed tree. Without it, a
+                  crash on a full-screen route (onboarding, login, the boot
+                  gates), anywhere under /grove, or a lazy chunk that 404s after
+                  a deploy is a blank white page. The inner boundary in
+                  AppLayout still gives signed-in routes a finer-grained
+                  fallback that keeps the nav chrome. */}
+              <ErrorBoundary>
               <Suspense fallback={<PineTreeLoading />}>
               <Routes>
                 {/* Grove admin routes — outside AppLayout */}
@@ -197,6 +205,7 @@ const App = () => (
                 } />
               </Routes>
               </Suspense>
+              </ErrorBoundary>
             </BrowserRouter>
           </TooltipProvider>
         </NavigationProvider>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { AnimatePresence } from 'framer-motion';
 import SparkComposer from './SparkComposer';
@@ -14,6 +14,7 @@ type PostType = 'spark' | 'story' | 'ember' | null;
 const MobileComposerSheet = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { composerOpen, setComposerOpen } = useNavigation();
   const { isSeedling, daysLeft } = useSeedlingStatus();
   const [activeType, setActiveType] = useState<PostType>(null);
@@ -39,9 +40,12 @@ const MobileComposerSheet = () => {
     setComposerOpen(false);
   };
 
-  const handlePost = async (post: any) => {
-    // If we're on the feed, the inline ComposerStub will handle optimistic updates
-    // Otherwise just close the sheet and navigate to feed
+  const handlePost = async (_post: unknown) => {
+    // The composer only calls this once the post is committed, so refetching
+    // the feed now reliably includes it. Invalidate rather than optimistically
+    // splice: the query owns the canonical, enriched list (author, media,
+    // reactions) and a refetch is simplest to keep correct.
+    if (user) queryClient.invalidateQueries({ queryKey: ['feed', user.id] });
     setActiveType(null);
     setComposerOpen(false);
     if (window.location.pathname !== '/') {

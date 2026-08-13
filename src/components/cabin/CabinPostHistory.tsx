@@ -13,6 +13,8 @@ interface Props {
   /** Narrow the history to certain kinds — the Journal tab asks for stories. */
   postTypes?: string[];
   emptyMessage?: string;
+  /** Bump to force a reload — e.g. after the owner posts from the wall. */
+  refreshKey?: number;
 }
 
 /**
@@ -21,15 +23,23 @@ interface Props {
  * circle get sparks and bulletins in full, stories as a title, embers behind
  * a blur.
  */
-const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMessage }: Props) => {
+const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMessage, refreshKey }: Props) => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
 
   const typeKey = postTypes?.join(',') ?? '';
 
   useEffect(() => {
+    // Guard against a slow response from a previous profile writing into the
+    // current one when you navigate quickly between pages. Only the latest
+    // effect run is allowed to commit state.
+    let active = true;
+    setLoading(true);
+    setFailed(false);
+
     const load = async () => {
       let query = supabase
         .from('posts')
@@ -46,9 +56,11 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
         query = query.in('post_type', typeKey.split(','));
       }
 
-      const { data } = await query;
-      if (!data) { setLoading(false); return; }
-
+      const { data, error } = await query;
+      if (!active) return;
+      // A read error is not the same as "no posts" — surface it so we don't
+      // tell the owner their wall is empty when the network just hiccuped.
+      if (error || !data) { setFailed(!!error); setPosts([]); setLoading(false); return; }
 
       const { data: prof } = await supabase
         .from('profiles')
@@ -67,6 +79,8 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
         .select('post_id, reaction_type, user_id')
         .in('post_id', postIds);
 
+      if (!active) return;
+
       const enriched: PostWithAuthor[] = data.map(p => ({
         ...p,
         created_at: p.created_at || '',
@@ -79,7 +93,9 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
       setLoading(false);
     };
     load();
-  }, [profileId, isOwner, typeKey]);
+
+    return () => { active = false; };
+  }, [profileId, isOwner, typeKey, refreshKey]);
 
   // Visibility gating for visitors outside the circle. Sparks and bulletins
   // are written for a wide audience; stories and embers only tease.
@@ -119,6 +135,14 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
   };
 
   if (loading) return null;
+
+  if (failed) {
+    return (
+      <section className="paper module">
+        <p className="quiet">These posts didn’t load. Check your connection and try again.</p>
+      </section>
+    );
+  }
 
   if (posts.length === 0) {
     const empty = emptyMessage ?? 'Nothing posted yet.';

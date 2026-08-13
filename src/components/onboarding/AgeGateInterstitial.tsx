@@ -59,19 +59,24 @@ const AgeGateInterstitial = ({ onComplete }: AgeGateInterstitialProps) => {
     const bracket = calculateBracket();
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          age_bracket: bracket,
-          birth_year: parseInt(year),
-          is_age_verified: true,
-        } as any)
-        .eq('id', user.id);
+      // Server decides bracket + account_status from birth year; the client can
+      // no longer write the age columns directly.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: result, error } = await (supabase as any).rpc('set_age_verification', {
+        _birth_year: parseInt(year),
+        _age_bracket: bracket,
+      });
 
       if (error) throw error;
+      if (result && result.success === false) {
+        toast.error(result.error === 'under_13'
+          ? 'Under Pines is for people 13 and older.'
+          : 'Something went wrong. Please try again.');
+        return;
+      }
 
-      // LEGAL-REVIEW-NEEDED: If minor, trigger parental consent & restrictions
-      if (bracket === '13_to_17') {
+      // LEGAL-REVIEW-NEEDED: If minor, parental consent is required.
+      if (result?.age_bracket === '13_to_17') {
         toast('Minor account detected. Parental consent may be required.');
       }
 

@@ -46,7 +46,9 @@ const StepVerify = () => {
             birth_year: data.birthYear,
             trail_pass_token: data.trailPassToken || undefined,
             invite_id: data.inviteId || undefined,
-            invite_ip_hash: data.ipHash || undefined,
+            // invite_ip_hash intentionally omitted: a client-supplied hash is
+            // forgeable and was defeating the per-IP invite sub-limit. The
+            // per-invite caps are enforced server-side in validate-invite.
           },
         },
       });
@@ -67,14 +69,16 @@ const StepVerify = () => {
         return;
       }
 
-      // Update profile with age data
+      // Record age verification server-side. The client can no longer write
+      // is_age_verified / account_status directly (those columns are revoked);
+      // the RPC decides the bracket and status from birth year so a 13–17
+      // account can't self-activate past parental consent.
       if (authData.user) {
-        await supabase.from('profiles').update({
-          age_bracket: data.ageBracket,
-          birth_year: data.birthYear,
-          is_age_verified: true,
-          account_status: data.ageBracket === '13_to_17' ? 'pending_parental_consent' : 'active',
-        } as any).eq('id', authData.user.id);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any).rpc('set_age_verification', {
+          _birth_year: data.birthYear,
+          _age_bracket: data.ageBracket,
+        });
 
         // Server-side signup risk evaluation — fire and forget; the user is
         // never blocked on it and never sees scores (spec §33-§34).

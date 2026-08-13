@@ -53,7 +53,14 @@ const MarketplaceDetail = () => {
 
   const handleApply = async () => {
     if (!user || !id) return;
-    await supabase.from('profiles').update({ applied_design_id: id }).eq('id', user.id);
+    // applied_design_id is set through the RPC, which verifies ownership —
+    // the column is no longer client-writable.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: result, error } = await (supabase as any).rpc('apply_cabin_design', { _design_id: id });
+    if (error || (result && result.success === false)) {
+      toast.error("Couldn't apply that design. Do you own it?");
+      return;
+    }
     setApplied(true);
     toast.success(`${design.name} is now your Cabin design.`);
   };
@@ -61,7 +68,11 @@ const MarketplaceDetail = () => {
   const handleBuyFree = async () => {
     if (!user || !design) return;
     setBuying(true);
-    await supabase.from('design_purchases').insert({
+    // Free designs: record the purchase (RLS now allows this only for free
+    // designs), then apply through the ownership-checked RPC. The purchase
+    // counter is maintained server-side, not by the buyer (that UPDATE was
+    // blocked by cabin_designs' creator-only policy anyway).
+    const { error: purchaseErr } = await supabase.from('design_purchases').insert({
       design_id: design.id,
       buyer_id: user.id,
       creator_id: design.creator_id,
@@ -69,11 +80,21 @@ const MarketplaceDetail = () => {
       platform_fee_cents: 0,
       creator_amount_cents: 0,
     });
-    await supabase.from('cabin_designs').update({ purchases: (design.purchases || 0) + 1 }).eq('id', design.id);
-    await supabase.from('profiles').update({ applied_design_id: design.id }).eq('id', user.id);
+    if (purchaseErr) {
+      setBuying(false);
+      toast.error("Couldn't add that design. Try again?");
+      return;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: result, error } = await (supabase as any).rpc('apply_cabin_design', { _design_id: design.id });
+    setBuying(false);
+    if (error || (result && result.success === false)) {
+      setOwned(true);
+      toast.error("Added to your designs, but applying it failed. Try Apply again.");
+      return;
+    }
     setOwned(true);
     setApplied(true);
-    setBuying(false);
     toast.success(`${design.name} is now your Cabin design.`);
   };
 

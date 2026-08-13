@@ -68,12 +68,28 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     PUBLIC_ROUTES.includes(location.pathname) ||
     PUBLIC_PREFIXES.some(p => location.pathname.startsWith(p));
 
-  // Hard gate: once auth resolves, a visitor with no session on a protected
-  // route sees the invite gate instead of any member content. This backs up
-  // the row-level security in the database — the UI never even attempts to
-  // render protected pages for a stranger, so a shared or indexed profile
-  // link leads to "sign in or get an invite," not the page itself.
-  if (!authLoading && !user && !isPublic) {
+  // Hard gate: a visitor with no session on a protected route never sees any
+  // member content — only the invite gate. This backs up the row-level
+  // security in the database.
+  //
+  // The gate covers the auth-loading window too, not just the resolved state.
+  // Until auth resolves we cannot prove a session exists, so on a protected
+  // route we hold on a loading screen rather than mount the page. That stops a
+  // protected page (e.g. `/:handle`) from mounting and firing its pre-auth
+  // profile query, and stops the shell from flashing before the gate decides.
+  // The net effect: a shared or indexed link to any member page is
+  // "sign in or get an invite" from the very first paint, never the page.
+  if (!user && !isPublic) {
+    if (authLoading) {
+      return (
+        <div className="app">
+          <div className="topbar" />
+          <main>
+            <PineTreeLoading />
+          </main>
+        </div>
+      );
+    }
     return (
       <Suspense fallback={<PineTreeLoading />}>
         <Gate />
