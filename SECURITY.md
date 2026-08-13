@@ -114,6 +114,25 @@ their way into someone else's private data with this policy?"**
 _Newest first. Every security-relevant change gets an entry: date, what, why,
 where (migration file / PR), verification._
 
+### 2026-08-13 — Camp bonfire flow repaired (constraint + campfire visibility)
+**Migration:** `supabase/migrations/20260813230000_camp_bonfire_flow.sql`
+(applied via `query_database` — NOT in Lovable's ledger). The
+`campfires_campfire_type_check` constraint never allowed `'bonfire'`, so every
+camp's chat-room creation had been silently failing (prod had zero camp-linked
+campfires). Also, the participant-only SELECT policy on `campfires` meant a
+camp member could not discover the bonfire row to self-join it. Fixed: CHECK
+now includes `'bonfire'`; new SELECT policy `Camp members can read camp
+campfires` (`camp_id IS NOT NULL AND is_camp_member(...)` — row visibility
+only; messages/logs/reactions stay participant-gated); backfilled the missing
+bonfire + participants for the existing camp. **Verified:** 10-case
+impersonated test in a rolled-back transaction — full CreateCamp flow,
+non-member cannot see a camp's bonfire, CampView join → discover → self-enroll
+chain works, DM self-insert and ember self-join still blocked (42501), bogus
+campfire_type rejected (23514). Note: camp members can now also read (and
+self-join) camp sub-bonfires — acceptable within the camp trust boundary since
+sub-bonfires are splits of the camp chat, and message visibility remains
+participant-gated.
+
 ### 2026-08-13 — Join-approval + rating-integrity RLS hardening
 **Migration:** `supabase/migrations/20260813220000_rls_join_and_rating_hardening.sql`
 (applied directly via `query_database` — NOT in Lovable's ledger). Fixes three

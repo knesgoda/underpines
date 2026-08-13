@@ -152,6 +152,20 @@ invited join, campfire creation, verified rating). Zero test rows persisted;
 zero client-code changes needed, so no frontend deploy is required for this
 one.
 
+**Also fixed same session: the camp bonfire flow was entirely broken.**
+Migration `20260813230000_camp_bonfire_flow.sql` (applied live via
+`query_database`, NOT in Lovable's ledger): the `campfires` type CHECK never
+allowed `'bonfire'`, so CreateCamp's chat-room insert silently failed —
+prod had ZERO camp campfires. Also camp members couldn't SELECT a bonfire
+they weren't yet participants of (so CampView.join and CampBonfire came up
+empty even with the constraint fixed). CHECK now includes `'bonfire'`; new
+campfires SELECT policy lets camp members read camp-linked campfires
+(messages stay participant-gated); backfilled "Return of the Sonics
+Bonfire" with all 4 members enrolled. 10-case impersonated test verified
+the full CreateCamp + join→discover→self-enroll chains plus regressions
+(all green, rolled back). tsc clean, 130 vitest pass, build clean — still
+no client-code changes.
+
 **Process change:** `SECURITY.md` created at repo root — hard RLS/edge rules
 + mandatory pre-change checklist + the running security changelog (see the
 security gate note at the top of this file). Same rules pushed into
