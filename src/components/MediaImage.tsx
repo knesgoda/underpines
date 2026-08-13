@@ -83,18 +83,24 @@ export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }
   const { url, loading, failed, resigning, retry, resign } = useSignedMediaUrl(src);
   // true once the re-sign budget for this reference is spent.
   const [givenUp, setGivenUp] = useState(false);
+  // A person pressed "Try again": keep the card on screen with a busy button,
+  // rather than swapping it for a skeleton under their finger.
+  const [manual, setManual] = useState(false);
   const attemptsRef = useRef(0);
 
-  useEffect(() => { setGivenUp(false); attemptsRef.current = 0; }, [src]);
+  useEffect(() => { setGivenUp(false); setManual(false); attemptsRef.current = 0; }, [src]);
+  useEffect(() => { if (!resigning) setManual(false); }, [resigning]);
 
-  const manualRetry = () => { setGivenUp(false); attemptsRef.current = 0; retry(); };
+  const manualRetry = () => { setGivenUp(false); setManual(true); attemptsRef.current = 0; retry(); };
 
   // An automatic re-sign is in flight: hold the skeleton rather than flashing
   // a broken frame or an unavailable card that's about to be replaced.
-  if (!givenUp && resigning) return <Placeholder className={className} style={style} state="retrying" />;
+  if (!givenUp && resigning && !manual) {
+    return <Placeholder className={className} style={style} state="retrying" />;
+  }
 
-  if (givenUp || !url || (failed && !loading)) {
-    if (loading && !givenUp) return <Placeholder className={className} style={style} />;
+  if (givenUp || manual || !url || (failed && !loading)) {
+    if (loading && !givenUp && !manual) return <Placeholder className={className} style={style} />;
     return (
       <MediaFallback
         kind="photo"
@@ -102,10 +108,11 @@ export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }
         style={style}
         label={alt || "Photo unavailable"}
         onRetry={manualRetry}
-        retrying={resigning || loading}
+        retrying={manual && (resigning || loading)}
       />
     );
   }
+
 
   return (
     <img
