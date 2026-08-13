@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ImgHTMLAttributes, VideoHTMLAttributes } from 'react';
-import { ImageOff, RotateCw } from 'lucide-react';
+import { ImageOff, Loader2, RotateCw } from 'lucide-react';
 import { useSignedMediaUrl } from '@/lib/signedMedia';
 import { logMediaFailure } from '@/lib/mediaTelemetry';
 
@@ -13,9 +13,13 @@ import { logMediaFailure } from '@/lib/mediaTelemetry';
  *  - we minted one and Storage still answered 403/expired when the browser
  *    fetched the file — the <img> would otherwise render a broken-image icon
  *
- * The second case gets one silent re-sign attempt (signatures lapse; access can
- * change mid-session), and only then falls back to a quiet, readable placard
- * with a manual "Try again".
+ * The second case gets backoff-guarded silent re-sign attempts (signatures
+ * lapse; access can change mid-session), and only then falls back to a quiet,
+ * readable placard with a manual "Try again".
+ *
+ * While a re-sign is pending — the backoff wait included — the slot shows a
+ * skeleton rather than a broken frame, and the "Try again" button stays inert
+ * until that attempt has landed so a person can't stack requests.
  */
 
 type FallbackProps = {
@@ -23,16 +27,17 @@ type FallbackProps = {
   style?: React.CSSProperties;
   label: string;
   onRetry?: () => void;
+  retrying?: boolean;
   kind: 'photo' | 'video';
 };
 
-const MediaFallback = ({ className, style, label, onRetry, kind }: FallbackProps) => (
+const MediaFallback = ({ className, style, label, onRetry, retrying, kind }: FallbackProps) => (
   <div
     className={`${className ?? ''} flex flex-col items-center justify-center gap-2 border border-border bg-muted/60 p-4 text-center`.trim()}
     style={style}
     role="img"
     aria-label={label}
-    data-media-state="unavailable"
+    data-media-state={retrying ? 'retrying' : 'unavailable'}
   >
     <ImageOff className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
     <p className="text-xs leading-snug text-muted-foreground">
@@ -42,21 +47,31 @@ const MediaFallback = ({ className, style, label, onRetry, kind }: FallbackProps
       <button
         type="button"
         onClick={onRetry}
-        className="inline-flex items-center gap-1 text-xs font-medium text-foreground underline underline-offset-2 hover:opacity-80"
+        disabled={retrying}
+        aria-busy={retrying || undefined}
+        className="inline-flex items-center gap-1 text-xs font-medium text-foreground underline underline-offset-2 hover:opacity-80 disabled:cursor-not-allowed disabled:no-underline disabled:opacity-60"
       >
-        <RotateCw className="h-3 w-3" aria-hidden="true" />
-        Try again
+        {retrying ? (
+          <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+        ) : (
+          <RotateCw className="h-3 w-3" aria-hidden="true" />
+        )}
+        {retrying ? 'Trying…' : 'Try again'}
       </button>
     )}
   </div>
 );
 
-const Placeholder = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+const Placeholder = ({
+  className,
+  style,
+  state = 'loading',
+}: { className?: string; style?: React.CSSProperties; state?: 'loading' | 'retrying' }) => (
   <div
     className={`${className ?? ''} animate-pulse bg-muted`.trim()}
     style={style}
     aria-hidden="true"
-    data-media-state="loading"
+    data-media-state={state}
   />
 );
 
@@ -65,18 +80,27 @@ type MediaImageProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> & {
 };
 
 export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }: MediaImageProps) => {
-  const { url, loading, failed, retry, resign } = useSignedMediaUrl(src);
+  const { url, loading, failed, resigning, retry, resign } = useSignedMediaUrl(src);
   // true once the re-sign budget for this reference is spent.
   const [givenUp, setGivenUp] = useState(false);
+  // A person pressed "Try again": keep the card on screen with a busy button,
+  // rather than swapping it for a skeleton under their finger.
+  const [manual, setManual] = useState(false);
   const attemptsRef = useRef(0);
 
-  useEffect(() => { setGivenUp(false); attemptsRef.current = 0; }, [src]);
+  useEffect(() => { setGivenUp(false); setManual(false); attemptsRef.current = 0; }, [src]);
+  useEffect(() => { if (!resigning) setManual(false); }, [resigning]);
 
-  const manualRetry = () => { setGivenUp(false); attemptsRef.current = 0; retry(); };
+  const manualRetry = () => { setGivenUp(false); setManual(true); attemptsRef.current = 0; retry(); };
 
+  // An automatic re-sign is in flight: hold the skeleton rather than flashing
+  // a broken frame or an unavailable card that's about to be replaced.
+  if (!givenUp && resigning && !manual) {
+    return <Placeholder className={className} style={style} state="retrying" />;
+  }
 
-  if (givenUp || !url || (failed && !loading)) {
-    if (loading && !givenUp) return <Placeholder className={className} style={style} />;
+  if (givenUp || manual || !url || (failed && !loading)) {
+    if (loading && !givenUp && !manual) return <Placeholder className={className} style={style} />;
     return (
       <MediaFallback
         kind="photo"
@@ -84,9 +108,11 @@ export const MediaImage = ({ src, className, style, alt = '', onError, ...rest }
         style={style}
         label={alt || "Photo unavailable"}
         onRetry={manualRetry}
+        retrying={manual && (resigning || loading)}
       />
     );
   }
+
 
   return (
     <img
@@ -114,24 +140,34 @@ type MediaVideoProps = Omit<VideoHTMLAttributes<HTMLVideoElement>, 'src'> & {
 };
 
 export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVideoProps) => {
-  const { url, loading, failed, retry, resign } = useSignedMediaUrl(src);
+  const { url, loading, failed, resigning, retry, resign } = useSignedMediaUrl(src);
   const [givenUp, setGivenUp] = useState(false);
+  const [manual, setManual] = useState(false);
   const attemptsRef = useRef(0);
 
-  useEffect(() => { setGivenUp(false); attemptsRef.current = 0; }, [src]);
+  useEffect(() => { setGivenUp(false); setManual(false); attemptsRef.current = 0; }, [src]);
+  useEffect(() => { if (!resigning) setManual(false); }, [resigning]);
 
-  if (givenUp || !url || (failed && !loading)) {
-    if (loading && !givenUp) return <Placeholder className={className} style={style} />;
+  const manualRetry = () => { setGivenUp(false); setManual(true); attemptsRef.current = 0; retry(); };
+
+  if (!givenUp && resigning && !manual) {
+    return <Placeholder className={className} style={style} state="retrying" />;
+  }
+
+  if (givenUp || manual || !url || (failed && !loading)) {
+    if (loading && !givenUp && !manual) return <Placeholder className={className} style={style} />;
     return (
       <MediaFallback
         kind="video"
         className={className}
         style={style}
         label="Video unavailable"
-        onRetry={() => { setGivenUp(false); attemptsRef.current = 0; retry(); }}
+        onRetry={manualRetry}
+        retrying={manual && (resigning || loading)}
       />
     );
   }
+
 
   return (
     <video
@@ -151,6 +187,7 @@ export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVid
     />
   );
 };
+
 
 
 export default MediaImage;

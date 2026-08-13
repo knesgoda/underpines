@@ -226,6 +226,12 @@ export interface SignedMedia {
   url: string | null;
   loading: boolean;
   failed: boolean;
+  /**
+   * True from the moment a re-sign is claimed (manually or automatically) until
+   * the next signature resolves — including the backoff wait. Callers use it to
+   * show a loading state and to keep "Try again" inert until the attempt lands.
+   */
+  resigning: boolean;
   /** Manual retry: clears the re-sign budget and mints a fresh signature now. */
   retry: () => void;
   /**
@@ -236,7 +242,8 @@ export interface SignedMedia {
   resign: () => boolean;
 }
 
-type SignedMediaState = Omit<SignedMedia, 'retry' | 'resign'>;
+type SignedMediaState = Omit<SignedMedia, 'retry' | 'resign' | 'resigning'>;
+
 
 
 /**
@@ -245,6 +252,8 @@ type SignedMediaState = Omit<SignedMedia, 'retry' | 'resign'>;
  */
 export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia => {
   const [attempt, setAttempt] = useState(0);
+  // True while a re-sign is pending: covers the backoff wait AND the request.
+  const [resigning, setResigning] = useState(false);
   const [state, setState] = useState<SignedMediaState>(() => {
     if (!input) return { url: null, loading: false, failed: false };
     if (isAlreadySigned(input)) return { url: input, loading: false, failed: false };
@@ -256,15 +265,16 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
   });
 
   useEffect(() => {
-    if (!input) { setState({ url: null, loading: false, failed: false }); return; }
-    if (isAlreadySigned(input)) { setState({ url: input, loading: false, failed: false }); return; }
+    if (!input) { setState({ url: null, loading: false, failed: false }); setResigning(false); return; }
+    if (isAlreadySigned(input)) { setState({ url: input, loading: false, failed: false }); setResigning(false); return; }
 
     const path = extractPostMediaPath(input);
-    if (!path) { setState({ url: input, loading: false, failed: false }); return; }
+    if (!path) { setState({ url: input, loading: false, failed: false }); setResigning(false); return; }
 
     const hit = freshHit(path);
     if (hit) {
       setState({ url: hit.url, loading: false, failed: false });
+      setResigning(false);
       return;
     }
 
@@ -273,6 +283,8 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     getSignedMediaUrl(path).then((url) => {
       if (!alive) return;
       setState({ url, loading: false, failed: !url });
+      // The attempt has landed — whatever its outcome, we're no longer waiting.
+      setResigning(false);
     });
 
     // Refresh shortly before the signature lapses so long sessions keep working.
@@ -300,6 +312,7 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     }
     resetSignedMediaResigns(input);
     invalidateSignedMediaUrl(input);
+    setResigning(true);
     setAttempt((n) => n + 1);
   }, [input]);
 
@@ -310,6 +323,7 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     const delay = claimSignedMediaResign(input);
     if (delay === null) return false;
 
+    setResigning(true);
     backoffTimer.current = window.setTimeout(() => {
       backoffTimer.current = null;
       invalidateSignedMediaUrl(input);
@@ -318,6 +332,7 @@ export const useSignedMediaUrl = (input: string | null | undefined): SignedMedia
     return true;
   }, [input]);
 
-  return { ...state, retry, resign };
+  return { ...state, resigning, retry, resign };
 };
+
 
