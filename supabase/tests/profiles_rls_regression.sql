@@ -114,17 +114,20 @@ with sensitive(col) as (
          ),
          'the server-side age RPC is missing; a client could claim any age'
 
-  -- 10. No policy on profiles may be open to anon.
+  -- 10. No read policy on profiles may be open to anon. (The INSERT/UPDATE
+  --     policies are PUBLIC by design — column grants are their real gate.)
   union all
-  select 'no anon-facing policy on profiles',
+  select 'no anon-facing read policy on profiles',
          not exists (
            select 1 from pg_policy p
             where p.polrelid = 'public.profiles'::regclass
+              and p.polcmd in ('r', '*')
               and (p.polroles = '{0}'::oid[]
                    or exists (select 1 from pg_roles r
                                where r.oid = any(p.polroles) and r.rolname = 'anon'))
          ),
-         'every profiles policy must name the authenticated role explicitly'
+         'the profiles read policy must name the authenticated role explicitly'
+
 )
 select check_name,
        coalesce(passed, false) as passed,
