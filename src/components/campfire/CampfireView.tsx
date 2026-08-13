@@ -444,7 +444,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
             <span className="text-sm">{campfire.campfire_type === 'flicker' ? '🕯️' : '🔥'}</span>
             <h2 className="font-body text-sm font-medium text-foreground truncate">{headerName}</h2>
             {campfire.campfire_type === 'flicker' && flickerTimeLeft && flickerTimeLeft !== 'expired' && (
-              <span className="font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-[3px] shrink-0">
+              <span className="msg-skin-chip font-body text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-[3px] shrink-0">
                 {flickerTimeLeft}
               </span>
             )}
@@ -465,6 +465,10 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
             </div>
           )}
         </div>
+        {/* MSN-style display picture: decoration only, hidden unless a skin shows it */}
+        <span className="msg-skin-dp" aria-hidden="true">
+          {(campfire.campfire_type === 'one_on_one' ? otherParticipant?.display_name : headerName)?.[0]?.toUpperCase() ?? '•'}
+        </span>
         <div className="flex items-center gap-1">
           {campfire.campfire_type === 'group' && (
             <button onClick={() => setShowLog(!showLog)} className="p-2 rounded-[4px] text-muted-foreground hover:bg-muted" title="The Log">
@@ -481,7 +485,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-[5px] shadow-lg overflow-hidden z-30"
+                  className="msg-skin-menu absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-[5px] shadow-lg overflow-hidden z-30"
                 >
                   {campfire.campfire_type === 'one_on_one' && otherParticipant && (
                     <MenuBtn onClick={() => { setMenuOpen(false); navigate(`/${otherParticipant.handle}`); }}>
@@ -511,7 +515,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
 
       {/* Idle banner */}
       {campfire.is_embers && (
-        <div className="px-4 py-2 bg-muted text-center">
+        <div className="msg-skin-banner px-4 py-2 bg-muted text-center">
           <p className="font-body text-xs text-muted-foreground">This fire has been embers. The history is still here.</p>
         </div>
       )}
@@ -522,7 +526,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
         <div className="flex-1 flex flex-col min-h-0 relative">
           <div ref={scrollRef} onScroll={handleScroll} className="msg-skin-history flex-1 overflow-y-auto overscroll-y-contain px-4 py-3 space-y-1" style={{ touchAction: 'pan-y' }}>
             {messages.length === 0 && (
-              <div className="text-center py-12">
+              <div className="msg-skin-empty text-center py-12">
                 <p className="text-3xl mb-2">🔥</p>
                 <p className="font-body text-sm text-muted-foreground">The fire's lit. Say something.</p>
               </div>
@@ -536,32 +540,33 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               return (
                 <div key={msg.id} id={`msg-${msg.id}`}>
                   {showDivider && msg.created_at && (
-                    <div className="flex items-center gap-3 my-4">
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="font-body text-[10px] text-muted-foreground">{formatTimeDivider(msg.created_at)}</span>
-                      <div className="flex-1 h-px bg-border" />
+                    <div className="msg-skin-divider flex items-center gap-3 my-4">
+                      <div className="msg-skin-divider-line flex-1 h-px bg-border" />
+                      <span className="msg-skin-divider-text font-body text-[10px] text-muted-foreground">{formatTimeDivider(msg.created_at)}</span>
+                      <div className="msg-skin-divider-line flex-1 h-px bg-border" />
                     </div>
                   )}
 
                   <div className={`msg-skin-line flex ${isMine ? 'justify-end' : 'justify-start'} group transition-colors ${highlightMsgId === msg.id ? 'bg-amber-light/30 rounded-[5px]' : ''}`}>
                     <div className="msg-skin-line-body max-w-[75%]">
 
-                      {/* Sender name for group chats */}
-                      {!isMine && campfire.campfire_type === 'group' && (
-                        prevMsg?.sender_id !== msg.sender_id || showDivider
-                      ) && (
-                        <p className="msg-skin-name font-body text-[10px] text-muted-foreground mb-0.5 px-3">{msg.senderName}</p>
-                      )}
+                      {/* Sender name. Rendered for every message; the base CSS
+                          shows it only for group-incoming at a sender boundary
+                          (the pre-skin behavior), while retro skins show it on
+                          every line (ScreenName: / nick / "says:"). */}
+                      <p className={`msg-skin-name font-body text-[10px] text-muted-foreground mb-0.5 px-3 ${isMine ? 'is-mine' : ''} ${campfire.campfire_type === 'group' ? 'is-group' : ''} ${prevMsg?.sender_id === msg.sender_id && !showDivider ? 'is-repeat' : ''}`}>
+                        {msg.senderName}
+                      </p>
 
                       {msg.is_faded ? (
-                        <div className="px-3 py-2 rounded-[5px] bg-muted">
+                        <div className="msg-skin-faded px-3 py-2 rounded-[5px] bg-muted">
                           <p className="font-body text-xs text-muted-foreground italic">
                             A message from {msg.created_at ? new Date(msg.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : 'the past'}
                           </p>
                         </div>
                       ) : msg.message_type === 'photo' && msg.media_url ? (
                         <div
-                          className={`rounded-[5px] overflow-hidden cursor-pointer ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
+                          className={`msg-skin-media rounded-[5px] overflow-hidden cursor-pointer ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
                           onContextMenu={(e) => { e.preventDefault(); setReactionMsgId(msg.id); }}
                           onDoubleClick={() => setReactionMsgId(msg.id)}
                         >
@@ -621,7 +626,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
 
                       {/* Timestamp on hover */}
                       {msg.created_at && (
-                        <p className={`font-body text-[9px] text-muted-foreground mt-0.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity ${isMine ? 'text-right' : ''}`}>
+                        <p className={`msg-skin-time font-body text-[9px] text-muted-foreground mt-0.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity ${isMine ? 'text-right' : ''}`}>
                           {new Date(msg.created_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
                         </p>
                       )}
@@ -661,7 +666,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
           {newMsgPill && (
             <button
               onClick={() => { setAutoScroll(true); setNewMsgPill(false); if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }}
-              className="absolute bottom-16 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-xs shadow-lg"
+              className="msg-skin-pill absolute bottom-16 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-[3px] bg-primary text-primary-foreground font-body text-xs shadow-lg"
             >
               ↓ New message
             </button>
@@ -742,11 +747,10 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
                   className="msg-skin-send-btn h-9 w-9 shrink-0 hover:opacity-90 disabled:opacity-30"
                   aria-label="Send message"
                 >
-                  {uploadingMedia ? (
-                    <span className="text-xs">...</span>
-                  ) : (
-                    <Send size={18} />
-                  )}
+                  <span className="msg-skin-send-icon">
+                    {uploadingMedia ? <span className="text-xs">...</span> : <Send size={18} />}
+                  </span>
+                  <span className="msg-skin-send-label">Send</span>
                 </button>
               </div>
             </div>
@@ -777,7 +781,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              className="relative bg-card rounded-t-2xl w-full max-h-[70dvh] overflow-hidden"
+              className="msg-skin-dialog relative bg-card rounded-t-2xl w-full max-h-[70dvh] overflow-hidden"
             >
               <CampfireLog campfireId={campfireId} isFirekeeper={isFirekeeper} onClose={() => setShowLog(false)} />
             </motion.div>
@@ -794,7 +798,7 @@ const CampfireView = ({ campfireId, onBack, onRefreshList, autoFocusInput, isSco
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="relative bg-card rounded-t-2xl md:rounded-[5px] w-full max-w-sm max-h-[60dvh] overflow-hidden border border-border"
+              className="msg-skin-dialog relative bg-card rounded-t-2xl md:rounded-[5px] w-full max-w-sm max-h-[60dvh] overflow-hidden border border-border"
             >
               <div className="p-4 border-b border-border flex items-center justify-between">
                 <h3 className="font-body text-sm font-medium text-foreground">The Fire ({participants.length})</h3>

@@ -92,7 +92,7 @@ const CrossPostCard = ({ postId, note, isMine }: CrossPostCardProps) => {
 
   if (loading) {
     return (
-      <div className={`rounded-[5px] border border-border bg-muted/50 px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
+      <div className={`msg-skin-crosspost rounded-[5px] border border-border bg-muted/50 px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
         <div className="h-3 w-24 bg-muted rounded animate-pulse mb-2" />
         <div className="h-3 w-40 bg-muted rounded animate-pulse" />
       </div>
@@ -102,7 +102,7 @@ const CrossPostCard = ({ postId, note, isMine }: CrossPostCardProps) => {
   // Post was deleted or inaccessible
   if (!post) {
     return (
-      <div className={`rounded-[5px] border border-border bg-muted/40 px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
+      <div className={`msg-skin-crosspost rounded-[5px] border border-border bg-muted/40 px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
         <p className="font-body text-xs text-muted-foreground italic">This post is no longer available.</p>
       </div>
     );
@@ -111,7 +111,7 @@ const CrossPostCard = ({ postId, note, isMine }: CrossPostCardProps) => {
   // Not in circles — redacted view
   if (!inCircle) {
     return (
-      <div className={`rounded-[5px] border border-border bg-card px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
+      <div className={`msg-skin-crosspost rounded-[5px] border border-border bg-card px-3 py-3 ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}>
         <p className="font-body text-xs text-muted-foreground">
           A post from someone outside your Circles
         </p>
@@ -130,7 +130,7 @@ const CrossPostCard = ({ postId, note, isMine }: CrossPostCardProps) => {
   return (
     <button
       onClick={handleTap}
-      className={`w-full text-left rounded-[5px] border border-border bg-card hover:bg-muted/50 transition-colors overflow-hidden ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
+      className={`msg-skin-crosspost w-full text-left rounded-[5px] border border-border bg-card hover:bg-muted/50 transition-colors overflow-hidden ${isMine ? 'rounded-br-md' : 'rounded-bl-md'}`}
     >
       <div className="px-3 pt-3 pb-2">
         {/* Author row */}
