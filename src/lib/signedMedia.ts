@@ -39,6 +39,20 @@ const isAlreadySigned = (input: string) => input.includes(SIGNED_MARKER);
 const cache = new Map<string, { url: string; expiresAt: number }>();
 const inflight = new Map<string, Promise<string | null>>();
 
+/**
+ * Forget the cached signature for a stored reference.
+ *
+ * A signature can be minted successfully and still be refused by Storage later —
+ * the clock ran past the expiry, or the viewer's access changed mid-session — in
+ * which case the browser reports a 403 on the <img> itself. Dropping the cache
+ * entry lets the next read mint a fresh signature instead of replaying a dead one.
+ */
+export const invalidateSignedMediaUrl = (input: string | null | undefined) => {
+  const path = extractPostMediaPath(input);
+  if (path) cache.delete(path);
+};
+
+
 export const getSignedMediaUrl = async (path: string): Promise<string | null> => {
   const hit = cache.get(path);
   if (hit && hit.expiresAt > Date.now() + REFRESH_MARGIN_MS) return hit.url;
