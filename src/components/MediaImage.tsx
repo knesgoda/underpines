@@ -142,16 +142,20 @@ type MediaVideoProps = Omit<VideoHTMLAttributes<HTMLVideoElement>, 'src'> & {
 export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVideoProps) => {
   const { url, loading, failed, resigning, retry, resign } = useSignedMediaUrl(src);
   const [givenUp, setGivenUp] = useState(false);
+  const [manual, setManual] = useState(false);
   const attemptsRef = useRef(0);
 
-  useEffect(() => { setGivenUp(false); attemptsRef.current = 0; }, [src]);
+  useEffect(() => { setGivenUp(false); setManual(false); attemptsRef.current = 0; }, [src]);
+  useEffect(() => { if (!resigning) setManual(false); }, [resigning]);
 
-  const manualRetry = () => { setGivenUp(false); attemptsRef.current = 0; retry(); };
+  const manualRetry = () => { setGivenUp(false); setManual(true); attemptsRef.current = 0; retry(); };
 
-  if (!givenUp && resigning) return <Placeholder className={className} style={style} state="retrying" />;
+  if (!givenUp && resigning && !manual) {
+    return <Placeholder className={className} style={style} state="retrying" />;
+  }
 
-  if (givenUp || !url || (failed && !loading)) {
-    if (loading && !givenUp) return <Placeholder className={className} style={style} />;
+  if (givenUp || manual || !url || (failed && !loading)) {
+    if (loading && !givenUp && !manual) return <Placeholder className={className} style={style} />;
     return (
       <MediaFallback
         kind="video"
@@ -159,10 +163,11 @@ export const MediaVideo = ({ src, className, style, onError, ...rest }: MediaVid
         style={style}
         label="Video unavailable"
         onRetry={manualRetry}
-        retrying={resigning || loading}
+        retrying={manual && (resigning || loading)}
       />
     );
   }
+
 
   return (
     <video
