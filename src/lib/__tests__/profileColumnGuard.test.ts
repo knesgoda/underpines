@@ -102,11 +102,13 @@ describe('the SQL regression suite stays in sync', () => {
   });
 
   it('is read-only', () => {
-    // Strip `--` comments first: the explanatory notes name the DDL we guard against.
-    const statements = sql.replace(/--[^\n]*/g, '');
+    // Strip `--` comments and quoted literals first: the explanatory notes and the
+    // remediation hints name the very DDL this check guards against.
+    const statements = sql.replace(/--[^\n]*/g, '').replace(/'(?:[^']|'')*'/g, "''");
     expect(statements).not.toMatch(
       /\b(insert into|update |delete from|drop |alter |grant |revoke )\b/i,
     );
   });
+
 
 });
