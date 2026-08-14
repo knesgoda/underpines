@@ -16,9 +16,13 @@
   padding-bottom: 40px;
 }
 
-/* Topbar — navy ground, ember underline */
+/* Topbar — navy ground, ember underline.
+   The safe-area padding makes the bar itself the status-bar backdrop on
+   notched phones (viewport-fit=cover in index.html hands us that strip);
+   in a plain browser tab env() is 0 and nothing changes. */
 .topbar {
-  height: 64px;
+  height: calc(64px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -26,6 +30,21 @@
   color: hsl(var(--sidebar-foreground));
   border-bottom: 4px solid hsl(var(--primary));
   box-shadow: 0 4px 12px hsl(var(--foreground) / 0.18);
+}
+
+/* iOS moves the whole document during rubber-band overscroll — and its
+   standalone-PWA launch bug can hold the page a few dozen pixels low until
+   the first scroll. Whenever that happens, this paints the space above the
+   bar in the bar's own navy instead of the page background, so the header
+   always reads as reaching the top edge. */
+.topbar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 300px;
+  background: hsl(var(--sidebar-background));
 }
 
 .topbar-inner {
@@ -568,6 +587,27 @@
   .topbar-bell { display: flex; margin-left: auto; }
   .mini-me-menu { margin-left: 0; }
   .tabbar { display: grid; }
-  .app { padding-bottom: 72px; }
+  /* The tabbar grows by the home-indicator inset, so the page's clearance
+     under it has to grow by the same amount. */
+  .app { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
   .page-shell { width: calc(100% - 24px); margin-top: 16px; }
+}
+
+/* Full-screen routes (login, onboarding, legal, the gates) render without the
+   topbar, so they need their own status-bar treatment under
+   viewport-fit=cover: push content below the notch and paint the strip navy —
+   standalone iOS draws the clock in white, which vanishes on cream. */
+.fullscreen-shell {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.fullscreen-shell::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: hsl(var(--sidebar-background));
+  z-index: 40;
 }

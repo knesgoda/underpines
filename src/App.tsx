@@ -15,7 +15,16 @@ import { CABIN_ENABLED } from "@/lib/flags";
 
 import AppLayout from "@/components/navigation/AppLayout";
 
-// Lazy-loaded page components
+// Lazy-loaded page components.
+//
+// HomePage gets its chunk warmed at module scope: a cold start used to
+// serialize "download entry → boot React → render the router → discover '/'
+// needs the HomePage chunk → download it". Kicking the fetch off here overlaps
+// it with React's own startup. HomePage carries both the signed-in feed and
+// the logged-out landing, so it is the right warm for every visitor. The
+// catch keeps a flaky first fetch from surfacing as an unhandled rejection —
+// lazy() below re-imports on demand and stays the real error path.
+import("./pages/HomePage").catch(() => {});
 const HomePage = lazy(() => import("./pages/HomePage"));
 const Login = lazy(() => import("./pages/Login"));
 const InviteLanding = lazy(() => import("./pages/InviteLanding"));

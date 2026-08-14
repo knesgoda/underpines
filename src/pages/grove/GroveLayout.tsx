@@ -38,7 +38,10 @@ const GroveLayout = () => {
     : NAV_ITEMS;
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--pine-darkest))]">
+    // The safe-area padding keeps the header out from under the status bar on
+    // notched phones now that viewport-fit=cover is set; the strip above it
+    // shows this div's own dark ground, so the white clock stays readable.
+    <div className="min-h-screen bg-[hsl(var(--pine-darkest))]" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <header className="h-14 border-b border-[hsl(var(--pine-mid)/0.3)] flex items-center justify-between px-6 bg-[hsl(var(--pine-dark))]">
         <div className="flex items-center gap-2">
           <span className="text-lg">🌲</span>

@@ -2,7 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- viewport-fit=cover + black-translucent hand the status-bar strip to
+         the page instead of iOS. Without them, standalone launches put the
+         web view in an OS-managed band below the status bar, and iOS has a
+         long-standing bug where that band opens a gap above the page until
+         the first scroll. The topbar/tabbar pad themselves with
+         env(safe-area-inset-*) to draw that strip in their own navy. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Under Pines" />
     <!-- Invite-only network: keep every route out of search indexes and out
          of AI/social crawlers. This is a single-page app with one static
          <head>, so this default covers member profiles, cabins, posts and the
@@ -33,6 +43,15 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/pwa-icon-192.png" />
+
+    <!-- Everything the signed-in app does starts with a request to this
+         origin (get_boot_state, then the feed). Warming DNS+TCP+TLS here
+         runs it in parallel with the JS download instead of after it. Two
+         tags on purpose: fetch() uses the CORS connection pool (crossorigin),
+         <img> loads of signed media use the plain one. The host is public —
+         it ships in the bundle via VITE_SUPABASE_URL; keep in sync with .env. -->
+    <link rel="preconnect" href="https://dzwltzkakritkwrsikvb.supabase.co" crossorigin />
+    <link rel="preconnect" href="https://dzwltzkakritkwrsikvb.supabase.co" />
 
     <!-- Self-hosted; see src/styles/fonts.css. Preloaded because the first
          text on screen is set in both families. -->
