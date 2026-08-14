@@ -444,7 +444,12 @@
 }
 
 /* Direct children only — the React slot nests ReactionBar, whose emoji-fan
-   buttons must not inherit the action-row chrome. */
+   buttons must not inherit the action-row chrome. The row is the positioning
+   context for the fan (see .post-action-react below). */
+.post-actions {
+  position: relative;
+}
+
 .post-actions > button {
   border: 0;
   border-right: 1px solid hsl(var(--border));
@@ -472,9 +477,15 @@
   background: hsl(var(--card));
 }
 
+/* ReactionBar's root is position:relative by default, which would anchor the
+   emoji fan to the narrow middle cell — on a phone the fan then runs past
+   the card's right edge and .post's overflow:hidden clips the last emoji
+   unreachable. Statically positioned, the fan anchors to .post-actions
+   instead: card-left, above the row, fully inside the card. */
 .post-action-react > div {
   display: flex;
   flex: 1;
+  position: static;
 }
 
 .post-action-react > div > button {

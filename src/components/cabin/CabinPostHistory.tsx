@@ -31,8 +31,12 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
   const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
   // Reacting in place refetches counts; the list should not blank out while
   // that happens, so reloads after the first render keep the old posts up.
+  // The ref is scoped to one (profile, filter) target — navigating to a
+  // different profile must show the loading state again, never the previous
+  // person's posts under the new header.
   const [reactionTick, setReactionTick] = useState(0);
   const hasLoadedRef = useRef(false);
+  const loadTargetRef = useRef('');
 
   const typeKey = postTypes?.join(',') ?? '';
 
@@ -41,6 +45,12 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
     // current one when you navigate quickly between pages. Only the latest
     // effect run is allowed to commit state.
     let active = true;
+    const target = `${profileId}|${typeKey}|${isOwner}`;
+    if (loadTargetRef.current !== target) {
+      loadTargetRef.current = target;
+      hasLoadedRef.current = false;
+      setPosts([]);
+    }
     setLoading(!hasLoadedRef.current);
     setFailed(false);
 

@@ -61,13 +61,17 @@ BEGIN
        OR _invite.uses_remaining < 1 THEN
       RETURN jsonb_build_object('valid', false);
     END IF;
-    -- ...and rests while its owner is frozen or out of passes. 'resting'
-    -- leaks nothing beyond what the link holder already knows (they got the
-    -- link from the owner); it lets the landing say something useful.
+    -- ...and rests while its owner is frozen, out of passes, or no longer
+    -- invite-eligible — mirroring every owner-side check the signup gate
+    -- enforces, so a landing that answers valid cannot dead-end in a hard
+    -- signup exception. 'resting' leaks nothing beyond what the link holder
+    -- already knows (they got the link from the owner).
     IF NOT EXISTS (
       SELECT 1 FROM public.invite_allowances
       WHERE user_id = _invite.inviter_id
         AND invites_frozen_at IS NULL
+        AND invite_eligible_at IS NOT NULL
+        AND invite_eligible_at <= now()
         AND available_passes >= 1
     ) THEN
       RETURN jsonb_build_object('valid', false, 'reason', 'resting');

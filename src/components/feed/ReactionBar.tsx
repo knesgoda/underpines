@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -30,18 +31,25 @@ const ReactionBar = ({ postId, reactions, onReactionChange }: ReactionBarProps) 
     if (!user) return;
     setShowFan(false);
 
+    let failed = false;
     if (myReaction?.reaction_type === type) {
       // Remove reaction
-      await supabase.from('reactions').delete().eq('post_id', postId).eq('user_id', user.id);
+      const { error } = await supabase.from('reactions').delete().eq('post_id', postId).eq('user_id', user.id);
+      failed = !!error;
     } else if (myReaction) {
       // Change reaction - delete then insert (unique constraint)
-      await supabase.from('reactions').delete().eq('post_id', postId).eq('user_id', user.id);
-      await supabase.from('reactions').insert({ post_id: postId, user_id: user.id, reaction_type: type });
+      const { error: delError } = await supabase.from('reactions').delete().eq('post_id', postId).eq('user_id', user.id);
+      const { error: insError } = await supabase.from('reactions').insert({ post_id: postId, user_id: user.id, reaction_type: type });
+      failed = !!delError || !!insError;
     } else {
       // New reaction. The trigger on reactions maintains the author's
       // aggregated "X and N others reacted" notification.
-      await supabase.from('reactions').insert({ post_id: postId, user_id: user.id, reaction_type: type });
+      const { error } = await supabase.from('reactions').insert({ post_id: postId, user_id: user.id, reaction_type: type });
+      failed = !!error;
     }
+    // Refetch either way — on failure it snaps the UI back to the truth
+    // instead of leaving a reaction that silently didn't stick.
+    if (failed) toast.error("That reaction didn't stick. Try again.");
     onReactionChange();
   };
 

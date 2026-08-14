@@ -139,6 +139,10 @@ untouched.
   `expires_at` + `uses_remaining` for the panel. This file supersedes
   20260815100000 as the newest source of `handle_new_user`,
   `get_invite_landing` and `get_my_invite_link`.
+- **Review fix (same day, applied):** the landing's owner-side gate also
+  checks `invite_eligible_at` — every owner condition the signup gate
+  enforces is now mirrored at the landing, so a valid landing can never
+  dead-end in a `signup_invalid_invitation` exception mid-funnel.
 
 **Verified in production:** state checks (column present, live
 `handle_new_user` contains the expiry + uses checks, `get_my_invite_link`

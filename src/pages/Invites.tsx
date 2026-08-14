@@ -253,8 +253,10 @@ const Invites = () => {
           url: link,
         });
         return;
-      } catch {
-        // Cancelled or unsupported payload — fall through to copy.
+      } catch (err) {
+        // Dismissing the share sheet is a decision, not a failure — don't
+        // clobber the clipboard behind it. Real failures fall through.
+        if (err instanceof Error && err.name === 'AbortError') return;
       }
     }
     await copyInviteLink(link);
@@ -284,10 +286,20 @@ const Invites = () => {
       <section className="panel module">
         <h2>Invite someone Under Pines</h2>
         <p>
-          Under Pines grows through people, not algorithms. There are two ways
-          to bring someone in: email them a Trail Pass — personal, one address,
-          works exactly once — or text them your personal link. Both spend one
-          of your passes when someone joins.
+          {inviteLink ? (
+            <>
+              Under Pines grows through people, not algorithms. There are two
+              ways to bring someone in: email them a Trail Pass — personal, one
+              address, works exactly once — or text them your personal link.
+              Both spend one of your passes when someone joins.
+            </>
+          ) : (
+            <>
+              Under Pines grows through people, not algorithms. Send a Trail
+              Pass to someone you'd like to have around. Each pass is personal:
+              it goes to one email address and works exactly once.
+            </>
+          )}
         </p>
       </section>
 
