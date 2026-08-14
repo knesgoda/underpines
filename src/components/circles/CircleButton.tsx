@@ -50,12 +50,8 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
   const sendRequest = async () => {
     if (!user) return;
     setActing(true);
+    // The trigger on circles notifies the requestee.
     await supabase.from('circles').insert({ requester_id: user.id, requestee_id: profileId });
-    await supabase.from('notifications').insert({
-      recipient_id: profileId,
-      notification_type: 'circle_request',
-      actor_id: user.id,
-    });
     setStatus('pending_sent');
     setActing(false);
   };
@@ -69,11 +65,7 @@ const CircleButton = ({ profileId, profileName }: CircleButtonProps) => {
       .eq('requester_id', profileId)
       .eq('requestee_id', user.id);
 
-    await supabase.from('notifications').insert({
-      recipient_id: profileId,
-      notification_type: 'circle_accepted',
-      actor_id: user.id,
-    });
+    // The trigger on circles notifies the requester of the acceptance.
     setStatus('accepted');
     setActing(false);
     toast.success(`You and ${profileName} are friends now.`);

@@ -105,6 +105,13 @@ export const TopBar = ({
           </Link>
         </nav>
 
+        {/* Phones lose the desktop nav, and the TabBar's five slots are set —
+            the bell is how Updates stays one tap away with its count. */}
+        <Link to="/updates" className="topbar-bell" aria-label="Updates">
+          <span aria-hidden="true">🔔</span>
+          {unreadCount > 0 && <b>{unreadCount > 99 ? '99+' : unreadCount}</b>}
+        </Link>
+
         <div className="mini-me-menu" ref={menuRef}>
           <button
             type="button"
@@ -123,6 +130,9 @@ export const TopBar = ({
           </button>
           {menuOpen && (
             <div className="mini-me-panel" role="menu" aria-label="Your menu">
+              <Link to="/updates" role="menuitem">
+                Updates{unreadCount > 0 ? ` (${unreadCount > 99 ? '99+' : unreadCount})` : ''}
+              </Link>
               <Link to="/me" role="menuitem">My Page</Link>
               <Link to="/settings" role="menuitem">Settings</Link>
               <Link to="/invites" role="menuitem">My Invites</Link>

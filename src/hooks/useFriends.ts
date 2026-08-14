@@ -217,14 +217,10 @@ export const useFriendActions = () => {
 
     request: useMutation({
       mutationFn: async (profileId: string) => {
+        // The trigger on circles notifies the requestee.
         const { error } = await supabase.from('circles')
           .insert({ requester_id: user!.id, requestee_id: profileId });
         if (error) throw error;
-        await supabase.from('notifications').insert({
-          recipient_id: profileId,
-          notification_type: 'circle_request',
-          actor_id: user!.id,
-        });
       },
       onSuccess: refresh,
     }),

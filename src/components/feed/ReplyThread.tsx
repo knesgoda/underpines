@@ -88,15 +88,8 @@ const ReplyThread = ({ postId, autoExpand = false }: ReplyThreadProps) => {
       setReplies(prev => prev.filter(r => r.id !== optimistic.id));
       toast.error("That reply didn't make it. Try again?");
     } else {
-      const { data: post } = await supabase.from('posts').select('author_id').eq('id', postId).single();
-      if (post && post.author_id !== user.id) {
-        await supabase.from('notifications').insert({
-          recipient_id: post.author_id,
-          notification_type: 'reply',
-          actor_id: user.id,
-          post_id: postId,
-        });
-      }
+      // The trigger on replies notifies the post author (and, on nested
+      // replies, the parent reply's author) — no client insert needed.
       fetchReplies();
     }
     setPosting(false);

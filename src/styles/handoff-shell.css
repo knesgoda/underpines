@@ -131,6 +131,34 @@
   font-size: 10px;
 }
 
+/* The bell — phones only. Desktop already has the Updates link in the nav;
+   on a phone this is the one always-visible door to /updates, since the
+   TabBar's five slots are spoken for. */
+.topbar-bell {
+  display: none;
+  position: relative;
+  align-items: center;
+  text-decoration: none;
+  font-size: 17px;
+  line-height: 1;
+  padding: 4px;
+}
+
+.topbar-bell b {
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 9px;
+}
+
 /* The avatar menu — visible on every viewport since it now carries Settings,
    Invites and the Ranger Station rather than being a mobile-only page link. */
 .mini-me-menu { position: relative; display: flex; align-items: center; }
@@ -537,7 +565,8 @@
 @media (max-width: 700px) {
   .topbar-inner { width: calc(100% - 24px); gap: 12px; }
   .desktop-nav { display: none; }
-  .mini-me-menu { margin-left: auto; }
+  .topbar-bell { display: flex; margin-left: auto; }
+  .mini-me-menu { margin-left: 0; }
   .tabbar { display: grid; }
   .app { padding-bottom: 72px; }
   .page-shell { width: calc(100% - 24px); margin-top: 16px; }
