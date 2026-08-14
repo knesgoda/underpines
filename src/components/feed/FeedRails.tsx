@@ -10,6 +10,9 @@ const RAIL_NAV = [
   // profile, so there is no rail entry pointing at a route that 404s.
   { label: 'Groups', to: '/groups', icon: '⛺' },
   { label: 'Messages', to: '/messages', icon: '✉' },
+  { label: 'Ranger Station', to: '/ranger-station', icon: '🪧' },
+  { label: 'Invites', to: '/invites', icon: '🎟' },
+  { label: 'Settings', to: '/settings', icon: '⚙' },
 ];
 
 const memberSince = (iso: string | null) =>

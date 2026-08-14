@@ -54,7 +54,10 @@ const AtAGlance = ({
 
     <div className="glance-actions">
       {isOwner ? (
-        <Link to="/me/edit" className="paper-button">Edit my page</Link>
+        <>
+          <Link to="/me/edit" className="paper-button">Edit my page</Link>
+          <Link to="/settings" className="paper-button">Settings</Link>
+        </>
       ) : (
         <CircleButton profileId={profile.id} profileName={profile.display_name} />
       )}

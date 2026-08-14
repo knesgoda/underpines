@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useNavigation } from '@/contexts/NavigationContext';
+import { useAuth } from '@/contexts/AuthContext';
 import UserAvatar from '@/components/UserAvatar';
 import logo from '@/assets/logo.png';
 
@@ -27,12 +28,38 @@ export const TopBar = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { unreadCount, hasUnreadCampfires } = useNavigation();
+  const { signOut } = useAuth();
   const [query, setQuery] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) navigate(`/search?q=${encodeURIComponent(query.trim())}`);
   };
+
+  // Hand-rolled menu on purpose — the topbar rides in the entry chunk, and a
+  // dropdown library would ride along with it.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
+
+  // Navigating closes the menu; so does signing out.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <header className="topbar">
@@ -78,14 +105,40 @@ export const TopBar = ({
           </Link>
         </nav>
 
-        <Link to="/me" className="mini-me" aria-label="Open your page">
-          <UserAvatar
-            avatarUrl={profile?.avatar_url ?? null}
-            defaultAvatarKey={profile?.default_avatar_key ?? null}
-            displayName={profile?.display_name ?? ''}
-            size={34}
-          />
-        </Link>
+        <div className="mini-me-menu" ref={menuRef}>
+          <button
+            type="button"
+            className="mini-me"
+            aria-label="Your menu"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(open => !open)}
+          >
+            <UserAvatar
+              avatarUrl={profile?.avatar_url ?? null}
+              defaultAvatarKey={profile?.default_avatar_key ?? null}
+              displayName={profile?.display_name ?? ''}
+              size={34}
+            />
+          </button>
+          {menuOpen && (
+            <div className="mini-me-panel" role="menu" aria-label="Your menu">
+              <Link to="/me" role="menuitem">My Page</Link>
+              <Link to="/settings" role="menuitem">Settings</Link>
+              <Link to="/invites" role="menuitem">My Invites</Link>
+              <Link to="/ranger-station" role="menuitem">Ranger Station</Link>
+              <hr aria-hidden="true" />
+              <button
+                type="button"
+                role="menuitem"
+                className="is-signout"
+                onClick={() => { setMenuOpen(false); signOut(); navigate('/'); }}
+              >
+                Sign out
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
