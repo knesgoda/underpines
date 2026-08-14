@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { useFeedPosts } from '@/hooks/useFeedPosts';
 import { useViewerProfile } from '@/hooks/queries';
+import { refreshMyInvites } from '@/lib/trailApi';
 import { LeftRail, RightRail } from '@/components/feed/FeedRails';
 import HandoffPostCard from '@/components/feed/HandoffPostCard';
 import LightboxViewer from '@/components/feed/LightboxViewer';
@@ -35,6 +36,14 @@ const Feed = () => {
   const queryClient = useQueryClient();
   const { data: profile } = useViewerProfile();
   const { data, isLoading } = useFeedPosts();
+  // Real pass balance for the right rail — the RPC also lazily expires
+  // overdue passes, so the number it answers is the honest one.
+  const { data: inviteSummary } = useQuery({
+    queryKey: ['invite-summary', user?.id],
+    enabled: !!user,
+    staleTime: 5 * 60_000,
+    queryFn: refreshMyInvites,
+  });
   const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({
     open: false,
     images: [],
@@ -121,7 +130,9 @@ const Feed = () => {
           )}
         </div>
 
-        <RightRail inviteUrl={null} />
+        <RightRail
+          availablePasses={inviteSummary?.success ? inviteSummary.available_passes : null}
+        />
       </div>
 
       <LightboxViewer
