@@ -54,6 +54,7 @@ const ANON_KEY =
 
 const failures = [];
 const notes = [];
+const warnings = [];
 
 async function probe(url, init = {}) {
   const ctrl = new AbortController();
@@ -197,6 +198,7 @@ if (!SUPABASE_URL) {
 
 // ---------------------------------------------------------------------------
 for (const n of notes) console.log(`  ok  ${n}`);
+for (const w of warnings) console.log(`  warn  ${w}`);
 
 if (failures.length) {
   console.error(`\nFAIL — ${failures.length} post-deploy check(s) failed against ${BASE}:\n`);
