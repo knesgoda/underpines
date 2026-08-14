@@ -126,9 +126,14 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-14 (LATEST) — Notification system overhaul (PR #23, merged
-to main; ⚠️ migration committed but NOT APPLIED to prod — apply it BEFORE
-any Lovable publish, runbook in `docs/notifications-deploy.md`).**
+**As of 2026-08-14 (LATEST) — Notification system overhaul (PR #23, merged;
+migration APPLIED to prod via Lovable and verified — exploit test 12/12
+green + independent state checks. Lovable re-recorded it in its ledger as
+`20260814060500_6eb130d5-….sql` and regenerated `supabase/types.ts`, so the
+new tables/columns are in generated types now. Remaining: Lovable PUBLISH
+(safe now — do it promptly, the badge already counts reactions the old UI
+hides) + `send-daily-ember` edge deploy; Kevin's eyeball list in
+`docs/notifications-deploy.md`).**
 
 Kevin's ask: FB/IG-style notifications — "X commented", "X liked your post",
 "X accepted my invite", click-through to the thing, clear-all. Decisions
