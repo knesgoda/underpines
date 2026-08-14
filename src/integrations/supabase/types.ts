@@ -2968,6 +2968,7 @@ export type Database = {
       invites: {
         Row: {
           created_at: string | null
+          expires_at: string | null
           id: string
           inviter_id: string
           is_active: boolean | null
@@ -2975,11 +2976,13 @@ export type Database = {
           is_root: boolean
           secret_token: string | null
           slug: string
+          spends_allowance: boolean
           uses_remaining: number
           uses_total: number
         }
         Insert: {
           created_at?: string | null
+          expires_at?: string | null
           id?: string
           inviter_id: string
           is_active?: boolean | null
@@ -2987,11 +2990,13 @@ export type Database = {
           is_root?: boolean
           secret_token?: string | null
           slug: string
+          spends_allowance?: boolean
           uses_remaining?: number
           uses_total?: number
         }
         Update: {
           created_at?: string | null
+          expires_at?: string | null
           id?: string
           inviter_id?: string
           is_active?: boolean | null
@@ -2999,6 +3004,7 @@ export type Database = {
           is_root?: boolean
           secret_token?: string | null
           slug?: string
+          spends_allowance?: boolean
           uses_remaining?: number
           uses_total?: number
         }
@@ -5094,6 +5100,7 @@ export type Database = {
       get_boot_state: { Args: { _campfires_seen_at?: string }; Returns: Json }
       get_cabin_view: { Args: { _handle: string }; Returns: Json }
       get_invite_landing: { Args: { _slug: string }; Returns: Json }
+      get_my_invite_link: { Args: never; Returns: Json }
       get_security_config: { Args: never; Returns: Json }
       get_trail_lineage: {
         Args: { _max_depth?: number; _user_id: string }
@@ -5299,6 +5306,7 @@ export type Database = {
         Returns: Json
       }
       rotate_invite_link: { Args: { _user_id: string }; Returns: string }
+      rotate_my_invite_link: { Args: never; Returns: Json }
       send_smoke_signal: { Args: { _recipient: string }; Returns: string }
       set_age_verification: {
         Args: { _age_bracket: string; _birth_year: number }
