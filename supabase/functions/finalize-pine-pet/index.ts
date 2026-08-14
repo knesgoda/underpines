@@ -52,6 +52,14 @@ serve(async (req) => {
     if (!VALID_ANIMAL_TYPES.includes(animal_type)) {
       return new Response(JSON.stringify({ error: "Invalid animal_type" }), { status: 400, headers: corsHeaders });
     }
+    // Both paths are stored on the pet row and later read back with the
+    // service-role key (regenerate-pine-pet-atmosphere downloads
+    // original_photo_path), so they must be pinned to the caller's own folder.
+    const ownsPath = (p: unknown): boolean =>
+      typeof p === "string" && p.startsWith(`${userId}/`) && !p.includes("..");
+    if (!ownsPath(selected_sprite_path) || !ownsPath(original_photo_path)) {
+      return new Response(JSON.stringify({ error: "Invalid storage path" }), { status: 403, headers: corsHeaders });
+    }
 
     // Validate pet name
     const trimmedName = pet_name.trim();

@@ -4987,6 +4987,14 @@ export type Database = {
         Args: { _post_id: string; _user_id: string }
         Returns: boolean
       }
+      can_self_join_camp: {
+        Args: { _camp_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_self_join_campfire: {
+        Args: { _campfire_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_view_member_content: { Args: { _owner: string }; Returns: boolean }
       check_invite_rate_limit: {
         Args: { _invite_id: string; _ip_hash: string }

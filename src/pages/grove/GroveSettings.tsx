@@ -49,11 +49,15 @@ const GroveSettings = () => {
 
       // Fetch founder invite slug
       if (user) {
+        // Exclude the root open-signup link ('open-trail'), which the founder
+        // also owns — with it included this maybeSingle() gets two rows and
+        // errors, leaving the panel blank.
         const { data: inv } = await supabase
           .from('invites')
           .select('slug')
           .eq('inviter_id', user.id)
           .eq('is_infinite', true)
+          .eq('is_root', false)
           .maybeSingle();
         if (inv) setInviteSlug(inv.slug);
       }

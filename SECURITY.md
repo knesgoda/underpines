@@ -135,6 +135,51 @@ submission → `rate_limited`, post-triage edits locked, anon reads zero rows
 and cannot submit, `get_boot_state()` unaffected; legit submit/vote-toggle/
 own-edit/ranger-status all pass. Zero test rows persisted.
 
+### 2026-08-13 — Invite rotation caller check, price-table lockdown, pine-pet path pinning
+**Migration:** `supabase/migrations/20260813240000_invite_rotation_and_price_visibility.sql`
+(applied via `query_database` — NOT in Lovable's ledger). Three scanner
+findings fixed:
+
+- **(Critical) `rotate_invite_link(_user_id)` trusted its parameter.** It
+  checked `is_admin(_user_id)` but never that the caller IS `_user_id`, so any
+  authenticated member could pass an admin's id and invalidate/regenerate that
+  admin's founder invite link (DoS on the founder's invite flow). Now the
+  function requires `_user_id = auth.uid()` AND `is_admin(auth.uid())`, and
+  operates only on `auth.uid()`'s rows; EXECUTE revoked from `anon`. Bonus bug
+  fixed: the UPDATE hit *both* of the founder's infinite invites (personal
+  link + the root `open-trail` open-signup link), which made rotation die on
+  the slug UNIQUE constraint — it now excludes `is_root` rows, and
+  `GroveSettings.tsx`'s founder-link fetch excludes them too (its
+  `maybeSingle()` errored on two rows, blanking the panel).
+- **(Warning) `collection_stripe_prices` SELECT was `USING (true)` TO public**
+  — anonymous internet users could read `stripe_price_id`/`stripe_product_id`/
+  `amount_cents` for every collection, drafts included. SELECT is now
+  `TO authenticated`, scoped `EXISTS (collections … is_published OR author_id
+  = auth.uid())` — mirroring the `collections` visibility policy; INSERT moved
+  `public` → `authenticated` (same author check). Edge functions
+  (`create-collection-price`, checkout, webhooks) use service role and are
+  unaffected; the only client read (`CollectionView.handleSubscribe`) is
+  signed-in.
+- **(Warning) pine-pet edge functions trusted client storage paths.**
+  `generate-pine-pet` (`photo_storage_path`) and `finalize-pine-pet`
+  (`selected_sprite_path`, `original_photo_path`) service-role-read/write
+  whatever path the client sent — any member could read another member's
+  uploaded pet photo, or point their pet at someone else's original.
+  All paths must now start with `${userId}/` (and contain no `..`);
+  `regenerate-pine-pet-atmosphere` re-checks the stored
+  `pet.original_photo_path` before downloading, as defense in depth for
+  pre-fix rows (prod scan found zero foreign-path rows). ⚠️ **Requires
+  edge-function deploy** to take effect; client upload path is already
+  `${user.id}/…` so no frontend change.
+
+**Verified in production:** function/policy state via `pg_policies`/`pg_proc`
++ acl, and a 7-case impersonated test in a rolled-back transaction — member
+rotating the admin's link blocked, non-admin self-rotation blocked, anon
+EXECUTE blocked (42501), anon price read sees 0 rows, member sees only
+published-collection prices, author sees own draft price, and the legit
+founder rotation succeeds with `open-trail` untouched. Slugs confirmed
+unchanged after rollback.
+
 ### 2026-08-13 — Camp bonfire flow repaired (constraint + campfire visibility)
 **Migration:** `supabase/migrations/20260813230000_camp_bonfire_flow.sql`
 (applied via `query_database` — NOT in Lovable's ledger). The
