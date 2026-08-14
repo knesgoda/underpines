@@ -170,6 +170,19 @@ until the first scroll. The fix takes the strip over:
   `get_feed()` RPC idea in the 2026-08-13 perf entry remains the next big
   lever.
 
+**Follow-up (same day): home-screen icon.** Kevin's installed PWA showed a
+generated green "U" tile instead of the badge. The repo's 192/512 icons were
+already the badge, but they had transparent corners (iOS paints those black)
+and the live install predated/never fetched them. Fixed: new
+`public/apple-touch-icon.png` (180px, badge full-bleed on the black ground,
+now referenced from index.html with `sizes`), and `pwa-icon-192/512.png`
+regenerated opaque with the badge inside the maskable safe zone (~84%) so
+Android's circle crop can't clip the ring. Composited via Chromium canvas
+(no image tooling in the sandbox); the original transparent 512 badge is in
+git history if ever needed as a source again. **Icon changes only show after
+a Lovable publish AND deleting + re-adding the Home Screen icon** — iOS
+snapshots the icon at install.
+
 **Verified:** tsc clean; eslint clean on changed files; 142 vitest pass;
 build clean; entry 197.5 kB gzip (197.2 baseline — the +0.3 kB is safe-area
 CSS + the nudge module); signed-out Chromium sweep green 12 routes × both
