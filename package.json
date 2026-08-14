@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "smoke:deploy": "node scripts/deploy-smoke-test.mjs"
+    "smoke:deploy": "node scripts/deploy-smoke-test.mjs",
+    "smoke:post-deploy": "node scripts/post-deploy-smoke.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
