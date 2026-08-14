@@ -2748,6 +2748,83 @@ export type Database = {
           },
         ]
       }
+      feedback_items: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          item_type: string
+          ranger_note: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          item_type: string
+          ranger_note?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          item_type?: string
+          ranger_note?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_items_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feedback_votes: {
+        Row: {
+          created_at: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_votes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "feedback_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inactive_nudges: {
         Row: {
           created_at: string | null
@@ -3233,6 +3310,7 @@ export type Database = {
       notifications: {
         Row: {
           actor_id: string | null
+          aggregate_count: number
           camp_id_ref: string | null
           campfire_id: string | null
           collection_id: string | null
@@ -3246,6 +3324,7 @@ export type Database = {
         }
         Insert: {
           actor_id?: string | null
+          aggregate_count?: number
           camp_id_ref?: string | null
           campfire_id?: string | null
           collection_id?: string | null
@@ -3259,6 +3338,7 @@ export type Database = {
         }
         Update: {
           actor_id?: string | null
+          aggregate_count?: number
           camp_id_ref?: string | null
           campfire_id?: string | null
           collection_id?: string | null
@@ -5008,6 +5088,7 @@ export type Database = {
         }
         Returns: Json
       }
+      delete_own_feedback: { Args: { _item_id: string }; Returns: Json }
       email_hmac: { Args: { _email: string }; Returns: string }
       get_boot_state: { Args: { _campfires_seen_at?: string }; Returns: Json }
       get_cabin_view: { Args: { _handle: string }; Returns: Json }
@@ -5069,6 +5150,18 @@ export type Database = {
         Returns: string
       }
       normalize_email: { Args: { _email: string }; Returns: string }
+      notify_user: {
+        Args: {
+          _actor: string
+          _camp?: string
+          _campfire?: string
+          _collection?: string
+          _post?: string
+          _recipient: string
+          _type: string
+        }
+        Returns: undefined
+      }
       process_invite_maturation_for: {
         Args: { _inviter_id: string }
         Returns: number
@@ -5207,6 +5300,19 @@ export type Database = {
       rotate_invite_link: { Args: { _user_id: string }; Returns: string }
       set_age_verification: {
         Args: { _age_bracket: string; _birth_year: number }
+        Returns: Json
+      }
+      set_feedback_status: {
+        Args: { _item_id: string; _note?: string; _status: string }
+        Returns: Json
+      }
+      submit_feedback: {
+        Args: { _body: string; _title: string; _type: string }
+        Returns: Json
+      }
+      toggle_feedback_vote: { Args: { _item_id: string }; Returns: Json }
+      update_own_feedback: {
+        Args: { _body: string; _item_id: string; _title: string }
         Returns: Json
       }
     }
