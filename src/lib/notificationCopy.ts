@@ -4,10 +4,12 @@
  * through it and fails on any that falls into the "Something happened."
  * bucket.
  *
- * Every destination here must be a real route (App.tsx). Two deliberate
+ * Every destination here must be a real route (App.tsx). Three deliberate
  * degradations: messages land on /messages because no per-thread route
- * exists, and cabin events link to the actor's profile while the cabin is
- * flag-hidden (CABIN_ENABLED) — flipping the flag restores the cabin door.
+ * exists, cabin events link to the actor's profile while the cabin is
+ * flag-hidden (CABIN_ENABLED), and design events land home while the
+ * marketplace is flag-hidden (MARKETPLACE_ENABLED) — flipping the flags
+ * restores the doors.
  */
 import type { NotificationRow } from '@/lib/notificationsApi';
 
@@ -21,6 +23,7 @@ export interface DescribeContext {
   /** The signed-in viewer's handle (collections live under it). */
   viewerHandle: string | null;
   cabinEnabled: boolean;
+  marketplaceEnabled: boolean;
 }
 
 export interface Described {
@@ -38,6 +41,8 @@ export const describeNotification = (n: NotificationRow, ctx: DescribeContext): 
   const campPage = () => (n.camp_id_ref ? `/camps/${n.camp_id_ref}` : '/camps/mine');
   // While the cabin is hidden, cabin events point at the person instead.
   const cabinPage = () => (ctx.cabinEnabled ? '/cabin' : actorPage());
+  // While the marketplace is hidden, design events land home.
+  const designsPage = () => (ctx.marketplaceEnabled ? '/settings/designs' : '/');
 
   switch (n.notification_type) {
     case 'circle_request':
@@ -69,11 +74,11 @@ export const describeNotification = (n: NotificationRow, ctx: DescribeContext): 
         to: ctx.viewerHandle ? `/${ctx.viewerHandle}/collections` : '/',
       };
     case 'design_purchased':
-      return { text: `${name} bought your design.`, to: '/settings/designs' };
+      return { text: `${name} bought your design.`, to: designsPage() };
     case 'design_approved':
-      return { text: 'Your design was approved and is live in the marketplace.', to: '/settings/designs' };
+      return { text: 'Your design was approved and is live in the marketplace.', to: designsPage() };
     case 'design_rejected':
-      return { text: 'Your design was not approved this time.', to: '/settings/designs' };
+      return { text: 'Your design was not approved this time.', to: designsPage() };
     case 'camp_join_request':
       return { text: `${name} asked to join your group.`, to: campPage() };
     case 'camp_join_accepted':

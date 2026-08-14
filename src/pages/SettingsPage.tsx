@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme, type AppTheme, type MessengerSkin } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { MARKETPLACE_ENABLED } from '@/lib/flags';
 import { useIsMobile } from '@/hooks/use-mobile';
 import SkinThumb from '@/components/campfire/SkinThumb';
 import '@/styles/messenger-skins.css';
@@ -134,8 +134,12 @@ const SettingsPage = () => {
         <SettingsItem emoji="☺" label="My Page" onClick={() => navigate('/me')} />
         <SettingsItem emoji="✎" label="Edit my page" onClick={() => navigate('/me/edit')} />
         <SettingsItem emoji="♫" label="Listening" onClick={() => navigate('/listening')} />
-        <SettingsItem emoji="🎨" label="My Designs" onClick={() => navigate('/settings/designs')} />
-        <SettingsItem emoji="🛍" label="Marketplace" onClick={() => navigate('/marketplace')} />
+        {MARKETPLACE_ENABLED && (
+          <SettingsItem emoji="🎨" label="My Designs" onClick={() => navigate('/settings/designs')} />
+        )}
+        {MARKETPLACE_ENABLED && (
+          <SettingsItem emoji="🛍" label="Marketplace" onClick={() => navigate('/marketplace')} />
+        )}
       </SettingsSection>
 
       {/* YOUR PRIVACY */}
@@ -150,7 +154,9 @@ const SettingsPage = () => {
 
       {/* YOUR ACCOUNT */}
       <SettingsSection label="Your Account">
-        <SettingsItem emoji="💰" label="Payouts" onClick={() => navigate('/settings/payouts')} />
+        {MARKETPLACE_ENABLED && (
+          <SettingsItem emoji="💰" label="Payouts" onClick={() => navigate('/settings/payouts')} />
+        )}
         <SettingsItem emoji="✉️" label="My Invites" onClick={() => navigate('/invites')} />
         <SettingsItem emoji="✿" label="Friends" onClick={() => navigate('/friends')} />
       </SettingsSection>
@@ -161,15 +167,21 @@ const SettingsPage = () => {
         <SettingsItem emoji="📜" label="Terms of Service" onClick={() => navigate('/terms')} />
       </SettingsSection>
 
-      <div className="pt-4 pb-8">
-        <Button
-          variant="ghost"
+      {/* YOUR SESSION */}
+      <SettingsSection label="Your Session">
+        {user?.email && (
+          <p className="px-4 py-3 font-body text-sm text-muted-foreground">
+            Signed in as {user.email}
+          </p>
+        )}
+        <button
           onClick={() => { signOut(); navigate('/'); }}
-          className="text-destructive font-body text-sm"
+          className="w-full text-left px-4 py-3 hover:bg-muted transition-colors font-body text-sm font-medium text-destructive flex items-center gap-2 min-h-[44px]"
         >
-          Sign out
-        </Button>
-      </div>
+          <span>⏻</span> Sign out of Under Pines
+        </button>
+      </SettingsSection>
+      <div className="pb-8" />
     </motion.div>
   );
 };

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import UserAvatar from '@/components/UserAvatar';
+import ReactionBar from './ReactionBar';
 import { formatTimeAgo } from '@/lib/time';
 import { MediaImage } from '@/components/MediaImage';
 import type { PostWithAuthor } from './PostCard';
@@ -24,11 +25,16 @@ export const HandoffPostCard = ({
   draft = false,
   onOpen,
   onImageClick,
+  onReactionChange,
 }: {
   post: PostWithAuthor;
   draft?: boolean;
   onOpen?: () => void;
   onImageClick?: (images: string[], index: number) => void;
+  /** Enables reacting in place. Called after a reaction is written so the
+   *  owner can refetch counts. Camp posts never get the reaction slot —
+   *  their ids are not posts ids and must not reach reactions.post_id. */
+  onReactionChange?: () => void;
 }) => {
   const media = (post.post_media || []).slice().sort((a, b) => a.position - b.position);
   const images = media.filter(m => m.media_type !== 'video').map(m => m.url);
@@ -91,7 +97,17 @@ export const HandoffPostCard = ({
 
       <div className="post-actions">
         <button type="button" onClick={onOpen}>Reply</button>
-        <button type="button" onClick={onOpen}>React</button>
+        {onReactionChange && !post._isCampPost ? (
+          <div className="post-action-react">
+            <ReactionBar
+              postId={post.id}
+              reactions={post.reactions ?? []}
+              onReactionChange={onReactionChange}
+            />
+          </div>
+        ) : (
+          <button type="button" onClick={onOpen}>React</button>
+        )}
         <button type="button" onClick={onOpen}>Share</button>
       </div>
     </article>

@@ -127,6 +127,7 @@ export const TopBar = ({
               displayName={profile?.display_name ?? ''}
               size={34}
             />
+            <span className="mini-me-caret" aria-hidden="true">▾</span>
           </button>
           {menuOpen && (
             <div className="mini-me-panel" role="menu" aria-label="Your menu">

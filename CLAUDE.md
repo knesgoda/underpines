@@ -136,7 +136,78 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-14 (LATEST) — deep-scan security batch (5 findings fixed;
+**As of 2026-08-14 (LATEST) — Kevin's five UI fixes + personal invite links
+(branch `claude/ui-fixes-feature-requests-r7hbtw`; migration APPLIED to prod
++ 24-assertion exploit test green; needs Lovable PUBLISH only — no edge
+deploys).**
+
+Kevin's asks from his iPhone, all shipped:
+
+1. **Topbar fixed.** The 300px navy `::before` filler from the 8a9145d iOS
+   safe-area fix painted the whole launch-offset gap navy → giant header at
+   rest. Now: plain 64px sticky bar (`top: env(safe-area-inset-top)`), a
+   thin FIXED status-bar strip, above-bar cover capped at one inset, `.app`
+   gets matching top padding so sticky never displaces over content. The
+   standalone scroll nudge retries while the doc is too short to scroll and
+   re-fires on visualViewport resize. Sweep asserts `.topbar` computed
+   height 64px.
+2. **Personal multi-use invite links (textable).** Kevin chose multi-use
+   over email-optional single-use (AskUserQuestion). One reusable
+   `/invite/<slug>` per member; each signup spends one allowance pass;
+   rotate = deactivate-and-recreate. Migration
+   `20260815100000_personal_invite_links.sql` **APPLIED via query_database
+   (NOT in Lovable's ledger)** — full detail + verification in SECURITY.md's
+   2026-08-14 personal-links entry (read it before touching invites/signup).
+   **Follow-up same day (Kevin's ask): links limited to 7 days + 10 joins,
+   auto-renewing** — migration `20260815110000_personal_link_limits.sql`
+   (also APPLIED + exploit-tested, own SECURITY.md entry; now the newest
+   source of `handle_new_user`/`get_invite_landing`/`get_my_invite_link`).
+   Panel shows "Good through <date> · N joins left"; expired/exhausted links
+   retire themselves and a fresh one mints on the next /invites visit.
+   Client: "Your personal link" panel on /invites (navigator.share → the
+   iPhone share sheet is the "text it" path, copy fallback, rotate w/
+   inline confirm), landing shows "resting" copy when the owner is out of
+   passes. `handle_new_user`/`accept_invite_create_circle`/
+   `rotate_invite_link` re-emitted from LIVE bodies — this migration file is
+   now their newest source. No edge changes (validate-invite already rate-
+   limits personal rows via its infinite-link path).
+3. **Sign out discoverable:** avatar dropdown trigger gains a ▾ caret;
+   Settings gets a "Your Session" section (signed-in email + full-width
+   destructive Sign out row) replacing the buried ghost button.
+4. **Design economy parked:** `MARKETPLACE_ENABLED = false` in
+   `src/lib/flags.ts` gates the five routes (App.tsx, kept registered →
+   Navigate replace), the three Settings items, and the three design
+   notification deep links (degrade to `/`, cabin pattern). Flag flip
+   re-opens everything. `/grove/designs` (admin) untouched.
+5. **Feed reactions work in place:** `HandoffPostCard` embeds the working
+   `ReactionBar` for regular posts (new `onReactionChange` prop); camp
+   posts keep a plain button — their ids must never reach
+   `reactions.post_id` (new `_isCampPost`/`_campId` tags in useFeedPosts +
+   pure `feedPostTarget()` helper, unit-tested). `onOpen` now actually
+   navigates (feed → post detail or camp; MyPage likes tab wired too;
+   CabinPostHistory refetches counts without blanking).
+
+**Verified:** tsc clean; eslint clean on changed files (pre-existing `any`
+baselines untouched: PostCard ×1, InviteLanding ×2); 167 vitest pass (11 new:
+3 feedPostTarget, 1 marketplace-degradation, 7 personal-link migration
+drift incl. the limits shapes); build clean; entry 197.6 kB gzip (197.5 baseline — the caret + flag
+are the only entry-graph additions); signed-out Chromium sweep green 12
+routes × both themes + topbar-height assertion. Migration verified per
+SECURITY.md (state checks + 24-assertion exploit test, all ok, rolled back
+clean).
+
+**Remaining:** Lovable publish (one publish covers all five — the migration
+is already live and harmless to the old client). Kevin's signed-in eyeball:
+topbar at rest/scrolled in Safari + installed PWA (relaunch twice), /invites
+→ personal link create/share/rotate + a real signup through it on a fresh
+email, avatar caret + Settings sign-out on the phone, Marketplace/My
+Designs/Payouts gone from Settings (+ `/marketplace` redirects home), and
+reacting straight from the feed. Note the still-pending items from the
+previous entry below: 4 deep-scan edge functions still need deploy.
+
+---
+
+**Previously (2026-08-14) — deep-scan security batch (5 findings fixed;
 migration APPLIED to prod + 12-case exploit test green; 4 edge functions
 NEED DEPLOY + frontend publish).**
 
