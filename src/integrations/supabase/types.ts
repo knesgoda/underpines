@@ -5088,6 +5088,7 @@ export type Database = {
         }
         Returns: Json
       }
+      created_design: { Args: { _design_id: string }; Returns: boolean }
       delete_own_feedback: { Args: { _item_id: string }; Returns: Json }
       email_hmac: { Args: { _email: string }; Returns: string }
       get_boot_state: { Args: { _campfires_seen_at?: string }; Returns: Json }
@@ -5298,6 +5299,7 @@ export type Database = {
         Returns: Json
       }
       rotate_invite_link: { Args: { _user_id: string }; Returns: string }
+      send_smoke_signal: { Args: { _recipient: string }; Returns: string }
       set_age_verification: {
         Args: { _age_bracket: string; _birth_year: number }
         Returns: Json
