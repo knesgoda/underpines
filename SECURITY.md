@@ -114,6 +114,71 @@ their way into someone else's private data with this policy?"**
 _Newest first. Every security-relevant change gets an entry: date, what, why,
 where (migration file / PR), verification._
 
+### 2026-08-14 — Deep-scan batch: notification send paths, Pines+ price allow-list, email escaping, triage injection, rating privacy — APPLIED & VERIFIED (edge deploys pending)
+**Migration:** `supabase/migrations/20260814080000_notification_send_paths_and_rating_privacy.sql`
+(applied via `query_database` — NOT in Lovable's ledger; repo file is source of
+truth). Five real findings from the 2026-08-14 Lovable deep scan (two others —
+`rotate_invite_link` and pine-pet paths — were stale: verified already fixed
+in prod before triage).
+
+Database (live now):
+
+- **(Warning) notifications INSERT let any member target any recipient.**
+  The `smoke_signal`/`camp_newsletter` self-send branch had no recipient
+  constraint — a spam vector that also bypassed `notify_user()`'s block
+  re-check, preferences and dedupe. Both flows moved server-side: the
+  /invites nudge is now `send_smoke_signal(_recipient)` (SECURITY DEFINER,
+  requires a `user_lineage` row proving the caller invited the recipient,
+  routes through `notify_user`; EXECUTE revoked from anon), and the
+  newsletter fan-out is an AFTER trigger on `camp_newsletters` firing on the
+  →'sent' transition (the newsletter INSERT policy already requires author +
+  firekeeper/trailblazer, so the trigger inherits an authorized write).
+  Direct INSERT keeps only the admin-notice branch (NULL actor + is_admin —
+  GroveDesigns). Client: `Invites.tsx` calls the RPC;
+  `CampNewsletterComposer.tsx` fan-out deleted; a vitest pins the set of
+  client insert sites and the policy shape.
+- **(Warning) design_ratings SELECT was `USING (true)`** — every member could
+  read `buyer_id` → who bought which cabin design. No client code reads the
+  table at all, so reads scoped to buyer-own-rows + design creator (via new
+  `created_design()` definer helper per the policy-subquery rule). UI loss:
+  none.
+
+Edge functions (**need deploy** — DB changes above are independent):
+
+- **(Warning) `create-checkout-session` accepted any Stripe priceId** while
+  the webhook granted `is_pines_plus` for ANY completed subscription,
+  defaulting unknown prices to a full "annual" plan — e.g. a $1-collection
+  price could buy Pines+. Checkout now resolves a client-sent `plan`
+  (`monthly`/`annual`) against `STRIPE_MONTHLY_PRICE_ID`/
+  `STRIPE_ANNUAL_PRICE_ID` server-side (legacy raw priceId accepted only if
+  it equals one of the two; 503 fail-closed if unset), and `stripe-webhook`
+  maps price→plan strictly, granting nothing on an unknown price.
+- **(Warning) `send-trail-pass` HTML injection**: inviter `display_name` and
+  `invitee_name` now escaped in the email HTML (personal_message already
+  was); subject stays raw (plain text, not HTML).
+- **(Warning) `triage-report` prompt injection**: reported content +
+  reporter context are fenced as untrusted data with an explicit
+  ignore-embedded-instructions clause (attempted manipulation = escalation
+  signal), and the AI can no longer close a report — `clear` stays
+  `pending_review` for a Ranger; only escalation (auto-hide) is applied
+  automatically. AI free-text is escaped before landing in the critical
+  alert email.
+
+**Verified in production:** `pg_proc`/`pg_policy`/`pg_trigger` state checked
+independently (definer + search_path on both new fns, anon EXECUTE false,
+trigger present, INSERT policy exactly the admin branch, two scoped SELECT
+policies on design_ratings), then the 12-case impersonated exploit test
+(`docs/notification-send-paths-exploit-test.sql`) in a rolled-back
+transaction — all 12 ok, zero rows persisted. (First run had a harness bug in
+case 3: the "stranger" pair chosen from prod was the founder + a real
+invitee, and the count ran under the attacker's RLS; corrected in the checked
+-in test. Not a prod hole.) `get_boot_state()` confirmed answering.
+**Deploy coordination:** migration is live and safe against the old client
+(the nudge shows its normal error toast until publish; newsletter sends fine
+— the trigger writes what the dropped client fan-out no longer can). Publish
+the frontend + deploy `create-checkout-session`, `stripe-webhook`,
+`send-trail-pass`, `triage-report` promptly.
+
 ### 2026-08-14 — Notification system overhaul (server-side producers, RLS tightening) — APPLIED & VERIFIED
 **Migration:** `supabase/migrations/20260815000000_notification_system_overhaul.sql`
 (PR #23). **Applied to prod 2026-08-14 via Lovable** (the building sandbox was

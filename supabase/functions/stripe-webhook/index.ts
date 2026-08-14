@@ -145,7 +145,18 @@ serve(async (req) => {
         const sub = await stripe.subscriptions.retrieve(subscriptionId);
         const priceId = sub.items.data[0]?.price.id;
         const monthlyPriceId = Deno.env.get("STRIPE_MONTHLY_PRICE_ID");
-        const plan = priceId === monthlyPriceId ? "monthly" : "annual";
+        const annualPriceId = Deno.env.get("STRIPE_ANNUAL_PRICE_ID");
+        // Strict mapping: only the two known subscription prices grant
+        // Pines+. Anything else (e.g. a per-collection price smuggled into a
+        // subscription checkout) is logged and granted nothing — previously
+        // every unknown price defaulted to a full "annual" grant.
+        let plan: "monthly" | "annual";
+        if (priceId && priceId === monthlyPriceId) plan = "monthly";
+        else if (priceId && priceId === annualPriceId) plan = "annual";
+        else {
+          console.error(`[STRIPE-WEBHOOK] Unknown subscription price ${priceId} for user ${userId} — not granting Pines+`);
+          break;
+        }
 
         await supabase.from("pines_plus_subscriptions").upsert({
           user_id: userId,

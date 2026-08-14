@@ -24,8 +24,32 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
 
-    const { priceId } = await req.json();
-    if (!priceId) throw new Error("priceId is required");
+    // The client picks a plan; the price IDs live server-side only. A raw
+    // priceId is still accepted for compatibility but must match one of the
+    // two known subscription prices — this Stripe account also holds cheap
+    // per-collection prices, and an arbitrary priceId here would let a
+    // member start a "Pines+" subscription at any of them (the webhook
+    // grants is_pines_plus on completion). Fail closed if unconfigured.
+    const monthlyPriceId = Deno.env.get("STRIPE_MONTHLY_PRICE_ID");
+    const annualPriceId = Deno.env.get("STRIPE_ANNUAL_PRICE_ID");
+    if (!monthlyPriceId || !annualPriceId) {
+      return new Response(JSON.stringify({ error: "subscriptions_not_configured" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 503,
+      });
+    }
+
+    const { priceId, plan } = await req.json();
+    const resolvedPriceId =
+      plan === "monthly" ? monthlyPriceId
+      : plan === "annual" ? annualPriceId
+      : priceId;
+    if (resolvedPriceId !== monthlyPriceId && resolvedPriceId !== annualPriceId) {
+      return new Response(JSON.stringify({ error: "unknown_plan" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -45,7 +69,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       payment_method_types: ["card"],
       mode: "subscription",
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [{ price: resolvedPriceId, quantity: 1 }],
       success_url: `${origin}/cabin?upgraded=true`,
       cancel_url: `${origin}/settings?cancelled=true`,
       metadata: { userId: user.id },
