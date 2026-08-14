@@ -1,0 +1,264 @@
+/**
+ * Ranger Station (member feedback board) — route-scoped.
+ *
+ * Panels, buttons, .tab-strip and .state-panel come from handoff-shell.css.
+ */
+
+.feedback-intro {
+  margin: -4px 0 13px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+
+/* --- submit panel ------------------------------------------------------- */
+
+.feedback-form {
+  display: grid;
+  gap: 9px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.feedback-form-type {
+  display: flex;
+  gap: 7px;
+}
+
+.feedback-form input[type='text'],
+.feedback-form textarea,
+.feedback-edit input[type='text'],
+.feedback-edit textarea,
+.feedback-ranger input[type='text'],
+.feedback-ranger select {
+  width: 100%;
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  padding: 7px 9px;
+  font-size: 13.5px;
+  font-family: inherit;
+}
+
+.feedback-form textarea,
+.feedback-edit textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.feedback-form-send {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.feedback-form-send .quiet {
+  font-size: 11.5px;
+  color: hsl(var(--muted-foreground));
+}
+
+/* --- status filter chips ------------------------------------------------ */
+
+.feedback-status-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 11px 0 13px;
+}
+
+.feedback-status-filter button {
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  background: hsl(var(--secondary));
+  color: hsl(var(--muted-foreground));
+  padding: 3px 11px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.feedback-status-filter button.is-active {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* --- the board ---------------------------------------------------------- */
+
+.feedback-list {
+  display: grid;
+  gap: 11px;
+}
+
+.feedback-row {
+  display: flex;
+  gap: 13px;
+  padding: 13px 15px;
+}
+
+.feedback-vote {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  align-self: flex-start;
+  min-width: 44px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 3px;
+  background: hsl(var(--secondary));
+  color: hsl(var(--muted-foreground));
+  padding: 7px 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.feedback-vote b {
+  font-size: 14px;
+  color: hsl(var(--foreground));
+}
+
+.feedback-vote[aria-pressed='true'] {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.feedback-vote[aria-pressed='true'] b {
+  color: hsl(var(--primary-foreground));
+}
+
+.feedback-main {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 7px;
+}
+
+.feedback-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.feedback-type,
+.feedback-status {
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--secondary));
+  color: hsl(var(--muted-foreground));
+}
+
+.feedback-type.is-bug {
+  border-color: hsl(var(--destructive) / 0.45);
+  color: hsl(var(--destructive));
+}
+
+.feedback-status.is-planned,
+.feedback-status.is-in_progress {
+  border-color: hsl(var(--primary) / 0.5);
+  color: hsl(var(--primary));
+}
+
+.feedback-status.is-done {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.feedback-row h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16.5px;
+  color: hsl(var(--foreground));
+  overflow-wrap: anywhere;
+}
+
+.feedback-body {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: hsl(var(--foreground) / 0.88);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.feedback-note {
+  margin: 0;
+  border-left: 3px solid hsl(var(--primary) / 0.5);
+  padding: 4px 0 4px 10px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+
+.feedback-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  color: hsl(var(--muted-foreground));
+}
+
+.feedback-owner-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.feedback-owner-actions button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: hsl(var(--primary));
+  cursor: pointer;
+}
+
+.feedback-owner-actions button.is-danger {
+  color: hsl(var(--destructive));
+}
+
+/* --- edit + ranger controls --------------------------------------------- */
+
+.feedback-edit {
+  display: grid;
+  gap: 7px;
+}
+
+.feedback-edit-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.feedback-ranger {
+  display: flex;
+  gap: 7px;
+  border-top: 1px dashed hsl(var(--border));
+  padding-top: 9px;
+}
+
+.feedback-ranger select {
+  width: auto;
+  flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+  .feedback-form-send {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .feedback-ranger {
+    flex-wrap: wrap;
+  }
+}

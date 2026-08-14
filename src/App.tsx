@@ -53,6 +53,7 @@ const CampNewsletterComposer = lazy(() => import("./pages/CampNewsletterComposer
 const CampNewsletterView = lazy(() => import("./pages/CampNewsletterView"));
 const CampNewsletterArchive = lazy(() => import("./pages/CampNewsletterArchive"));
 const SearchPage = lazy(() => import("./pages/Search"));
+const RangerStation = lazy(() => import("./pages/RangerStation"));
 const Explore = lazy(() => import("./pages/Explore"));
 const Marketplace = lazy(() => import("./pages/Marketplace"));
 const MarketplaceDetail = lazy(() => import("./pages/MarketplaceDetail"));
@@ -127,7 +128,7 @@ const App = () => (
                   <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
                   <Route path="designs" element={<GroveDesigns />} />
-                  {/* Ranger Station */}
+                  {/* Moderation */}
                   <Route path="cases" element={<GroveCases />} />
                   <Route path="cases/:id" element={<GroveCaseDetail />} />
                   <Route path="trails" element={<GroveTrails />} />
@@ -163,7 +164,9 @@ const App = () => (
                           stay so /u/foo never falls through to /:handle. */}
                       <Route path="/u/:handle" element={CABIN_ENABLED ? <CabinPage /> : <Navigate to="/" replace />} />
                       <Route path="/cabin" element={CABIN_ENABLED ? <CabinPage /> : <Navigate to="/" replace />} />
-                      <Route path="/ranger" element={<Navigate to="/grove/cases" replace />} />
+                      {/* Ranger Station — the member feedback board. */}
+                      <Route path="/ranger-station" element={<RangerStation />} />
+                      <Route path="/ranger" element={<Navigate to="/ranger-station" replace />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />
                       <Route path="/messages" element={<Campfires />} />
