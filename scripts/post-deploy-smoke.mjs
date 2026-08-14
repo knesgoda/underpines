@@ -122,6 +122,13 @@ export function classifyFunction(source) {
   return { kind: "open", allowed: [200, 400, 422], why: "validates its own input" };
 }
 
+/**
+ * The functions gateway rejects a call before it ever reaches the function when
+ * `verify_jwt` is on and no member JWT is present. That is a deployed, correctly
+ * gated function — not a failure — whatever the function's own auth style is.
+ */
+const GATEWAY_REJECTION = /UNAUTHORIZED_NO_AUTH_HEADER|Missing authorization header|Invalid JWT/i;
+
 if (!SUPABASE_URL) {
   failures.push("no backend URL: set SUPABASE_FUNCTIONS_URL or keep VITE_SUPABASE_URL in .env");
 } else {
