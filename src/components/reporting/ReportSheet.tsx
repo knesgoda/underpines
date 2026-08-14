@@ -125,7 +125,7 @@ const ReportSheet = ({
               Thanks for looking out for the community.
             </p>
             <p className="font-body text-sm text-muted-foreground">
-              The Ranger Station received your report.
+              The Rangers received your report.
             </p>
             <Button variant="ghost" onClick={handleClose} className="mt-4 font-body">
               Close
@@ -186,7 +186,7 @@ const ReportSheet = ({
                 disabled={!reason || submitting}
                 className="w-full font-body"
               >
-                {submitting ? 'Sending…' : 'Send to the Ranger Station'}
+                {submitting ? 'Sending…' : 'Send to the Rangers'}
               </Button>
             </div>
           </>

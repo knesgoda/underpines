@@ -54,7 +54,7 @@ const GroveAppeals = () => {
       <div>
         <h1 className="font-display text-xl text-[hsl(var(--pine-pale))]">Appeals</h1>
         <p className="text-sm text-[hsl(var(--pine-light)/0.65)]">
-          Members asking the Ranger Station to take a second look.
+          Members asking the Rangers to take a second look.
         </p>
       </div>
 

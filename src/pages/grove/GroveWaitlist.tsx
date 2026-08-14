@@ -107,7 +107,7 @@ const GroveWaitlist = () => {
         <p className="text-sm text-[hsl(var(--pine-light)/0.65)]">
           People who left an email on the coming-soon page. Marking someone
           invited is bookkeeping only — send the actual invite from Invites or
-          the Ranger Station.
+          the moderation tools.
         </p>
       </div>
 

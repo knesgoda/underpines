@@ -29,7 +29,7 @@ const CASE_TYPE_LABEL: Record<string, string> = {
   OTHER: 'Other',
 };
 
-/** Ranger Station home: what needs attention right now (spec §61/§63). */
+/** Moderation home: what needs attention right now (spec §61/§63). */
 const GroveCases = () => {
   const [showClosed, setShowClosed] = useState(false);
   const [typeFilter, setTypeFilter] = useState<string>('all');
@@ -78,7 +78,7 @@ const GroveCases = () => {
   return (
     <div className="max-w-4xl space-y-6">
       <div>
-        <h1 className="font-display text-xl text-[hsl(var(--pine-pale))]">Ranger Station</h1>
+        <h1 className="font-display text-xl text-[hsl(var(--pine-pale))]">Moderation</h1>
         <p className="text-sm text-[hsl(var(--pine-light)/0.65)]">
           Bot &amp; abuse queue. Automation flags — humans judge.
         </p>
