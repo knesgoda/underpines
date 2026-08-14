@@ -272,9 +272,14 @@ function buildEmailHtml(
   }
 
   if (grouped.reactions.length > 0) {
+    // Reactions collapse to one notification row per post; aggregate_count
+    // carries how many reactions each row stands for.
+    const reactionTotal = grouped.reactions.reduce(
+      (sum, n) => sum + (n.aggregate_count ?? 1), 0,
+    );
     sections += section("REACTIONS", `
       <p style="margin:4px 0;color:#1a1a2e;">
-        Your posts received ${grouped.reactions.length} reaction${grouped.reactions.length > 1 ? "s" : ""}. 🔥🌲💚✨
+        Your posts received ${reactionTotal} reaction${reactionTotal > 1 ? "s" : ""}. 🔥🌲💚✨
       </p>
     `);
   }
