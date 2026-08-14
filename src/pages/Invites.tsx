@@ -295,11 +295,21 @@ const Invites = () => {
         <section className="panel module">
           <h2>Your personal link</h2>
           <p className="text-sm text-muted-foreground">
-            Anyone with this link can join while you have passes — each signup
-            uses one. Text it, or share it wherever your people are.
+            Good for a week and up to ten joins — each join uses one of your
+            passes. Text it, or share it wherever your people are. When it
+            runs out, a fresh link appears here.
           </p>
           <div className="rounded-[5px] border border-border bg-muted/40 p-3 mt-3 space-y-2">
             <code className="invite-url break-all">{inviteLink.replace(/^https?:\/\//, '')}</code>
+            {(linkResult?.expires_at || linkResult?.uses_remaining != null) && (
+              <p className="text-xs text-muted-foreground">
+                {linkResult.expires_at &&
+                  `Good through ${new Date(linkResult.expires_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}`}
+                {linkResult.expires_at && linkResult.uses_remaining != null && ' · '}
+                {linkResult.uses_remaining != null &&
+                  `${linkResult.uses_remaining} ${linkResult.uses_remaining === 1 ? 'join' : 'joins'} left`}
+              </p>
+            )}
             <div className="flex flex-wrap gap-2">
               <button type="button" className="solid-button" onClick={() => shareLink(inviteLink)}>
                 <Share2 size={14} className="mr-1 inline" /> Share

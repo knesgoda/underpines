@@ -84,6 +84,10 @@ export interface InviteLinkResult {
   success: boolean;
   error?: string;
   slug?: string;
+  /** Links are time- and use-boxed (a week, ten joins by default); when one
+   *  runs out the next get lazily mints a fresh link. */
+  expires_at?: string;
+  uses_remaining?: number;
 }
 
 /** The member's reusable personal link (lazily created server-side). Every

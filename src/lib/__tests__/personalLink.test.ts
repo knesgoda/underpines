@@ -12,6 +12,13 @@ const MIGRATION = readFileSync(
   'utf8',
 );
 
+// 20260815110000 supersedes the first file for handle_new_user,
+// get_invite_landing and get_my_invite_link — those shapes are pinned there.
+const LIMITS_MIGRATION = readFileSync(
+  resolve(__dirname, '../../../supabase/migrations/20260815110000_personal_link_limits.sql'),
+  'utf8',
+);
+
 describe('personal invite link migration contract', () => {
   it('lineage CHECK carries all five source kinds', () => {
     const match = MIGRATION.match(
@@ -25,11 +32,25 @@ describe('personal invite link migration contract', () => {
   });
 
   it('handle_new_user spends the allowance under a row lock', () => {
-    const fn = MIGRATION.split('FUNCTION public.handle_new_user')[1] ?? '';
+    const fn = LIMITS_MIGRATION.split('FUNCTION public.handle_new_user')[1] ?? '';
     expect(fn).toContain('_legacy.spends_allowance');
     expect(fn).toMatch(/FROM public\.invite_allowances\s+WHERE user_id = _legacy\.inviter_id\s+FOR UPDATE/);
     expect(fn).toContain('available_passes < 1');
     expect(fn).toContain('SET available_passes = available_passes - 1');
+  });
+
+  it('handle_new_user enforces link expiry and the join cap in the personal branch', () => {
+    const fn = LIMITS_MIGRATION.split('FUNCTION public.handle_new_user')[1] ?? '';
+    const personalBranch = fn.split('_legacy.spends_allowance')[1]?.split('ELSE')[0] ?? '';
+    expect(personalBranch).toContain('_legacy.expires_at <= now()');
+    expect(personalBranch).toContain('_legacy.uses_remaining < 1');
+    expect(personalBranch).toMatch(/SET uses_remaining = uses_remaining - 1,\s*is_active = \(uses_remaining - 1\) > 0/);
+  });
+
+  it('new links carry the week + ten-join defaults', () => {
+    const fn = LIMITS_MIGRATION.split('FUNCTION public.get_my_invite_link')[1] ?? '';
+    expect(fn).toContain("'personal_link_expiry_days')::integer, 7");
+    expect(fn).toContain("'personal_link_max_uses')::integer, 10");
   });
 
   it('admin rotate_invite_link excludes personal rows', () => {
