@@ -114,6 +114,66 @@ their way into someone else's private data with this policy?"**
 _Newest first. Every security-relevant change gets an entry: date, what, why,
 where (migration file / PR), verification._
 
+### 2026-08-14 — Personal multi-use invite links — APPLIED & VERIFIED
+**Migration:** `supabase/migrations/20260815100000_personal_invite_links.sql`
+(applied via `query_database` — NOT in Lovable's ledger; repo file is source
+of truth). New feature with a deliberate authority design: each member gets
+one reusable `/invite/<slug>` link, and **every signup through it spends one
+pass from the owner's `invite_allowances`**, so a leaked link is bounded by
+the balance, regenerates only through healthy maturation, and the existing
+ranger freeze (`invites_frozen_at`) kills it instantly — checked at both the
+anon landing and inside the signup transaction.
+
+- Rides the legacy `invites` pipeline (new `spends_allowance` flag +
+  one-active-per-member partial unique index) rather than a new table, so the
+  owner-only SELECT RLS, `validate-invite`'s per-invite/per-IP rate limiting
+  (personal rows are `is_infinite`), and the `handle_new_user` row-locked
+  redemption path all apply unchanged. `uses_remaining` is bypassed; the
+  allowance is the only counter, decremented under `FOR UPDATE` inside the
+  auth transaction.
+- **Re-emitted from live prod bodies** (`pg_get_functiondef`, not repo
+  copies): `handle_new_user` (new `spends_allowance` branch; legacy +
+  trail-pass branches verbatim; personal links get their own
+  `PERSONAL_LINKS_ENABLED` kill switch, default on, and are NOT subject to
+  `LEGACY_LINK_REDEMPTION_ENABLED` draining), `accept_invite_create_circle`
+  (lineage `source_kind` CASE gains `'personal_link'`; CHECK widened), and
+  `rotate_invite_link` (admin rotation now excludes `spends_allowance` rows —
+  without that it renames both of the founder's infinite rows to one slug and
+  dies on the UNIQUE constraint, the 2026-08-13 bug class).
+- New definer RPCs `get_my_invite_link()` (lazy get-or-create; eligibility
+  mirrors `create_trail_pass`: blocked/moderated/low-trust/frozen/ineligible
+  members get no link) and `rotate_my_invite_link()` —
+  **deactivate-and-recreate, never a slug rename**: `get_invite_landing`
+  hands the row's `invite_id` to any visitor and signup validates by that id,
+  so renaming would leave a captured id redeemable forever. EXECUTE revoked
+  from PUBLIC/anon on both. `get_invite_landing` gains a `'resting'` branch
+  (owner frozen or out of passes) that leaks nothing beyond what the link
+  holder already knows.
+- Known accepted gap: personal-link signups bypass the trail-pass
+  EMAIL_DOMAIN_VELOCITY risk signal (no trail_passes row); the
+  `evaluate-signup-risk` LIKE query is unaffected. Candidate follow-up: a
+  low-severity signal on `user_lineage.source_kind='personal_link'` velocity.
+
+**Verified in production:** independent state checks (column, partial index,
+5-value CHECK, prosecdef + `search_path` + anon EXECUTE false on both new
+fns, live `handle_new_user` contains the allowance branch, admin rotation
+contains the exclusion), then a 24-assertion impersonated exploit test
+(`docs/personal-link-exploit-test.sql`) in a rolled-back transaction — mint +
+idempotent re-get, anon RPC EXECUTE blocked (42501), arbitrary-email signup
+spends exactly one pass with lineage/circles/invite_uses/notification, zero
+passes → landing rests + signup rejected, frozen → both rejected, attacker
+cannot read or deactivate the owner's link, rotation kills old slug AND old
+id while a fresh one works, trail-pass email binding regression-unchanged
+both directions, founder's admin rotation leaves the personal link alone,
+`get_boot_state()` answers. All ok, zero FAIL, zero rows persisted
+(personal_links/profiles/users/passes all 0 after rollback).
+**Deploy coordination:** migration is live and harmless to the old client
+(nothing calls the new RPCs; `spends_allowance` defaults false everywhere).
+The new /invites panel requires this migration — publish the frontend AFTER
+(it is already applied, so publish is safe now). No edge deploys needed:
+`validate-invite` passes personal rows through its existing infinite-link
+path.
+
 ### 2026-08-14 — Deep-scan batch: notification send paths, Pines+ price allow-list, email escaping, triage injection, rating privacy — APPLIED & VERIFIED (edge deploys pending)
 **Migration:** `supabase/migrations/20260814080000_notification_send_paths_and_rating_privacy.sql`
 (applied via `query_database` — NOT in Lovable's ledger; repo file is source of
