@@ -57,16 +57,7 @@ const QuoteComposer = ({ post, open, onClose, onQuoted }: QuoteComposerProps) =>
     if (error) {
       toast.error("That one didn't make it. Try again?");
     } else {
-      // Create deferred notification
-      if (post.author_id !== user.id) {
-        await supabase.from('notifications').insert({
-          recipient_id: post.author_id,
-          notification_type: 'quote_post',
-          actor_id: user.id,
-          post_id: data.id,
-          is_delivered_in_ember: true,
-        });
-      }
+      // The trigger on posts notifies the quoted author.
       onQuoted(data);
       setContent('');
       onClose();

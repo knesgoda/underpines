@@ -93,15 +93,9 @@ export const WelcomePeople = ({ onNext, onBack }: { onNext: () => void; onBack: 
 
     setSending(true);
     const ids = [...picked];
+    // The trigger on circles notifies each requestee.
     await supabase.from('circles').insert(
       ids.map(id => ({ requester_id: user.id, requestee_id: id }))
-    );
-    await supabase.from('notifications').insert(
-      ids.map(id => ({
-        recipient_id: id,
-        notification_type: 'circle_request',
-        actor_id: user.id,
-      }))
     );
     setSending(false);
     onNext();

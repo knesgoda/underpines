@@ -8,7 +8,7 @@ import {
   type NotificationsPage,
 } from '@/lib/notificationsApi';
 import { describeNotification, type DescribeContext } from '@/lib/notificationCopy';
-import { REACTIONS } from '@/components/feed/ReactionBar';
+import { REACTIONS } from '@/lib/reactionTypes';
 
 const MIGRATION = readFileSync(
   resolve(__dirname, '../../../supabase/migrations/20260815000000_notification_system_overhaul.sql'),

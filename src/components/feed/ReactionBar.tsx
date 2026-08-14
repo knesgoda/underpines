@@ -3,19 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
-// Exported for the drift test: every emoji offered here must be in the
-// reactions CHECK constraint, or the reaction is silently thrown away.
-export const REACTIONS = [
-  { type: 'warmth', icon: '❤️' },
-  { type: 'laughed', icon: '😂' },
-  { type: 'heavy', icon: '😢' },
-  { type: 'noted', icon: '🤔' },
-  { type: 'relatable', icon: '🫠' },
-  { type: 'eyeroll', icon: '🙄' },
-  { type: 'grounded', icon: '🌲' },
-  { type: 'delight', icon: '✨' },
-  { type: 'moonstruck', icon: '🌕' },
-];
+import { REACTIONS } from '@/lib/reactionTypes';
 
 interface ReactionBarProps {
   postId: string;
@@ -50,19 +38,9 @@ const ReactionBar = ({ postId, reactions, onReactionChange }: ReactionBarProps) 
       await supabase.from('reactions').delete().eq('post_id', postId).eq('user_id', user.id);
       await supabase.from('reactions').insert({ post_id: postId, user_id: user.id, reaction_type: type });
     } else {
-      // New reaction
+      // New reaction. The trigger on reactions maintains the author's
+      // aggregated "X and N others reacted" notification.
       await supabase.from('reactions').insert({ post_id: postId, user_id: user.id, reaction_type: type });
-      // Create deferred notification (ember-only)
-      const { data: post } = await supabase.from('posts').select('author_id').eq('id', postId).single();
-      if (post && post.author_id !== user.id) {
-        await supabase.from('notifications').insert({
-          recipient_id: post.author_id,
-          notification_type: 'reaction_batch',
-          actor_id: user.id,
-          post_id: postId,
-          is_delivered_in_ember: false,
-        });
-      }
     }
     onReactionChange();
   };
