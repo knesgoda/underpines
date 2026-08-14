@@ -126,9 +126,9 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-14 (LATEST) — Notification system overhaul (branch
-`claude/notification-system-design-ewdaqj`, pushed, NOT merged; ⚠️ migration
-committed but NOT APPLIED to prod).**
+**As of 2026-08-14 (LATEST) — Notification system overhaul (PR #23, merged
+to main; ⚠️ migration committed but NOT APPLIED to prod — apply it BEFORE
+any Lovable publish, runbook in `docs/notifications-deploy.md`).**
 
 Kevin's ask: FB/IG-style notifications — "X commented", "X liked your post",
 "X accepted my invite", click-through to the thing, clear-all. Decisions
