@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-// @ts-expect-error -- plain .mjs helper shared with scripts/deploy-smoke-test.mjs
+// Plain .mjs helper shared with scripts/deploy-smoke-test.mjs
 import { extractPinnedTags, diffPinnedTags, diffBinaryAsset, PINNED_HEAD_PATTERNS } from "../../../scripts/deployHeadContract.mjs";
 
 const ROOT = path.resolve(__dirname, "../../..");
