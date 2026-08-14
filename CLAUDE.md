@@ -136,7 +136,43 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-14 (LATEST) — iOS PWA topbar gap fix + first-load trims
+**As of 2026-08-14 (LATEST) — deep-scan security batch (5 findings fixed;
+migration APPLIED to prod + 12-case exploit test green; 4 edge functions
+NEED DEPLOY + frontend publish).**
+
+Kevin ran the fresh Lovable security scan after the deploy pass; 7 findings
+triaged (2 stale — `rotate_invite_link` and pine-pet paths, verified already
+fixed in prod). The 5 real ones are fixed — full detail in SECURITY.md's
+2026-08-14 deep-scan entry (read it before touching any of this):
+
+- Migration `20260814080000_notification_send_paths_and_rating_privacy.sql`
+  (applied via `query_database`, NOT in Lovable's ledger): nudges go through
+  new `send_smoke_signal()` RPC (lineage-gated, via `notify_user`),
+  newsletter fan-out is now an AFTER trigger on `camp_newsletters`, direct
+  notification INSERT is admin-notices-only, `design_ratings` reads scoped
+  to buyer + creator (new `created_design()` helper). Client: `Invites.tsx`
+  → RPC, `CampNewsletterComposer.tsx` fan-out deleted, new vitest pins the
+  insert sites + policy shape.
+- Edge (in repo, **not deployed**): `create-checkout-session` price
+  allow-list vs `STRIPE_MONTHLY/ANNUAL_PRICE_ID` (503 if unset),
+  `stripe-webhook` strict price→plan (no grant on unknown price),
+  `send-trail-pass` HTML-escapes names, `triage-report` fences reported
+  content + never auto-clears (escalation-only) + escapes AI text in the
+  alert email.
+- Verified: state checks + 12-case impersonated exploit test
+  (`docs/notification-send-paths-exploit-test.sql`), all green, rolled
+  back; tsc/vitest(144)/build/sweep clean, entry 197.5 kB gzip unchanged.
+  Pre-existing 2 `any` errors in CampNewsletterComposer at baseline,
+  untouched.
+- **Remaining:** Lovable publish (nudge shows its error toast on the live
+  site until then — migration-first ordering, same as the overhaul) + deploy
+  the 4 edge functions. Kevin's signed-in eyeball: nudge an invitee from
+  /invites, send a camp newsletter and see member Updates rows, and (if
+  Stripe is configured) a Pines+ checkout round-trip.
+
+---
+
+**Previously (2026-08-14) — iOS PWA topbar gap fix + first-load trims
 (branch `claude/mobile-header-sticky-fix-lmhdb2`).**
 
 Kevin's report: on the installed iPhone PWA, a tan gap sits above the navy

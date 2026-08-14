@@ -194,13 +194,14 @@ const Invites = () => {
   const nudge = async (inviteeId: string) => {
     if (nudging) return;
     setNudging(inviteeId);
-    const { error } = await supabase.from('notifications').insert({
-      notification_type: 'smoke_signal',
-      recipient_id: inviteeId,
-      actor_id: user.id,
-      is_read: false,
+    // Server-side path: the RPC verifies the recipient is actually someone
+    // this member invited, and routes through notify_user (blocks,
+    // preferences, dedupe). Direct notification inserts are admin-only now.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as any).rpc('send_smoke_signal', {
+      _recipient: inviteeId,
     });
-    if (error) toast.error('Could not send that.');
+    if (error || data !== 'sent') toast.error('Could not send that.');
     else {
       setNudged(prev => new Set(prev).add(inviteeId));
       toast.success('Nudged. They will see it next time they look.');

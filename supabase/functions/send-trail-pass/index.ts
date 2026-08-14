@@ -9,6 +9,18 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, jsonResponse } from "../_shared/cors.ts";
 
+// Every user-controlled string that lands in the email HTML goes through
+// this — display names and invitee names are as attacker-controlled as the
+// personal message is.
+function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 async function sha256Hex(input: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
   return Array.from(new Uint8Array(digest))
@@ -72,11 +84,12 @@ Deno.serve(async (req) => {
       .select("display_name")
       .eq("id", userData.user.id)
       .maybeSingle();
-    const inviterName = inviter?.display_name ?? "Someone";
-    const greeting = pass.invitee_name ? `Hi ${pass.invitee_name},` : "Hi,";
+    const inviterNameRaw = inviter?.display_name ?? "Someone";
+    const inviterName = escapeHtml(inviterNameRaw);
+    const greeting = pass.invitee_name ? `Hi ${escapeHtml(pass.invitee_name)},` : "Hi,";
     const messageBlock = pass.personal_message
       ? `<blockquote style="margin:16px 0;padding:12px 16px;border-left:3px solid #d97748;color:#4a4038;">${
-          pass.personal_message.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          escapeHtml(pass.personal_message)
         }</blockquote>`
       : "";
 
@@ -89,7 +102,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from: "Under Pines <noreply@underpines.com>",
         to: [pass.invitee_email_normalized],
-        subject: `${inviterName} saved you a place Under Pines`,
+        subject: `${inviterNameRaw} saved you a place Under Pines`,
         html: `
           <div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;color:#2f2a25;">
             <h1 style="font-size:22px;">Someone saved you a place Under Pines.</h1>

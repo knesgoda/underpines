@@ -146,21 +146,9 @@ const CampNewsletterComposer = () => {
       });
     }
 
-    // Create notifications for all camp members
-    const { data: members } = await supabase
-      .from('camp_members')
-      .select('user_id')
-      .eq('camp_id', campId);
-
-    if (members && members.length > 0) {
-      const notifs = members.map(m => ({
-        recipient_id: m.user_id,
-        notification_type: 'camp_newsletter',
-        actor_id: user.id,
-        camp_id_ref: campId,
-      }));
-      await supabase.from('notifications').insert(notifs);
-    }
+    // Member notifications are written by the notify_camp_newsletter trigger
+    // when the newsletter row reaches status='sent' — the client no longer
+    // fans out inserts (and couldn't: direct inserts are admin-only now).
 
     toast.success('Newsletter sent!');
     navigate(`/camps/${campId}/settings`);
