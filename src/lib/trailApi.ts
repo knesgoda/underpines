@@ -80,6 +80,27 @@ export async function createTrailPass(
   return data as CreatePassResult;
 }
 
+export interface InviteLinkResult {
+  success: boolean;
+  error?: string;
+  slug?: string;
+}
+
+/** The member's reusable personal link (lazily created server-side). Every
+ *  signup through it spends one pass from the owner's allowance. */
+export async function getMyInviteLink(): Promise<InviteLinkResult> {
+  const { data, error } = await db.rpc('get_my_invite_link');
+  if (error) return { success: false, error: error.message };
+  return data as InviteLinkResult;
+}
+
+/** Kills the current personal link (slug AND id) and mints a fresh one. */
+export async function rotateMyInviteLink(): Promise<InviteLinkResult> {
+  const { data, error } = await db.rpc('rotate_my_invite_link');
+  if (error) return { success: false, error: error.message };
+  return data as InviteLinkResult;
+}
+
 export async function revokeTrailPass(passId: string): Promise<{ success: boolean; error?: string }> {
   const { data, error } = await db.rpc('revoke_trail_pass', { _pass_id: passId });
   if (error) return { success: false, error: error.message };

@@ -15,6 +15,8 @@ const InviteLanding = () => {
   const [invite, setInvite] = useState<any>(null);
   const [inviter, setInviter] = useState<any>(null);
   const [expired, setExpired] = useState(false);
+  // A personal link whose owner is out of passes: valid link, resting door.
+  const [resting, setResting] = useState(false);
 
   useEffect(() => {
     const fetchInvite = async () => {
@@ -39,6 +41,7 @@ const InviteLanding = () => {
       const { data: landing } = await (supabase as any).rpc('get_invite_landing', { _slug: slug });
 
       if (!landing?.valid) {
+        if (landing?.reason === 'resting') setResting(true);
         setExpired(true);
         setLoading(false);
         return;
@@ -82,11 +85,20 @@ const InviteLanding = () => {
           </svg>
 
           <h2 className="text-2xl font-display text-foreground mb-4">
-            This invite has expired.
+            {resting ? 'This link is resting.' : 'This invite has expired.'}
           </h2>
           <p className="text-muted-foreground font-body text-sm">
-            Know someone on Under Pines?<br />
-            Ask them for a fresh invite.
+            {resting ? (
+              <>
+                Whoever sent it is out of invites for the moment.<br />
+                Ask them to send you a Trail Pass by email instead.
+              </>
+            ) : (
+              <>
+                Know someone on Under Pines?<br />
+                Ask them for a fresh invite.
+              </>
+            )}
           </p>
           </motion.div>
         </div>

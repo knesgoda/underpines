@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, Copy, Mail, TreePine, XCircle } from 'lucide-react';
+import { Check, Copy, Mail, RefreshCw, Share2, TreePine, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
   createTrailPass,
+  getMyInviteLink,
   listMyTrailPasses,
   refreshMyInvites,
   revokeTrailPass,
+  rotateMyInviteLink,
   sendTrailPassEmail,
   type InviteSummary,
   type TrailPass,
@@ -64,8 +66,21 @@ const Invites = () => {
   const [newPassLink, setNewPassLink] = useState<string | null>(null);
   const [emailWasSent, setEmailWasSent] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [rotating, setRotating] = useState(false);
+  const [confirmRotate, setConfirmRotate] = useState(false);
   const [nudging, setNudging] = useState<string | null>(null);
   const [nudged, setNudged] = useState<Set<string>>(new Set());
+
+  // The personal link is its own query: it lazily creates the row server-side
+  // and its eligibility errors mirror the pass form's, so a failure here just
+  // hides the panel rather than blocking the page.
+  const { data: linkResult } = useQuery({
+    queryKey: ['invite-link', user?.id],
+    enabled: !!user,
+    staleTime: 5 * 60_000,
+    queryFn: getMyInviteLink,
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ['trail-passes', user?.id],
@@ -164,7 +179,7 @@ const Invites = () => {
     }
   };
 
-  const copyLink = async (link: string) => {
+  const writeClipboard = async (link: string) => {
     try {
       await navigator.clipboard.writeText(link);
     } catch {
@@ -176,9 +191,19 @@ const Invites = () => {
       document.execCommand('copy');
       document.body.removeChild(textarea);
     }
-    setCopied(true);
     toast.success('Link copied.');
+  };
+
+  const copyLink = async (link: string) => {
+    await writeClipboard(link);
+    setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copyInviteLink = async (link: string) => {
+    await writeClipboard(link);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
   };
 
   const handleRevoke = async (passId: string) => {
@@ -213,6 +238,45 @@ const Invites = () => {
   const frozen = !!summary?.frozen;
   const eligible = !!summary?.eligible;
 
+  const inviteLink = linkResult?.success && linkResult.slug
+    ? `${window.location.origin}/invite/${linkResult.slug}`
+    : null;
+
+  const shareLink = async (link: string) => {
+    // navigator.share opens the system sheet — on a phone that is how the
+    // link reaches Messages/WhatsApp; anywhere else we fall back to copy.
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Join me Under Pines',
+          text: "I saved you a spot Under Pines — a small corner of the internet for actual friends.",
+          url: link,
+        });
+        return;
+      } catch {
+        // Cancelled or unsupported payload — fall through to copy.
+      }
+    }
+    await copyInviteLink(link);
+  };
+
+  const handleRotate = async () => {
+    if (rotating) return;
+    setRotating(true);
+    try {
+      const result = await rotateMyInviteLink();
+      if (result.success) {
+        toast.success('New link minted. The old one is dead.');
+        queryClient.setQueryData(['invite-link', user.id], result);
+      } else {
+        toast.error('Could not rotate the link right now.');
+      }
+      setConfirmRotate(false);
+    } finally {
+      setRotating(false);
+    }
+  };
+
   return (
     <div className="page-shell invites">
       <div className="panel-title"><span>Trail Passes</span></div>
@@ -220,11 +284,49 @@ const Invites = () => {
       <section className="panel module">
         <h2>Invite someone Under Pines</h2>
         <p>
-          Under Pines grows through people, not algorithms. Send a Trail Pass to
-          someone you'd like to have around. Each pass is personal: it goes to
-          one email address and works exactly once.
+          Under Pines grows through people, not algorithms. There are two ways
+          to bring someone in: email them a Trail Pass — personal, one address,
+          works exactly once — or text them your personal link. Both spend one
+          of your passes when someone joins.
         </p>
       </section>
+
+      {!frozen && eligible && inviteLink && (
+        <section className="panel module">
+          <h2>Your personal link</h2>
+          <p className="text-sm text-muted-foreground">
+            Anyone with this link can join while you have passes — each signup
+            uses one. Text it, or share it wherever your people are.
+          </p>
+          <div className="rounded-[5px] border border-border bg-muted/40 p-3 mt-3 space-y-2">
+            <code className="invite-url break-all">{inviteLink.replace(/^https?:\/\//, '')}</code>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className="solid-button" onClick={() => shareLink(inviteLink)}>
+                <Share2 size={14} className="mr-1 inline" /> Share
+              </button>
+              <button type="button" className="outline-button" onClick={() => copyInviteLink(inviteLink)}>
+                {linkCopied ? <Check size={14} className="mr-1 inline" /> : <Copy size={14} className="mr-1 inline" />}
+                {linkCopied ? 'Copied' : 'Copy link'}
+              </button>
+              {confirmRotate ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Your old link stops working.</span>
+                  <button type="button" className="outline-button" onClick={handleRotate} disabled={rotating}>
+                    {rotating ? 'Rotating…' : 'Yes, get a new link'}
+                  </button>
+                  <button type="button" className="outline-button" onClick={() => setConfirmRotate(false)}>
+                    Keep it
+                  </button>
+                </span>
+              ) : (
+                <button type="button" className="outline-button" onClick={() => setConfirmRotate(true)}>
+                  <RefreshCw size={14} className="mr-1 inline" /> Get a new link
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {frozen ? (
         <StatePanel title="Your Trail Passes are resting.">
