@@ -13,18 +13,22 @@
 
 .app {
   min-height: 100vh;
+  /* Start the document below the status-bar strip (viewport-fit=cover), so
+     the sticky topbar's flow position equals its sticky offset — it never
+     gets displaced over the first lines of content. env() is 0 in plain
+     browser tabs. */
+  padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: 40px;
 }
 
-/* Topbar — navy ground, ember underline.
-   The safe-area padding makes the bar itself the status-bar backdrop on
-   notched phones (viewport-fit=cover in index.html hands us that strip);
-   in a plain browser tab env() is 0 and nothing changes. */
+/* Topbar — navy ground, ember underline. Standard 64px bar; on notched
+   phones (viewport-fit=cover in index.html) it sticks just below the
+   status-bar strip that ::before paints. In a plain browser tab env() is 0
+   and everything collapses to a 64px bar at the very top. */
 .topbar {
-  height: calc(64px + env(safe-area-inset-top, 0px));
-  padding-top: env(safe-area-inset-top, 0px);
+  height: 64px;
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   z-index: 20;
   background: hsl(var(--sidebar-background));
   color: hsl(var(--sidebar-foreground));
@@ -32,18 +36,29 @@
   box-shadow: 0 4px 12px hsl(var(--foreground) / 0.18);
 }
 
-/* iOS moves the whole document during rubber-band overscroll — and its
-   standalone-PWA launch bug can hold the page a few dozen pixels low until
-   the first scroll. Whenever that happens, this paints the space above the
-   bar in the bar's own navy instead of the page background, so the header
-   always reads as reaching the top edge. */
+/* Status-bar backdrop: a thin FIXED strip pinned to the physical top edge,
+   immune to iOS holding the document low (its standalone launch bug) or
+   rubber-band overscroll. Same pattern as .fullscreen-shell::before. */
 .topbar::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: hsl(var(--sidebar-background));
+}
+
+/* Launch-offset cover: when iOS parks the page low until the first scroll,
+   paint at most one status-bar height of navy above the bar — bounded, unlike
+   the previous 300px filler that read as a giant header. */
+.topbar::after {
   content: '';
   position: absolute;
   left: 0;
   right: 0;
   bottom: 100%;
-  height: 300px;
+  height: env(safe-area-inset-top, 0px);
   background: hsl(var(--sidebar-background));
 }
 
@@ -182,7 +197,23 @@
    Invites and the Ranger Station rather than being a mobile-only page link. */
 .mini-me-menu { position: relative; display: flex; align-items: center; }
 
-.mini-me { display: block; border: 0; background: none; padding: 0; cursor: pointer; }
+.mini-me {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* The caret is what says "this is a menu" — without it the avatar reads as
+   decoration and Sign out / Settings become undiscoverable, especially on
+   phones where there is no other account chrome. */
+.mini-me-caret {
+  font-size: 11px;
+  color: hsl(var(--sidebar-foreground) / 0.85);
+}
 
 .mini-me-panel {
   position: absolute;
@@ -412,7 +443,9 @@
   min-height: 42px;
 }
 
-.post-actions button {
+/* Direct children only — the React slot nests ReactionBar, whose emoji-fan
+   buttons must not inherit the action-row chrome. */
+.post-actions > button {
   border: 0;
   border-right: 1px solid hsl(var(--border));
   background: hsl(var(--card));
@@ -423,10 +456,40 @@
   cursor: pointer;
 }
 
-.post-actions button:last-child { border-right: 0; }
+.post-actions > *:last-child { border-right: 0; }
 
-.post-actions button:hover,
-.post-actions button.liked {
+.post-actions > button:hover,
+.post-actions > button.liked {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.08);
+}
+
+/* The React cell: ReactionBar's trigger button fills it and matches its
+   sibling buttons; the fan it opens keeps ReactionBar's own styling. */
+.post-action-react {
+  display: flex;
+  border-right: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+}
+
+.post-action-react > div {
+  display: flex;
+  flex: 1;
+}
+
+.post-action-react > div > button {
+  flex: 1;
+  justify-content: center;
+  border: 0;
+  background: none;
+  color: hsl(var(--muted-foreground));
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.post-action-react > div > button:hover {
   color: hsl(var(--primary));
   background: hsl(var(--primary) / 0.08);
 }

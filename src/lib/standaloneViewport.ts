@@ -24,11 +24,25 @@ export function installStandaloneViewportFix() {
     }
   };
 
-  window.addEventListener('pageshow', settle);
+  // On a cold launch the page is often still skeletons — shorter than the
+  // viewport — and scrollTo(0, 1) cannot move it, so a single nudge can
+  // silently no-op. Retry across a few frames until content exists.
+  const settleWithRetry = (attempts = 8) => {
+    settle();
+    if (attempts > 0 && document.documentElement.scrollHeight <= window.innerHeight) {
+      requestAnimationFrame(() => settleWithRetry(attempts - 1));
+    }
+  };
+
+  window.addEventListener('pageshow', () => settleWithRetry());
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') settle();
+    if (document.visibilityState === 'visible') settleWithRetry();
   });
+  // WebKit reconciles the two viewports on visual-viewport resizes (keyboard,
+  // toolbar, launch settling) — that is exactly the moment a resting page can
+  // be re-nudged into place.
+  window.visualViewport?.addEventListener('resize', settle);
   // First launch: wait for the first real frame so there is a laid-out page
   // to nudge.
-  requestAnimationFrame(() => requestAnimationFrame(settle));
+  requestAnimationFrame(() => requestAnimationFrame(() => settleWithRetry()));
 }
