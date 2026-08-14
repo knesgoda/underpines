@@ -126,7 +126,56 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-14 (LATEST) — Notification system overhaul (PR #23, merged;
+**As of 2026-08-14 (LATEST) — iOS PWA topbar gap fix + first-load trims
+(branch `claude/mobile-header-sticky-fix-lmhdb2`).**
+
+Kevin's report: on the installed iPhone PWA, a tan gap sits above the navy
+topbar at rest; scrolling makes the bar stick, then the gap returns. Root
+cause class: the page left the status-bar strip to iOS (no
+`viewport-fit=cover`, no safe-area handling), and iOS standalone mode has a
+long-standing bug where that OS-managed band opens a gap above the web view
+until the first scroll. The fix takes the strip over:
+
+- `index.html`: `viewport-fit=cover` + `apple-mobile-web-app-capable` +
+  `apple-mobile-web-app-status-bar-style=black-translucent` (+ app title).
+  The page now owns the full screen; white status text sits on our navy.
+- `.topbar` pads itself `env(safe-area-inset-top)` (height goes to calc) and
+  gains a `::before` that extends 300px of navy above it — rubber-band
+  overscroll and the buggy launch offset can no longer show page background
+  above the bar. `.tabbar`'s existing `env(safe-area-inset-bottom)` padding
+  becomes active now that cover is set; mobile `.app` bottom clearance grows
+  to match. Campfires' mobile list height calc subtracts the top inset.
+- Full-screen routes (login/onboarding/legal/gates — everything without the
+  topbar) render inside a new `.fullscreen-shell` (AppLayout): safe-area top
+  padding + a fixed navy strip behind the status text. GroveLayout got the
+  same padding inline.
+- `src/lib/standaloneViewport.ts` (called from main.tsx): standalone-only,
+  at-rest-only scroll nudge on launch/foreground — the documented
+  self-correction for the iOS offset bug.
+- First-load trims for the ~12s cold start Kevin saw: `<link rel=preconnect>`
+  ×2 (CORS + plain) to the Supabase origin in index.html, and the HomePage
+  chunk warms at App.tsx module scope (was: fetched only after React booted
+  and the router rendered). The rest of the 12s is cold-start waterfall
+  (entry → boot RPC → feed → signed media) + PWA process launch; the
+  `get_feed()` RPC idea in the 2026-08-13 perf entry remains the next big
+  lever.
+
+**Verified:** tsc clean; eslint clean on changed files; 142 vitest pass;
+build clean; entry 197.5 kB gzip (197.2 baseline — the +0.3 kB is safe-area
+CSS + the nudge module); signed-out Chromium sweep green 12 routes × both
+themes. NOT verifiable here (no iOS device, no Supabase egress): the actual
+notch behavior. **Kevin's eyeball after Lovable publish:** relaunch the
+installed PWA (force-quit first; the service worker picks up the new
+index.html on the second launch — if the status bar still looks off after
+two launches, remove and re-add to Home Screen, since iOS snapshots those
+metas at install), then check: no gap above the navy bar at rest, bar stays
+put while scrolling, clock/battery readable over navy, tab bar clears the
+home indicator, login page (signed out) shows a navy strip behind the clock,
+and second-launch load time vs the ~12s first run.
+
+---
+
+**Previously (2026-08-14) — Notification system overhaul (PR #23, merged;
 migration APPLIED to prod via Lovable and verified — exploit test 12/12
 green + independent state checks. Lovable re-recorded it in its ledger as
 `20260814060500_6eb130d5-….sql` and regenerated `supabase/types.ts`, so the

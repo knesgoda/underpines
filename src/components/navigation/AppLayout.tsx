@@ -115,9 +115,11 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       );
     }
     return (
-      <Suspense fallback={<PineTreeLoading />}>
-        <Gate />
-      </Suspense>
+      <div className="fullscreen-shell">
+        <Suspense fallback={<PineTreeLoading />}>
+          <Gate />
+        </Suspense>
+      </div>
     );
   }
 
@@ -153,25 +155,29 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (user && ageGateChecked && needsAgeGate) {
     return (
-      <Suspense fallback={<PineTreeLoading />}>
-        {/* Refetch rather than flip a local flag: the age gate writes
-            is_age_verified, so the boot payload is the thing that changed. */}
-        <AgeGateInterstitial
-          onComplete={() => queryClient.invalidateQueries({ queryKey: ['boot-state'] })}
-        />
-      </Suspense>
+      <div className="fullscreen-shell">
+        <Suspense fallback={<PineTreeLoading />}>
+          {/* Refetch rather than flip a local flag: the age gate writes
+              is_age_verified, so the boot payload is the thing that changed. */}
+          <AgeGateInterstitial
+            onComplete={() => queryClient.invalidateQueries({ queryKey: ['boot-state'] })}
+          />
+        </Suspense>
+      </div>
     );
   }
 
   if (user && !checking && suspension) {
     return (
-      <Suspense fallback={<PineTreeLoading />}>
-        <SuspendedPage
-          reason={suspension.reason}
-          suspendedUntil={suspension.suspended_until}
-          isPermanent={suspension.is_permanent}
-        />
-      </Suspense>
+      <div className="fullscreen-shell">
+        <Suspense fallback={<PineTreeLoading />}>
+          <SuspendedPage
+            reason={suspension.reason}
+            suspendedUntil={suspension.suspended_until}
+            isPermanent={suspension.is_permanent}
+          />
+        </Suspense>
+      </div>
     );
   }
 
@@ -191,14 +197,14 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (!showNav) {
     return (
-      <>
+      <div className="fullscreen-shell">
         <Deferred>
           <OfflineBanner />
           <InstallPrompt />
           <UpdatePrompt />
         </Deferred>
         {children}
-      </>
+      </div>
     );
   }
 

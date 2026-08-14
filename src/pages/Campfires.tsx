@@ -200,7 +200,7 @@ const Campfires = () => {
     }
 
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="msg-skin-surface flex flex-col" style={{ height: 'calc(100dvh - 56px)' }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="msg-skin-surface flex flex-col" style={{ height: 'calc(100dvh - 56px - env(safe-area-inset-top, 0px))' }}>
         <CampfireListHeader filter={filter} setFilter={setFilter} skin={skin} setSkin={setSkin} />
         <div className="msg-skin-surface flex-1 overflow-y-auto overscroll-y-contain" style={{ touchAction: 'pan-y' }}>
           <CampfireList
