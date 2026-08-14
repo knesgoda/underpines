@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import StatePanel from '@/components/StatePanel';
@@ -55,6 +56,8 @@ const MyPage = () => {
 
   const [tab, setTab] = useState<ProfileTab>('wall');
   const { data: liked } = useLikedPosts(profile?.id, tab === 'likes');
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // CabinPostHistory loads the wall with its own effect (not React Query), so
   // after the owner posts we bump this to make it reload from the server.
@@ -207,7 +210,16 @@ const MyPage = () => {
                   <p className="quiet">Nothing liked yet.</p>
                 </section>
               )}
-              {liked?.map(p => <HandoffPostCard key={p.id} post={p} />)}
+              {liked?.map(p => (
+                <HandoffPostCard
+                  key={p.id}
+                  post={p}
+                  onOpen={() => navigate(`/post/${p.id}`)}
+                  onReactionChange={() =>
+                    queryClient.invalidateQueries({ queryKey: ['liked-posts', profile.id] })
+                  }
+                />
+              ))}
             </>
           )}
         </div>

@@ -36,6 +36,11 @@ export interface PostWithAuthor {
   quoted_post?: PostWithAuthor | null;
   _optimistic?: boolean;
   _failed?: boolean;
+  /** Set by useFeedPosts on camp_posts rows. Camp posts have no /post/:id
+   *  detail page and their ids must never be written to reactions.post_id. */
+  _isCampPost?: boolean;
+  _campId?: string;
+  _campName?: string;
 }
 
 interface PostCardProps {

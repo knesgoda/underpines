@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { PostWithAuthor } from '@/components/feed/PostCard';
@@ -29,6 +29,10 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [lightbox, setLightbox] = useState<{ open: boolean; images: string[]; index: number }>({ open: false, images: [], index: 0 });
+  // Reacting in place refetches counts; the list should not blank out while
+  // that happens, so reloads after the first render keep the old posts up.
+  const [reactionTick, setReactionTick] = useState(0);
+  const hasLoadedRef = useRef(false);
 
   const typeKey = postTypes?.join(',') ?? '';
 
@@ -37,7 +41,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
     // current one when you navigate quickly between pages. Only the latest
     // effect run is allowed to commit state.
     let active = true;
-    setLoading(true);
+    setLoading(!hasLoadedRef.current);
     setFailed(false);
 
     const load = async () => {
@@ -90,12 +94,13 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
       }));
 
       setPosts(enriched);
+      hasLoadedRef.current = true;
       setLoading(false);
     };
     load();
 
     return () => { active = false; };
-  }, [profileId, isOwner, typeKey, refreshKey]);
+  }, [profileId, isOwner, typeKey, refreshKey, reactionTick]);
 
   // Visibility gating for visitors outside the circle. Sparks and bulletins
   // are written for a wide audience; stories and embers only tease.
@@ -106,6 +111,7 @@ const CabinPostHistory = ({ profileId, isOwner, isInCircle, postTypes, emptyMess
         post={post}
         draft={isOwner && !post.is_published}
         onOpen={() => navigate(`/post/${post.id}`)}
+        onReactionChange={() => setReactionTick(t => t + 1)}
         onImageClick={(images, index) => setLightbox({ open: true, images, index })}
       />
     );

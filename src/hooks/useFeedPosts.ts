@@ -51,12 +51,18 @@ const AUTHOR_COLUMNS = 'id, display_name, handle, accent_color, cabin_mood, avat
 interface CampPostRow {
   id: string;
   author_id: string;
+  camp_id: string;
   content: string | null;
   post_type: string | null;
   created_at: string;
   author: PostWithAuthor['author'];
   camp: { name: string } | null;
 }
+
+/** Where opening a feed item goes: camp posts have no /post/:id detail page,
+ *  so they land on their camp instead. */
+export const feedPostTarget = (post: PostWithAuthor): string =>
+  post._isCampPost ? (post._campId ? `/camps/${post._campId}` : '/camps/mine') : `/post/${post.id}`;
 
 export const useFeedPosts = () => {
   const { user } = useAuth();
@@ -111,7 +117,7 @@ export const useFeedPosts = () => {
           post_media: p.post_media ?? [],
         }));
 
-      const enrichedCamp: (PostWithAuthor & { _campName?: string })[] = campPosts
+      const enrichedCamp: PostWithAuthor[] = campPosts
         .filter(p => !muted.has(p.author_id))
         .map(p => ({
           id: p.id,
@@ -126,6 +132,8 @@ export const useFeedPosts = () => {
           author: p.author,
           reactions: [],
           post_media: [],
+          _isCampPost: true,
+          _campId: p.camp_id,
           _campName: p.camp?.name,
         }));
 

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { useFeedPosts } from '@/hooks/useFeedPosts';
+import { useFeedPosts, feedPostTarget } from '@/hooks/useFeedPosts';
 import { useViewerProfile } from '@/hooks/queries';
 import { refreshMyInvites } from '@/lib/trailApi';
 import { LeftRail, RightRail } from '@/components/feed/FeedRails';
@@ -33,6 +33,7 @@ const today = () =>
 const Feed = () => {
   const { user, loading: authLoading } = useAuth();
   const { setComposerOpen } = useNavigation();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: profile } = useViewerProfile();
   const { data, isLoading } = useFeedPosts();
@@ -118,7 +119,8 @@ const Feed = () => {
             <HandoffPostCard
               key={post.id}
               post={post}
-              onOpen={() => queryClient.invalidateQueries({ queryKey: ['feed', user.id] })}
+              onOpen={() => navigate(feedPostTarget(post))}
+              onReactionChange={() => queryClient.invalidateQueries({ queryKey: ['feed', user.id] })}
               onImageClick={(images, index) => setLightbox({ open: true, images, index })}
             />
           ))}
