@@ -7,8 +7,9 @@ import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { to: '/grove', label: 'Overview', end: true },
-  // Ranger Station: trust, bot defense, and invitation containment
-  { to: '/grove/cases', label: 'Ranger Station' },
+  // Moderation: trust, bot defense, and invitation containment. ("Ranger
+  // Station" now names the member-facing feedback board at /ranger-station.)
+  { to: '/grove/cases', label: 'Moderation' },
   { to: '/grove/trails', label: 'Trail Map' },
   { to: '/grove/appeals', label: 'Appeals' },
   { to: '/grove/queue', label: 'Review Queue' },

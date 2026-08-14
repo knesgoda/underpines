@@ -35,7 +35,7 @@ const SuspendedPage = ({ reason, suspendedUntil, isPermanent }: SuspendedPagePro
     if (result.success) {
       setOpenAppeal({ status: 'OPEN' });
       setShowAppeal(false);
-      toast.success('Your appeal is on its way to the Ranger Station.');
+      toast.success('Your appeal is on its way to the Rangers.');
     } else {
       toast.error('Something went wrong sending your appeal. Please try again.');
     }
@@ -50,7 +50,7 @@ const SuspendedPage = ({ reason, suspendedUntil, isPermanent }: SuspendedPagePro
         <p className="font-body text-lg text-foreground/80">
           {suspendedUntil || isPermanent
             ? 'Your account has been suspended.'
-            : 'Your account is on hold while the Ranger Station takes a look.'}
+            : 'Your account is on hold while the Rangers take a look.'}
         </p>
 
         {reason && (
@@ -77,7 +77,7 @@ const SuspendedPage = ({ reason, suspendedUntil, isPermanent }: SuspendedPagePro
         {checkedAppeal && (
           openAppeal ? (
             <p className="font-body text-sm text-muted-foreground rounded-[5px] border border-border bg-card px-4 py-3">
-              The Ranger Station has your appeal and will take a careful look.
+              The Rangers have your appeal and will take a careful look.
             </p>
           ) : showAppeal ? (
             <div className="space-y-3 text-left">
@@ -107,7 +107,7 @@ const SuspendedPage = ({ reason, suspendedUntil, isPermanent }: SuspendedPagePro
               onClick={() => setShowAppeal(true)}
               className="font-body text-sm text-primary underline underline-offset-4 hover:opacity-80"
             >
-              Think we got this wrong? Ask the Ranger Station to review your account.
+              Think we got this wrong? Ask the Rangers to review your account.
             </button>
           )
         )}

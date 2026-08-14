@@ -65,16 +65,13 @@ export const useInviteeCount = () => {
     queryKey: ['invitee-count', user?.id],
     enabled: !!user,
     queryFn: async (): Promise<number> => {
-      const { data: invite } = await supabase
-        .from('invites')
-        .select('id')
-        .eq('inviter_id', user!.id)
-        .maybeSingle();
-      if (!invite) return 0;
+      // Lineage covers both eras — Trail Pass invitees and the legacy link
+      // backfill — where the old invites/invite_uses pair only counted the
+      // latter.
       const { count } = await supabase
-        .from('invite_uses')
+        .from('user_lineage')
         .select('*', { count: 'exact', head: true })
-        .eq('invite_id', invite.id);
+        .eq('invited_by_user_id', user!.id);
       return count ?? 0;
     },
   });

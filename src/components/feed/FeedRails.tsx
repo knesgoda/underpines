@@ -10,6 +10,9 @@ const RAIL_NAV = [
   // profile, so there is no rail entry pointing at a route that 404s.
   { label: 'Groups', to: '/groups', icon: '⛺' },
   { label: 'Messages', to: '/messages', icon: '✉' },
+  { label: 'Ranger Station', to: '/ranger-station', icon: '🪧' },
+  { label: 'Invites', to: '/invites', icon: '🎟' },
+  { label: 'Settings', to: '/settings', icon: '⚙' },
 ];
 
 const memberSince = (iso: string | null) =>
@@ -74,7 +77,7 @@ export const LeftRail = () => {
 };
 
 /** Right rail — invite state and the house rules. */
-export const RightRail = ({ inviteUrl }: { inviteUrl: string | null }) => (
+export const RightRail = ({ availablePasses }: { availablePasses: number | null }) => (
   <aside className="right-rail">
     <section className="panel">
       <h2 className="panel-title">
@@ -82,9 +85,11 @@ export const RightRail = ({ inviteUrl }: { inviteUrl: string | null }) => (
         <Link to="/invites"><button type="button">Manage</button></Link>
       </h2>
       <p className="mt-3 font-body text-xs text-muted-foreground">
-        {inviteUrl
-          ? 'Everyone here was let in by someone. Pass it on carefully.'
-          : 'No invites left right now. They come back.'}
+        {availablePasses === null
+          ? 'Everyone here was let in by someone.'
+          : availablePasses > 0
+            ? `You have ${availablePasses} Trail Pass${availablePasses === 1 ? '' : 'es'} to share. Everyone here was let in by someone — pass it on carefully.`
+            : 'No invites left right now. They come back.'}
       </p>
     </section>
 

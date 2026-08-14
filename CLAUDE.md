@@ -126,8 +126,76 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-13 (LATEST) — invite-rotation + price-table + pine-pet path
-fixes (branch `claude/security-issues-review-26w33x`, pushed, not merged).**
+**As of 2026-08-14 (LATEST) — Cabin hidden, member Ranger Station (feedback
+board), Settings/Invites access restored (branch
+`claude/cabin-ranger-station-settings-yovcme`, merged to main; live site
+still needs a Lovable publish).**
+
+Four asks from Kevin, all shipped:
+
+- **Cabin hidden behind a flag.** New `src/lib/flags.ts`
+  (`CABIN_ENABLED = false`). `/u/:handle` + `/cabin` redirect home (routes
+  kept so `/u/foo` never falls into the `/:handle` catch-all); sign-in now
+  lands on `/` (was `/cabin`); collection publish/delete return to `/me`;
+  marketplace "Preview on my Cabin" gated; PWA shortcut → My Page. All cabin
+  code untouched — re-enable is one flag flip.
+- **Member-facing Ranger Station at `/ranger-station`** (`/ranger` repoints
+  here; the ADMIN area under /grove is now labeled **"Moderation"**, and
+  member copy says "the Rangers" — ReportSheet, Suspended, GroveAppeals).
+  Any member files feature requests / bug reports and votes items up the
+  board; Rangers get an inline status select + note per row. Migration
+  `20260814000000_ranger_station_feedback.sql` — **applied LIVE via
+  `query_database` (NOT in Lovable's ledger; repo file is source of truth)**:
+  `feedback_items` + `feedback_votes`, SELECT-only RLS, all writes through 5
+  definer RPCs (submit 5/day rate limit + auto-self-vote, idempotent vote
+  toggle, author edit/delete only while `open`, `set_feedback_status` gated
+  `ranger_level >= 1`). Verified per SECURITY.md: pg_policies/pg_proc + an
+  18-case impersonated exploit test in a rolled-back transaction (all green,
+  zero rows persisted — see SECURITY.md changelog). Client:
+  `src/lib/feedbackApi.ts`, `src/hooks/useFeedback.ts`,
+  `src/pages/RangerStation.tsx` (+ route-scoped `ranger-station.css`), drift
+  tests keep client status/type vocab matching the migration CHECKs.
+- **Settings reachable again** (orphaned since the 601b785 UI port): the
+  topbar avatar is now a hand-rolled dropdown — My Page / Settings /
+  My Invites / Ranger Station / Sign out — visible on ALL viewports
+  (`.mini-me` un-hidden on desktop, panel styles in handoff-shell.css);
+  feed left rail gains Ranger Station/Invites/Settings; My Page owners get
+  a Settings paper-button. TabBar stays at its designed 5 slots.
+- **Invites resurfaced:** `Feed.tsx` no longer hardcodes
+  `<RightRail inviteUrl={null} />` (which showed every member "No invites
+  left right now") — the rail now reads the real balance via
+  `refresh_my_invites` (5-min staleTime) and shows the pass count;
+  `useInviteeCount` now counts `user_lineage` rows instead of the legacy
+  `invites`/`invite_uses` pair, so the "Invited" stat includes Trail Pass
+  invitees.
+
+**Verified:** tsc clean; eslint clean on changed files (7 pre-existing `any`
+errors in MarketplaceDetail at baseline, untouched); 134 vitest pass (4 new);
+build clean; entry 197.2 kB gzip (196.8 baseline — the +0.4 kB is the topbar
+dropdown + flag, all board code rides in its route chunk); signed-out
+Chromium sweep green on 12 routes × both themes.
+
+**Kevin's signed-in eyeball list** (sandbox can't reach Supabase):
+1. Sign-in lands on the feed; `/cabin` + `/u/<handle>` redirect home; My Page
+   has no cabin button; publishing a collection returns to `/me`.
+2. `/ranger-station`: file a feature + a bug; 6th same-day submit politely
+   refused; vote/unvote moves the count; tabs/status filter/sort work; as
+   admin the status select + note appear — move something to Planned; a
+   second account sees status+note but no control.
+3. Avatar dropdown desktop + phone; feed left rail shows the three new links.
+4. Feed right rail shows the real pass count (matches `/invites`); the
+   "Invited" stat is no longer 0 for Trail Pass inviters.
+5. `/grove` nav reads "Moderation"; report sheet says "Send to the Rangers";
+   `/ranger` lands on the member board.
+
+**Deploy note:** the migration is live and additive (harmless to the current
+frontend). The UI changes need this branch merged + published via Lovable to
+reach underpines.com.
+
+---
+
+**Previously (2026-08-13) — invite-rotation + price-table + pine-pet path
+fixes (branch `claude/security-issues-review-26w33x`, merged to main).**
 
 Three more scanner findings fixed — migration
 `supabase/migrations/20260813240000_invite_rotation_and_price_visibility.sql`,

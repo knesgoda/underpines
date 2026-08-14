@@ -24,8 +24,8 @@
   "categories": ["social", "lifestyle"],
   "shortcuts": [
     {
-      "name": "My Cabin",
-      "url": "/cabin",
+      "name": "My Page",
+      "url": "/me",
       "icons": [{ "src": "/pwa-icon-192.png", "sizes": "192x192" }]
     },
     {

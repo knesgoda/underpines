@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import PineTreeLoading from '@/components/PineTreeLoading';
+import { CABIN_ENABLED } from '@/lib/flags';
 import { toast } from 'sonner';
 
 const MarketplaceDetail = () => {
@@ -149,7 +150,7 @@ const MarketplaceDetail = () => {
               <h2 className="font-display text-xl text-foreground mb-2">{design.name} is yours.</h2>
               <div className="flex gap-2 justify-center mt-6">
                 <Button onClick={() => { setShowPurchased(false); handleApply(); }} className="rounded-[3px] font-body text-sm">
-                  Apply to my Cabin now →
+                  Apply to my page now →
                 </Button>
                 <Button variant="ghost" onClick={() => setShowPurchased(false)} className="rounded-[3px] font-body text-sm">
                   Keep browsing
@@ -194,7 +195,7 @@ const MarketplaceDetail = () => {
           </>
         ) : (
           <>
-            {user && (
+            {user && CABIN_ENABLED && (
               <Button variant="outline" onClick={handlePreview} className="rounded-[3px] font-body text-sm">
                 Preview on my Cabin →
               </Button>
