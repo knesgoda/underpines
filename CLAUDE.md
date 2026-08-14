@@ -128,7 +128,8 @@ what the next session should know._
 
 **As of 2026-08-14 (LATEST) — Cabin hidden, member Ranger Station (feedback
 board), Settings/Invites access restored (branch
-`claude/cabin-ranger-station-settings-yovcme`, pushed, not merged).**
+`claude/cabin-ranger-station-settings-yovcme`, merged to main; live site
+still needs a Lovable publish).**
 
 Four asks from Kevin, all shipped:
 
