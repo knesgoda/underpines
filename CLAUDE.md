@@ -50,6 +50,16 @@ distinction changes how you apply schema changes and how you verify them.
    functions, `pg_policies` counts for RLS, and the actual payload shape against
    a real row.
 
+**Always hand Kevin a Lovable prompt too (Kevin's standing request).** Any
+time a session produces a migration — or anything else that needs Lovable to
+act (apply SQL, publish the frontend, deploy an edge function) — end the
+session by giving Kevin a ready-to-paste prompt for the Lovable agent in the
+chat reply, even when the session already applied or requested the change
+itself through the MCP. The prompt should state exactly what to run or
+deploy, in what order, what NOT to improvise, and what a checkable success
+looks like (row/policy/function counts), so Kevin can drive the handover
+from the Lovable editor without reconstructing context.
+
 ## The sandbox cannot reach Supabase
 
 Outbound egress to `*.supabase.co` is blocked here. Consequences:
