@@ -158,6 +158,12 @@ Kevin's asks from his iPhone, all shipped:
    `20260815100000_personal_invite_links.sql` **APPLIED via query_database
    (NOT in Lovable's ledger)** — full detail + verification in SECURITY.md's
    2026-08-14 personal-links entry (read it before touching invites/signup).
+   **Follow-up same day (Kevin's ask): links limited to 7 days + 10 joins,
+   auto-renewing** — migration `20260815110000_personal_link_limits.sql`
+   (also APPLIED + exploit-tested, own SECURITY.md entry; now the newest
+   source of `handle_new_user`/`get_invite_landing`/`get_my_invite_link`).
+   Panel shows "Good through <date> · N joins left"; expired/exhausted links
+   retire themselves and a fresh one mints on the next /invites visit.
    Client: "Your personal link" panel on /invites (navigator.share → the
    iPhone share sheet is the "text it" path, copy fallback, rotate w/
    inline confirm), landing shows "resting" copy when the owner is out of
@@ -182,9 +188,9 @@ Kevin's asks from his iPhone, all shipped:
    CabinPostHistory refetches counts without blanking).
 
 **Verified:** tsc clean; eslint clean on changed files (pre-existing `any`
-baselines untouched: PostCard ×1, InviteLanding ×2); 165 vitest pass (9 new:
-3 feedPostTarget, 1 marketplace-degradation, 5 personal-link migration
-drift); build clean; entry 197.6 kB gzip (197.5 baseline — the caret + flag
+baselines untouched: PostCard ×1, InviteLanding ×2); 167 vitest pass (11 new:
+3 feedPostTarget, 1 marketplace-degradation, 7 personal-link migration
+drift incl. the limits shapes); build clean; entry 197.6 kB gzip (197.5 baseline — the caret + flag
 are the only entry-graph additions); signed-out Chromium sweep green 12
 routes × both themes + topbar-height assertion. Migration verified per
 SECURITY.md (state checks + 24-assertion exploit test, all ok, rolled back

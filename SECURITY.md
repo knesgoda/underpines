@@ -114,6 +114,45 @@ their way into someone else's private data with this policy?"**
 _Newest first. Every security-relevant change gets an entry: date, what, why,
 where (migration file / PR), verification._
 
+### 2026-08-14 — Personal link limits: 7-day expiry + 10-join cap — APPLIED & VERIFIED
+**Migration:** `supabase/migrations/20260815110000_personal_link_limits.sql`
+(applied via `query_database` — NOT in Lovable's ledger; repo file is source
+of truth). Kevin's tightening of the same-day personal-links feature: each
+link is now good for **7 days** and at most **10 joins** (both tunable via
+`security_config`: `personal_link_expiry_days` / `personal_link_max_uses`),
+on top of the unchanged per-join allowance spend. Email Trail Passes
+untouched.
+
+- New nullable `invites.expires_at` (only personal rows set it; legacy/root
+  rows keep NULL = no expiry). The join cap reuses `uses_remaining` (personal
+  rows previously bypassed it at 0/0); rows stay `is_infinite = true` so
+  `validate-invite`'s per-IP rate limiting keeps applying.
+- Enforced in BOTH places: `get_invite_landing` (expired/exhausted → plain
+  invalid; `'resting'` stays reserved for frozen/out-of-passes) and the
+  `handle_new_user` personal branch (checks before the allowance spend;
+  decrements `uses_remaining` under the existing FOR UPDATE row lock with the
+  legacy branch's atomic `is_active = (uses_remaining - 1) > 0` pattern — the
+  final join self-retires the row).
+- **Auto-renew:** `get_my_invite_link` lazily retires an expired/exhausted
+  row and mints a fresh one (the self-deactivation frees the
+  one-active-per-member partial unique index slot). Payload now returns
+  `expires_at` + `uses_remaining` for the panel. This file supersedes
+  20260815100000 as the newest source of `handle_new_user`,
+  `get_invite_landing` and `get_my_invite_link`.
+
+**Verified in production:** state checks (column present, live
+`handle_new_user` contains the expiry + uses checks, `get_my_invite_link`
+carries the 7/10 defaults, landing checks the cap), then the extended
+23-assertion impersonated exploit test in a rolled-back transaction — new-link
+budget is a week/ten, a signup spends one pass AND one join (10→9), expired
+link lands invalid + rejects signup, auto-renew mints a fresh slug while the
+old row stays retired, the final join retires the link and the retired id
+rejects the eleventh, plus the full regression set (anon EXECUTE blocked,
+resting at zero passes, rotation revokes old id, trail-pass email binding
+both directions, `get_boot_state()` answers). All ok, zero FAIL, zero rows
+persisted. **Deploy:** additive and harmless to the current client; ships in
+the same pending Lovable publish as the rest of the branch.
+
 ### 2026-08-14 — Personal multi-use invite links — APPLIED & VERIFIED
 **Migration:** `supabase/migrations/20260815100000_personal_invite_links.sql`
 (applied via `query_database` — NOT in Lovable's ledger; repo file is source
