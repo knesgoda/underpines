@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
-const REACTIONS = [
+// Exported for the drift test: every emoji offered here must be in the
+// reactions CHECK constraint, or the reaction is silently thrown away.
+export const REACTIONS = [
   { type: 'warmth', icon: '❤️' },
   { type: 'laughed', icon: '😂' },
   { type: 'heavy', icon: '😢' },
