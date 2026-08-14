@@ -156,7 +156,7 @@ const CollectionEditor = () => {
       }
 
       toast.success('Collection published!');
-      navigate('/cabin');
+      navigate('/me');
     }
     setSaving(false);
   };
@@ -168,7 +168,7 @@ const CollectionEditor = () => {
     await supabase.from('collections').update({ is_published: false }).eq('id', id);
     setDeleteOpen(false);
     toast.success('Collection removed');
-    navigate('/cabin');
+    navigate('/me');
   };
 
   const addPost = (post: PostItem) => {

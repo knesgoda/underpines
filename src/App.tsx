@@ -11,6 +11,7 @@ import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PineTreeLoading from "@/components/PineTreeLoading";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { CABIN_ENABLED } from "@/lib/flags";
 
 import AppLayout from "@/components/navigation/AppLayout";
 
@@ -157,9 +158,11 @@ const App = () => (
                       <Route path="/listening" element={<Listening />} />
                       <Route path="/events" element={<Events />} />
                       <Route path="/events/new" element={<EventComposer />} />
-                      {/* The Cabin — the place. /:handle stays the page. */}
-                      <Route path="/u/:handle" element={<CabinPage />} />
-                      <Route path="/cabin" element={<CabinPage />} />
+                      {/* The Cabin — the place. /:handle stays the page. Hidden
+                          behind CABIN_ENABLED while it's worked on; the routes
+                          stay so /u/foo never falls through to /:handle. */}
+                      <Route path="/u/:handle" element={CABIN_ENABLED ? <CabinPage /> : <Navigate to="/" replace />} />
+                      <Route path="/cabin" element={CABIN_ENABLED ? <CabinPage /> : <Navigate to="/" replace />} />
                       <Route path="/ranger" element={<Navigate to="/grove/cases" replace />} />
                       <Route path="/invites" element={<Invites />} />
                       <Route path="/invites/tree" element={<InviteTree />} />

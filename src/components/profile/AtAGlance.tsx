@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { CalendarDays, Eye, MapPin } from 'lucide-react';
 import CircleButton from '@/components/circles/CircleButton';
 import { CabinFlourish } from './PaperFlourish';
+import { CABIN_ENABLED } from '@/lib/flags';
 import type { PageProfile } from '@/hooks/useProfilePage';
 
 const memberSince = (iso: string | null) =>
@@ -57,9 +58,11 @@ const AtAGlance = ({
       ) : (
         <CircleButton profileId={profile.id} profileName={profile.display_name} />
       )}
-      <Link to={`/u/${profile.handle}`} className="paper-button">
-        {isOwner ? 'Step into your cabin' : 'Visit the cabin'}
-      </Link>
+      {CABIN_ENABLED && (
+        <Link to={`/u/${profile.handle}`} className="paper-button">
+          {isOwner ? 'Step into your cabin' : 'Visit the cabin'}
+        </Link>
+      )}
     </div>
   </section>
 );

@@ -31,8 +31,8 @@ const Login = () => {
     }
 
     // Return the visitor to the page they originally tried to open, if the
-    // gate captured one; otherwise land on their own cabin.
-    navigate(from && from !== '/login' ? from : '/cabin', { replace: true });
+    // gate captured one; otherwise land on the feed.
+    navigate(from && from !== '/login' ? from : '/', { replace: true });
   };
 
   return (

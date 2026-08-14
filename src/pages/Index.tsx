@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -122,13 +122,8 @@ const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // If logged in, redirect to cabin
-  useEffect(() => {
-    if (!loading && user) {
-      navigate('/cabin', { replace: true });
-    }
-  }, [loading, user, navigate]);
-
+  // Signed-in visitors never see the landing — HomePage renders the feed
+  // before this component mounts. The guard just prevents a flash.
   if (!loading && user) return null;
 
   return (
