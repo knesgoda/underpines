@@ -114,6 +114,27 @@ their way into someone else's private data with this policy?"**
 _Newest first. Every security-relevant change gets an entry: date, what, why,
 where (migration file / PR), verification._
 
+### 2026-08-14 — Ranger Station feedback board (new tables, RPC-only writes)
+**Migration:** `supabase/migrations/20260814000000_ranger_station_feedback.sql`
+(applied via `query_database` — NOT in Lovable's ledger). New member-facing
+feedback board: `feedback_items` (feature/bug + status + ranger_note) and
+`feedback_votes` (PK item+user). Design follows the RPC-only write pattern:
+both tables carry a single `SELECT TO authenticated USING (true)` policy and
+**no INSERT/UPDATE/DELETE policies at all** — the self-insert bug class has no
+policy to exploit. Writes go through five SECURITY DEFINER fns (actor always
+`auth.uid()`): `submit_feedback` (validates type/length, 5/author/24h rate
+limit, auto-votes own item), `toggle_feedback_vote` (idempotent, PK-bounded),
+`update_own_feedback` / `delete_own_feedback` (author only, only while
+`status='open'`), `set_feedback_status` (`ranger_level >= 1` only).
+**Verified in production:** `pg_policies` (exactly 2 SELECT policies) +
+`pg_proc` (5 fns, prosecdef, `search_path=public`), then an 18-case
+impersonated exploit test in a rolled-back transaction — direct INSERT
+blocked 42501 on both tables, direct UPDATE/DELETE match zero rows, non-ranger
+status change → `not_allowed`, non-author edit/delete rejected, 6th same-day
+submission → `rate_limited`, post-triage edits locked, anon reads zero rows
+and cannot submit, `get_boot_state()` unaffected; legit submit/vote-toggle/
+own-edit/ranger-status all pass. Zero test rows persisted.
+
 ### 2026-08-13 — Camp bonfire flow repaired (constraint + campfire visibility)
 **Migration:** `supabase/migrations/20260813230000_camp_bonfire_flow.sql`
 (applied via `query_database` — NOT in Lovable's ledger). The
