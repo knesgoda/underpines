@@ -114,6 +114,55 @@ their way into someone else's private data with this policy?"**
 _Newest first. Every security-relevant change gets an entry: date, what, why,
 where (migration file / PR), verification._
 
+### 2026-08-14 — Notification system overhaul (server-side producers, RLS tightening) — ⚠️ NOT YET APPLIED
+**Migration:** `supabase/migrations/20260815000000_notification_system_overhaul.sql`
+(branch `claude/notification-system-design-ewdaqj`). **Committed but NOT
+applied to prod** — the building session could not get DDL approval
+(`query_database` denied by the permission classifier; Lovable `send_message`
+needed an interactive approval). Apply per `docs/notifications-deploy.md`
+**before** publishing the frontend from that branch, then run
+`docs/notifications-exploit-test.sql` (12-case impersonated test in a
+rolled-back transaction) and the state checks in the runbook, and update this
+entry to record the results.
+
+What it changes, security-wise:
+
+- **Notification production moves server-side.** New `notify_user()`
+  SECURITY DEFINER helper (blocks re-check, per-type preference enforcement,
+  10-minute dedupe, exception-swallowing) + 10 AFTER triggers on
+  `replies`/`reactions`/`circles`/`posts`/`camp_members`/`camp_join_requests`,
+  plus one added notify call in the LIVE bodies of `handle_new_user()`,
+  `redeem_trail_pass()` and `accept_invite_create_circle()` (re-emitted from
+  `pg_get_functiondef` output, not repo copies). EXECUTE revoked from
+  anon/authenticated on all new functions — clients cannot spoof through them.
+- **INSERT policy narrowed** from "any type as yourself" to
+  `smoke_signal`/`camp_newsletter` as yourself, or NULL-actor as admin
+  (GroveDesigns). Everything else must come from triggers or service role.
+- **UPDATE tightened**: real `WITH CHECK (recipient_id = auth.uid())` plus a
+  column-scoped grant — authenticated can UPDATE only `is_read` (the
+  `profiles` precedent). Previously a recipient could rewrite any column of
+  their own rows.
+- **DELETE policy added** (recipient-only) — enables per-item dismiss and
+  Clear all.
+- **Stale CHECK constraints fixed**: `notification_type` gains the six types
+  live code already writes (incl. ranger `system` notices, which were ERRORING
+  inside moderation RPCs) plus four camp types; `reactions.reaction_type`
+  gains `relatable`/`eyeroll`/`moonstruck`, which the client offers but the
+  constraint silently rejected.
+- **Reaction aggregation**: partial unique index
+  `(recipient_id, post_id) WHERE notification_type='reaction_batch'`, counts
+  recomputed from the reactions table in the trigger (never incremented, never
+  client-supplied).
+- `get_boot_state()` re-emitted with one edit (reaction_batch exclusion
+  removed from `unread_notifications`) — checklist item 5 must confirm it
+  still answers for a normal member after apply.
+
+Hostile-user walk: spoofed inserts blocked by the narrowed policy + revoked
+EXECUTE; recipients can no longer forge row contents (column grant); deletes
+are recipient-scoped; triggers derive recipient/actor entirely from the
+underlying row and `auth.uid()`, never from client-supplied notification
+fields. The exploit test exercises each of these plus the legit flows.
+
 ### 2026-08-14 — Ranger Station feedback board (new tables, RPC-only writes)
 **Migration:** `supabase/migrations/20260814000000_ranger_station_feedback.sql`
 (applied via `query_database` — NOT in Lovable's ledger). New member-facing

@@ -126,7 +126,63 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-14 (LATEST) — Cabin hidden, member Ranger Station (feedback
+**As of 2026-08-14 (LATEST) — Notification system overhaul (branch
+`claude/notification-system-design-ewdaqj`, pushed, NOT merged; ⚠️ migration
+committed but NOT APPLIED to prod).**
+
+Kevin's ask: FB/IG-style notifications — "X commented", "X liked your post",
+"X accepted my invite", click-through to the thing, clear-all. Decisions
+(AskUserQuestion): reactions live + aggregated, Clear all = permanent delete,
+in-app only (web push stays the known-broken scaffold, untouched).
+
+- **Migration `20260815000000_notification_system_overhaul.sql` — the whole
+  backend.** Production moves server-side: `notify_user()` definer helper
+  (blocks, per-type preference enforcement — first time the `notify_*` prefs
+  do anything — 10-min dedupe, exception-swallowing) + 10 AFTER triggers
+  (replies incl. nested-reply parents, aggregated reactions, circles
+  request/accept — fixing the 1-of-3-paths inconsistency — quote posts, camp
+  member/join-request events) + one notify call added to the LIVE bodies of
+  `handle_new_user`/`redeem_trail_pass`/`accept_invite_create_circle`
+  (`invite_accepted` finally has producers). Stale CHECKs fixed: 6 live
+  notification types were being rejected (ranger `system` notices ERRORED in
+  moderation RPCs!) and 3 of the client's 9 reaction emoji (🫠🙄🌕) were
+  silently dropped. RLS: DELETE policy (new), UPDATE column-scoped to
+  `is_read` + WITH CHECK, INSERT narrowed to smoke_signal/camp_newsletter/
+  admin-null-actor. `get_boot_state` re-emitted minus the reaction_batch
+  exclusion. Reactions collapse to one row per (recipient, post) via a
+  partial unique index; counts recomputed in-trigger, bump-to-unread only
+  when the count grows (emoji-change dance doesn't re-notify).
+- **⚠️ APPLY IS THE BLOCKING STEP.** This sandbox was denied DDL
+  (`query_database` classifier-blocked, `send_message` needed interactive
+  approval), so unlike previous migrations this one is NOT live.
+  **`docs/notifications-deploy.md` is the runbook** — apply order (migration
+  BEFORE frontend publish, or notifications silently stop), then
+  `docs/notifications-exploit-test.sql` (12-case impersonated test, rolls
+  itself back), then the state checks. SECURITY.md entry is written and
+  marked NOT YET APPLIED — update both after the apply.
+- **Client:** `src/lib/notificationsApi.ts` (all reads/writes centralized,
+  keyset pagination), `src/lib/notificationCopy.ts` (all 25 types → copy +
+  real route; cabin events degrade to actor profile while `CABIN_ENABLED`
+  is false), `src/hooks/useNotifications.ts` (infinite query + mutations).
+  `Lantern.tsx` overhauled: reactions live with "X and N others", per-row
+  dismiss ✕, Clear all with inline confirm, "Show older" pagination, new
+  Cabin section, no more "Something happened." rows. Six redundant client
+  notification inserts deleted (ReplyThread, ReactionBar, QuoteComposer,
+  CircleButton ×2, useFriends, WelcomePeople). NavigationContext badge stops
+  excluding reaction_batch (recount + realtime). Mobile finally gets a door:
+  🔔 + count in the topbar under 700px, "Updates (N)" row in the avatar
+  dropdown everywhere (TabBar untouched at 5 slots). `send-daily-ember`
+  sums `aggregate_count` (needs edge deploy; undercounts harmlessly until).
+- **Verified:** tsc clean; eslint clean on changed files (2 pre-existing
+  `any` errors in ReplyThread at baseline, untouched); 142 vitest pass
+  (8 new: CHECK-constraint drift ×2, copy coverage of all 25 types,
+  aggregated-copy boundaries, cabin-flag link degradation, pagination
+  merge/dedupe); build clean; entry 197.2 kB gzip (= baseline, the bell rides
+  free); signed-out Chromium sweep green 12 routes × both themes. NOT
+  verifiable here: everything signed-in/data-dependent — that's the exploit
+  test (post-apply) + Kevin's eyeball list in the runbook.
+
+**Previously (2026-08-14) — Cabin hidden, member Ranger Station (feedback
 board), Settings/Invites access restored (branch
 `claude/cabin-ranger-station-settings-yovcme`, merged to main; live site
 still needs a Lovable publish).**
