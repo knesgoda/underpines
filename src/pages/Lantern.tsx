@@ -9,7 +9,7 @@ import PineTreeLoading from '@/components/PineTreeLoading';
 import { ErrorPanel } from '@/components/StatePanel';
 import { useViewerProfile } from '@/hooks/queries';
 import { formatTimeAgo } from '@/lib/time';
-import { CABIN_ENABLED } from '@/lib/flags';
+import { CABIN_ENABLED, MARKETPLACE_ENABLED } from '@/lib/flags';
 import { describeNotification } from '@/lib/notificationCopy';
 import { markAllRead as apiMarkAllRead, type NotificationRow } from '@/lib/notificationsApi';
 import {
@@ -143,6 +143,7 @@ const Lantern = () => {
       threadName: id => (id && threadNames[id]) || null,
       viewerHandle: viewer?.handle ?? null,
       cabinEnabled: CABIN_ENABLED,
+      marketplaceEnabled: MARKETPLACE_ENABLED,
     });
 
   const dismissButton = (n: NotificationRow) => (

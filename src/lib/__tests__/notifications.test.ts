@@ -42,6 +42,7 @@ describe('notification type contract', () => {
       threadName: () => 'The Grove',
       viewerHandle: 'me',
       cabinEnabled: false,
+      marketplaceEnabled: false,
     };
     for (const type of NOTIFICATION_TYPES) {
       const { text, to } = describeNotification(row({ notification_type: type }), ctx);
@@ -73,6 +74,7 @@ describe('describeNotification', () => {
     threadName: () => 'The Grove',
     viewerHandle: 'me',
     cabinEnabled: false,
+    marketplaceEnabled: false,
   };
 
   it('aggregated reaction copy at counts 1, 2, and many', () => {
@@ -93,6 +95,16 @@ describe('describeNotification', () => {
       { ...ctx, cabinEnabled: true },
     );
     expect(shown.to).toBe('/cabin');
+  });
+
+  it('design events land home while the marketplace is hidden, in My Designs when not', () => {
+    const hidden = describeNotification(row({ notification_type: 'design_approved' }), ctx);
+    expect(hidden.to).toBe('/');
+    const shown = describeNotification(
+      row({ notification_type: 'design_approved' }),
+      { ...ctx, marketplaceEnabled: true },
+    );
+    expect(shown.to).toBe('/settings/designs');
   });
 
   it('reply deep-links to the post, camp events to the camp', () => {

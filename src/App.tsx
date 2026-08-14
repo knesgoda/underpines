@@ -11,7 +11,7 @@ import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import PineTreeLoading from "@/components/PineTreeLoading";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { CABIN_ENABLED } from "@/lib/flags";
+import { CABIN_ENABLED, MARKETPLACE_ENABLED } from "@/lib/flags";
 
 import AppLayout from "@/components/navigation/AppLayout";
 
@@ -188,11 +188,14 @@ const App = () => (
                       <Route path="/settings/notifications" element={<NotificationSettings />} />
                       <Route path="/settings/privacy" element={<PrivacySettings />} />
                       <Route path="/settings/subscription" element={<SubscriptionPage />} />
-                      <Route path="/settings/payouts" element={<CreatorPayouts />} />
-                      <Route path="/settings/designs" element={<MyDesigns />} />
-                      <Route path="/marketplace" element={<Marketplace />} />
-                      <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
-                      <Route path="/designs/create" element={<DesignCreator />} />
+                      {/* The design economy is parked behind MARKETPLACE_ENABLED.
+                          Routes stay registered so /marketplace etc. never fall
+                          through to the /:handle catch-all. */}
+                      <Route path="/settings/payouts" element={MARKETPLACE_ENABLED ? <CreatorPayouts /> : <Navigate to="/settings" replace />} />
+                      <Route path="/settings/designs" element={MARKETPLACE_ENABLED ? <MyDesigns /> : <Navigate to="/settings" replace />} />
+                      <Route path="/marketplace" element={MARKETPLACE_ENABLED ? <Marketplace /> : <Navigate to="/" replace />} />
+                      <Route path="/marketplace/:id" element={MARKETPLACE_ENABLED ? <MarketplaceDetail /> : <Navigate to="/" replace />} />
+                      <Route path="/designs/create" element={MARKETPLACE_ENABLED ? <DesignCreator /> : <Navigate to="/" replace />} />
                       <Route path="/new/story" element={<StoryComposer />} />
                       <Route path="/friends" element={<CirclesPage />} />
                       <Route path="/circles" element={<Navigate to="/friends" replace />} />
