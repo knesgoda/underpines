@@ -114,16 +114,22 @@ their way into someone else's private data with this policy?"**
 _Newest first. Every security-relevant change gets an entry: date, what, why,
 where (migration file / PR), verification._
 
-### 2026-08-14 — Notification system overhaul (server-side producers, RLS tightening) — ⚠️ NOT YET APPLIED
+### 2026-08-14 — Notification system overhaul (server-side producers, RLS tightening) — APPLIED & VERIFIED
 **Migration:** `supabase/migrations/20260815000000_notification_system_overhaul.sql`
-(branch `claude/notification-system-design-ewdaqj`). **Committed but NOT
-applied to prod** — the building session could not get DDL approval
-(`query_database` denied by the permission classifier; Lovable `send_message`
-needed an interactive approval). Apply per `docs/notifications-deploy.md`
-**before** publishing the frontend from that branch, then run
-`docs/notifications-exploit-test.sql` (12-case impersonated test in a
-rolled-back transaction) and the state checks in the runbook, and update this
-entry to record the results.
+(PR #23). **Applied to prod 2026-08-14 via Lovable** (the building sandbox was
+denied DDL, so Kevin ran it through Lovable's agent; Lovable re-recorded it in
+its ledger as `20260814060500_6eb130d5-…​.sql` — same SQL — and regenerated
+`src/integrations/supabase/types.ts`). **Verified twice:** Lovable ran
+`docs/notifications-exploit-test.sql` — all 12 cases green (21 ok-notices,
+zero FAIL), rolled back cleanly with `exploit_test_complete_rollback` — plus
+an independent read-only pass from the Claude session against `pg_policies` /
+`pg_proc` / `pg_trigger` / `aclexplode`: 4 policies (UPDATE has WITH CHECK),
+both new indexes, 10 triggers, `notify_user` prosecdef + not executable by
+authenticated, zero reaction duplicates, 25/11 constraint vocabularies,
+`is_read` the sole UPDATE-grantable column, `get_boot_state()` re-emitted
+without the reaction_batch exclusion and answering with a full payload,
+`handle_new_user` carrying the notify call. Frontend publish + edge deploy
+(`send-daily-ember`) were still pending at entry time — see the runbook.
 
 What it changes, security-wise:
 
