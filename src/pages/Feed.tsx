@@ -32,7 +32,7 @@ const today = () =>
  */
 const Feed = () => {
   const { user, loading: authLoading } = useAuth();
-  const { setComposerOpen } = useNavigation();
+  const { openComposer } = useNavigation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: profile } = useViewerProfile();
@@ -81,23 +81,23 @@ const Feed = () => {
               />
               <input
                 readOnly
-                onFocus={() => setComposerOpen(true)}
-                onClick={() => setComposerOpen(true)}
+                onFocus={() => openComposer()}
+                onClick={() => openComposer()}
                 placeholder="What's happening under your pines?"
                 aria-label="Write a post"
               />
             </div>
             <div className="composer-actions">
-              <button type="button" onClick={() => setComposerOpen(true)}>
+              <button type="button" onClick={() => openComposer('ember')}>
                 <span aria-hidden="true">▧</span> Photos
               </button>
-              <button type="button" onClick={() => setComposerOpen(true)}>
+              <button type="button" onClick={() => navigate('/new/story')}>
                 <span aria-hidden="true">✎</span> Blog
               </button>
               <button
                 type="button"
                 className="post-button"
-                onClick={() => setComposerOpen(true)}
+                onClick={() => openComposer()}
               >
                 Post
               </button>

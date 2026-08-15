@@ -13,53 +13,31 @@
 
 .app {
   min-height: 100vh;
-  /* Start the document below the status-bar strip (viewport-fit=cover), so
-     the sticky topbar's flow position equals its sticky offset — it never
-     gets displaced over the first lines of content. env() is 0 in plain
-     browser tabs. */
-  padding-top: env(safe-area-inset-top, 0px);
+  /* The topbar is fixed (out of flow), so the page clears it explicitly:
+     64px of bar + the status-bar inset it pads itself with. env() is 0 in
+     plain browser tabs, collapsing this to 64px. */
+  padding-top: calc(64px + env(safe-area-inset-top, 0px));
   padding-bottom: 40px;
 }
 
-/* Topbar — navy ground, ember underline. Standard 64px bar; on notched
-   phones (viewport-fit=cover in index.html) it sticks just below the
-   status-bar strip that ::before paints. In a plain browser tab env() is 0
-   and everything collapses to a 64px bar at the very top. */
+/* Topbar — navy ground, ember underline. FIXED to the physical top edge:
+   iOS standalone can park the in-flow document low until the first scroll
+   (its long-standing launch bug), and a sticky bar rides that offset down,
+   opening a gap above it — a fixed bar cannot. The bar pads itself by the
+   status-bar inset (viewport-fit=cover) so its 64px of content sits below
+   the clock while the padding band paints navy behind it. */
 .topbar {
-  height: 64px;
-  position: sticky;
-  top: env(safe-area-inset-top, 0px);
+  height: calc(64px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 20;
   background: hsl(var(--sidebar-background));
   color: hsl(var(--sidebar-foreground));
   border-bottom: 4px solid hsl(var(--primary));
   box-shadow: 0 4px 12px hsl(var(--foreground) / 0.18);
-}
-
-/* Status-bar backdrop: a thin FIXED strip pinned to the physical top edge,
-   immune to iOS holding the document low (its standalone launch bug) or
-   rubber-band overscroll. Same pattern as .fullscreen-shell::before. */
-.topbar::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: env(safe-area-inset-top, 0px);
-  background: hsl(var(--sidebar-background));
-}
-
-/* Launch-offset cover: when iOS parks the page low until the first scroll,
-   paint at most one status-bar height of navy above the bar — bounded, unlike
-   the previous 300px filler that read as a giant header. */
-.topbar::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 100%;
-  height: env(safe-area-inset-top, 0px);
-  background: hsl(var(--sidebar-background));
 }
 
 .topbar-inner {
@@ -684,4 +662,5 @@
   height: env(safe-area-inset-top, 0px);
   background: hsl(var(--sidebar-background));
   z-index: 40;
+  pointer-events: none;
 }
