@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag, Repeat2 } from 'lucide-react';
+import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag, Repeat2, MapPin } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/time';
 import ReactionBar from './ReactionBar';
 import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
@@ -165,6 +165,11 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
               <p className="font-body text-xs text-muted-foreground">
                 @{post.author?.handle}
               </p>
+              {post.place_name && (
+                <p className="font-body text-xs text-muted-foreground flex items-center gap-1">
+                  <MapPin size={11} aria-hidden="true" /> at {post.place_name}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
