@@ -17,21 +17,17 @@ const DesignCreator = () => {
   const [isFreeSelected, setIsFreeSelected] = useState(true);
   const [isSeasonal, setIsSeasonal] = useState(false);
   const [season, setSeason] = useState<string>('autumn');
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB'); return; }
-    setUploading(true);
-    const path = `${user.id}/${Date.now()}.${file.name.split('.').pop()}`;
-    const { error } = await supabase.storage.from('design-previews').upload(path, file);
-    if (error) { toast.error('Upload failed'); setUploading(false); return; }
-    const { data: urlData } = supabase.storage.from('design-previews').getPublicUrl(path);
-    setPreviewUrl(urlData.publicUrl);
-    setUploading(false);
+    setPreviewFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
   const handleSubmit = async () => {
@@ -53,22 +49,42 @@ const DesignCreator = () => {
       accent_color: profile.accent_color,
     };
 
-    const { error } = await supabase.from('cabin_designs').insert({
+    // The design row comes first: preview images are stored under the design
+    // they belong to so storage can verify the uploader created it.
+    const { data: design, error } = await supabase.from('cabin_designs').insert({
       creator_id: user.id,
       name: name.trim(),
       description: description.trim() || null,
-      preview_image_url: previewUrl,
+      preview_image_url: null,
       price_cents: isFreeSelected ? 0 : priceCents,
       is_seasonal: isSeasonal,
       season: isSeasonal ? season : null,
       status: 'pending_review',
       design_data: designData,
-    });
+    }).select('id').single();
 
-    if (error) {
+    if (error || !design) {
       toast.error('Could not submit design');
       setSubmitting(false);
       return;
+    }
+
+    if (previewFile) {
+      setUploading(true);
+      const path = `${user.id}/${design.id}/${crypto.randomUUID()}.${previewFile.name.split('.').pop()}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('design-previews')
+        .upload(path, previewFile);
+      setUploading(false);
+      if (uploadErr) {
+        toast.error('Preview image upload failed — you can add it later.');
+      } else {
+        const { data: urlData } = supabase.storage.from('design-previews').getPublicUrl(path);
+        await supabase
+          .from('cabin_designs')
+          .update({ preview_image_url: urlData.publicUrl })
+          .eq('id', design.id);
+      }
     }
 
     toast.success('Design submitted for review!');
