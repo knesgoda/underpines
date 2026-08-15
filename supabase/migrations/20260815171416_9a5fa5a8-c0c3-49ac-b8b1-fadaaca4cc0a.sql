@@ -1,0 +1,1 @@
+DO $$ BEGIN IF EXISTS (SELECT 1 FROM cron.job WHERE jobid = 5) THEN PERFORM cron.unschedule(5); END IF; END $$;
