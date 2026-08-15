@@ -76,22 +76,11 @@ serve(async (req) => {
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Not cached — this path costs two paid AI calls (Claude + Gemini), so it
-    // must be gated exactly like first-time generation. Without this a member
-    // could loop uncached atmospheres (or mint pet rows) into unbounded spend
-    // on our Anthropic/Gemini keys. Cached hits above stay free and ungated.
-    const { data: prof } = await supabase
-      .from("profiles")
-      .select("is_pines_plus")
-      .eq("id", userId)
-      .single();
-
-    if (!prof?.is_pines_plus) {
-      return new Response(JSON.stringify({
-        error: "Pine Pets are a Pines+ feature. Upgrade to bring your pet to life.",
-      }), { status: 403, headers: corsHeaders });
-    }
-
+    // Not cached — this path costs two paid AI calls (Claude + Gemini). With
+    // the Pines+ subscription retired, the shared 3/day budget below is the
+    // sole cap keeping a member from looping uncached atmospheres into
+    // unbounded spend on our Anthropic/Gemini keys — keep it. Cached hits
+    // above stay free and unmetered.
     // Same 3/day budget as generation, shared through pine_pet_generations.
     const todayStart = new Date();
     todayStart.setUTCHours(0, 0, 0, 0);

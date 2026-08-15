@@ -155,16 +155,8 @@ const PinePetCreationFlow = ({ open, onClose, onCreated, activeAtmosphere = 'mor
       if (error) throw error;
 
       if (data?.error) {
-        if (data.error.includes("couldn't find a pet")) {
-          setErrorMessage(data.error);
-          goTo(1);
-        } else if (data.error.includes('generation attempts')) {
-          setErrorMessage(data.error);
-        } else if (data.error.includes('Pines+')) {
-          setErrorMessage(data.error);
-        } else {
-          setErrorMessage(data.error);
-        }
+        setErrorMessage(data.error);
+        if (data.error.includes("couldn't find a pet")) goTo(1);
         setGenerating(false);
         return;
       }

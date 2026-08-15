@@ -9,24 +9,13 @@ project_id = "dzwltzkakritkwrsikvb"
 #                       requireUser() in the body.
 #
 #   verify_jwt = false  No user JWT. Used only where the caller authenticates a
-#                       different way: Stripe webhook signatures, a CRON_SECRET
-#                       shared secret, a single-use capability token in the URL,
-#                       or a deliberately public endpoint that gates itself.
-
-# ---------------------------------------------------------------------------
-# Stripe webhooks — authenticated by Stripe's request signature, never a JWT.
-[functions.stripe-webhook]
-verify_jwt = false
-
-[functions.stripe-connect-webhook]
-verify_jwt = false
+#                       different way: a CRON_SECRET shared secret, a
+#                       single-use capability token in the URL, or a
+#                       deliberately public endpoint that gates itself.
 
 # ---------------------------------------------------------------------------
 # Scheduled / service-to-service — gated on the CRON_SECRET shared secret
 # (header `x-cron-secret`); the bodies refuse to run without it.
-[functions.process-monthly-payouts]
-verify_jwt = false
-
 [functions.check-block-thresholds]
 verify_jwt = false
 
@@ -93,30 +82,6 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.spotify-search]
-verify_jwt = true
-
-[functions.check-subscription]
-verify_jwt = true
-
-[functions.create-checkout-session]
-verify_jwt = true
-
-[functions.create-collection-checkout]
-verify_jwt = true
-
-[functions.create-collection-price]
-verify_jwt = true
-
-[functions.create-connect-account]
-verify_jwt = true
-
-[functions.create-connect-login-link]
-verify_jwt = true
-
-[functions.create-design-checkout]
-verify_jwt = true
-
-[functions.create-portal-session]
 verify_jwt = true
 
 [functions.evaluate-signup-risk]

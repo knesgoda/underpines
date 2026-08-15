@@ -11,7 +11,6 @@ const script = readFileSync(SCRIPT, "utf8");
 // hit production. This test pins the classification rules the script uses and
 // fails if the script's copy drifts out of shape.
 function classifyFunction(source: string) {
-  if (/constructEventAsync\s*\(/.test(source)) return "stripe-webhook";
   if (/requireCronSecret\s*\(/.test(source)) return "cron";
   if (/requireUser\s*\(/.test(source)) return "member";
   if (/status:\s*401/.test(source)) return "self-auth";
@@ -20,7 +19,7 @@ function classifyFunction(source: string) {
 
 describe("post-deploy smoke test", () => {
   it("exports a classifier and keeps every branch the test relies on", () => {
-    for (const kind of ["stripe-webhook", "cron", "member", "self-auth", "open"]) {
+    for (const kind of ["cron", "member", "self-auth", "open"]) {
       expect(script).toContain(`kind: "${kind}"`);
     }
     expect(script).toContain("export function classifyFunction");
@@ -29,11 +28,10 @@ describe("post-deploy smoke test", () => {
   it("classifies the deployed functions we care about", () => {
     const read = (name: string) =>
       readFileSync(path.join(ROOT, "supabase/functions", name, "index.ts"), "utf8");
-    expect(classifyFunction(read("stripe-webhook"))).toBe("stripe-webhook");
     expect(classifyFunction(read("triage-report"))).toBe("member");
     expect(classifyFunction(read("log-media-access-failure"))).toBe("member");
     expect(classifyFunction(read("check-block-thresholds"))).toBe("cron");
-    expect(classifyFunction(read("process-monthly-payouts"))).toBe("cron");
+    expect(classifyFunction(read("campfire-lifecycle"))).toBe("cron");
   });
 
   it("classifies every function directory without throwing", () => {
@@ -43,7 +41,7 @@ describe("post-deploy smoke test", () => {
     expect(dirs.length).toBeGreaterThan(20);
     for (const name of dirs) {
       const source = readFileSync(path.join(ROOT, "supabase/functions", name, "index.ts"), "utf8");
-      expect(["stripe-webhook", "cron", "member", "self-auth", "open"]).toContain(classifyFunction(source));
+      expect(["cron", "member", "self-auth", "open"]).toContain(classifyFunction(source));
     }
   });
 

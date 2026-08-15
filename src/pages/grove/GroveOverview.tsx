@@ -10,7 +10,6 @@ interface Stats {
   weekReports: number;
   totalMembers: number;
   suspendedMembers: number;
-  pinesPlusMembers: number;
   totalCamps: number;
   flaggedCamps: number;
   recentReportsFiled: number;
@@ -33,7 +32,6 @@ const GroveOverview = () => {
       const [
         { count: totalMembers },
         { count: suspendedMembers },
-        { count: pinesPlusMembers },
         { count: totalCamps },
         { count: flaggedCamps },
         { data: urgentData },
@@ -46,7 +44,6 @@ const GroveOverview = () => {
       ] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
         supabase.from('suspensions').select('id', { count: 'exact', head: true }),
-        supabase.from('pines_plus_subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active'),
         supabase.from('camps').select('id', { count: 'exact', head: true }).eq('is_active', true),
         supabase.from('camps').select('id', { count: 'exact', head: true }).in('health_status', ['concern', 'watch']),
         supabase.from('reports').select('id').eq('status', 'pending_review').eq('ai_severity', 'critical'),
@@ -64,7 +61,6 @@ const GroveOverview = () => {
         weekReports: weekData?.length ?? 0,
         totalMembers: totalMembers ?? 0,
         suspendedMembers: suspendedMembers ?? 0,
-        pinesPlusMembers: pinesPlusMembers ?? 0,
         totalCamps: totalCamps ?? 0,
         flaggedCamps: flaggedCamps ?? 0,
         recentReportsFiled: recentFiled ?? 0,
@@ -98,7 +94,6 @@ const GroveOverview = () => {
       rows: [
         { label: 'Members total', value: stats.totalMembers },
         { label: '🚫 Suspended', value: stats.suspendedMembers },
-        { label: '🌲 Pines+', value: stats.pinesPlusMembers, note: stats.totalMembers > 0 ? `(${Math.round(stats.pinesPlusMembers / stats.totalMembers * 100)}%)` : '' },
       ],
     },
     {

@@ -30,7 +30,6 @@ Deno.serve(async (req) => {
       { count: reportsFiled },
       { count: reportsCleared },
       { count: reportsActioned },
-      { count: pinesActive },
       { count: totalCamps },
       { count: flaggedCamps },
       { data: urgentReports },
@@ -39,7 +38,6 @@ Deno.serve(async (req) => {
       supabase.from("reports").select("id", { count: "exact", head: true }).gte("created_at", oneWeek),
       supabase.from("reports").select("id", { count: "exact", head: true }).eq("status", "cleared").gte("created_at", oneWeek),
       supabase.from("reports").select("id", { count: "exact", head: true }).in("status", ["warned", "suspended", "banned"]).gte("created_at", oneWeek),
-      supabase.from("pines_plus_subscriptions").select("id", { count: "exact", head: true }).eq("status", "active"),
       supabase.from("camps").select("id", { count: "exact", head: true }).eq("is_active", true),
       supabase.from("camps").select("id", { count: "exact", head: true }).in("health_status", ["concern", "watch"]),
       supabase.from("reports").select("id").eq("status", "pending_review").eq("ai_severity", "critical").gte("created_at", oneWeek),
@@ -70,7 +68,6 @@ Actions taken: ${reportsActioned ?? 0}
 
 ────────────────────────────────
 PLATFORM
-Pines+ active: ${pinesActive ?? 0}
 Total camps: ${totalCamps ?? 0}
 Flagged camps: ${flaggedCamps ?? 0}
 

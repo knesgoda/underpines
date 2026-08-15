@@ -13,7 +13,6 @@
  *
  *       requireUser(...)        → must answer 401 to an unauthenticated call
  *       requireCronSecret(...)  → must answer 401 (secret set) or 503 (unset)
- *       stripe webhook          → must answer 400 (missing/invalid signature)
  *       anything else           → must answer, with CORS headers, and must not
  *                                 500 on a bare probe (i.e. it is deployed)
  *
@@ -24,7 +23,7 @@
  * Usage:
  *   node scripts/post-deploy-smoke.mjs
  *   node scripts/post-deploy-smoke.mjs https://www.underpines.com
- *   SMOKE_FUNCTIONS=stripe-webhook,triage-report node scripts/post-deploy-smoke.mjs
+ *   SMOKE_FUNCTIONS=validate-invite,triage-report node scripts/post-deploy-smoke.mjs
  *   npm run smoke:post-deploy
  *
  * Env: SMOKE_BASE_URL, SMOKE_FUNCTIONS (comma list, default: all),
@@ -108,9 +107,6 @@ if (!shell.error && !/<script[^>]+src="\/assets\/[^"]+\.js"/.test(shell.body)) {
 // 2. Edge-function reachability
 // ---------------------------------------------------------------------------
 export function classifyFunction(source) {
-  if (/constructEventAsync\s*\(/.test(source)) {
-    return { kind: "stripe-webhook", allowed: [400, 401], why: "missing Stripe signature" };
-  }
   if (/requireCronSecret\s*\(/.test(source)) {
     return { kind: "cron", allowed: [401, 503], why: "no x-cron-secret (503 if CRON_SECRET unset)" };
   }

@@ -45,14 +45,6 @@ const GroveDesigns = () => {
   const handleApprove = async (design: PendingDesign) => {
     if (!user) return;
     try {
-      // If paid, create Stripe product/price via edge function
-      if (design.price_cents > 0) {
-        const { data, error } = await supabase.functions.invoke('create-design-stripe-price', {
-          body: { designId: design.id },
-        });
-        if (error) console.warn('Stripe price creation deferred:', error.message);
-      }
-
       await supabase.from('cabin_designs').update({
         status: 'published',
       }).eq('id', design.id);
@@ -141,7 +133,7 @@ const GroveDesigns = () => {
           <AlertDialogHeader>
             <AlertDialogTitle className="text-[hsl(var(--pine-pale))]">Approve {actionDesign?.name}?</AlertDialogTitle>
             <AlertDialogDescription className="text-[hsl(var(--pine-light)/0.6)]">
-              This will publish the design to the marketplace. {actionDesign?.price_cents ? 'A Stripe product will be created.' : ''}
+              This will publish the design to the marketplace.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

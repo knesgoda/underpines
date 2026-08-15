@@ -85,68 +85,9 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 4. Fade messages older than 6 months for non-Pines+ users
-    const sixMonthsAgo = new Date(Date.now() - 180 * 86400000).toISOString()
-
-    const { data: oldMessages } = await supabase
-      .from('campfire_messages')
-      .select('id, sender_id, campfire_id')
-      .eq('is_faded', false)
-      .lt('created_at', sixMonthsAgo)
-      .limit(100)
-
-    if (oldMessages) {
-      for (const msg of oldMessages) {
-        // Check if sender is Pines+
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_pines_plus')
-          .eq('id', msg.sender_id)
-          .maybeSingle()
-
-        if (!profile?.is_pines_plus) {
-          await supabase
-            .from('campfire_messages')
-            .update({ is_faded: true, content: null })
-            .eq('id', msg.id)
-        }
-      }
-    }
-
-    // 5. Send 5-month warning notifications
-    const fiveMonthsAgo = new Date(Date.now() - 150 * 86400000).toISOString()
-    const fiveMonthsPlus1 = new Date(Date.now() - 151 * 86400000).toISOString()
-
-    const { data: warningMessages } = await supabase
-      .from('campfire_messages')
-      .select('sender_id, campfire_id')
-      .eq('is_faded', false)
-      .lt('created_at', fiveMonthsAgo)
-      .gt('created_at', fiveMonthsPlus1)
-      .limit(50)
-
-    if (warningMessages) {
-      const notifiedUsers = new Set<string>()
-      for (const msg of warningMessages) {
-        if (notifiedUsers.has(msg.sender_id)) continue
-        notifiedUsers.add(msg.sender_id)
-
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_pines_plus')
-          .eq('id', msg.sender_id)
-          .maybeSingle()
-
-        if (!profile?.is_pines_plus) {
-          await supabase.from('notifications').insert({
-            recipient_id: msg.sender_id,
-            notification_type: 'campfire_message',
-            campfire_id: msg.campfire_id,
-            is_delivered_in_ember: true,
-          })
-        }
-      }
-    }
+    // Message fading is gone: it existed only as the free-tier limit of the
+    // retired Pines+ subscription. Messages now keep their content
+    // indefinitely; `is_faded` remains on rows faded before the retirement.
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -19,7 +19,6 @@ const MyDesigns = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [designs, setDesigns] = useState<any[]>([]);
-  const [earnings, setEarnings] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,15 +30,6 @@ const MyDesigns = () => {
         .eq('creator_id', user.id)
         .order('created_at', { ascending: false });
       setDesigns(data || []);
-
-      // Sum earnings from design purchases
-      const { data: purchases } = await supabase
-        .from('design_purchases')
-        .select('creator_amount_cents')
-        .eq('creator_id', user.id);
-      const total = (purchases || []).reduce((sum, p) => sum + (p.creator_amount_cents || 0), 0);
-      setEarnings(total);
-
       setLoading(false);
     };
     load();
@@ -117,16 +107,6 @@ const MyDesigns = () => {
           Create a new design
         </Button>
       </div>
-
-      {earnings > 0 && (
-        <div className="mt-6 border-t border-border pt-6">
-          <h2 className="font-display text-sm uppercase tracking-wider text-muted-foreground mb-2">Earnings from designs</h2>
-          <p className="text-lg font-display text-foreground">${(earnings / 100).toFixed(2)}</p>
-          <button onClick={() => navigate('/settings/payouts')} className="text-xs text-primary font-body mt-1 hover:underline">
-            View in payout dashboard →
-          </button>
-        </div>
-      )}
     </motion.div>
   );
 };

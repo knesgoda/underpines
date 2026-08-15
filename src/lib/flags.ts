@@ -5,8 +5,9 @@
 export const CABIN_ENABLED = false;
 
 /**
- * The design economy — Marketplace, My Designs, creator Payouts — is parked
- * until after beta. Flip back to true to re-open all three surfaces (routes,
- * Settings entries, notification deep links).
+ * The design economy — Marketplace and My Designs — is parked until after
+ * beta. Flip back to true to re-open the surfaces (routes, Settings entries,
+ * notification deep links). Stripe payments were removed entirely, so a
+ * revived marketplace is free-designs-only until a new payment path exists.
  */
 export const MARKETPLACE_ENABLED = false;

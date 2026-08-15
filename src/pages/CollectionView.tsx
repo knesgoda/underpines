@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useParams, useSearchParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import PostCard, { PostWithAuthor } from '@/components/feed/PostCard';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import { MediaImage } from '@/components/MediaImage';
@@ -10,7 +10,6 @@ import { toast } from 'sonner';
 
 const CollectionView = () => {
   const { handle, id } = useParams<{ handle: string; id: string }>();
-  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const [collection, setCollection] = useState<any>(null);
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
@@ -18,12 +17,6 @@ const CollectionView = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [onWaitlist, setOnWaitlist] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [subscriptionInfo, setSubscriptionInfo] = useState<any>(null);
-  const [showManage, setShowManage] = useState(false);
-
-  const justSubscribed = searchParams.get('subscribed') === 'true';
 
   useEffect(() => {
     const load = async () => {
@@ -40,7 +33,8 @@ const CollectionView = () => {
         .maybeSingle();
       setAuthorProfile(prof);
 
-      // Check subscription
+      // Check subscription (rows from before paid subscriptions were retired
+      // stay honored — a past subscriber keeps reading)
       if (user && col.is_paid) {
         const { data: sub } = await supabase
           .from('collection_subscriptions')
@@ -50,7 +44,6 @@ const CollectionView = () => {
           .eq('status', 'active')
           .maybeSingle();
         setIsSubscribed(!!sub);
-        setSubscriptionInfo(sub);
 
         if (!sub) {
           const { data: wl } = await supabase
@@ -61,12 +54,6 @@ const CollectionView = () => {
             .maybeSingle();
           setOnWaitlist(!!wl);
         }
-      }
-
-      // Show success modal if just subscribed
-      if (justSubscribed) {
-        setIsSubscribed(true);
-        setShowSuccess(true);
       }
 
       // Load posts
@@ -107,43 +94,7 @@ const CollectionView = () => {
       setLoading(false);
     };
     load();
-  }, [id, user, justSubscribed]);
-
-  const handleSubscribe = async () => {
-    if (!user || !id) return;
-    setCheckoutLoading(true);
-
-    // Check if Stripe price exists, if not create one
-    const { data: priceData } = await supabase
-      .from('collection_stripe_prices')
-      .select('stripe_price_id')
-      .eq('collection_id', id)
-      .maybeSingle();
-
-    if (!priceData) {
-      // Create price first
-      const { error: priceErr } = await supabase.functions.invoke('create-collection-price', {
-        body: { collectionId: id },
-      });
-      if (priceErr) {
-        toast.error('Could not set up payment. The creator may need to connect their payout account.');
-        setCheckoutLoading(false);
-        return;
-      }
-    }
-
-    // Create checkout session
-    const { data, error } = await supabase.functions.invoke('create-collection-checkout', {
-      body: { collectionId: id },
-    });
-
-    if (data?.url) {
-      window.location.href = data.url;
-    } else {
-      toast.error(error?.message || 'Could not start checkout. Try again.');
-      setCheckoutLoading(false);
-    }
-  };
+  }, [id, user]);
 
   const joinWaitlist = async () => {
     if (!user || !id) return;
@@ -166,37 +117,8 @@ const CollectionView = () => {
   // For paid: show 1 post as preview
   const visiblePosts = canViewAll ? posts : posts.slice(0, 1);
 
-  // Check if creator has connected stripe account (for showing subscribe vs waitlist)
-  const hasStripePrice = !!collection.is_paid; // We'll attempt checkout and handle errors
-
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto px-4 py-8">
-      {/* Success modal */}
-      <AnimatePresence>
-        {showSuccess && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4"
-          >
-            <div className="rounded-[5px] border border-border bg-card p-8 text-center max-w-sm w-full shadow-lg">
-              <p className="text-3xl mb-3">💚</p>
-              <p className="font-display text-lg text-foreground mb-2">You're subscribed.</p>
-              <p className="font-body text-sm text-muted-foreground mb-4">
-                {authorProfile?.display_name}'s Collection is yours to read. New posts arrive as they're published.
-              </p>
-              <button
-                onClick={() => setShowSuccess(false)}
-                className="px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm"
-              >
-                Start reading →
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Cover */}
       {collection.cover_image_url && (
         <div className="w-full h-[200px] rounded-[5px] overflow-hidden mb-6">
@@ -221,16 +143,7 @@ const CollectionView = () => {
 
       <p className="font-body text-xs text-muted-foreground mt-2">
         {isPaid ? `$${((collection.price_cents || 0) / 100).toFixed(0)} / ${collection.price_type || 'month'}` : 'Free'} · {posts.length} posts
-        {isSubscribed && (
-          <span className="ml-2 text-primary">
-            Subscribed ✓
-            {!isOwner && (
-              <button onClick={() => setShowManage(true)} className="ml-2 text-muted-foreground hover:underline text-[10px]">
-                Manage subscription
-              </button>
-            )}
-          </span>
-        )}
+        {isSubscribed && <span className="ml-2 text-primary">Subscribed ✓</span>}
       </p>
 
       {isOwner && (
@@ -238,42 +151,6 @@ const CollectionView = () => {
           Edit Collection
         </Link>
       )}
-
-      {/* Subscription management */}
-      <AnimatePresence>
-        {showManage && subscriptionInfo && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-            <div className="mt-4 rounded-[5px] border border-border bg-card p-5">
-              <p className="font-body text-sm text-foreground mb-1">Your subscription to</p>
-              <p className="font-display text-lg text-foreground mb-2">{collection.title}</p>
-              <p className="font-body text-xs text-muted-foreground mb-1">
-                ${((collection.price_cents || 0) / 100).toFixed(0)} / {collection.price_type || 'month'}
-              </p>
-              {subscriptionInfo.ends_at && (
-                <p className="font-body text-xs text-muted-foreground mb-3">
-                  Renews: {new Date(subscriptionInfo.ends_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
-                </p>
-              )}
-              <div className="flex gap-2">
-                <button onClick={() => setShowManage(false)} className="px-4 py-2 rounded-[3px] border border-border font-body text-xs text-foreground hover:bg-muted">
-                  Close
-                </button>
-                <button
-                  onClick={async () => {
-                    // For now, direct to Stripe portal
-                    const { data } = await supabase.functions.invoke('create-portal-session');
-                    if (data?.url) window.location.href = data.url;
-                    else toast.error('Could not open subscription management');
-                  }}
-                  className="px-4 py-2 rounded-[3px] border border-destructive/30 font-body text-xs text-destructive hover:bg-destructive/5"
-                >
-                  Cancel subscription
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <div className="h-px bg-border my-6" />
 
@@ -284,18 +161,12 @@ const CollectionView = () => {
         ))}
       </div>
 
-      {/* Paid gate */}
+      {/* Paid gate — subscriptions aren't open yet, so the only action is the
+          waitlist. Past subscribers pass canViewAll above. */}
       {isPaid && !canViewAll && (
         <div className="mt-6 rounded-[5px] border border-border bg-card p-8 text-center">
           <p className="text-3xl mb-3">📚</p>
           <p className="font-body text-sm text-foreground mb-1">This Collection continues for subscribers.</p>
-          <button
-            onClick={handleSubscribe}
-            disabled={checkoutLoading}
-            className="mt-3 px-6 py-2.5 rounded-[3px] bg-primary text-primary-foreground font-body text-sm disabled:opacity-50"
-          >
-            {checkoutLoading ? 'Loading...' : `$${((collection.price_cents || 0) / 100).toFixed(0)} / ${collection.price_type || 'month'} — Subscribe to continue reading`}
-          </button>
           {!onWaitlist ? (
             <button onClick={joinWaitlist} className="block mx-auto mt-3 font-body text-xs text-muted-foreground hover:underline">
               Notify me when subscriptions open →
