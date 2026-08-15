@@ -136,7 +136,27 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-15 (LATEST) — Ranger Station board fixed: the author embed
+**As of 2026-08-15 (LATEST) — Ranger Station fix MERGED (PR #31) and
+PUBLISHED; the 4 deep-scan edge functions DEPLOYED. Nothing is pending
+deploy-side for the first time in a while.**
+
+Same session, after the entry below was written: PR #31 squash-merged to
+main (`adc619d`), Lovable synced it and the site was published via
+`mcp__Lovable__deploy_project` — live build confirmed at `adc619d`, which
+also shipped the still-pending compose-sheet/topbar fixes from #30. Then
+the four deep-scan edge functions (`create-checkout-session`,
+`stripe-webhook`, `send-trail-pass`, `triage-report`) were deployed via
+`mcp__Lovable__send_message` (deploy-only instruction; Lovable's activity
+log shows one deploy call, zero code edits). Live-behavior verification of
+the functions is Kevin's (e.g. file a report → triage alert; Stripe
+checkout only once price-ID secrets are set — 503 until then is the
+designed fail-closed state). Kevin's signed-in eyeball list for the publish
+is in the entry below. Older still-open items (CRON_SECRET trio,
+RESEND_API_KEY, pine-pet deploys) live in their original entries.
+
+---
+
+**Previously (2026-08-15) — Ranger Station board fixed: the author embed
 was ambiguous and the API rejected it (branch
 `claude/ranger-station-loading-msrk53`; ONE-LINE client fix, no migration,
 no edge deploys — needs Lovable PUBLISH only).**
