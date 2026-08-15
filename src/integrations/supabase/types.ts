@@ -5081,6 +5081,10 @@ export type Database = {
         Args: { _campfire_id: string; _user_id: string }
         Returns: boolean
       }
+      can_upload_entity_cover: {
+        Args: { _bucket: string; _name: string }
+        Returns: boolean
+      }
       can_view_member_content: { Args: { _owner: string }; Returns: boolean }
       check_invite_rate_limit: {
         Args: { _invite_id: string; _ip_hash: string }
@@ -5099,6 +5103,13 @@ export type Database = {
       email_hmac: { Args: { _email: string }; Returns: string }
       get_boot_state: { Args: { _campfires_seen_at?: string }; Returns: Json }
       get_cabin_view: { Args: { _handle: string }; Returns: Json }
+      get_feedback_vote_counts: {
+        Args: never
+        Returns: {
+          item_id: string
+          vote_count: number
+        }[]
+      }
       get_invite_landing: { Args: { _slug: string }; Returns: Json }
       get_my_invite_link: { Args: never; Returns: Json }
       get_security_config: { Args: never; Returns: Json }
