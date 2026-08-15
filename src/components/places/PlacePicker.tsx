@@ -17,15 +17,19 @@ import {
 const PlacePicker = ({
   place,
   onChange,
+  defaultOpen = false,
 }: {
   place: Place | null;
   onChange: (place: Place | null) => void;
+  /** Start on the search field (used by the check-in entry point). */
+  defaultOpen?: boolean;
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Place[]>([]);
   const [searching, setSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
