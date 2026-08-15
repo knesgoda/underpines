@@ -4,23 +4,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
 import { ImagePlus, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import PlacePicker from '@/components/places/PlacePicker';
+import { attachPlaceToPost, type Place } from '@/lib/places';
 
 interface EmberComposerProps {
   onPost: (post: any) => void;
   onCancel: () => void;
+  /** Opens with the place step already showing (the check-in entry point). */
+  startWithPlace?: boolean;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
+const EmberComposer = ({ onPost, onCancel, startWithPlace = false }: EmberComposerProps) => {
   const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [caption, setCaption] = useState('');
+  const [place, setPlace] = useState<Place | null>(null);
   const [posting, setPosting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const captionRef = useRef<HTMLTextAreaElement>(null);
+
 
   const scrollCaptionIntoView = useCallback(() => {
     setTimeout(() => {
