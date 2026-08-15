@@ -54,7 +54,10 @@ Deno.serve(async (req) => {
   }
 
   const lovableKey = Deno.env.get("LOVABLE_API_KEY");
-  const mapsKey = Deno.env.get("GOOGLE_MAPS_API_KEY");
+  // Custom-domain key (own credentials) is linked as ..._1; the managed
+  // connection uses the unsuffixed name. Either is fine for the gateway.
+  const mapsKey = Deno.env.get("GOOGLE_MAPS_API_KEY_1") ??
+    Deno.env.get("GOOGLE_MAPS_API_KEY");
   if (!lovableKey || !mapsKey) {
     return jsonResponse({ error: "Place search isn't set up yet." }, 503);
   }
