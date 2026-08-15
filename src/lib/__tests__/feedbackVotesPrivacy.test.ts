@@ -83,7 +83,7 @@ describe('feedback vote reads', () => {
       { item_id: 'b', vote_count: 1 },
     ]);
     // Aggregates carry no identity fields.
-    counts.forEach(c => expect(Object.keys(c).sort()).toEqual(['item_count', 'vote_count'].slice(1).concat('item_id').sort()));
+    counts.forEach(c => expect(Object.keys(c).sort()).toEqual(['item_id', 'vote_count']));
   });
 
   it('never selects vote rows for other members', async () => {
