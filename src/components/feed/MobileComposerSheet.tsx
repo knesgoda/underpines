@@ -9,7 +9,7 @@ import SparkComposer from './SparkComposer';
 import EmberComposer from './EmberComposer';
 import { useSeedlingStatus } from './SeedlingBanner';
 
-type PostType = 'spark' | 'story' | 'ember' | null;
+type PostType = 'spark' | 'story' | 'ember' | 'checkin' | null;
 
 const MobileComposerSheet = () => {
   const { user } = useAuth();
@@ -77,6 +77,7 @@ const MobileComposerSheet = () => {
                 { type: 'spark' as PostType, icon: '🌿', label: 'Spark', desc: 'A quick thought · 300 characters' },
                 { type: 'story' as PostType, icon: '📖', label: 'Something longer', desc: 'Long-form with rich text editor' },
                 { type: 'ember' as PostType, icon: '📷', label: 'Photos', desc: 'Up to 10 photos or a short video' },
+                { type: 'checkin' as PostType, icon: '📍', label: 'Somewhere new', desc: 'Check in to a place' },
               ].map(({ type, icon, label, desc }) => (
                 <button
                   key={type}
@@ -105,6 +106,9 @@ const MobileComposerSheet = () => {
             )}
             {activeType === 'ember' && (
               <EmberComposer key="ember" onPost={handlePost} onCancel={handleCancel} />
+            )}
+            {activeType === 'checkin' && (
+              <SparkComposer key="checkin" onPost={handlePost} onCancel={handleCancel} startWithPlace />
             )}
           </AnimatePresence>
         )}

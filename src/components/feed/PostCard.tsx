@@ -30,6 +30,11 @@ export interface PostWithAuthor {
   is_quote_post: boolean | null;
   quoted_post_id: string | null;
   created_at: string;
+  /** A check-in: the place tagged on the post. Coordinates are rounded to
+   *  ~100m server-side. Visibility is the post's own. */
+  place_name?: string | null;
+  place_lat?: number | null;
+  place_lng?: number | null;
   author?: { display_name: string; handle: string; accent_color: string | null; cabin_mood: string | null; avatar_url?: string | null; default_avatar_key?: string | null };
   reactions?: { reaction_type: string; user_id: string }[];
   post_media?: { url: string; media_type: string; position: number }[];

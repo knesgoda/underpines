@@ -3,6 +3,7 @@ import UserAvatar from '@/components/UserAvatar';
 import ReactionBar from './ReactionBar';
 import { formatTimeAgo } from '@/lib/time';
 import { MediaImage } from '@/components/MediaImage';
+import { MapPin } from 'lucide-react';
 import type { PostWithAuthor } from './PostCard';
 
 /**
@@ -61,6 +62,11 @@ export const HandoffPostCard = ({
             {label && post.post_type !== 'spark' && post.post_type !== 'bulletin' ? ` · ${label}` : ''}
             {draft ? ' · Draft — only you see this' : ''}
           </p>
+          {post.place_name && (
+            <p className="post-place">
+              <MapPin size={11} aria-hidden="true" /> at {post.place_name}
+            </p>
+          )}
         </div>
         <button type="button" className="more" onClick={onOpen} aria-label="Open post">
           •••

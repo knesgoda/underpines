@@ -57,6 +57,9 @@ interface CampPostRow {
   created_at: string;
   author: PostWithAuthor['author'];
   camp: { name: string } | null;
+  place_name: string | null;
+  place_lat: number | null;
+  place_lng: number | null;
 }
 
 /** Where opening a feed item goes: camp posts have no /post/:id detail page,
@@ -129,6 +132,9 @@ export const useFeedPosts = () => {
           created_at: p.created_at,
           is_quote_post: false,
           quoted_post_id: null,
+          place_name: p.place_name ?? null,
+          place_lat: p.place_lat ?? null,
+          place_lng: p.place_lng ?? null,
           author: p.author,
           reactions: [],
           post_media: [],
