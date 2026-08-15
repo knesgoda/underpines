@@ -136,9 +136,24 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-15 (LATEST) — posting fixed: the compose sheet was never
-mounted (branch `claude/post-creation-broken-m3y15n`; no migration, no edge
+**As of 2026-08-15 (LATEST) — posting fixed (compose sheet was never
+mounted) + topbar now FIXED to the top edge (kills the iOS launch gap for
+good) (branch `claude/post-creation-broken-m3y15n`; no migration, no edge
 deploys — needs Lovable PUBLISH only).**
+
+**Topbar (Kevin's round-2 report, same session):** the rest gap returned on
+the installed PWA even after the 88936b2 sticky rework. His screenshot
+proved the mechanism: the FIXED `::before` status strip sat correctly at the
+physical top while the STICKY bar was parked ~180px down — iOS standalone
+offsets the in-flow document until the first scroll, but fixed elements
+don't ride it. Per Kevin's direction ("move the top bar up, don't widen
+it"): `.topbar` is now `position: fixed; top: 0` and pads itself
+`env(safe-area-inset-top)` (visible bar content stays exactly 64px;
+border-box), `::before`/`::after` cover strips deleted, `.app` padding-top
+becomes `calc(64px + inset)` so net content offset is unchanged (Campfires'
+height calc unaffected). The standalone scroll nudge stays — any residual
+launch offset now shows as a benign gap *below* the bar that the nudge
+closes. Sweep asserts `.topbar` computes `fixed @ top:0 / 64px`.
 
 Kevin's report: tapping Photos or the compose box on the feed did nothing.
 Root cause: the feed composer is a trigger-only stub that flips
