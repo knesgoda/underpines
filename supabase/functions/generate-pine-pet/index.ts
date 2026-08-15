@@ -63,23 +63,9 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Invalid atmosphere" }), { status: 400, headers: corsHeaders });
     }
 
-    // Check Pines+ — is_pines_plus is the canonical flag the rest of the app
-    // gates on (kept in sync by check-subscription / stripe-webhook). The old
-    // query hit a "subscriptions" table that does not exist, so this gate
-    // silently failed closed and no Pines+ member could ever generate a pet.
-    const { data: prof } = await supabase
-      .from("profiles")
-      .select("is_pines_plus")
-      .eq("id", userId)
-      .single();
-
-    if (!prof?.is_pines_plus) {
-      return new Response(JSON.stringify({
-        error: "Pine Pets are a Pines+ feature. Upgrade to bring your pet to life.",
-      }), { status: 403, headers: corsHeaders });
-    }
-
-    // Rate limit: max 3 generations per day
+    // Rate limit: max 3 generations per day. With the Pines+ subscription
+    // retired this budget is the sole spend cap on the paid AI calls below —
+    // keep it.
     const todayStart = new Date();
     todayStart.setUTCHours(0, 0, 0, 0);
 

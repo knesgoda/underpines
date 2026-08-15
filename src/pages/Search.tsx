@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { ilikePattern } from '@/lib/searchQuery';
-import { Search as SearchIcon, Lock, Users, Tent, Flame, TreePine } from 'lucide-react';
+import { Search as SearchIcon, Users, Tent, Flame, TreePine } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,6 @@ const Search = () => {
   const [query, setQuery] = useState('');
   const [activeTab, setActiveTab] = useState('posts');
   const [loading, setLoading] = useState(false);
-  const [isPinesPlus, setIsPinesPlus] = useState(false);
 
   /* results */
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
@@ -47,7 +46,7 @@ const Search = () => {
 
 
 
-  /* Load circle ids + pines+ status */
+  /* Load circle ids */
   useEffect(() => {
     if (!user) return;
     const loadCtx = async () => {
@@ -59,13 +58,6 @@ const Search = () => {
       if (cData) {
         setCircleIds(cData.map((c) => (c.requester_id === user.id ? c.requestee_id : c.requester_id)));
       }
-      const { data: sub } = await supabase
-        .from('pines_plus_subscriptions')
-        .select('status')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .maybeSingle();
-      setIsPinesPlus(!!sub);
     };
     loadCtx();
   }, [user]);
@@ -172,7 +164,6 @@ const Search = () => {
 
   /* ───── Campfires ───── */
   const searchCampfires = async (q: string) => {
-    if (!isPinesPlus) return;
     const pattern = ilikePattern(q);
     const { data } = await supabase
       .from('campfire_messages')
@@ -218,7 +209,6 @@ const Search = () => {
           <TabsTrigger value="campfires" className="flex-1 font-body text-xs gap-1">
             <Flame size={12} />
             Campfires
-            {!isPinesPlus && <Lock size={10} className="text-muted-foreground" />}
           </TabsTrigger>
         </TabsList>
 
@@ -342,24 +332,7 @@ const Search = () => {
 
         {/* Campfires */}
         <TabsContent value="campfires">
-          {!isPinesPlus ? (
-            <div className="text-center py-16 space-y-4">
-              <Flame size={32} className="mx-auto text-primary" />
-              <h3 className="font-display text-lg text-foreground">Search Your Campfires</h3>
-              <p className="font-body text-sm text-muted-foreground max-w-xs mx-auto">
-                Find any message, photo, or link ever shared in your Campfires.
-              </p>
-              <p className="font-body text-xs text-muted-foreground">
-                Available with Pines+<br />$10/year — less than a coffee.
-              </p>
-              <div className="flex justify-center gap-3 pt-2">
-                <Button variant="ghost" size="sm" className="font-body text-xs">Maybe later</Button>
-                <Button size="sm" className="font-body text-xs" onClick={() => navigate('/settings/subscription')}>
-                  Upgrade to Pines+
-                </Button>
-              </div>
-            </div>
-          ) : loading ? (
+          {loading ? (
             <div className="py-12"><PineTreeLoading /></div>
           ) : !hasSearched ? (
             <EmptyIdle />

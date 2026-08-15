@@ -22,7 +22,6 @@ export interface ViewerProfile {
   accent_color: string | null;
   cabin_mood: string | null;
   bio: string | null;
-  is_pines_plus: boolean | null;
   created_at: string | null;
 }
 

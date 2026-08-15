@@ -154,9 +154,6 @@ const SettingsPage = () => {
 
       {/* YOUR ACCOUNT */}
       <SettingsSection label="Your Account">
-        {MARKETPLACE_ENABLED && (
-          <SettingsItem emoji="💰" label="Payouts" onClick={() => navigate('/settings/payouts')} />
-        )}
         <SettingsItem emoji="✉️" label="My Invites" onClick={() => navigate('/invites')} />
         <SettingsItem emoji="✿" label="Friends" onClick={() => navigate('/friends')} />
       </SettingsSection>

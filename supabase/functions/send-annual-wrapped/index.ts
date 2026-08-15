@@ -28,11 +28,10 @@ serve(async (req) => {
     const todayMonth = now.getMonth() + 1;
     const todayDay = now.getDate();
 
-    // Find Pines+ members whose join anniversary is today
+    // Find members whose join anniversary is today
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("id, display_name, handle, created_at, is_pines_plus")
-      .eq("is_pines_plus", true);
+      .select("id, display_name, handle, created_at");
 
     if (!profiles || profiles.length === 0) {
       return new Response(JSON.stringify({ processed: 0 }), {

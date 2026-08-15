@@ -136,7 +136,71 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-15 (LATEST) — Ranger Station board fixed: the author embed
+**As of 2026-08-15 (LATEST) — Pines+ and Stripe removed entirely (branch
+`claude/remove-pines-stripe-2f20pq`; no migration — needs Lovable PUBLISH +
+edge-function deletions/redeploys, prompt below).**
+
+Kevin's ask: "remove all the pines+ and stripe stuff." Everything payment-
+related is gone from the codebase; features Pines+ used to gate are now free
+for every member.
+
+- **11 edge functions deleted from the repo + `config.toml`:**
+  `check-subscription`, `create-checkout-session`, `create-collection-checkout`,
+  `create-collection-price`, `create-connect-account`,
+  `create-connect-login-link`, `create-design-checkout`,
+  `create-portal-session`, `process-monthly-payouts`, `stripe-connect-webhook`,
+  `stripe-webhook`. ⚠️ Repo deletion ≠ undeploy — Lovable must DELETE these
+  from the Supabase deployment (they're live and callable until then; all
+  fail without a real checkout flow, but dead surface is dead surface).
+- **Pines+ gates removed (features now free for everyone):** campfire message
+  search on /search (tab un-locked), pine-pet generation + atmosphere
+  regeneration (**the 3/day `pine_pet_generations` budget is retained as the
+  sole cost cap on the paid AI calls — do not remove it**), all four cabin
+  music players in `VintageRadio.tsx`, annual Wrapped
+  (`send-annual-wrapped` now iterates all profiles). `campfire-lifecycle` no
+  longer fades 6-month-old messages (fading was the free-tier limit; nobody
+  loses content now) and no longer sends 5-month warnings.
+- **Pages deleted:** `SubscriptionPage` (/settings/subscription),
+  `CreatorPayouts` (/settings/payouts), `GroveRevenue` (/grove/revenue) —
+  routes now redirect to /settings (or 404 for /grove/revenue), nav/Settings
+  entries removed. GroveOverview lost its Pines+ stat;
+  `send-grove-weekly-report` lost its Pines+ line.
+- **Checkout paths stripped:** CollectionView (paid gate is waitlist-only now;
+  past `collection_subscriptions` rows still honored), MarketplaceDetail
+  (paid designs show a disabled "aren't available" button; free flow
+  untouched), GroveDesigns approve (no Stripe price creation), MyDesigns
+  (earnings/payout section gone). `is_pines_plus` dropped from boot-state /
+  queries types and GroveMemberDetail's select.
+- **DB deliberately untouched:** `pines_plus_subscriptions`,
+  `collection_stripe_prices`, `collection_subscriptions`,
+  `creator_stripe_accounts`, `creator_earnings`, `creator_payout_summaries`,
+  `profiles.is_pines_plus` all remain (empty/idle; nothing reads or writes
+  them from the app anymore). Dropping them is an optional future migration —
+  not needed for anything.
+- The smoke-test classifier (`scripts/post-deploy-smoke.mjs` + its drift
+  test) lost its stripe-webhook branch.
+
+**Verified:** tsc clean; eslint clean on changed files (pre-existing `any`
+baselines only — MarketplaceDetail's count actually dropped); 187 vitest
+pass; build clean; entry gzip 197.9 kB vs 198.1 kB baseline measured on the
+same machine (the branch also carries Lovable's 2026-08-15 storage-gating
+migration commit, which is untouched); signed-out Chromium sweep green 12
+routes × both themes (incl. /settings/subscription + /settings/payouts +
+/marketplace). Signed-in eyeball for Kevin after publish: /search Campfires
+tab works without an upsell, Settings has no Payouts row, a paid collection
+shows only the waitlist button, /grove has no Revenue nav.
+
+**Remaining:** Lovable publish + edge cleanup (see the prompt given in chat:
+delete the 11 functions from the deployment, redeploy the 5 changed ones —
+`campfire-lifecycle`, `generate-pine-pet`, `regenerate-pine-pet-atmosphere`,
+`send-annual-wrapped`, `send-grove-weekly-report` — optionally unschedule
+pg_cron job #5 and delete the STRIPE_* secrets). Of the previously pending
+deep-scan deploys, `send-trail-pass` + `triage-report` are still pending;
+`create-checkout-session` + `stripe-webhook` are now deleted instead.
+
+---
+
+**Previously (2026-08-15) — Ranger Station board fixed: the author embed
 was ambiguous and the API rejected it (branch
 `claude/ranger-station-loading-msrk53`; ONE-LINE client fix, no migration,
 no edge deploys — needs Lovable PUBLISH only).**

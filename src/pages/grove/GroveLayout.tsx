@@ -18,7 +18,6 @@ const NAV_ITEMS = [
   // the route, so the link rendered a blank page under the chrome.
   { to: '/grove/camps', label: 'Groups' },
   { to: '/grove/designs', label: 'Designs' },
-  { to: '/grove/revenue', label: 'Revenue' },
   { to: '/grove/audit', label: 'Audit Log' },
   { to: '/grove/settings', label: 'Settings' },
 ];

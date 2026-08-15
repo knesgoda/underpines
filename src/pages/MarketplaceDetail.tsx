@@ -99,21 +99,6 @@ const MarketplaceDetail = () => {
     toast.success(`${design.name} is now your Cabin design.`);
   };
 
-  const handleBuyPaid = async () => {
-    if (!user || !design) return;
-    setBuying(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-design-checkout', {
-        body: { designId: design.id },
-      });
-      if (error) throw error;
-      if (data?.url) window.open(data.url, '_blank');
-    } catch (e: any) {
-      toast.error(e.message || 'Could not start checkout');
-    }
-    setBuying(false);
-  };
-
   const handlePreview = () => {
     if (!design) return;
     // Store preview data in sessionStorage and navigate to own cabin
@@ -205,8 +190,10 @@ const MarketplaceDetail = () => {
                 {buying ? 'Applying…' : 'Apply for free'}
               </Button>
             ) : (
-              <Button onClick={handleBuyPaid} disabled={buying || !user} className="rounded-[3px] font-body text-sm">
-                {buying ? 'Starting checkout…' : `Buy for $${(design.price_cents / 100).toFixed(0)}`}
+              // Payments were removed with the Stripe integration; paid
+              // designs stay browsable but can't be bought.
+              <Button disabled className="rounded-[3px] font-body text-sm">
+                Paid designs aren't available
               </Button>
             )}
           </>

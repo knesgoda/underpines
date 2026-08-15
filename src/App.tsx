@@ -51,8 +51,6 @@ const CircleSuggestions = lazy(() => import("./pages/CircleSuggestions"));
 const CollectionsList = lazy(() => import("./pages/CollectionsList"));
 const CollectionView = lazy(() => import("./pages/CollectionView"));
 const CollectionEditor = lazy(() => import("./pages/CollectionEditor"));
-const SubscriptionPage = lazy(() => import("./pages/SubscriptionPage"));
-const CreatorPayouts = lazy(() => import("./pages/CreatorPayouts"));
 const CampsDirectory = lazy(() => import("./pages/CampsDirectory"));
 const MyCamps = lazy(() => import("./pages/MyCamps"));
 const CreateCamp = lazy(() => import("./pages/CreateCamp"));
@@ -82,7 +80,6 @@ const GroveMembers = lazy(() => import("./pages/grove/GroveMembers"));
 const GroveMemberDetail = lazy(() => import("./pages/grove/GroveMemberDetail"));
 const GroveCamps = lazy(() => import("./pages/grove/GroveCamps"));
 const GroveCampDetail = lazy(() => import("./pages/grove/GroveCampDetail"));
-const GroveRevenue = lazy(() => import("./pages/grove/GroveRevenue"));
 const GroveSettings = lazy(() => import("./pages/grove/GroveSettings"));
 const GroveDesigns = lazy(() => import("./pages/grove/GroveDesigns"));
 const GroveCases = lazy(() => import("./pages/grove/GroveCases"));
@@ -134,7 +131,6 @@ const App = () => (
                   <Route path="members/:handle" element={<GroveMemberDetail />} />
                   <Route path="camps" element={<GroveCamps />} />
                   <Route path="camps/:id" element={<GroveCampDetail />} />
-                  <Route path="revenue" element={<GroveRevenue />} />
                   <Route path="settings" element={<GroveSettings />} />
                   <Route path="designs" element={<GroveDesigns />} />
                   {/* Moderation */}
@@ -187,11 +183,13 @@ const App = () => (
                       <Route path="/settings" element={<SettingsPage />} />
                       <Route path="/settings/notifications" element={<NotificationSettings />} />
                       <Route path="/settings/privacy" element={<PrivacySettings />} />
-                      <Route path="/settings/subscription" element={<SubscriptionPage />} />
+                      {/* Pines+ and Stripe payouts are gone; old links land on
+                          Settings rather than a 404. */}
+                      <Route path="/settings/subscription" element={<Navigate to="/settings" replace />} />
+                      <Route path="/settings/payouts" element={<Navigate to="/settings" replace />} />
                       {/* The design economy is parked behind MARKETPLACE_ENABLED.
                           Routes stay registered so /marketplace etc. never fall
                           through to the /:handle catch-all. */}
-                      <Route path="/settings/payouts" element={MARKETPLACE_ENABLED ? <CreatorPayouts /> : <Navigate to="/settings" replace />} />
                       <Route path="/settings/designs" element={MARKETPLACE_ENABLED ? <MyDesigns /> : <Navigate to="/settings" replace />} />
                       <Route path="/marketplace" element={MARKETPLACE_ENABLED ? <Marketplace /> : <Navigate to="/" replace />} />
                       <Route path="/marketplace/:id" element={MARKETPLACE_ENABLED ? <MarketplaceDetail /> : <Navigate to="/" replace />} />

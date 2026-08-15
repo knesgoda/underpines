@@ -114,6 +114,48 @@ their way into someone else's private data with this policy?"**
 _Newest first. Every security-relevant change gets an entry: date, what, why,
 where (migration file / PR), verification._
 
+### 2026-08-15 — Pines+ / Stripe removal (attack-surface reduction; edge deletions PENDING)
+**Branch `claude/remove-pines-stripe-2f20pq`. No migration, no RLS change.**
+Kevin retired the Pines+ subscription and all Stripe payments. Security-
+relevant consequences:
+
+- **11 edge functions removed from repo + `config.toml`** (the whole payment
+  surface): `check-subscription`, `create-checkout-session`,
+  `create-collection-checkout`, `create-collection-price`,
+  `create-connect-account`, `create-connect-login-link`,
+  `create-design-checkout`, `create-portal-session`,
+  `process-monthly-payouts`, `stripe-connect-webhook`, `stripe-webhook`.
+  ⚠️ **They stay deployed and callable until Lovable deletes them from the
+  Supabase deployment** — do that with the publish. The 2026-08-14 deep-scan
+  fixes to `create-checkout-session`/`stripe-webhook` (price allow-list,
+  strict price→plan) are mooted by deletion; `send-trail-pass` +
+  `triage-report` from that batch still need their deploy.
+- **Pine-pet cost gating changed, not dropped:** `generate-pine-pet` and
+  `regenerate-pine-pet-atmosphere` no longer require `is_pines_plus`, but the
+  shared **3/day `pine_pet_generations` budget remains the sole spend cap on
+  the paid Claude/Gemini calls** (the "rate-limit anything that costs money"
+  rule). Do not remove that budget; both functions need redeploy.
+- **`campfire-lifecycle` no longer destroys content:** the 6-month
+  fade-to-null of non-Pines+ messages and its warning notifications are
+  gone (they existed only as the free-tier limit). Needs redeploy, along
+  with `send-annual-wrapped` (now all members) and
+  `send-grove-weekly-report` (Pines+ stat removed).
+- **Stripe secrets become dead** (`STRIPE_SECRET_KEY`,
+  `STRIPE_WEBHOOK_SECRET`, `STRIPE_CONNECT_WEBHOOK_SECRET`,
+  `STRIPE_MONTHLY_PRICE_ID`, `STRIPE_ANNUAL_PRICE_ID`) — delete from
+  function secrets once the functions are gone. pg_cron job #5
+  (process-monthly-payouts, never armed — CRON_SECRET was never set) should
+  be unscheduled.
+- **DB untouched by design:** the Stripe/Pines+ tables and
+  `profiles.is_pines_plus` remain with their existing RLS (already tightened
+  2026-08-13/14: prices authenticated-scoped, ratings purchase-verified,
+  `is_pines_plus` not self-writable). Nothing reads/writes them from the app;
+  dropping them is optional future cleanup, not a hole.
+
+**Verified:** tsc/eslint(changed)/187 vitest/build clean, signed-out Chromium
+sweep green both themes. Nothing here loosens a policy; every change removes
+surface or removes a paywall in front of an already-rate-limited path.
+
 ### 2026-08-14 — Personal link limits: 7-day expiry + 10-join cap — APPLIED & VERIFIED
 **Migration:** `supabase/migrations/20260815110000_personal_link_limits.sql`
 (applied via `query_database` — NOT in Lovable's ledger; repo file is source

@@ -16,7 +16,6 @@ interface MusicPlayerProps {
   spotifyTrackId: string | null;
   spotifyPreviewUrl: string | null;
   playerType: PlayerType;
-  isPinesPlus: boolean;
   atmosphere: { cardBg: string; text: string; border: string; accent: string; background: string };
   onUpdate: () => void;
 }
@@ -38,7 +37,7 @@ const PLAYER_LABELS: Record<PlayerType, string> = {
 
 const MusicPlayer = ({
   userId, songTitle, songArtist, spotifyTrackId, spotifyPreviewUrl,
-  playerType, isPinesPlus, atmosphere, onUpdate,
+  playerType, atmosphere, onUpdate,
 }: MusicPlayerProps) => {
   const { user } = useAuth();
   const isOwner = user?.id === userId;
@@ -240,18 +239,17 @@ const MusicPlayer = ({
 
 /* ─── Player Selector (for Cabin edit form) ─── */
 export const PlayerSelector = ({
-  current, isPinesPlus, onChange, accent,
+  current, onChange, accent,
 }: {
   current: PlayerType;
-  isPinesPlus: boolean;
   onChange: (t: PlayerType) => void;
   accent: string;
 }) => {
-  const devices: { type: PlayerType; label: string; pinesOnly: boolean }[] = [
-    { type: 'radio', label: 'Radio', pinesOnly: false },
-    { type: 'walkman', label: 'Walkman', pinesOnly: true },
-    { type: 'discman', label: 'Discman', pinesOnly: true },
-    { type: 'mp3', label: 'MP3 Player', pinesOnly: true },
+  const devices: { type: PlayerType; label: string }[] = [
+    { type: 'radio', label: 'Radio' },
+    { type: 'walkman', label: 'Walkman' },
+    { type: 'discman', label: 'Discman' },
+    { type: 'mp3', label: 'MP3 Player' },
   ];
 
   const thumbProps = { playing: false, accent, cardBg: 'hsl(var(--card))', background: 'hsl(var(--muted))' };
@@ -260,18 +258,14 @@ export const PlayerSelector = ({
     <div className="space-y-3">
       <div className="grid grid-cols-4 gap-2">
         {devices.map(d => {
-          const locked = d.pinesOnly && !isPinesPlus;
           const selected = current === d.type;
           return (
             <button
               key={d.type}
-              onClick={() => !locked && onChange(d.type)}
+              onClick={() => onChange(d.type)}
               className={`relative rounded-[5px] border p-2 flex flex-col items-center gap-1.5 transition-all ${
-                selected ? 'border-primary bg-primary/5 ring-1 ring-primary/20' :
-                locked ? 'border-border opacity-40 cursor-not-allowed' :
-                'border-border hover:border-primary/40'
+                selected ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'border-border hover:border-primary/40'
               }`}
-              disabled={locked}
             >
               <div className="w-full flex justify-center" style={{ transform: 'scale(0.35)', transformOrigin: 'center', height: 45 }}>
                 {d.type === 'radio' && <RadioSVG {...thumbProps} />}
@@ -280,18 +274,10 @@ export const PlayerSelector = ({
                 {d.type === 'mp3' && <MP3PlayerSVG {...thumbProps} />}
               </div>
               <span className="text-[10px] font-body text-foreground">{d.label}</span>
-              {locked && (
-                <span className="absolute top-1 right-1 text-[8px] text-muted-foreground">🔒</span>
-              )}
             </button>
           );
         })}
       </div>
-      {!isPinesPlus && (
-        <p className="text-[10px] font-body text-muted-foreground text-center">
-          Pines+ coming soon — unlocks Walkman, Discman & MP3 Player
-        </p>
-      )}
     </div>
   );
 };
