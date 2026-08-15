@@ -136,7 +136,52 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-15 (LATEST) — posting fixed (compose sheet was never
+**As of 2026-08-15 (LATEST) — Ranger Station board fixed: the author embed
+was ambiguous and the API rejected it (branch
+`claude/ranger-station-loading-msrk53`; ONE-LINE client fix, no migration,
+no edge deploys — needs Lovable PUBLISH only).**
+
+Kevin's report: `/ranger-station` shows "That did not load. Could not reach
+the Ranger Station." Diagnosis (all done against prod via
+`mcp__Lovable__query_database`): the board **never worked in production** —
+`pg_stat_statements` shows the `feedback_votes` read executed 9× and the new
+`get_feedback_vote_counts()` RPC 3×, but the `feedback_items` read from
+PostgREST has executed ZERO times. Root cause: `feedback_votes` carries FKs
+to BOTH `feedback_items` and `profiles`, so PostgREST treats it as a
+junction table and sees TWO relationships from `feedback_items` to
+`profiles` (the author FK + the votes m2m path). `feedbackApi.ts` had the
+codebase's ONLY hint-less profiles embed (`author:profiles(...)`), so the
+API answers PGRST201 ("more than one relationship") before the query ever
+reaches the executor → `useFeedbackBoard` throws → error panel. NOT caused
+by Lovable's 2026-08-15 feedback-votes privacy pass — that migration
+(`20260815031106_840fa937…`) is applied and healthy (RPC + policy verified
+in prod; impersonated reads all pass; grants/FKs/schema-reload triggers all
+checked and fine).
+
+- Fix: `feedbackApi.ts` embed is now
+  `author:profiles!feedback_items_author_id_fkey(handle, display_name)` —
+  the same explicit-hint convention every other profiles embed already uses.
+- New drift test in `feedback.test.ts` pins the FK hint (and bans a
+  hint-less `profiles(` in that file) with a comment explaining the
+  junction-table ambiguity.
+- Note: `feedback_items`/`feedback_votes` are both EMPTY in prod (0 rows) —
+  nothing was lost; nobody has ever successfully loaded the board to file
+  anything.
+
+**Verified:** tsc clean; eslint clean on changed files; 187 vitest pass
+(186 + 1 new — Lovable's privacy-pass tests included); build clean; entry
+193.4 kB gzip (= baseline); signed-out Chromium sweep green 6 routes × both
+themes (incl. /ranger-station → gate). Signed-in board load is Kevin's
+eyeball after publish: /ranger-station renders the empty board, file a
+feature + a bug, vote, and (as admin) move a status.
+
+**Remaining:** Lovable publish — one publish covers this + the still-pending
+compose-sheet/topbar branch (merge both first). Still pending from previous
+entries: the 4 deep-scan edge functions need deploy.
+
+---
+
+**Previously (2026-08-15) — posting fixed (compose sheet was never
 mounted) + topbar now FIXED to the top edge (kills the iOS launch gap for
 good) (branch `claude/post-creation-broken-m3y15n`; no migration, no edge
 deploys — needs Lovable PUBLISH only).**
