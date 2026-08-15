@@ -124,12 +124,25 @@ const EmberComposer = ({ onPost, onCancel, startWithPlace = false }: EmberCompos
         setUploadProgress(Math.round(((i + 1) / files.length) * 100));
       }
 
+      // The place is a separate, server-checked write: place columns on posts
+      // are not client-writable. A failure here must not lose the post.
+      if (place) {
+        try {
+          await attachPlaceToPost(post.id, place);
+        } catch (placeErr) {
+          console.error('Attaching place failed', placeErr);
+          toast("Posted, but the place didn't stick.");
+        }
+      }
+
       onPost({ ...post, post_media: [] }); // Will be refetched
       previews.forEach(u => URL.revokeObjectURL(u));
       setFiles([]);
       setPreviews([]);
       setCaption('');
+      setPlace(null);
     } catch (err: any) {
+
       console.error('Ember post error:', err);
       toast.error("Something got stuck in the branches. Your text is safe — try posting again.");
     }
