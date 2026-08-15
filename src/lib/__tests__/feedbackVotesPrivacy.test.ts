@@ -148,7 +148,7 @@ describe('database contract (migration source)', () => {
 
   it('exposes totals through a SECURITY DEFINER aggregate function', () => {
     const fn = MIGRATION.match(
-      /CREATE OR REPLACE FUNCTION public\.get_feedback_vote_counts[\s\S]*?\$\$/i,
+      /CREATE OR REPLACE FUNCTION public\.get_feedback_vote_counts[\s\S]*?\$\$;/i,
     );
     expect(fn).toBeTruthy();
     expect(fn![0]).toMatch(/SECURITY DEFINER/i);
