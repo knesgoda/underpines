@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import {
   deleteOwnFeedback,
   listFeedbackItems,
+  listFeedbackVoteCounts,
   listFeedbackVotes,
   setFeedbackStatus,
   submitFeedback,
@@ -11,12 +12,14 @@ import {
   type FeedbackItem,
   type FeedbackStatus,
   type FeedbackType,
+  type FeedbackVoteCount,
   type FeedbackVoteRow,
 } from '@/lib/feedbackApi';
 
 /**
- * The Ranger Station board. Two reads (items + votes) folded client-side —
- * the board is small, and sorting by votes is cheaper here than another RPC.
+ * The Ranger Station board. Totals come from an aggregate RPC (voter
+ * identities stay private); the viewer's own votes come from the rows RLS
+ * still lets them read.
  */
 
 export interface FeedbackBoardItem extends FeedbackItem {
@@ -27,18 +30,19 @@ export interface FeedbackBoardItem extends FeedbackItem {
 /** Exported for the unit test; pure fold, no I/O. */
 export const foldVotes = (
   items: FeedbackItem[],
-  votes: FeedbackVoteRow[],
+  counts: FeedbackVoteCount[],
+  myVotes: FeedbackVoteRow[],
   viewerId: string | null,
 ): FeedbackBoardItem[] => {
-  const counts = new Map<string, number>();
+  const countMap = new Map<string, number>();
+  counts.forEach(c => countMap.set(c.item_id, c.vote_count));
   const mine = new Set<string>();
-  votes.forEach(v => {
-    counts.set(v.item_id, (counts.get(v.item_id) ?? 0) + 1);
+  myVotes.forEach(v => {
     if (viewerId && v.user_id === viewerId) mine.add(v.item_id);
   });
   return items.map(item => ({
     ...item,
-    vote_count: counts.get(item.id) ?? 0,
+    vote_count: countMap.get(item.id) ?? 0,
     mine_voted: mine.has(item.id),
   }));
 };
@@ -49,8 +53,12 @@ export const useFeedbackBoard = () => {
   return useQuery({
     queryKey: ['feedback', user?.id],
     queryFn: async (): Promise<FeedbackBoardItem[]> => {
-      const [items, votes] = await Promise.all([listFeedbackItems(), listFeedbackVotes()]);
-      return foldVotes(items, votes, user?.id ?? null);
+      const [items, counts, myVotes] = await Promise.all([
+        listFeedbackItems(),
+        listFeedbackVoteCounts(),
+        listFeedbackVotes(),
+      ]);
+      return foldVotes(items, counts, myVotes, user?.id ?? null);
     },
   });
 };
