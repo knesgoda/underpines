@@ -85,10 +85,25 @@ export const listFeedbackItems = async (): Promise<FeedbackItem[]> => {
   return (data ?? []) as FeedbackItem[];
 };
 
+/**
+ * Only the viewer's own votes come back over RLS — voter identities are private.
+ * Totals come from the aggregate RPC below.
+ */
 export const listFeedbackVotes = async (): Promise<FeedbackVoteRow[]> => {
   const { data, error } = await db.from('feedback_votes').select('item_id, user_id');
   if (error) throw error;
   return (data ?? []) as FeedbackVoteRow[];
+};
+
+export interface FeedbackVoteCount {
+  item_id: string;
+  vote_count: number;
+}
+
+export const listFeedbackVoteCounts = async (): Promise<FeedbackVoteCount[]> => {
+  const { data, error } = await db.rpc('get_feedback_vote_counts');
+  if (error) throw error;
+  return (data ?? []) as FeedbackVoteCount[];
 };
 
 export const submitFeedback = async (

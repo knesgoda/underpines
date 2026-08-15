@@ -41,20 +41,21 @@ describe('foldVotes', () => {
     updated_at: '2026-08-14T00:00:00Z',
   });
 
-  const votes: FeedbackVoteRow[] = [
-    { item_id: 'a', user_id: 'me' },
-    { item_id: 'a', user_id: 'them' },
-    { item_id: 'b', user_id: 'them' },
+  // Totals arrive as aggregates; only the viewer's own vote rows are readable.
+  const counts = [
+    { item_id: 'a', vote_count: 2 },
+    { item_id: 'b', vote_count: 1 },
   ];
+  const myVotes: FeedbackVoteRow[] = [{ item_id: 'a', user_id: 'me' }];
 
   it('counts votes per item and flags the viewer’s own', () => {
-    const folded = foldVotes([item('a'), item('b'), item('c')], votes, 'me');
+    const folded = foldVotes([item('a'), item('b'), item('c')], counts, myVotes, 'me');
     expect(folded.map(f => f.vote_count)).toEqual([2, 1, 0]);
     expect(folded.map(f => f.mine_voted)).toEqual([true, false, false]);
   });
 
   it('handles a signed-out viewer', () => {
-    const folded = foldVotes([item('a')], votes, null);
+    const folded = foldVotes([item('a')], counts, myVotes, null);
     expect(folded[0].vote_count).toBe(2);
     expect(folded[0].mine_voted).toBe(false);
   });

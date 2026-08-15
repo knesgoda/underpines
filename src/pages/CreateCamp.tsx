@@ -33,26 +33,14 @@ const CreateCamp = () => {
     if (!user || !name.trim()) return;
     setCreating(true);
 
-    let coverUrl: string | null = null;
-    if (coverFile) {
-      const ext = coverFile.name.split('.').pop();
-      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-      const { error: uploadErr } = await supabase.storage
-        .from('camp-covers')
-        .upload(path, coverFile);
-      if (!uploadErr) {
-        const { data: urlData } = supabase.storage.from('camp-covers').getPublicUrl(path);
-        coverUrl = urlData.publicUrl;
-      }
-    }
-
-    // Create camp
+    // Create camp first — cover uploads are filed under the camp they belong to,
+    // so the storage policy can verify the uploader actually runs that camp.
     const { data: camp, error: campErr } = await supabase
       .from('camps')
       .insert({
         name: name.trim(),
         description: description.trim() || null,
-        cover_image_url: coverUrl,
+        cover_image_url: null,
         visibility,
         firekeeper_id: user.id,
       })
@@ -71,6 +59,18 @@ const CreateCamp = () => {
       user_id: user.id,
       role: 'firekeeper',
     });
+
+    if (coverFile) {
+      const ext = coverFile.name.split('.').pop();
+      const path = `${user.id}/${camp.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('camp-covers')
+        .upload(path, coverFile);
+      if (!uploadErr) {
+        const { data: urlData } = supabase.storage.from('camp-covers').getPublicUrl(path);
+        await supabase.from('camps').update({ cover_image_url: urlData.publicUrl }).eq('id', camp.id);
+      }
+    }
 
     // Create bonfire campfire
     await supabase.from('campfires').insert({
