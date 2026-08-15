@@ -1678,6 +1678,10 @@ export type Database = {
           id: string
           is_pinned: boolean | null
           is_published: boolean | null
+          place_id: string | null
+          place_lat: number | null
+          place_lng: number | null
+          place_name: string | null
           post_type: string
           title: string | null
           updated_at: string | null
@@ -1690,6 +1694,10 @@ export type Database = {
           id?: string
           is_pinned?: boolean | null
           is_published?: boolean | null
+          place_id?: string | null
+          place_lat?: number | null
+          place_lng?: number | null
+          place_name?: string | null
           post_type: string
           title?: string | null
           updated_at?: string | null
@@ -1702,6 +1710,10 @@ export type Database = {
           id?: string
           is_pinned?: boolean | null
           is_published?: boolean | null
+          place_id?: string | null
+          place_lat?: number | null
+          place_lng?: number | null
+          place_name?: string | null
           post_type?: string
           title?: string | null
           updated_at?: string | null
@@ -3708,6 +3720,10 @@ export type Database = {
           image_url: string | null
           is_published: boolean | null
           is_quote_post: boolean | null
+          place_id: string | null
+          place_lat: number | null
+          place_lng: number | null
+          place_name: string | null
           post_type: string
           quoted_post_id: string | null
           title: string | null
@@ -3721,6 +3737,10 @@ export type Database = {
           image_url?: string | null
           is_published?: boolean | null
           is_quote_post?: boolean | null
+          place_id?: string | null
+          place_lat?: number | null
+          place_lng?: number | null
+          place_name?: string | null
           post_type: string
           quoted_post_id?: string | null
           title?: string | null
@@ -3734,6 +3754,10 @@ export type Database = {
           image_url?: string | null
           is_published?: boolean | null
           is_quote_post?: boolean | null
+          place_id?: string | null
+          place_lat?: number | null
+          place_lng?: number | null
+          place_name?: string | null
           post_type?: string
           quoted_post_id?: string | null
           title?: string | null
@@ -4997,6 +5021,17 @@ export type Database = {
         }[]
       }
       apply_cabin_design: { Args: { _design_id: string }; Returns: Json }
+      attach_post_place: {
+        Args: {
+          _is_camp_post?: boolean
+          _lat: number
+          _lng: number
+          _place_id: string
+          _place_name: string
+          _post_id: string
+        }
+        Returns: undefined
+      }
       cabin_append_history: {
         Args: { _detail: Json; _kind: string; _owner: string }
         Returns: undefined
