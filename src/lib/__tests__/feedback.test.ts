@@ -10,6 +10,8 @@ const MIGRATION = readFileSync(
   'utf8',
 );
 
+const API_SOURCE = readFileSync(resolve(__dirname, '../feedbackApi.ts'), 'utf8');
+
 describe('feedback board contract', () => {
   it('client statuses match the migration CHECK constraint', () => {
     // The status vocabulary lives in two places; this keeps them from
@@ -25,6 +27,16 @@ describe('feedback board contract', () => {
     expect(checkBlock).toBeTruthy();
     const sqlTypes = [...checkBlock![1].matchAll(/'([a-z_]+)'/g)].map(m => m[1]);
     expect(new Set(sqlTypes)).toEqual(new Set(Object.keys(TYPE_LABELS)));
+  });
+
+  it('the author embed names its FK — feedback_votes makes profiles ambiguous', () => {
+    // feedback_votes has FKs to BOTH feedback_items and profiles, so PostgREST
+    // sees two relationships from feedback_items to profiles (the author FK and
+    // the votes junction). A hint-less `profiles(...)` embed is answered with
+    // PGRST201 before the query ever runs, and the whole board shows the error
+    // panel. The explicit FK hint is what disambiguates it.
+    expect(API_SOURCE).toContain('author:profiles!feedback_items_author_id_fkey(');
+    expect(API_SOURCE).not.toMatch(/profiles\(/);
   });
 });
 

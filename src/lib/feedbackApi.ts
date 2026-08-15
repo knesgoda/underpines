@@ -79,7 +79,7 @@ export const rpcErrorMessage = (error?: string) =>
 export const listFeedbackItems = async (): Promise<FeedbackItem[]> => {
   const { data, error } = await db
     .from('feedback_items')
-    .select('*, author:profiles(handle, display_name)')
+    .select('*, author:profiles!feedback_items_author_id_fkey(handle, display_name)')
     .order('created_at', { ascending: false });
   if (error) throw error;
   return (data ?? []) as FeedbackItem[];
