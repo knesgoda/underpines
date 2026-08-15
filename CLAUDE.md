@@ -136,7 +136,51 @@ in a route chunk.
 _Update this section as work lands. Keep it short: what shipped, what's open,
 what the next session should know._
 
-**As of 2026-08-14 (LATEST) — Kevin's five UI fixes + personal invite links
+**As of 2026-08-15 (LATEST) — posting fixed: the compose sheet was never
+mounted (branch `claude/post-creation-broken-m3y15n`; no migration, no edge
+deploys — needs Lovable PUBLISH only).**
+
+Kevin's report: tapping Photos or the compose box on the feed did nothing.
+Root cause: the feed composer is a trigger-only stub that flips
+`composerOpen` on NavigationContext, and the only listener —
+`MobileComposerSheet` — was lazy-imported in `AppLayout.tsx` but **never
+rendered** (the JSX was dropped in the d3aa89a lazy-loading refactor and no
+test covered the mount). My Page's `WallComposer` uses local state, which is
+why posting still worked there. NOT the topbar CSS; no overlay involved.
+Yesterday's Lovable publish put the broken build live, surfacing it.
+(Lovable's own commits that evening — forceRefresh one-shot purge/sign-out +
+tests + types regen — are benign and untouched.)
+
+What shipped:
+- `AppLayout.tsx`: `<MobileComposerSheet />` mounted in the signed-in shell
+  (inside `Deferred`, after `TabBar`) — the one-line core fix.
+- Intent plumbing: `NavigationContext` gains `composerIntent` +
+  `openComposer(intent?)` (closing clears intent). Feed's **Photos** button
+  now opens the photo composer directly, **Blog** navigates to `/new/story`,
+  compose box/Post open the picker. Sheet seeds `activeType` from intent.
+- Sheet labels renamed per nomenclature policy: "Ember Post"→"Photos",
+  "Story"→"Something longer" (data values untouched).
+- Hygiene: `pointer-events: none` on the decorative safe-area strips
+  (`.topbar::before/::after`, `.fullscreen-shell::before`).
+- Deleted dead `ComposerStub.tsx` (imported by nothing).
+- New regression tests `AppLayout.composer.test.tsx` (4): sheet mounts in
+  the authenticated shell, closed sheet renders nothing, ember/spark intent
+  skips the picker.
+
+**Verified:** tsc clean; eslint clean on changed files (2 pre-existing
+NavigationContext warnings at baseline); 179 vitest pass (175 + 4 new);
+build clean; entry 193.4 kB gzip (= this branch's baseline — the sheet stays
+in its lazy chunk); signed-out Chromium sweep green 12 routes × both themes.
+Signed-in flow is Kevin's eyeball after publish: feed compose box → sheet
+opens; Photos → straight to the photo composer; post a Spark and see it land
+in the feed; Blog → story editor.
+
+**Remaining:** Lovable publish (this branch merged first). Still pending
+from previous entries: the 4 deep-scan edge functions need deploy.
+
+---
+
+**Previously (2026-08-14) — Kevin's five UI fixes + personal invite links
 (branch `claude/ui-fixes-feature-requests-r7hbtw`; migration APPLIED to prod
 + 24-assertion exploit test green; needs Lovable PUBLISH only — no edge
 deploys).**

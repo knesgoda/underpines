@@ -4,6 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { CAMPFIRE_LAST_SEEN_KEY, useBootState } from '@/hooks/useBootState';
 
 
+export type ComposerIntent = 'spark' | 'ember';
+
 interface NavigationContextType {
   unreadCount: number;
   hasUnreadNotifications: boolean;
@@ -11,7 +13,9 @@ interface NavigationContextType {
   markCampfiresSeen: () => void;
   onlineIds: Set<string>;
   composerOpen: boolean;
+  composerIntent: ComposerIntent | null;
   setComposerOpen: (open: boolean) => void;
+  openComposer: (intent?: ComposerIntent) => void;
   refreshNotifications: () => void;
 }
 
@@ -22,7 +26,9 @@ const NavigationContext = createContext<NavigationContextType>({
   markCampfiresSeen: () => {},
   onlineIds: new Set<string>(),
   composerOpen: false,
+  composerIntent: null,
   setComposerOpen: () => {},
+  openComposer: () => {},
   refreshNotifications: () => {},
 });
 
@@ -34,7 +40,21 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [hasUnreadCampfires, setHasUnreadCampfires] = useState(false);
   const [onlineIds, setOnlineIds] = useState<Set<string>>(() => new Set());
-  const [composerOpen, setComposerOpen] = useState(false);
+  const [composerOpen, setComposerOpenState] = useState(false);
+  const [composerIntent, setComposerIntent] = useState<ComposerIntent | null>(null);
+
+  // A trigger can name the kind of post it means ("Photos" goes straight to
+  // the photo composer); plain triggers open the picker. Intent lives here so
+  // it survives the sheet's lazy chunk loading between the tap and the mount.
+  const openComposer = useCallback((intent?: ComposerIntent) => {
+    setComposerIntent(intent ?? null);
+    setComposerOpenState(true);
+  }, []);
+
+  const setComposerOpen = useCallback((open: boolean) => {
+    if (!open) setComposerIntent(null);
+    setComposerOpenState(open);
+  }, []);
 
   /**
    * Re-count after a mutation the realtime stream cannot express — marking
@@ -156,7 +176,9 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       markCampfiresSeen,
       onlineIds,
       composerOpen,
+      composerIntent,
       setComposerOpen,
+      openComposer,
       refreshNotifications,
     }}>
       {children}

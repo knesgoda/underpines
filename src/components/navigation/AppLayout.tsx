@@ -223,6 +223,12 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </main>
 
       <TabBar />
+
+      {/* The compose sheet listens to NavigationContext's composerOpen; every
+          "write a post" trigger outside My Page depends on this mount. */}
+      <Deferred>
+        <MobileComposerSheet />
+      </Deferred>
     </div>
   );
 };

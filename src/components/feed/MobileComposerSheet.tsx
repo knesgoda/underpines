@@ -15,14 +15,19 @@ const MobileComposerSheet = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { composerOpen, setComposerOpen } = useNavigation();
+  const { composerOpen, setComposerOpen, composerIntent } = useNavigation();
   const { isSeedling, daysLeft } = useSeedlingStatus();
   const [activeType, setActiveType] = useState<PostType>(null);
 
-  // Reset type when sheet closes
+  // A trigger that named its post kind ("Photos") skips the picker; plain
+  // triggers start on it. Reset when the sheet closes.
   useEffect(() => {
-    if (!composerOpen) setActiveType(null);
-  }, [composerOpen]);
+    if (!composerOpen) {
+      setActiveType(null);
+      return;
+    }
+    if (composerIntent) setActiveType(composerIntent);
+  }, [composerOpen, composerIntent]);
 
   if (!user) return null;
 
@@ -70,8 +75,8 @@ const MobileComposerSheet = () => {
             <div className="space-y-2">
               {[
                 { type: 'spark' as PostType, icon: '🌿', label: 'Spark', desc: 'A quick thought · 300 characters' },
-                { type: 'story' as PostType, icon: '📖', label: 'Story', desc: 'Long-form with rich text editor' },
-                { type: 'ember' as PostType, icon: '📷', label: 'Ember Post', desc: 'Up to 10 photos or a short video' },
+                { type: 'story' as PostType, icon: '📖', label: 'Something longer', desc: 'Long-form with rich text editor' },
+                { type: 'ember' as PostType, icon: '📷', label: 'Photos', desc: 'Up to 10 photos or a short video' },
               ].map(({ type, icon, label, desc }) => (
                 <button
                   key={type}

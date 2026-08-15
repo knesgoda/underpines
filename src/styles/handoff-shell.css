@@ -47,6 +47,7 @@
   right: 0;
   height: env(safe-area-inset-top, 0px);
   background: hsl(var(--sidebar-background));
+  pointer-events: none;
 }
 
 /* Launch-offset cover: when iOS parks the page low until the first scroll,
@@ -60,6 +61,7 @@
   bottom: 100%;
   height: env(safe-area-inset-top, 0px);
   background: hsl(var(--sidebar-background));
+  pointer-events: none;
 }
 
 .topbar-inner {
@@ -684,4 +686,5 @@
   height: env(safe-area-inset-top, 0px);
   background: hsl(var(--sidebar-background));
   z-index: 40;
+  pointer-events: none;
 }
