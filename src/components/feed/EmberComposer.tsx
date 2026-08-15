@@ -231,7 +231,10 @@ const EmberComposer = ({ onPost, onCancel, startWithPlace = false }: EmberCompos
         </div>
       )}
 
+      <PlacePicker place={place} onChange={setPlace} defaultOpen={startWithPlace} />
+
       <div className="flex items-center justify-between">
+
         <button onClick={onCancel} className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors">
           Cancel
         </button>
