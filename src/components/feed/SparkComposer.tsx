@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ImageIcon, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { PostWithAuthor } from './PostCard';
+import PlacePicker from '@/components/places/PlacePicker';
+import { attachPlaceToPost, type Place } from '@/lib/places';
 
 interface SparkComposerProps {
   onPost: (post: PostWithAuthor) => void;
@@ -14,14 +16,17 @@ interface SparkComposerProps {
    * bulletin is the same form with a different post_type.
    */
   postType?: 'spark' | 'bulletin';
+  /** Opens with the place step already showing (the check-in entry point). */
+  startWithPlace?: boolean;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerProps) => {
+const SparkComposer = ({ onPost, onCancel, postType = 'spark', startWithPlace = false }: SparkComposerProps) => {
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [posting, setPosting] = useState(false);
+  const [place, setPlace] = useState<Place | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -125,8 +130,20 @@ const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerPr
       return;
     }
 
+    // The place is a separate, server-checked write: place columns on posts are
+    // not client-writable. A failure here must not lose the post.
+    if (place) {
+      try {
+        await attachPlaceToPost(data.id, place);
+      } catch (placeErr) {
+        console.error('Attaching place failed', placeErr);
+        toast("Posted, but the place didn't stick.");
+      }
+    }
+
     setContent('');
     clearImage();
+    setPlace(null);
     setPosting(false);
     onPost(data as PostWithAuthor);
   };
@@ -188,6 +205,8 @@ const SparkComposer = ({ onPost, onCancel, postType = 'spark' }: SparkComposerPr
         className="hidden"
         onChange={handleImageSelect}
       />
+
+      <PlacePicker place={place} onChange={setPlace} defaultOpen={startWithPlace} />
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
