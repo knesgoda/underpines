@@ -345,6 +345,18 @@
   font-size: 10px;
 }
 
+/* Check-in line: the place a post was tagged at. */
+.post-header .post-place {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 3px;
+  color: hsl(var(--muted-foreground));
+  font-size: 10px;
+}
+
+
+
 .more {
   margin-left: auto;
   border: 0;

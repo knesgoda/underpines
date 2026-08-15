@@ -4,23 +4,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
 import { ImagePlus, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import PlacePicker from '@/components/places/PlacePicker';
+import { attachPlaceToPost, type Place } from '@/lib/places';
 
 interface EmberComposerProps {
   onPost: (post: any) => void;
   onCancel: () => void;
+  /** Opens with the place step already showing (the check-in entry point). */
+  startWithPlace?: boolean;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
+const EmberComposer = ({ onPost, onCancel, startWithPlace = false }: EmberComposerProps) => {
   const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [caption, setCaption] = useState('');
+  const [place, setPlace] = useState<Place | null>(null);
   const [posting, setPosting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const captionRef = useRef<HTMLTextAreaElement>(null);
+
 
   const scrollCaptionIntoView = useCallback(() => {
     setTimeout(() => {
@@ -118,12 +124,25 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         setUploadProgress(Math.round(((i + 1) / files.length) * 100));
       }
 
+      // The place is a separate, server-checked write: place columns on posts
+      // are not client-writable. A failure here must not lose the post.
+      if (place) {
+        try {
+          await attachPlaceToPost(post.id, place);
+        } catch (placeErr) {
+          console.error('Attaching place failed', placeErr);
+          toast("Posted, but the place didn't stick.");
+        }
+      }
+
       onPost({ ...post, post_media: [] }); // Will be refetched
       previews.forEach(u => URL.revokeObjectURL(u));
       setFiles([]);
       setPreviews([]);
       setCaption('');
+      setPlace(null);
     } catch (err: any) {
+
       console.error('Ember post error:', err);
       toast.error("Something got stuck in the branches. Your text is safe — try posting again.");
     }
@@ -212,7 +231,10 @@ const EmberComposer = ({ onPost, onCancel }: EmberComposerProps) => {
         </div>
       )}
 
+      <PlacePicker place={place} onChange={setPlace} defaultOpen={startWithPlace} />
+
       <div className="flex items-center justify-between">
+
         <button onClick={onCancel} className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors">
           Cancel
         </button>

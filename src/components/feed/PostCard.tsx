@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag, Repeat2 } from 'lucide-react';
+import { MoreHorizontal, Copy, Trash2, Quote, Flame, Flag, Repeat2, MapPin } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/time';
 import ReactionBar from './ReactionBar';
 import { extractFirstUrl, stripFirstUrl } from '@/lib/linkify';
@@ -30,6 +30,11 @@ export interface PostWithAuthor {
   is_quote_post: boolean | null;
   quoted_post_id: string | null;
   created_at: string;
+  /** A check-in: the place tagged on the post. Coordinates are rounded to
+   *  ~100m server-side. Visibility is the post's own. */
+  place_name?: string | null;
+  place_lat?: number | null;
+  place_lng?: number | null;
   author?: { display_name: string; handle: string; accent_color: string | null; cabin_mood: string | null; avatar_url?: string | null; default_avatar_key?: string | null };
   reactions?: { reaction_type: string; user_id: string }[];
   post_media?: { url: string; media_type: string; position: number }[];
@@ -160,6 +165,11 @@ const PostCard = ({ post, circleIds = [], onRemove, onRefresh, onImageClick }: P
               <p className="font-body text-xs text-muted-foreground">
                 @{post.author?.handle}
               </p>
+              {post.place_name && (
+                <p className="font-body text-xs text-muted-foreground flex items-center gap-1">
+                  <MapPin size={11} aria-hidden="true" /> at {post.place_name}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
