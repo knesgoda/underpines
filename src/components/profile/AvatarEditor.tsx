@@ -74,6 +74,7 @@ const AvatarEditor = ({
   const { user } = useAuth();
   const saveAvatar = useSaveAvatar(user?.id);
   const [uploading, setUploading] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const busy = uploading || saveAvatar.isPending;
@@ -84,8 +85,22 @@ const AvatarEditor = ({
     return () => onBusyChange?.(false);
   }, [busy, onBusyChange]);
 
+  // Release the preview URL when the cropper closes.
+  useEffect(() => {
+    return () => {
+      if (cropSrc) URL.revokeObjectURL(cropSrc);
+    };
+  }, [cropSrc]);
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const closeCropper = () => {
+    setCropSrc(prev => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+  };
+
+  /** Pick a file, then fine-tune it — drag to reposition, zoom to fill. */
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file || !user) return;
@@ -96,11 +111,18 @@ const AvatarEditor = ({
       return;
     }
 
+    setCropSrc(URL.createObjectURL(file));
+  };
+
+  const handleCropped = async (blob: Blob) => {
+    if (!user) return;
+    closeCropper();
+
     setUploading(true);
-    const path = avatarStoragePath(user.id, file.name, crypto.randomUUID());
+    const path = avatarStoragePath(user.id, 'picture.png', crypto.randomUUID());
     const { error: uploadErr } = await supabase.storage
       .from('avatars')
-      .upload(path, file, { contentType: file.type, upsert: false, cacheControl: '31536000' });
+      .upload(path, blob, { contentType: 'image/png', upsert: false, cacheControl: '31536000' });
 
     if (uploadErr) {
       setUploading(false);
@@ -120,6 +142,7 @@ const AvatarEditor = ({
   };
 
   const chooseCreature = async (key: string) => {
+
     try {
       // Choosing an illustration means showing it, so the photo steps aside.
       await saveAvatar.mutateAsync({ default_avatar_key: key, avatar_url: null });
