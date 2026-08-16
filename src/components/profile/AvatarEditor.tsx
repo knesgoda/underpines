@@ -36,7 +36,13 @@ interface AvatarEditorProps {
   avatarUrl: string | null;
   defaultAvatarKey: string | null;
   displayName: string | null;
+  /**
+   * 'panel' — the standalone section on Edit my page (default).
+   * 'bare'  — no panel or heading, for use inside a dialog that titles itself.
+   */
+  chrome?: 'panel' | 'bare';
 }
+
 
 /**
  * Your picture.
@@ -49,7 +55,7 @@ interface AvatarEditorProps {
  * Saves on its own rather than waiting for "Save page", because a picture is a
  * single decision and people expect it to land immediately.
  */
-const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName }: AvatarEditorProps) => {
+const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName, chrome = 'panel' }: AvatarEditorProps) => {
   const { user } = useAuth();
   const saveAvatar = useSaveAvatar(user?.id);
   const [uploading, setUploading] = useState(false);
@@ -110,8 +116,8 @@ const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName }: AvatarEditor
   };
 
   return (
-    <section className="panel module">
-      <h2>Your picture</h2>
+    <section className={chrome === 'bare' ? 'avatar-editor-bare' : 'panel module'}>
+      {chrome === 'panel' && <h2>Your picture</h2>}
 
       <div className="avatar-editor-row">
         <div className="avatar-editor-current">

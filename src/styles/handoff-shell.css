@@ -676,3 +676,81 @@
   z-index: 40;
   pointer-events: none;
 }
+
+/* Your picture — upload plus the woodland grid. Shared by Edit my page and the
+   picture dialog on My Page, so it lives in the always-loaded stylesheet. */
+.avatar-editor-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.avatar-editor-current { position: relative; }
+
+.avatar-editor-busy {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: hsl(var(--background) / 0.6);
+  color: hsl(var(--primary));
+}
+
+.avatar-editor-actions {
+  display: grid;
+  gap: 7px;
+  justify-items: start;
+}
+
+.avatar-editor-actions small {
+  color: hsl(var(--muted-foreground));
+  font-size: 11px;
+}
+
+.avatar-editor-label {
+  margin: 16px 0 8px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.avatar-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 8px;
+}
+
+.avatar-editor-grid button {
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  background: hsl(var(--background));
+  padding: 4px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.avatar-editor-grid button:hover { border-color: hsl(var(--primary)); }
+
+.avatar-editor-grid button.is-active {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.35);
+}
+
+.avatar-editor-grid button:disabled { opacity: 0.5; cursor: default; }
+
+.avatar-editor-grid img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* The dialog form of the editor: no panel chrome, grid scrolls on short screens. */
+.avatar-editor-dialog { max-height: 88dvh; overflow-y: auto; }
+.avatar-editor-bare { display: block; }
+.avatar-editor-bare .avatar-editor-grid { max-height: 40dvh; overflow-y: auto; padding-right: 2px; }
