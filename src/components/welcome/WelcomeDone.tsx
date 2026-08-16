@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,6 +13,7 @@ import WelcomeShell from './WelcomeShell';
  */
 export const WelcomeDone = ({ onFinish }: { onFinish: () => void }) => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
 
   const finish = async () => {
@@ -24,14 +26,21 @@ export const WelcomeDone = ({ onFinish }: { onFinish: () => void }) => {
       .from('profiles')
       .update(patch as unknown as never)
       .eq('id', user.id);
-    setSaving(false);
 
     if (error) {
+      setSaving(false);
       toast.error('Could not finish setting up. Try again.');
       return;
     }
+
+    // The shell's guard reads onboarding_completed_at from the cached boot
+    // state (60s staleTime). Without refetching first, landing on "/" bounces
+    // straight back into this flow from step one.
+    await queryClient.refetchQueries({ queryKey: ['boot-state', user.id] });
+    setSaving(false);
     onFinish();
   };
+
 
   return (
     <WelcomeShell
