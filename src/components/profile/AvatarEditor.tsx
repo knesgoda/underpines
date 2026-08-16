@@ -28,7 +28,7 @@ export const validateAvatarFile = (
 
 /** Owner-scoped path — the avatars bucket only accepts writes under your own id. */
 export const avatarStoragePath = (userId: string, fileName: string, uuid: string, now = Date.now()) => {
-  const ext = (fileName.split('.').pop() || 'jpg').toLowerCase();
+  const ext = (/\.([a-z0-9]{2,5})$/i.exec(fileName)?.[1] ?? 'jpg').toLowerCase();
   return `${userId}/${now}-${uuid}.${ext}`;
 };
 
