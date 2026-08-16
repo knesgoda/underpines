@@ -157,6 +157,7 @@ const SettingsPage = () => {
       <SettingsSection label="Your Account">
         <SettingsItem emoji="✉️" label="My Invites" onClick={() => navigate('/invites')} />
         <SettingsItem emoji="✿" label="Friends" onClick={() => navigate('/friends')} />
+        <SettingsItem emoji="🔧" label="Troubleshooting" onClick={() => navigate('/settings/troubleshooting')} />
       </SettingsSection>
 
       {/* LEGAL */}
