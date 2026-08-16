@@ -138,7 +138,7 @@ const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName }: AvatarEditor
             {uploading ? 'Uploading…' : 'Upload a photo'}
           </button>
           {avatarUrl && (
-            <button type="button" className="paper-button" onClick={removePhoto} disabled={busy}>
+            <button type="button" className="outline-button inline-flex items-center gap-1.5" onClick={removePhoto} disabled={busy}>
               <X size={13} /> Remove photo
             </button>
           )}
