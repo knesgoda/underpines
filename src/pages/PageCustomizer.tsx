@@ -205,11 +205,15 @@ const PageCustomizer = () => {
 
   return (
     <div className="page-shell customizer">
-      <div className="mb-4 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground" aria-label="Back">
-          <ArrowLeft size={18} />
+      <div className="customizer-head">
+        <button type="button" onClick={goBack} className="customizer-back">
+          <ArrowLeft size={16} aria-hidden="true" />
+          <span>{backLabel}</span>
         </button>
+      </div>
+      <div className="mb-4 flex items-center gap-3">
         <h1 className="font-display text-2xl text-foreground">Edit my page</h1>
+
         <button type="button" className="solid-button ml-auto" onClick={save} disabled={saving}>
           {saving ? 'Saving…' : 'Save page'}
         </button>
