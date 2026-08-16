@@ -45,6 +45,8 @@ const CURRENTLY_TYPES = ['reading', 'listening to', 'watching', 'making', 'think
 const PageCustomizer = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = readEditorReturn(location.state);
   const { data: profile, isLoading } = usePageProfile();
   const { data: savedModules } = usePageModules(profile?.id);
   const { data: savedTheme } = usePageTheme(profile?.id);
