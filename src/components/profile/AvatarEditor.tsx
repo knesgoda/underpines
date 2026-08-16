@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import UserAvatar from '@/components/UserAvatar';
 import { defaultAvatars, defaultAvatarKeys } from '@/lib/default-avatars';
 import { useSaveAvatar } from '@/hooks/usePageEditor';
+import { uploadWithProgress } from '@/lib/uploadWithProgress';
 
 const AvatarCropModal = lazy(() => import('@/components/cabin/AvatarCropModal'));
 
@@ -74,10 +75,14 @@ const AvatarEditor = ({
   const { user } = useAuth();
   const saveAvatar = useSaveAvatar(user?.id);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState<'idle' | 'uploading' | 'saving'>('idle');
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const busy = uploading || saveAvatar.isPending;
+  // Upload is the long part; saving the record is the last sliver.
+  const percent = phase === 'saving' ? 96 : Math.round(progress * 92);
 
   // Tell the host (a dialog, usually) so it can hold the door shut mid-save.
   useEffect(() => {
@@ -119,27 +124,38 @@ const AvatarEditor = ({
     closeCropper();
 
     setUploading(true);
+    setProgress(0);
+    setPhase('uploading');
     const path = avatarStoragePath(user.id, 'picture.png', crypto.randomUUID());
-    const { error: uploadErr } = await supabase.storage
-      .from('avatars')
-      .upload(path, blob, { contentType: 'image/png', upsert: false, cacheControl: '31536000' });
+    const { error: uploadErr } = await uploadWithProgress('avatars', path, blob, {
+      contentType: 'image/png',
+      cacheControl: '31536000',
+      onProgress: setProgress,
+    });
 
     if (uploadErr) {
       setUploading(false);
+      setPhase('idle');
+      setProgress(0);
       toast.error("That picture didn't make it through. Try again?");
       return;
     }
 
     const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
     setUploading(false);
+    setPhase('saving');
 
     try {
       await saveAvatar.mutateAsync({ avatar_url: urlData.publicUrl });
       toast.success('New picture up.');
     } catch {
       toast.error("Uploaded, but it didn't save. Try again?");
+    } finally {
+      setPhase('idle');
+      setProgress(0);
     }
   };
+
 
   const chooseCreature = async (key: string) => {
 
@@ -195,8 +211,27 @@ const AvatarEditor = ({
             </button>
           )}
           <small>JPEG, PNG, GIF or WebP, up to 5MB. You can zoom and drag it into place. Shown as a circle.</small>
+
+          {phase !== 'idle' && (
+            <div
+              className="avatar-editor-progress"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={percent}
+              aria-label="Saving your picture"
+            >
+              <div className="avatar-editor-progress-track">
+                <span style={{ width: `${percent}%` }} />
+              </div>
+              <span className="avatar-editor-progress-label">
+                {phase === 'uploading' ? `Uploading… ${percent}%` : 'Almost done — saving…'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
+
 
       <input
         ref={fileInputRef}

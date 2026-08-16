@@ -709,6 +709,36 @@
   font-size: 11px;
 }
 
+/* Upload/save progress for your picture */
+.avatar-editor-progress {
+  width: 100%;
+  max-width: 260px;
+  display: grid;
+  gap: 4px;
+}
+
+.avatar-editor-progress-track {
+  height: 6px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--muted));
+  overflow: hidden;
+}
+
+.avatar-editor-progress-track > span {
+  display: block;
+  height: 100%;
+  background: hsl(var(--primary));
+  transition: width 180ms ease-out;
+}
+
+.avatar-editor-progress-label {
+  font-size: 11px;
+  color: hsl(var(--muted-foreground));
+  font-variant-numeric: tabular-nums;
+}
+
+
+
 .avatar-editor-label {
   margin: 16px 0 8px;
   font-size: 9px;
