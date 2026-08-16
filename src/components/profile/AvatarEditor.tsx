@@ -7,6 +7,7 @@ import UserAvatar from '@/components/UserAvatar';
 import { defaultAvatars, defaultAvatarKeys } from '@/lib/default-avatars';
 import { useSaveAvatar } from '@/hooks/usePageEditor';
 import { uploadWithProgress } from '@/lib/uploadWithProgress';
+import { avatarProgress, crawl, type AvatarPhase } from '@/lib/avatarProgress';
 
 const AvatarCropModal = lazy(() => import('@/components/cabin/AvatarCropModal'));
 
@@ -84,7 +85,9 @@ const AvatarEditor = ({
   const saveAvatar = useSaveAvatar(user?.id);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState<'idle' | 'uploading' | 'saving'>('idle');
+  const [phase, setPhase] = useState<AvatarPhase>('idle');
+  // Steps we can't measure crawl forward on a timer instead of sitting still.
+  const [ticks, setTicks] = useState(0);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   // A failed attempt holds on to the cropped picture so Retry doesn't ask you
   // to pick and crop it all over again.
@@ -98,8 +101,16 @@ const AvatarEditor = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const busy = uploading || saveAvatar.isPending;
-  // Upload is the long part; saving the record is the last sliver.
-  const percent = phase === 'saving' ? 96 : Math.round(progress * 92);
+  const within = phase === 'uploading' ? progress : crawl(ticks);
+  const { percent, label, step, steps, done } = avatarProgress(phase, within);
+
+  // Crawl the unmeasurable steps so the bar keeps moving while we wait.
+  useEffect(() => {
+    if (phase !== 'processing' && phase !== 'saving') return;
+    setTicks(0);
+    const id = window.setInterval(() => setTicks(t => t + 1), 450);
+    return () => window.clearInterval(id);
+  }, [phase]);
 
   // Tell the host (a dialog, usually) so it can hold the door shut mid-save.
   useEffect(() => {
@@ -142,13 +153,17 @@ const AvatarEditor = ({
     try {
       await saveAvatar.mutateAsync({ avatar_url: url });
       setFailure(null);
+      setPhase('done');
       toast.success('New picture up.');
+      window.setTimeout(() => {
+        setPhase('idle');
+        setProgress(0);
+      }, 700);
     } catch {
       setFailure({ kind: 'save', url });
-      toast.error("Uploaded, but it didn't save. Your picture is still here — try again.");
-    } finally {
       setPhase('idle');
       setProgress(0);
+      toast.error("Uploaded, but it didn't save. Your picture is still here — try again.");
     }
   };
 
@@ -164,6 +179,7 @@ const AvatarEditor = ({
       contentType: 'image/png',
       cacheControl: '31536000',
       onProgress: setProgress,
+      onBytesSent: () => setPhase('processing'),
     });
     setUploading(false);
 
@@ -242,7 +258,7 @@ const AvatarEditor = ({
             onClick={() => fileInputRef.current?.click()}
             disabled={busy}
           >
-            {uploading ? 'Uploading…' : 'Upload a photo'}
+            {phase === 'uploading' || phase === 'processing' ? 'Uploading…' : 'Upload a photo'}
           </button>
           {avatarUrl && (
             <button type="button" className="outline-button inline-flex items-center gap-1.5" onClick={removePhoto} disabled={busy}>
@@ -259,12 +275,13 @@ const AvatarEditor = ({
               aria-valuemax={100}
               aria-valuenow={percent}
               aria-label="Saving your picture"
+              aria-valuetext={`${label} — ${percent}%`}
             >
               <div className="avatar-editor-progress-track">
                 <span style={{ width: `${percent}%` }} />
               </div>
               <span className="avatar-editor-progress-label">
-                {phase === 'uploading' ? `Uploading… ${percent}%` : 'Almost done — saving…'}
+                {done ? 'Done' : `Step ${step} of ${steps} · ${label}… ${percent}%`}
               </span>
             </div>
           )}
