@@ -12,6 +12,10 @@
  */
 export const FORCE_REFRESH_VERSION = '2026-08-16-a';
 
+import { logClientEvent } from '@/lib/clientLog';
+import { purgeCachesAndWorkers } from '@/lib/swDiagnostics';
+
+
 const MARKER_KEY = 'up_force_refresh';
 const REPORT_KEY = 'up_force_refresh_report';
 
@@ -108,20 +112,18 @@ const purgeAndReload = async () => {
     if ('indexedDB' in window) indexedDB.deleteDatabase('under-pines');
   } catch { /* ignore */ }
 
-  // 4. Service worker + Cache Storage.
-  try {
-    if ('caches' in window) {
-      const names = await caches.keys();
-      await Promise.all(names.map(n => caches.delete(n)));
-    }
-  } catch { /* ignore */ }
+  // 4. Service worker + Cache Storage — recorded so the troubleshooting panel
+  //    can report whether the purge actually succeeded.
+  const purge = await purgeCachesAndWorkers();
+  writeReport({
+    version: FORCE_REFRESH_VERSION,
+    startedAt: new Date().toISOString(),
+    cachesDeleted: purge.cachesDeleted,
+    cachesFailed: purge.cachesFailed,
+    workersUnregistered: purge.workersUnregistered,
+    workersFailed: purge.workersFailed,
+  });
 
-  try {
-    if ('serviceWorker' in navigator) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(r => r.unregister()));
-    }
-  } catch { /* ignore */ }
 
   // 5. Reload into the fresh build, bypassing any HTTP cache for the shell.
   const url = new URL(window.location.href);
