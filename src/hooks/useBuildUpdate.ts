@@ -54,8 +54,10 @@ const useBuildUpdate = () => {
 
   /** Reload onto the new build. */
   const applyUpdate = useCallback(() => {
+    logClientEvent('build-update', 'reload requested from the update banner');
     window.location.reload();
   }, []);
+
 
   return { updateReady, applyUpdate };
 };
