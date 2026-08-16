@@ -14,7 +14,13 @@ export async function uploadWithProgress(
   bucket: string,
   path: string,
   body: Blob,
-  opts: { contentType?: string; cacheControl?: string; onProgress?: (fraction: number) => void } = {},
+  opts: {
+    contentType?: string;
+    cacheControl?: string;
+    onProgress?: (fraction: number) => void;
+    /** Fires when the last byte has left the device and storage takes over. */
+    onBytesSent?: () => void;
+  } = {},
 ): Promise<{ error: Error | null }> {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
@@ -38,6 +44,10 @@ export async function uploadWithProgress(
       if (event.lengthComputable) {
         opts.onProgress?.(Math.min(1, event.loaded / event.total));
       }
+    };
+    xhr.upload.onload = () => {
+      opts.onProgress?.(1);
+      opts.onBytesSent?.();
     };
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
