@@ -84,6 +84,29 @@ export const useSaveBasics = (userId: string | undefined) => {
   });
 };
 
+/**
+ * Your picture. Both fields are member-writable columns on `profiles`; the photo
+ * itself lives in the owner-scoped `avatars` bucket.
+ *
+ * The boot state is invalidated too, so the top bar's avatar changes without a
+ * reload — it reads from that one RPC rather than from the page queries.
+ */
+export const useSaveAvatar = (userId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (patch: { avatar_url?: string | null; default_avatar_key?: string }) => {
+      const { error } = await supabase.from('profiles').update(patch).eq('id', userId!);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['page-profile'] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['boot-state'] });
+    },
+  });
+};
+
 export const useSavePageTheme = (userId: string | undefined) => {
   const queryClient = useQueryClient();
 
