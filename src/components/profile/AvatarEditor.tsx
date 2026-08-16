@@ -36,7 +36,13 @@ interface AvatarEditorProps {
   avatarUrl: string | null;
   defaultAvatarKey: string | null;
   displayName: string | null;
+  /**
+   * 'panel' — the standalone section on Edit my page (default).
+   * 'bare'  — no panel or heading, for use inside a dialog that titles itself.
+   */
+  chrome?: 'panel' | 'bare';
 }
+
 
 /**
  * Your picture.
