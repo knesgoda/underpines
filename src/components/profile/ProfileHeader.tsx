@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import UserAvatar from '@/components/UserAvatar';
 import { PineFlourish } from './PaperFlourish';
 import type { PageProfile } from '@/hooks/useProfilePage';
