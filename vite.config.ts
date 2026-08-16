@@ -2,8 +2,13 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import { VitePWA } from "vite-plugin-pwa";
 
+// No service worker on purpose. The previous Workbox app-shell worker
+// precached index.html and served built assets CacheFirst, so published
+// updates never reached installed clients. public/sw.js is now a kill-switch
+// worker that evicts those caches and unregisters itself; do not reintroduce
+// an app-shell service worker without the guarded registration wrapper
+// (NetworkFirst HTML, never registered in dev/preview, ?sw=off escape hatch).
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -13,76 +18,8 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [
-    react(),
-    mode === "development" && componentTagger(),
-    VitePWA({
-      registerType: "autoUpdate",
-      manifest: false,
-      workbox: {
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-        // Precache the navigation shell only. Hashed build output and images
-        // are cached on first use by the runtime rules below, so a first
-        // visit no longer downloads every lazy route chunk and every avatar
-        // before the user has done anything.
-        globPatterns: ["index.html", "manifest.json", "favicon.svg", "favicon.png"],
-        navigateFallbackDenylist: [/^\/~oauth/],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/.*supabase.*\/storage/,
-            handler: "NetworkOnly",
-          },
-          {
-            urlPattern: /^https:\/\/.*supabase.*\/rest/,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "supabase-api",
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 5,
-              },
-              networkTimeoutSeconds: 3,
-            },
-          },
-          {
-            // Build output is content-hashed, so it is safe to serve from
-            // cache indefinitely; a new deploy produces new filenames.
-            urlPattern: /\/assets\/[^/]+\.(?:js|css)$/,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "app-assets",
-              expiration: {
-                maxEntries: 150,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
-              },
-            },
-          },
-          {
-            urlPattern: /\.(?:png|jpg|jpeg|gif|webp|svg|ico)$/,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "images",
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
-              },
-            },
-          },
-          {
-            urlPattern: /\.(?:woff2?|ttf|otf)$/,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "fonts",
-              expiration: {
-                maxEntries: 16,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
-            },
-          },
-        ],
-      },
-    }),
-  ].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
