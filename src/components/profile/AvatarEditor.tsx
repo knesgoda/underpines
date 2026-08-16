@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,6 +6,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import UserAvatar from '@/components/UserAvatar';
 import { defaultAvatars, defaultAvatarKeys } from '@/lib/default-avatars';
 import { useSaveAvatar } from '@/hooks/usePageEditor';
+
+const AvatarCropModal = lazy(() => import('@/components/cabin/AvatarCropModal'));
+
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED = /^image\/(jpeg|png|gif|webp)$/;
@@ -71,6 +74,7 @@ const AvatarEditor = ({
   const { user } = useAuth();
   const saveAvatar = useSaveAvatar(user?.id);
   const [uploading, setUploading] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const busy = uploading || saveAvatar.isPending;
@@ -81,8 +85,22 @@ const AvatarEditor = ({
     return () => onBusyChange?.(false);
   }, [busy, onBusyChange]);
 
+  // Release the preview URL when the cropper closes.
+  useEffect(() => {
+    return () => {
+      if (cropSrc) URL.revokeObjectURL(cropSrc);
+    };
+  }, [cropSrc]);
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const closeCropper = () => {
+    setCropSrc(prev => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+  };
+
+  /** Pick a file, then fine-tune it — drag to reposition, zoom to fill. */
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file || !user) return;
@@ -93,11 +111,18 @@ const AvatarEditor = ({
       return;
     }
 
+    setCropSrc(URL.createObjectURL(file));
+  };
+
+  const handleCropped = async (blob: Blob) => {
+    if (!user) return;
+    closeCropper();
+
     setUploading(true);
-    const path = avatarStoragePath(user.id, file.name, crypto.randomUUID());
+    const path = avatarStoragePath(user.id, 'picture.png', crypto.randomUUID());
     const { error: uploadErr } = await supabase.storage
       .from('avatars')
-      .upload(path, file, { contentType: file.type, upsert: false, cacheControl: '31536000' });
+      .upload(path, blob, { contentType: 'image/png', upsert: false, cacheControl: '31536000' });
 
     if (uploadErr) {
       setUploading(false);
@@ -117,6 +142,7 @@ const AvatarEditor = ({
   };
 
   const chooseCreature = async (key: string) => {
+
     try {
       // Choosing an illustration means showing it, so the photo steps aside.
       await saveAvatar.mutateAsync({ default_avatar_key: key, avatar_url: null });
@@ -168,7 +194,7 @@ const AvatarEditor = ({
               <X size={13} /> Remove photo
             </button>
           )}
-          <small>JPEG, PNG, GIF or WebP, up to 5MB. Shown as a circle.</small>
+          <small>JPEG, PNG, GIF or WebP, up to 5MB. You can zoom and drag it into place. Shown as a circle.</small>
         </div>
       </div>
 
@@ -179,6 +205,13 @@ const AvatarEditor = ({
         className="hidden"
         onChange={handleFile}
       />
+
+      {cropSrc && (
+        <Suspense fallback={null}>
+          <AvatarCropModal imageSrc={cropSrc} onCancel={closeCropper} onSave={handleCropped} />
+        </Suspense>
+      )}
+
 
       <p className="avatar-editor-label">Or pick a woodland friend</p>
       <div className="avatar-editor-grid">
