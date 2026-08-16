@@ -219,3 +219,22 @@
 /* Your picture — the editor's own styles live in handoff-shell.css because the
    same component renders inside a dialog on My Page, which never loads this file. */
 
+
+/* The way out. Labeled rather than a bare arrow, so it reads as an exit. */
+.customizer-head { margin-bottom: 10px; }
+
+.customizer-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body, inherit);
+  font-size: 0.85rem;
+  color: hsl(var(--muted-foreground));
+  background: none;
+  border: 0;
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.customizer-back:hover,
+.customizer-back:focus-visible { color: hsl(var(--foreground)); text-decoration: underline; }

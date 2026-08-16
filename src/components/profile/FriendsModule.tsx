@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import UserAvatar from '@/components/UserAvatar';
 import { FEATURED_FRIEND_COUNTS, useSaveFeaturedFriendsCount, type FeaturedFriendCount } from '@/hooks/useFeaturedPage';
 import type { TopFriend } from '@/hooks/useProfilePage';
+import { editorReturnState } from '@/lib/editorReturn';
 
 /** "Megan Rivers" reads as "Megan R." under an avatar this small. */
 export const shortName = (displayName: string) => {

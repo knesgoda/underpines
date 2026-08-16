@@ -3,6 +3,7 @@ import { CalendarDays, Eye, MapPin } from 'lucide-react';
 import CircleButton from '@/components/circles/CircleButton';
 import { CabinFlourish } from './PaperFlourish';
 import { CABIN_ENABLED } from '@/lib/flags';
+import { editorReturnState } from '@/lib/editorReturn';
 import type { PageProfile } from '@/hooks/useProfilePage';
 
 const memberSince = (iso: string | null) =>
