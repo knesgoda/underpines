@@ -519,6 +519,11 @@
   display: inline-flex;
   border-radius: 999px;
   flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
 }
 
 .avatar-edit-link .avatar-edit-hint {
