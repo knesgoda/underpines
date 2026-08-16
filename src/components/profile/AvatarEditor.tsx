@@ -13,20 +13,17 @@ const ALLOWED = /^image\/(jpeg|png|gif|webp)$/;
 /** Shared with the tests: the same rules the file input enforces. */
 export const validateAvatarFile = (
   file: { size: number; type: string; name?: string },
-): { ok: true } | { ok: false; message: string } => {
+): string | null => {
   if (file.size > MAX_FILE_SIZE) {
-    return { ok: false, message: 'That picture is a little big. Try one under 5MB.' };
+    return 'That picture is a little big. Try one under 5MB.';
   }
   if (!ALLOWED.test(file.type)) {
     const isHeic = file.name?.toLowerCase().endsWith('.heic') || file.type === 'image/heic';
-    return {
-      ok: false,
-      message: isHeic
-        ? "That file format isn't supported yet. Try saving it as a JPEG or PNG first."
-        : 'Only JPEG, PNG, GIF, or WebP pictures for now.',
-    };
+    return isHeic
+      ? "That file format isn't supported yet. Try saving it as a JPEG or PNG first."
+      : 'Only JPEG, PNG, GIF, or WebP pictures for now.';
   }
-  return { ok: true };
+  return null;
 };
 
 /** Owner-scoped path — the avatars bucket only accepts writes under your own id. */
@@ -65,9 +62,9 @@ const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName }: AvatarEditor
     e.target.value = '';
     if (!file || !user) return;
 
-    const check = validateAvatarFile(file);
-    if (!check.ok) {
-      toast.error(check.message);
+    const problem = validateAvatarFile(file);
+    if (problem) {
+      toast.error(problem);
       return;
     }
 
