@@ -864,3 +864,34 @@
   outline: 2px solid hsl(var(--accent-foreground));
   outline-offset: 2px;
 }
+
+.avatar-editor-error {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid hsl(var(--destructive) / 0.45);
+  background: hsl(var(--destructive) / 0.08);
+  display: grid;
+  gap: 8px;
+}
+
+.avatar-editor-error p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: hsl(var(--foreground));
+}
+
+.avatar-editor-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.avatar-editor-error-actions .solid-button,
+.avatar-editor-error-actions .outline-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

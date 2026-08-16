@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,6 +10,14 @@ import { uploadWithProgress } from '@/lib/uploadWithProgress';
 
 const AvatarCropModal = lazy(() => import('@/components/cabin/AvatarCropModal'));
 
+
+/** What went wrong, in plain words, plus the promise that nothing was lost. */
+const failureCopy: Record<'upload' | 'save' | 'creature' | 'remove', string> = {
+  upload: "The upload didn't finish. Your cropped picture is still here — nothing was lost.",
+  save: "The picture uploaded but we couldn't attach it to your page yet.",
+  creature: "We couldn't save that woodland friend.",
+  remove: "We couldn't remove your photo.",
+};
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED = /^image\/(jpeg|png|gif|webp)$/;
@@ -78,6 +86,15 @@ const AvatarEditor = ({
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<'idle' | 'uploading' | 'saving'>('idle');
   const [cropSrc, setCropSrc] = useState<string | null>(null);
+  // A failed attempt holds on to the cropped picture so Retry doesn't ask you
+  // to pick and crop it all over again.
+  const [failure, setFailure] = useState<
+    | { kind: 'upload'; blob: Blob }
+    | { kind: 'save'; url: string }
+    | { kind: 'creature'; key: string }
+    | { kind: 'remove' }
+    | null
+  >(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const busy = uploading || saveAvatar.isPending;
@@ -119,10 +136,26 @@ const AvatarEditor = ({
     setCropSrc(URL.createObjectURL(file));
   };
 
-  const handleCropped = async (blob: Blob) => {
-    if (!user) return;
-    closeCropper();
+  /** Save the record that points at an already-uploaded picture. */
+  const runSave = async (url: string) => {
+    setPhase('saving');
+    try {
+      await saveAvatar.mutateAsync({ avatar_url: url });
+      setFailure(null);
+      toast.success('New picture up.');
+    } catch {
+      setFailure({ kind: 'save', url });
+      toast.error("Uploaded, but it didn't save. Your picture is still here — try again.");
+    } finally {
+      setPhase('idle');
+      setProgress(0);
+    }
+  };
 
+  /** Upload the cropped picture, then save it. */
+  const runUpload = async (blob: Blob) => {
+    if (!user) return;
+    setFailure(null);
     setUploading(true);
     setProgress(0);
     setPhase('uploading');
@@ -132,38 +165,42 @@ const AvatarEditor = ({
       cacheControl: '31536000',
       onProgress: setProgress,
     });
+    setUploading(false);
 
     if (uploadErr) {
-      setUploading(false);
       setPhase('idle');
       setProgress(0);
-      toast.error("That picture didn't make it through. Try again?");
+      setFailure({ kind: 'upload', blob });
+      toast.error("That picture didn't make it through. Your crop is saved — try again.");
       return;
     }
 
     const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
-    setUploading(false);
-    setPhase('saving');
-
-    try {
-      await saveAvatar.mutateAsync({ avatar_url: urlData.publicUrl });
-      toast.success('New picture up.');
-    } catch {
-      toast.error("Uploaded, but it didn't save. Try again?");
-    } finally {
-      setPhase('idle');
-      setProgress(0);
-    }
+    await runSave(urlData.publicUrl);
   };
 
+  const handleCropped = async (blob: Blob) => {
+    closeCropper();
+    await runUpload(blob);
+  };
+
+  const retry = async () => {
+    if (!failure) return;
+    if (failure.kind === 'upload') return runUpload(failure.blob);
+    if (failure.kind === 'save') return runSave(failure.url);
+    if (failure.kind === 'creature') return chooseCreature(failure.key);
+    return removePhoto();
+  };
 
   const chooseCreature = async (key: string) => {
 
     try {
       // Choosing an illustration means showing it, so the photo steps aside.
       await saveAvatar.mutateAsync({ default_avatar_key: key, avatar_url: null });
+      setFailure(null);
       toast.success(`${defaultAvatars[key].label} it is.`);
     } catch {
+      setFailure({ kind: 'creature', key });
       toast.error('Could not save that. Try again?');
     }
   };
@@ -171,8 +208,10 @@ const AvatarEditor = ({
   const removePhoto = async () => {
     try {
       await saveAvatar.mutateAsync({ avatar_url: null });
+      setFailure(null);
       toast.success('Back to your woodland friend.');
     } catch {
+      setFailure({ kind: 'remove' });
       toast.error('Could not save that. Try again?');
     }
   };
@@ -227,6 +266,20 @@ const AvatarEditor = ({
               <span className="avatar-editor-progress-label">
                 {phase === 'uploading' ? `Uploading… ${percent}%` : 'Almost done — saving…'}
               </span>
+            </div>
+          )}
+
+          {failure && !busy && (
+            <div className="avatar-editor-error" role="alert">
+              <p>{failureCopy[failure.kind]}</p>
+              <div className="avatar-editor-error-actions">
+                <button type="button" className="solid-button" onClick={retry}>
+                  <RefreshCw size={13} /> Try again
+                </button>
+                <button type="button" className="outline-button" onClick={() => setFailure(null)}>
+                  Not now
+                </button>
+              </div>
             </div>
           )}
         </div>
