@@ -116,8 +116,8 @@ const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName, chrome = 'pane
   };
 
   return (
-    <section className="panel module">
-      <h2>Your picture</h2>
+    <section className={chrome === 'bare' ? 'avatar-editor-bare' : 'panel module'}>
+      {chrome === 'panel' && <h2>Your picture</h2>}
 
       <div className="avatar-editor-row">
         <div className="avatar-editor-current">
