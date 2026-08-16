@@ -56,7 +56,7 @@ vi.mock('@/components/navigation/TopBar', () => ({ default: () => null }));
 vi.mock('@/components/navigation/TabBar', () => ({ default: () => null }));
 vi.mock('@/components/pwa/OfflineBanner', () => ({ default: () => null }));
 vi.mock('@/components/pwa/InstallPrompt', () => ({ default: () => null }));
-vi.mock('@/components/pwa/UpdatePrompt', () => ({ default: () => null }));
+
 
 // The real composers talk to Supabase; the sheet choosing which one to show
 // is what's under test.

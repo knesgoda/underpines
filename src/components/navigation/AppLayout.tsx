@@ -17,7 +17,7 @@ import '@/styles/handoff-shell.css';
 const MobileComposerSheet = lazy(() => import('@/components/feed/MobileComposerSheet'));
 const OfflineBanner = lazy(() => import('@/components/pwa/OfflineBanner'));
 const InstallPrompt = lazy(() => import('@/components/pwa/InstallPrompt'));
-const UpdatePrompt = lazy(() => import('@/components/pwa/UpdatePrompt'));
+
 const SuspendedPage = lazy(() => import('@/pages/Suspended'));
 const AgeGateInterstitial = lazy(() => import('@/components/onboarding/AgeGateInterstitial'));
 const Gate = lazy(() => import('@/pages/Gate'));
@@ -201,7 +201,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <Deferred>
           <OfflineBanner />
           <InstallPrompt />
-          <UpdatePrompt />
         </Deferred>
         {children}
       </div>
@@ -213,8 +212,8 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <Deferred>
         <OfflineBanner />
         <InstallPrompt />
-        <UpdatePrompt />
       </Deferred>
+
 
       <TopBar profile={profile ?? null} />
 
