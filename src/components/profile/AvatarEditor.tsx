@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,6 +6,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import UserAvatar from '@/components/UserAvatar';
 import { defaultAvatars, defaultAvatarKeys } from '@/lib/default-avatars';
 import { useSaveAvatar } from '@/hooks/usePageEditor';
+
+const AvatarCropModal = lazy(() => import('@/components/cabin/AvatarCropModal'));
+
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED = /^image\/(jpeg|png|gif|webp)$/;
