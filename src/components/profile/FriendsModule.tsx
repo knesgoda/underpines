@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import UserAvatar from '@/components/UserAvatar';
 import { FEATURED_FRIEND_COUNTS, useSaveFeaturedFriendsCount, type FeaturedFriendCount } from '@/hooks/useFeaturedPage';
 import type { TopFriend } from '@/hooks/useProfilePage';
+import { editorReturnState } from '@/lib/editorReturn';
 
 /** "Megan Rivers" reads as "Megan R." under an avatar this small. */
 export const shortName = (displayName: string) => {
@@ -58,7 +59,7 @@ const FriendsModule = ({
       {shown.length === 0 ? (
         <p className="quiet">
           {isOwner ? (
-            <>Nobody pinned up yet. <Link to="/me/edit" className="album-link">Choose your friends →</Link></>
+            <>Nobody pinned up yet. <Link to="/me/edit" state={editorReturnState()} className="album-link">Choose your friends →</Link></>
           ) : (
             <>No friends featured here yet.</>
           )}
