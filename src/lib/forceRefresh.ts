@@ -1,3 +1,6 @@
+import { logClientEvent } from '@/lib/clientLog';
+import { purgeCachesAndWorkers } from '@/lib/swDiagnostics';
+
 /**
  * One-shot cache purge + forced sign-out.
  *
@@ -12,8 +15,7 @@
  */
 export const FORCE_REFRESH_VERSION = '2026-08-16-a';
 
-import { logClientEvent } from '@/lib/clientLog';
-import { purgeCachesAndWorkers } from '@/lib/swDiagnostics';
+
 
 
 const MARKER_KEY = 'up_force_refresh';
