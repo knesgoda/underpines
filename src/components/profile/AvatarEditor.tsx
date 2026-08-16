@@ -61,13 +61,26 @@ interface AvatarEditorProps {
  * Saves on its own rather than waiting for "Save page", because a picture is a
  * single decision and people expect it to land immediately.
  */
-const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName, chrome = 'panel' }: AvatarEditorProps) => {
+const AvatarEditor = ({
+  avatarUrl,
+  defaultAvatarKey,
+  displayName,
+  chrome = 'panel',
+  onBusyChange,
+}: AvatarEditorProps) => {
   const { user } = useAuth();
   const saveAvatar = useSaveAvatar(user?.id);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const busy = uploading || saveAvatar.isPending;
+
+  // Tell the host (a dialog, usually) so it can hold the door shut mid-save.
+  useEffect(() => {
+    onBusyChange?.(busy);
+    return () => onBusyChange?.(false);
+  }, [busy, onBusyChange]);
+
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
