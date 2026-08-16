@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import UserAvatar from '@/components/UserAvatar';
 import { defaultAvatars, defaultAvatarKeys } from '@/lib/default-avatars';
 import { useSaveAvatar } from '@/hooks/usePageEditor';
+import { uploadWithProgress } from '@/lib/uploadWithProgress';
 
 const AvatarCropModal = lazy(() => import('@/components/cabin/AvatarCropModal'));
 
