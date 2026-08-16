@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
+
 import UserAvatar from '@/components/UserAvatar';
 import { PineFlourish } from './PaperFlourish';
 import AvatarEditor from './AvatarEditor';
@@ -23,6 +25,21 @@ import type { PageProfile } from '@/hooks/useProfilePage';
  */
 const ProfileHeader = ({ profile, isOwner = false }: { profile: PageProfile; isOwner?: boolean }) => {
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // A picture halfway to the server is easy to lose: hold the door shut while a
+  // save is in flight rather than letting Esc, the backdrop or Done drop it.
+  const requestClose = useCallback(
+    (next: boolean) => {
+      if (!next && saving) {
+        toast.info('Still saving your picture — one moment.');
+        return;
+      }
+      setEditing(next);
+    },
+    [saving],
+  );
+
 
   const avatar = (
     <UserAvatar
@@ -52,8 +69,19 @@ const ProfileHeader = ({ profile, isOwner = false }: { profile: PageProfile; isO
             {avatar}
             <span className="avatar-edit-hint">Change</span>
           </button>
-          <Dialog open={editing} onOpenChange={setEditing}>
-            <DialogContent className="avatar-editor-dialog">
+          <Dialog open={editing} onOpenChange={requestClose}>
+            <DialogContent
+              className={`avatar-editor-dialog${saving ? ' is-saving' : ''}`}
+              onEscapeKeyDown={(e) => {
+                if (saving) e.preventDefault();
+              }}
+              onPointerDownOutside={(e) => {
+                if (saving) e.preventDefault();
+              }}
+              onInteractOutside={(e) => {
+                if (saving) e.preventDefault();
+              }}
+            >
               <DialogHeader>
                 <DialogTitle>Your picture</DialogTitle>
                 <DialogDescription>
@@ -65,14 +93,26 @@ const ProfileHeader = ({ profile, isOwner = false }: { profile: PageProfile; isO
                 avatarUrl={profile.avatar_url}
                 defaultAvatarKey={profile.default_avatar_key}
                 displayName={profile.display_name}
+                onBusyChange={setSaving}
               />
               <DialogFooter>
-                <button type="button" className="solid-button" onClick={() => setEditing(false)}>
-                  Done
+                {saving && (
+                  <p className="avatar-editor-saving-note" role="status">
+                    Saving your picture — hang on a second.
+                  </p>
+                )}
+                <button
+                  type="button"
+                  className="solid-button"
+                  disabled={saving}
+                  onClick={() => requestClose(false)}
+                >
+                  {saving ? 'Saving…' : 'Done'}
                 </button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
+
         </>
       ) : (
         avatar

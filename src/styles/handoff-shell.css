@@ -755,6 +755,21 @@
 .avatar-editor-bare { display: block; }
 .avatar-editor-bare .avatar-editor-grid { max-height: 40dvh; overflow-y: auto; padding-right: 2px; }
 
+/* Mid-save: the corner X stands down so the picture can't be dropped in flight. */
+.avatar-editor-dialog.is-saving > button:last-of-type {
+  pointer-events: none;
+  opacity: 0.35;
+}
+.avatar-editor-saving-note {
+  margin: 0;
+  flex: 1;
+  align-self: center;
+  font-size: 0.85rem;
+  color: hsl(var(--muted-foreground));
+  text-align: left;
+}
+
+
 /* ── A newer build is live ────────────────────────────────────────────────── */
 /* Sits above the topbar's fixed strip so it is the first thing read, and stays
    out of the way of the status bar on installed clients. */
