@@ -45,6 +45,7 @@ const Lantern = lazy(() => import("./pages/Lantern"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const NotificationSettings = lazy(() => import("./pages/NotificationSettings"));
 const PrivacySettings = lazy(() => import("./pages/PrivacySettings"));
+const Diagnostics = lazy(() => import("./pages/Diagnostics"));
 const StoryComposer = lazy(() => import("./pages/StoryComposer"));
 const CirclesPage = lazy(() => import("./pages/CirclesPage"));
 const CircleSuggestions = lazy(() => import("./pages/CircleSuggestions"));
@@ -183,6 +184,7 @@ const App = () => (
                       <Route path="/settings" element={<SettingsPage />} />
                       <Route path="/settings/notifications" element={<NotificationSettings />} />
                       <Route path="/settings/privacy" element={<PrivacySettings />} />
+                      <Route path="/settings/troubleshooting" element={<Diagnostics />} />
                       {/* Pines+ and Stripe payouts are gone; old links land on
                           Settings rather than a 404. */}
                       <Route path="/settings/subscription" element={<Navigate to="/settings" replace />} />

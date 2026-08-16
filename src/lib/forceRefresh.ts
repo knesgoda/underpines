@@ -1,3 +1,6 @@
+import { logClientEvent } from '@/lib/clientLog';
+import { purgeCachesAndWorkers } from '@/lib/swDiagnostics';
+
 /**
  * One-shot cache purge + forced sign-out.
  *
@@ -12,7 +15,36 @@
  */
 export const FORCE_REFRESH_VERSION = '2026-08-16-a';
 
+
+
+
 const MARKER_KEY = 'up_force_refresh';
+const REPORT_KEY = 'up_force_refresh_report';
+
+export interface ForceRefreshReport {
+  version: string;
+  startedAt: string;
+  cachesDeleted: number;
+  cachesFailed: number;
+  workersUnregistered: number;
+  workersFailed: number;
+  /** Set on the boot that follows the reload — proof the reload landed. */
+  reloadedAt?: string;
+}
+
+/** The last purge attempt, for the troubleshooting panel. */
+export const readForceRefreshReport = (): ForceRefreshReport | null => {
+  try {
+    const raw = localStorage.getItem(REPORT_KEY);
+    return raw ? (JSON.parse(raw) as ForceRefreshReport) : null;
+  } catch {
+    return null;
+  }
+};
+
+const writeReport = (report: ForceRefreshReport) => {
+  try { localStorage.setItem(REPORT_KEY, JSON.stringify(report)); } catch { /* ignore */ }
+};
 
 /**
  * Returns true when the page is about to reload — the caller should skip
@@ -28,7 +60,10 @@ export const runForceRefresh = (): boolean => {
     // Storage disabled (private browsing). Nothing to purge, nothing to loop on.
     return false;
   }
-  if (done === FORCE_REFRESH_VERSION) return false;
+  if (done === FORCE_REFRESH_VERSION) {
+    confirmReload();
+    return false;
+  }
 
   // Write the marker first: if any step below throws, the reload still
   // happens only once.
@@ -38,9 +73,26 @@ export const runForceRefresh = (): boolean => {
     return false;
   }
 
+  logClientEvent('force-refresh', `starting purge for ${FORCE_REFRESH_VERSION}`);
   void purgeAndReload();
   return true;
 };
+
+/**
+ * On the boot after a purge, stamp the report so the panel can say the reload
+ * succeeded rather than just that it was attempted.
+ */
+const confirmReload = () => {
+  const report = readForceRefreshReport();
+  if (!report || report.version !== FORCE_REFRESH_VERSION || report.reloadedAt) return;
+  writeReport({ ...report, reloadedAt: new Date().toISOString() });
+  logClientEvent(
+    'force-refresh',
+    `reload after purge ${FORCE_REFRESH_VERSION} completed (caches deleted ${report.cachesDeleted}, workers unregistered ${report.workersUnregistered})`,
+    report.cachesFailed || report.workersFailed ? 'warn' : 'info',
+  );
+};
+
 
 const purgeAndReload = async () => {
   // 1. Sign out: drop the persisted Supabase session (key is project-scoped,
@@ -62,20 +114,18 @@ const purgeAndReload = async () => {
     if ('indexedDB' in window) indexedDB.deleteDatabase('under-pines');
   } catch { /* ignore */ }
 
-  // 4. Service worker + Cache Storage.
-  try {
-    if ('caches' in window) {
-      const names = await caches.keys();
-      await Promise.all(names.map(n => caches.delete(n)));
-    }
-  } catch { /* ignore */ }
+  // 4. Service worker + Cache Storage — recorded so the troubleshooting panel
+  //    can report whether the purge actually succeeded.
+  const purge = await purgeCachesAndWorkers();
+  writeReport({
+    version: FORCE_REFRESH_VERSION,
+    startedAt: new Date().toISOString(),
+    cachesDeleted: purge.cachesDeleted,
+    cachesFailed: purge.cachesFailed,
+    workersUnregistered: purge.workersUnregistered,
+    workersFailed: purge.workersFailed,
+  });
 
-  try {
-    if ('serviceWorker' in navigator) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(r => r.unregister()));
-    }
-  } catch { /* ignore */ }
 
   // 5. Reload into the fresh build, bypassing any HTTP cache for the shell.
   const url = new URL(window.location.href);

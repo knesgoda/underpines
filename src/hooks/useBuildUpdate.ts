@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { currentBuildId, fetchLatestBuildId, isNewBuild } from '@/lib/buildVersion';
+import { logClientEvent } from '@/lib/clientLog';
 
 /** Quiet enough not to matter, often enough that nobody sits on a stale build. */
 const POLL_MS = 5 * 60 * 1000;
@@ -20,8 +21,14 @@ const useBuildUpdate = () => {
   const check = useCallback(async () => {
     if (!current.current) return;
     const latest = await fetchLatestBuildId();
-    if (isNewBuild(current.current, latest)) setUpdateReady(true);
+    if (isNewBuild(current.current, latest)) {
+      setUpdateReady(prev => {
+        if (!prev) logClientEvent('build-update', `newer build available: ${latest} (running ${current.current})`);
+        return true;
+      });
+    }
   }, []);
+
 
   useEffect(() => {
     if (!import.meta.env.PROD || !current.current) return;
@@ -47,8 +54,10 @@ const useBuildUpdate = () => {
 
   /** Reload onto the new build. */
   const applyUpdate = useCallback(() => {
+    logClientEvent('build-update', 'reload requested from the update banner');
     window.location.reload();
   }, []);
+
 
   return { updateReady, applyUpdate };
 };
