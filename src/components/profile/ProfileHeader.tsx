@@ -46,6 +46,7 @@ const ProfileHeader = ({ profile, isOwner = false }: { profile: PageProfile; isO
       </div>
     </div>
   </section>
-);
+  );
+};
 
 export default ProfileHeader;
