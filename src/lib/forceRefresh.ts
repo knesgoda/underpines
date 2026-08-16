@@ -13,6 +13,32 @@
 export const FORCE_REFRESH_VERSION = '2026-08-16-a';
 
 const MARKER_KEY = 'up_force_refresh';
+const REPORT_KEY = 'up_force_refresh_report';
+
+export interface ForceRefreshReport {
+  version: string;
+  startedAt: string;
+  cachesDeleted: number;
+  cachesFailed: number;
+  workersUnregistered: number;
+  workersFailed: number;
+  /** Set on the boot that follows the reload — proof the reload landed. */
+  reloadedAt?: string;
+}
+
+/** The last purge attempt, for the troubleshooting panel. */
+export const readForceRefreshReport = (): ForceRefreshReport | null => {
+  try {
+    const raw = localStorage.getItem(REPORT_KEY);
+    return raw ? (JSON.parse(raw) as ForceRefreshReport) : null;
+  } catch {
+    return null;
+  }
+};
+
+const writeReport = (report: ForceRefreshReport) => {
+  try { localStorage.setItem(REPORT_KEY, JSON.stringify(report)); } catch { /* ignore */ }
+};
 
 /**
  * Returns true when the page is about to reload — the caller should skip
@@ -28,7 +54,10 @@ export const runForceRefresh = (): boolean => {
     // Storage disabled (private browsing). Nothing to purge, nothing to loop on.
     return false;
   }
-  if (done === FORCE_REFRESH_VERSION) return false;
+  if (done === FORCE_REFRESH_VERSION) {
+    confirmReload();
+    return false;
+  }
 
   // Write the marker first: if any step below throws, the reload still
   // happens only once.
@@ -38,9 +67,26 @@ export const runForceRefresh = (): boolean => {
     return false;
   }
 
+  logClientEvent('force-refresh', `starting purge for ${FORCE_REFRESH_VERSION}`);
   void purgeAndReload();
   return true;
 };
+
+/**
+ * On the boot after a purge, stamp the report so the panel can say the reload
+ * succeeded rather than just that it was attempted.
+ */
+const confirmReload = () => {
+  const report = readForceRefreshReport();
+  if (!report || report.version !== FORCE_REFRESH_VERSION || report.reloadedAt) return;
+  writeReport({ ...report, reloadedAt: new Date().toISOString() });
+  logClientEvent(
+    'force-refresh',
+    `reload after purge ${FORCE_REFRESH_VERSION} completed (caches deleted ${report.cachesDeleted}, workers unregistered ${report.workersUnregistered})`,
+    report.cachesFailed || report.workersFailed ? 'warn' : 'info',
+  );
+};
+
 
 const purgeAndReload = async () => {
   // 1. Sign out: drop the persisted Supabase session (key is project-scoped,
