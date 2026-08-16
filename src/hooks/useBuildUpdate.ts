@@ -21,8 +21,14 @@ const useBuildUpdate = () => {
   const check = useCallback(async () => {
     if (!current.current) return;
     const latest = await fetchLatestBuildId();
-    if (isNewBuild(current.current, latest)) setUpdateReady(true);
+    if (isNewBuild(current.current, latest)) {
+      setUpdateReady(prev => {
+        if (!prev) logClientEvent('build-update', `newer build available: ${latest} (running ${current.current})`);
+        return true;
+      });
+    }
   }, []);
+
 
   useEffect(() => {
     if (!import.meta.env.PROD || !current.current) return;
