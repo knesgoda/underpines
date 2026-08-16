@@ -47,6 +47,10 @@
          must be an opaque square — and changing it needs a remove/re-add of
          the Home Screen icon to show up. -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <!-- Home-screen install metadata (name, icons, standalone display). There is
+         deliberately no service worker: see the note in vite.config.ts. -->
+    <link rel="manifest" href="/manifest.json" />
+
 
     <!-- Everything the signed-in app does starts with a request to this
          origin (get_boot_state, then the feed). Warming DNS+TCP+TLS here
