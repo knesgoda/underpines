@@ -6,6 +6,7 @@ import { currentBuildId, fetchLatestBuildId, isNewBuild } from '@/lib/buildVersi
 import { FORCE_REFRESH_VERSION, readForceRefreshReport, type ForceRefreshReport } from '@/lib/forceRefresh';
 import { readWorkerReport, purgeCachesAndWorkers, type WorkerReport } from '@/lib/swDiagnostics';
 import { readClientLog, clearClientLog, formatClientLog, logClientEvent, type ClientLogEntry } from '@/lib/clientLog';
+import '@/styles/diagnostics.css';
 
 /**
  * "Is this browser running the build I just published?"

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { currentBuildId, fetchLatestBuildId, isNewBuild } from '@/lib/buildVersion';
+import { logClientEvent } from '@/lib/clientLog';
 
 /** Quiet enough not to matter, often enough that nobody sits on a stale build. */
 const POLL_MS = 5 * 60 * 1000;
