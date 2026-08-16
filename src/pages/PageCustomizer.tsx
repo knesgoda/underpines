@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import PineTreeLoading from '@/components/PineTreeLoading';
 import UserAvatar from '@/components/UserAvatar';
+import AvatarEditor from '@/components/profile/AvatarEditor';
 import {
   usePageProfile, usePageModules, usePageTheme, useTopFriends, type PageTheme,
 } from '@/hooks/useProfilePage';
@@ -216,6 +217,12 @@ const PageCustomizer = () => {
 
       <div className="customizer-layout">
         <div className="customizer-main">
+          <AvatarEditor
+            avatarUrl={profile?.avatar_url ?? null}
+            defaultAvatarKey={profile?.default_avatar_key ?? null}
+            displayName={profile?.display_name ?? null}
+          />
+
           <section className="panel module">
             <h2>The basics</h2>
             <Field label="Display name">
