@@ -201,7 +201,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <Deferred>
           <OfflineBanner />
           <InstallPrompt />
-          <UpdatePrompt />
         </Deferred>
         {children}
       </div>
@@ -213,8 +212,8 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <Deferred>
         <OfflineBanner />
         <InstallPrompt />
-        <UpdatePrompt />
       </Deferred>
+
 
       <TopBar profile={profile ?? null} />
 
