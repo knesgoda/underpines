@@ -194,7 +194,7 @@ const AvatarEditor = ({
               <X size={13} /> Remove photo
             </button>
           )}
-          <small>JPEG, PNG, GIF or WebP, up to 5MB. Shown as a circle.</small>
+          <small>JPEG, PNG, GIF or WebP, up to 5MB. You can zoom and drag it into place. Shown as a circle.</small>
         </div>
       </div>
 
@@ -205,6 +205,13 @@ const AvatarEditor = ({
         className="hidden"
         onChange={handleFile}
       />
+
+      {cropSrc && (
+        <Suspense fallback={null}>
+          <AvatarCropModal imageSrc={cropSrc} onCancel={closeCropper} onSave={handleCropped} />
+        </Suspense>
+      )}
+
 
       <p className="avatar-editor-label">Or pick a woodland friend</p>
       <div className="avatar-editor-grid">
