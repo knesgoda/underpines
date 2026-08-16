@@ -41,7 +41,13 @@ interface AvatarEditorProps {
    * 'bare'  — no panel or heading, for use inside a dialog that titles itself.
    */
   chrome?: 'panel' | 'bare';
+  /**
+   * Called whenever a save is in flight, so a host dialog can refuse to close
+   * mid-upload instead of dropping the picture on the floor.
+   */
+  onBusyChange?: (busy: boolean) => void;
 }
+
 
 
 /**
