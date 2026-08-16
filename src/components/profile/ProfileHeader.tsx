@@ -23,6 +23,21 @@ import type { PageProfile } from '@/hooks/useProfilePage';
  */
 const ProfileHeader = ({ profile, isOwner = false }: { profile: PageProfile; isOwner?: boolean }) => {
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // A picture halfway to the server is easy to lose: hold the door shut while a
+  // save is in flight rather than letting Esc, the backdrop or Done drop it.
+  const requestClose = useCallback(
+    (next: boolean) => {
+      if (!next && saving) {
+        toast.info('Still saving your picture — one moment.');
+        return;
+      }
+      setEditing(next);
+    },
+    [saving],
+  );
+
 
   const avatar = (
     <UserAvatar
