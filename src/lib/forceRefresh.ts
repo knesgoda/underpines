@@ -10,7 +10,7 @@
  * Bump this string (date-stamped) whenever everyone needs to be pushed onto a
  * fresh build and re-authenticated.
  */
-export const FORCE_REFRESH_VERSION = '2026-08-14-a';
+export const FORCE_REFRESH_VERSION = '2026-08-16-a';
 
 const MARKER_KEY = 'up_force_refresh';
 
