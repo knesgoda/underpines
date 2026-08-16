@@ -168,7 +168,7 @@ const MyPage = () => {
 
   return (
     <div className={`page-shell profile-page ${pageTheme?.full2006 ? 'page-2006' : ''}`} style={themeStyle}>
-      <ProfileHeader profile={profile} />
+      <ProfileHeader profile={profile} isOwner={isOwner} />
 
       <div className="profile-columns">
         <div className="profile-wall">
