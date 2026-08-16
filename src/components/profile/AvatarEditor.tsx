@@ -55,7 +55,7 @@ interface AvatarEditorProps {
  * Saves on its own rather than waiting for "Save page", because a picture is a
  * single decision and people expect it to land immediately.
  */
-const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName }: AvatarEditorProps) => {
+const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName, chrome = 'panel' }: AvatarEditorProps) => {
   const { user } = useAuth();
   const saveAvatar = useSaveAvatar(user?.id);
   const [uploading, setUploading] = useState(false);
