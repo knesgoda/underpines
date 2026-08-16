@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme, type AppTheme, type MessengerSkin } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
+import { editorReturnState } from '@/lib/editorReturn';
 import { MARKETPLACE_ENABLED } from '@/lib/flags';
 import { useIsMobile } from '@/hooks/use-mobile';
 import SkinThumb from '@/components/campfire/SkinThumb';
@@ -132,7 +133,7 @@ const SettingsPage = () => {
       {/* YOUR PAGE */}
       <SettingsSection label="Your page">
         <SettingsItem emoji="☺" label="My Page" onClick={() => navigate('/me')} />
-        <SettingsItem emoji="✎" label="Edit my page" onClick={() => navigate('/me/edit')} />
+        <SettingsItem emoji="✎" label="Edit my page" onClick={() => navigate('/me/edit', { state: editorReturnState() })} />
         <SettingsItem emoji="♫" label="Listening" onClick={() => navigate('/listening')} />
         {MARKETPLACE_ENABLED && (
           <SettingsItem emoji="🎨" label="My Designs" onClick={() => navigate('/settings/designs')} />
