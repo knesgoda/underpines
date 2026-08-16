@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, GripVertical, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,6 +23,7 @@ import { useAlbums } from '@/hooks/usePhotos';
 import { useFeaturedAlbumRows, useSaveFeaturedAlbums } from '@/hooks/useFeaturedPage';
 
 import { contrastRatio, hexToHslTriplet, hslTripletToHex } from '@/lib/color';
+import { readEditorReturn, restoreScroll } from '@/lib/editorReturn';
 import { addModule, moveItem, moveModule, removeModule, updateModule } from '@/lib/pageModules';
 // profile.css supplies .module and .page-2006, which the preview reuses so it
 // shows the same rules the real page will.
@@ -195,6 +196,22 @@ const PageCustomizer = () => {
   const chosen = topFriendIds.map(id => byId.get(id)).filter((f): f is (typeof friends)[number] => !!f);
   const available = friends.filter(f => !topFriendIds.includes(f.id));
 
+  // Where "back" goes. Entry points hand over the route + scroll offset they
+  // were on, so the exit puts the person back exactly where they tapped; a
+  // direct link or refresh falls back to My Page.
+  const backLabel = returnTo && returnTo.from.startsWith('/settings')
+    ? 'Back to settings'
+    : 'Back to my page';
+
+  const goBack = () => {
+    if (returnTo) {
+      navigate(-1);
+      restoreScroll(returnTo.scrollY);
+      return;
+    }
+    navigate('/me');
+  };
+
   // The preview is the same tokens the page itself uses, so what is shown here
   // is what a visitor gets rather than an approximation of it.
   const previewStyle = {
@@ -202,6 +219,7 @@ const PageCustomizer = () => {
     '--card': hexToHslTriplet(colors.card) ?? undefined,
     '--foreground': hexToHslTriplet(colors.foreground) ?? undefined,
   } as React.CSSProperties;
+
 
   return (
     <div className="page-shell customizer">
