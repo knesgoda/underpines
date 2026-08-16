@@ -16,6 +16,7 @@ import '@/styles/handoff-shell.css';
 // composers, and SceneDebugPanel, which only founders ever see.
 const MobileComposerSheet = lazy(() => import('@/components/feed/MobileComposerSheet'));
 const OfflineBanner = lazy(() => import('@/components/pwa/OfflineBanner'));
+const UpdateBanner = lazy(() => import('@/components/UpdateBanner'));
 const InstallPrompt = lazy(() => import('@/components/pwa/InstallPrompt'));
 
 const SuspendedPage = lazy(() => import('@/pages/Suspended'));
@@ -199,6 +200,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="fullscreen-shell">
         <Deferred>
+          <UpdateBanner />
           <OfflineBanner />
           <InstallPrompt />
         </Deferred>
@@ -210,6 +212,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="app">
       <Deferred>
+        <UpdateBanner />
         <OfflineBanner />
         <InstallPrompt />
       </Deferred>
