@@ -211,8 +211,27 @@ const AvatarEditor = ({
             </button>
           )}
           <small>JPEG, PNG, GIF or WebP, up to 5MB. You can zoom and drag it into place. Shown as a circle.</small>
+
+          {phase !== 'idle' && (
+            <div
+              className="avatar-editor-progress"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={percent}
+              aria-label="Saving your picture"
+            >
+              <div className="avatar-editor-progress-track">
+                <span style={{ width: `${percent}%` }} />
+              </div>
+              <span className="avatar-editor-progress-label">
+                {phase === 'uploading' ? `Uploading… ${percent}%` : 'Almost done — saving…'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
+
 
       <input
         ref={fileInputRef}
