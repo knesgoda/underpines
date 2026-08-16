@@ -512,3 +512,34 @@
   .friend-grid { grid-template-columns: repeat(4, 1fr); gap: 11px 8px; }
   .paper-tabs { overflow-x: auto; }
 }
+
+/* The owner's picture doubles as the way into the picture editor. */
+.avatar-edit-link {
+  position: relative;
+  display: inline-flex;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.avatar-edit-link .avatar-edit-hint {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 3px 0 4px;
+  border-radius: 0 0 999px 999px;
+  background: hsl(var(--foreground) / 0.66);
+  color: hsl(var(--background));
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.avatar-edit-link:hover .avatar-edit-hint,
+.avatar-edit-link:focus-visible .avatar-edit-hint { opacity: 1; }
+
+@media (hover: none) {
+  .avatar-edit-link .avatar-edit-hint { opacity: 1; }
+}
