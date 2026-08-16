@@ -217,6 +217,7 @@ const PageCustomizer = () => {
 
       <div className="customizer-layout">
         <div className="customizer-main">
+          <div id="your-picture" />
           <AvatarEditor
             avatarUrl={profile?.avatar_url ?? null}
             defaultAvatarKey={profile?.default_avatar_key ?? null}
