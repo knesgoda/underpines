@@ -101,6 +101,7 @@ const AvatarEditor = ({ avatarUrl, defaultAvatarKey, displayName, chrome = 'pane
     try {
       // Choosing an illustration means showing it, so the photo steps aside.
       await saveAvatar.mutateAsync({ default_avatar_key: key, avatar_url: null });
+      toast.success(`${defaultAvatars[key].label} it is.`);
     } catch {
       toast.error('Could not save that. Try again?');
     }
