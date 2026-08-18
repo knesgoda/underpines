@@ -1,0 +1,1 @@
+update public.waitlist_signups set status = 'invited' where email = 'leslietstallings@gmail.com';
